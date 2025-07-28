@@ -160,6 +160,8 @@ LeadAgent <- R6::R6Class(
         self$agents[[agent$agent_id]] <- agent
       }
 
+      return(invisible(NULL))
+
     },
 
     #' @description
