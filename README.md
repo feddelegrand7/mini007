@@ -74,7 +74,7 @@ Each created Agent has an `agent_id` (among other meta information):
 
 ``` r
 polar_bear_researcher$agent_id
-#> [1] "765e0360-51ac-42b1-8537-86c406193936"
+#> [1] "8553923e-cd97-4b2b-852f-839379ff93c6"
 ```
 
 At any time, you can tweak the `llm_object`:
@@ -90,7 +90,7 @@ An agent can provide the answer to a prompt using the `invoke` method:
 
 ``` r
 polar_bear_researcher$invoke("Are polar bears dangerous for humans?")
-#> [1] "Yes, polar bears can be dangerous to humans. They are large, powerful predators and are considered one of the most dangerous bears due to their size, strength, and hunting capabilities. Polar bears primarily hunt seals and live in the Arctic region, where human encounters are relatively rare but can be risky.\n\nPolar bears may become aggressive if they feel threatened, are surprised, or are protecting their cubs. In some cases, polar bears have attacked humans, particularly when food is scarce or when bears become habituated to human presence.\n\nIf you are in polar bear territory, it is important to take precautions, such as carrying deterrents like bear spray, making noise to avoid surprising bears, and storing food securely to prevent attracting them. It’s also advised to travel in groups and follow local guidelines to minimize the risk of dangerous encounters."
+#> [1] "Yes, polar bears can be dangerous to humans. They are the largest land carnivores and are powerful predators. While polar bears generally avoid human contact, they may become aggressive if they feel threatened, are surprised, or are hungry. Attacks on humans, though relatively rare, have occurred, especially in areas where bears and people come into close proximity, such as Arctic communities or during expeditions.\n\nKey points about polar bears and human danger:\n\n- Polar bears are strong and capable hunters, able to kill large prey like seals.\n- They have been known to attack humans, particularly when food is scarce or they're protecting their cubs.\n- Most attacks occur because bears are surprised, feel threatened, or are habituated to human presence.\n- In Arctic regions, communities have measures in place to avoid and manage polar bear encounters, such as bear patrols and use of deterrents.\n- Travelers and researchers in polar bear habitats are advised to carry deterrents (e.g., bear spray, firearms in some cases) and follow safety protocols.\n\nIn summary, while polar bears do not typically seek out humans as prey, they pose a significant risk due to their size and predatory nature, and caution is essential when in bear country."
 ```
 
 You can also retrieve a list that displays the history of the agent:
@@ -118,24 +118,30 @@ polar_bear_researcher$messages
 #> [1] "assistant"
 #> 
 #> [[3]]$content
-#> [1] "Yes, polar bears can be dangerous to humans. They are large, powerful predators and are considered one of the most dangerous bears due to their size, strength, and hunting capabilities. Polar bears primarily hunt seals and live in the Arctic region, where human encounters are relatively rare but can be risky.\n\nPolar bears may become aggressive if they feel threatened, are surprised, or are protecting their cubs. In some cases, polar bears have attacked humans, particularly when food is scarce or when bears become habituated to human presence.\n\nIf you are in polar bear territory, it is important to take precautions, such as carrying deterrents like bear spray, making noise to avoid surprising bears, and storing food securely to prevent attracting them. It’s also advised to travel in groups and follow local guidelines to minimize the risk of dangerous encounters."
+#> [1] "Yes, polar bears can be dangerous to humans. They are the largest land carnivores and are powerful predators. While polar bears generally avoid human contact, they may become aggressive if they feel threatened, are surprised, or are hungry. Attacks on humans, though relatively rare, have occurred, especially in areas where bears and people come into close proximity, such as Arctic communities or during expeditions.\n\nKey points about polar bears and human danger:\n\n- Polar bears are strong and capable hunters, able to kill large prey like seals.\n- They have been known to attack humans, particularly when food is scarce or they're protecting their cubs.\n- Most attacks occur because bears are surprised, feel threatened, or are habituated to human presence.\n- In Arctic regions, communities have measures in place to avoid and manage polar bear encounters, such as bear patrols and use of deterrents.\n- Travelers and researchers in polar bear habitats are advised to carry deterrents (e.g., bear spray, firearms in some cases) and follow safety protocols.\n\nIn summary, while polar bears do not typically seek out humans as prey, they pose a significant risk due to their size and predatory nature, and caution is essential when in bear country."
 ```
 
 Or the `ellmer` way:
 
 ``` r
 polar_bear_researcher$llm_object
-#> <Chat OpenAI/gpt-4.1-mini turns=3 tokens=36/164 $0.00>
+#> <Chat OpenAI/gpt-4.1-mini turns=3 tokens=36/245 $0.00>
 #> ── system [0] ──────────────────────────────────────────────────────────────────
 #> You are an expert in polar bears, you task is to collect information about polar bears.
 #> ── user [36] ───────────────────────────────────────────────────────────────────
 #> Are polar bears dangerous for humans?
-#> ── assistant [164] ─────────────────────────────────────────────────────────────
-#> Yes, polar bears can be dangerous to humans. They are large, powerful predators and are considered one of the most dangerous bears due to their size, strength, and hunting capabilities. Polar bears primarily hunt seals and live in the Arctic region, where human encounters are relatively rare but can be risky.
+#> ── assistant [245] ─────────────────────────────────────────────────────────────
+#> Yes, polar bears can be dangerous to humans. They are the largest land carnivores and are powerful predators. While polar bears generally avoid human contact, they may become aggressive if they feel threatened, are surprised, or are hungry. Attacks on humans, though relatively rare, have occurred, especially in areas where bears and people come into close proximity, such as Arctic communities or during expeditions.
 #> 
-#> Polar bears may become aggressive if they feel threatened, are surprised, or are protecting their cubs. In some cases, polar bears have attacked humans, particularly when food is scarce or when bears become habituated to human presence.
+#> Key points about polar bears and human danger:
 #> 
-#> If you are in polar bear territory, it is important to take precautions, such as carrying deterrents like bear spray, making noise to avoid surprising bears, and storing food securely to prevent attracting them. It’s also advised to travel in groups and follow local guidelines to minimize the risk of dangerous encounters.
+#> - Polar bears are strong and capable hunters, able to kill large prey like seals.
+#> - They have been known to attack humans, particularly when food is scarce or they're protecting their cubs.
+#> - Most attacks occur because bears are surprised, feel threatened, or are habituated to human presence.
+#> - In Arctic regions, communities have measures in place to avoid and manage polar bear encounters, such as bear patrols and use of deterrents.
+#> - Travelers and researchers in polar bear habitats are advised to carry deterrents (e.g., bear spray, firearms in some cases) and follow safety protocols.
+#> 
+#> In summary, while polar bears do not typically seek out humans as prey, they pose a significant risk due to their size and predatory nature, and caution is essential when in bear country.
 ```
 
 ### Creating a multi-agents orchestraction
@@ -183,10 +189,10 @@ Next, we need to assign the Agents to `LeadAgent`, we do it as follows:
 ``` r
 lead_agent$register_agents(c(researcher, summarizer, translator))
 lead_agent$agents
-#> $`b474a5e8-d600-4256-aa4e-509777bbada8`
+#> $`3f4cfc05-5839-48e8-9294-b13119480819`
 #> <Agent>
 #>   Public:
-#>     agent_id: b474a5e8-d600-4256-aa4e-509777bbada8
+#>     agent_id: 3f4cfc05-5839-48e8-9294-b13119480819
 #>     clone: function (deep = FALSE) 
 #>     initialize: function (name, instruction, llm_object) 
 #>     instruction: You are a research assistant. Your job is to answer fact ...
@@ -201,10 +207,10 @@ lead_agent$agents
 #>     .add_message: function (message, type) 
 #>     .add_user_message: function (message, type = "user") 
 #> 
-#> $`6067c0f9-3c8a-4245-98d1-8a2fc8511fdc`
+#> $`37dd5724-6d93-48f7-a99f-3c017ce98c3b`
 #> <Agent>
 #>   Public:
-#>     agent_id: 6067c0f9-3c8a-4245-98d1-8a2fc8511fdc
+#>     agent_id: 37dd5724-6d93-48f7-a99f-3c017ce98c3b
 #>     clone: function (deep = FALSE) 
 #>     initialize: function (name, instruction, llm_object) 
 #>     instruction: You are agent designed to summarise a give text into 3 d ...
@@ -219,10 +225,10 @@ lead_agent$agents
 #>     .add_message: function (message, type) 
 #>     .add_user_message: function (message, type = "user") 
 #> 
-#> $`0162f54b-d99d-4c75-8407-d674cbfc6237`
+#> $`3d57f850-b179-4f25-8db0-f859ca31f362`
 #> <Agent>
 #>   Public:
-#>     agent_id: 0162f54b-d99d-4c75-8407-d674cbfc6237
+#>     agent_id: 3d57f850-b179-4f25-8db0-f859ca31f362
 #>     clone: function (deep = FALSE) 
 #>     initialize: function (name, instruction, llm_object) 
 #>     instruction: Your role is to translate a text from English to German
@@ -248,7 +254,7 @@ response <- lead_agent$invoke("Tell me about the economic situation in Algeria, 
 
 ``` r
 response
-#> [1] "- Die algerische Wirtschaft ist stark von Kohlenwasserstoffen abhängig, die etwa 95 % der Exporte und 30 % des BIP ausmachen.  \n- Es werden Anstrengungen unternommen, die Wirtschaft zu diversifizieren, mit langsamem Wachstum im Landwirtschafts- und Industriesektor.  \n- Die Inflation liegt moderat bei 6-7 %, während die Arbeitslosigkeit mit etwa 12-14 % hoch bleibt."
+#> [1] "- Das BIP-Wachstum Algeriens ist moderat bei 2-3 %, hauptsächlich angetrieben durch den Bereich der Kohlenwasserstoffe, der etwa 30 % der Wirtschaft ausmacht.  \n- Wichtige Branchen, die die Wirtschaft antreiben, sind Energie, Bergbau, Landwirtschaft und verarbeitendes Gewerbe.  \n- Zu den großen Herausforderungen zählen die starke Abhängigkeit von Ölexporten, hohe Arbeitslosenraten und der dringende Bedarf an wirtschaftlicher Diversifikation."
 ```
 
 If you want to inspect the multi-agents orchestration, you have access
@@ -258,7 +264,7 @@ to the `agents_interaction` object:
 lead_agent$agents_interaction
 #> [[1]]
 #> [[1]]$agent_id
-#> [1] "b474a5e8-d600-4256-aa4e-509777bbada8"
+#> [1] "3f4cfc05-5839-48e8-9294-b13119480819"
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
@@ -270,15 +276,15 @@ lead_agent$agents_interaction
 #> [1] "OpenAI"
 #> 
 #> [[1]]$prompt
-#> [1] "Gather current information about the economic situation in Algeria, including key statistics and trends."
+#> [1] "Gather recent data on Algeria's economic situation, including GDP growth, main industries, and challenges."
 #> 
 #> [[1]]$response
-#> [1] "As of mid-2024, Algeria's economy is marked by dependence on hydrocarbons, contributing about 95% of exports and 30% of GDP; oil prices and output cuts impact revenue. The government is focusing on diversification, with sectors like agriculture and manufacturing growing slowly; inflation is moderate around 6-7%, and unemployment remains high near 12-14%."
+#> [1] "As of 2023-2024, Algeria's GDP growth is estimated around 2-3%, driven mainly by hydrocarbons (oil and gas) accounting for ~30% of GDP; main industries include energy, mining, agriculture, and manufacturing. Challenges include reliance on oil exports, high unemployment, and need for economic diversification amid fluctuating oil prices."
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> [1] "6067c0f9-3c8a-4245-98d1-8a2fc8511fdc"
+#> [1] "37dd5724-6d93-48f7-a99f-3c017ce98c3b"
 #> 
 #> [[2]]$agent_name
 #> [1] "summarizer"
@@ -290,15 +296,15 @@ lead_agent$agents_interaction
 #> [1] "OpenAI"
 #> 
 #> [[2]]$prompt
-#> [1] "Summarize the economic situation in Algeria in three concise bullet points."
+#> [1] "Summarize the economic situation of Algeria into 3 concise bullet points in English."
 #> 
 #> [[2]]$response
-#> [1] "- Algeria's economy heavily relies on hydrocarbons, which make up around 95% of exports and 30% of GDP.  \n- Efforts to diversify the economy are underway, with slow growth in agriculture and manufacturing sectors.  \n- Inflation is moderate at 6-7%, while unemployment remains high at approximately 12-14%."
+#> [1] "- Algeria's GDP growth is moderate at 2-3%, primarily fueled by its hydrocarbons sector, which represents about 30% of the economy.  \n- Key industries driving the economy include energy, mining, agriculture, and manufacturing.  \n- Major challenges consist of heavy dependence on oil exports, high unemployment rates, and the urgent need for economic diversification."
 #> 
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> [1] "0162f54b-d99d-4c75-8407-d674cbfc6237"
+#> [1] "3d57f850-b179-4f25-8db0-f859ca31f362"
 #> 
 #> [[3]]$agent_name
 #> [1] "translator"
@@ -310,10 +316,10 @@ lead_agent$agents_interaction
 #> [1] "OpenAI"
 #> 
 #> [[3]]$prompt
-#> [1] "Translate the three bullet points about Algeria's economic situation into German."
+#> [1] "Translate the 3 bullet points summary into German."
 #> 
 #> [[3]]$response
-#> [1] "- Die algerische Wirtschaft ist stark von Kohlenwasserstoffen abhängig, die etwa 95 % der Exporte und 30 % des BIP ausmachen.  \n- Es werden Anstrengungen unternommen, die Wirtschaft zu diversifizieren, mit langsamem Wachstum im Landwirtschafts- und Industriesektor.  \n- Die Inflation liegt moderat bei 6-7 %, während die Arbeitslosigkeit mit etwa 12-14 % hoch bleibt."
+#> [1] "- Das BIP-Wachstum Algeriens ist moderat bei 2-3 %, hauptsächlich angetrieben durch den Bereich der Kohlenwasserstoffe, der etwa 30 % der Wirtschaft ausmacht.  \n- Wichtige Branchen, die die Wirtschaft antreiben, sind Energie, Bergbau, Landwirtschaft und verarbeitendes Gewerbe.  \n- Zu den großen Herausforderungen zählen die starke Abhängigkeit von Ölexporten, hohe Arbeitslosenraten und der dringende Bedarf an wirtschaftlicher Diversifikation."
 ```
 
 The above example is extremely simple, the usefulness of `mini007` would
