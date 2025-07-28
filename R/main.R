@@ -21,45 +21,26 @@ Agent <- R6::R6Class(
     #'
     #' @param name A short identifier for the agent (e.g. `"translator"`).
     #' @param instruction The system prompt that defines the agent's role.
-    #' @param model The OpenAI-compatible model to use (e.g. `"gpt-4.1-mini"`).
-    #' @param verbose If `TRUE`, prints debug info; used to control `echo` level of `ellmer`. Default is `TRUE`.
-    #' @param api_key Optional. If not provided, it will use `Sys.getenv("OPENAI_API_KEY")`.
+    #' @param llm_object The LLM object generate by ellmer (eg. output of ellmer::chat_openai)
 
-    initialize = function(name, instruction, model, verbose = FALSE, api_key = NULL) {
 
-      if (is.null(api_key)) {
-        api_key <- Sys.getenv("OPENAI_API_KEY", unset = NA)
-      }
-
-      if (is.na(api_key)) {
-        err_msg <- paste0(
-          "Please provide your api_key as parameter ",
-          "or define the OPENAI_API_KEY environment variable"
-        )
-        stop(err_msg)
-      }
+    initialize = function(name, instruction, llm_object) {
 
       checkmate::assert_string(name)
       checkmate::assert_string(instruction)
-      checkmate::assert_string(model)
-      checkmate::assert_string(api_key)
-      checkmate::assert_flag(verbose)
 
       self$name <- name
       self$instruction <- instruction
 
-      if (verbose) {
-        echo <- "all"
-      } else {
-        echo <- "none"
-      }
+      self$llm_object <- llm_object$clone(deep = TRUE)
 
-      self$llm_object <- ellmer::chat_openai(
-        system_prompt = instruction,
-        api_key = api_key,
-        model = model,
-        echo = echo
-      )
+      meta_data <-  self$llm_object$get_provider()
+
+      self$model_provider <- meta_data@name
+
+      self$model_name <- meta_data@model
+
+      self$llm_object$set_system_prompt(value = instruction)
 
       self$messages <- list(
         list(role = "system", content = instruction)
@@ -96,7 +77,12 @@ Agent <- R6::R6Class(
     #' @field messages A list of past messages (system, user, assistant).
     messages = NULL,
     #' @field agent_id A UUID uniquely identifying the agent.
-    agent_id = NULL
+    agent_id = NULL,
+    #'@field model_provider The name of the entity providing the model (eg. OpenAI)
+    model_provider = NULL,
+    #'@field model_name The name of the model to be used (eg. gpt-4.1-mini)
+    model_name = NULL
+
   ),
 
   private = list(
@@ -144,18 +130,19 @@ LeadAgent <- R6::R6Class(
     #' @description
     #' Initializes the LeadAgent with a built-in task-decomposition prompt.
     #' @param name A short name for the coordinator (e.g. `"lead"`).
-    #' @param model The LLM model to use for decomposition and matching.
-    #' @param api_key Optional. OpenAI API key; defaults to environment variable.
-    initialize = function(name, model, api_key = NULL) {
+    #' @param llm_object The LLM object generate by ellmer (eg. output of ellmer::chat_openai)
+
+    initialize = function(name, llm_object) {
 
       system_prompt <- paste0(
         "You are a task decomposition assistant. ",
         "You receive a complex user instruction and return a list of smaller subtasks to be performed in logical order. ",
         "Return the subtasks as plain text, one per line.",
-        "Within the subtasks, mentions the necessary information that should be known before executing them."
+        "Within the subtasks, mentions the necessary information that should be known before executing them. ",
+        "Write the subtask as it is. Do not include numerotation (like 1., 2. and so on), write the subtask plain and simple"
       )
 
-      super$initialize(name = name, model = model, instruction = system_prompt, api_key = api_key)
+      super$initialize(name = name, instruction = system_prompt, llm_object = llm_object)
     },
 
     #' @description
@@ -163,11 +150,17 @@ LeadAgent <- R6::R6Class(
     #' @param agents A vector of `Agent` objects to register.
     register_agents = function(agents) {
 
+      if (length(agents$agent_id) == 1) {
+        self$agents[[agent$agent_id]] <- agent
+        return(invisible(NULL))
+      }
+
       for (i in seq_along(agents)) {
         agent <- agents[[i]]
         self$agents[[agent$agent_id]] <- agent
       }
 
+      return(invisible(NULL))
 
     },
 
@@ -186,9 +179,15 @@ LeadAgent <- R6::R6Class(
 
         agent_name <- self$agents[[agent_id]]$name
 
+        model_provider <- self$agents[[agent_id]]$model_provider
+
+        model_name <- self$agents[[agent_id]]$model_name
+
         list(
           agent_id = agent_id,
           agent_name = agent_name,
+          model_name = model_name,
+          model_provider = model_provider,
           prompt = task
         )
 
@@ -262,6 +261,7 @@ LeadAgent <- R6::R6Class(
       tasks <- unlist(strsplit(result, "\n"))
       tasks <- trimws(tasks)
       tasks <- tasks[tasks != ""]
+
       return(tasks)
     },
 
@@ -280,8 +280,8 @@ LeadAgent <- R6::R6Class(
       system_prompt <- paste0(
         "You are an agent-matching assistant. ",
         "Given a task and a list of available agents with their instructions, names and IDs, ",
-        "pick the best-suited agent and return ONLY its ID (no explanation). The ID has a UUID structure",
-        "Agents are separated with dashes '--------'"
+        "pick the best-suited agent (only one) and return ONLY its ID (no explanation). The ID has a UUID structure",
+        " The structure of the Agent starts with the ID and finishes with the Instruction."
       )
 
       base_system_prompt <- self$llm_object$get_system_prompt()
@@ -297,6 +297,8 @@ LeadAgent <- R6::R6Class(
       agent_id <- self$llm_object$chat(
         user_message
       )
+
+      checkmate::assert_string(agent_id)
 
       agent_id <- trimws(agent_id)
 
