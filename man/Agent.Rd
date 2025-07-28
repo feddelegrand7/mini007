@@ -32,6 +32,10 @@ agent$invoke("Hello world")
 \item{\code{messages}}{A list of past messages (system, user, assistant).}
 
 \item{\code{agent_id}}{A UUID uniquely identifying the agent.}
+
+\item{\code{model_provider}}{The name of the entity providing the model (eg. OpenAI)}
+
+\item{\code{model_name}}{The name of the model to be used (eg. gpt-4.1-mini)}
 }
 \if{html}{\out{</div>}}
 }
@@ -49,7 +53,7 @@ agent$invoke("Hello world")
 \subsection{Method \code{new()}}{
 Initializes a new Agent with a specific role/instruction.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Agent$new(name, instruction, model, verbose = TRUE, api_key = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Agent$new(name, instruction, llm_object)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -59,11 +63,7 @@ Initializes a new Agent with a specific role/instruction.
 
 \item{\code{instruction}}{The system prompt that defines the agent's role.}
 
-\item{\code{model}}{The OpenAI-compatible model to use (e.g. `"gpt-4.1-mini"`).}
-
-\item{\code{verbose}}{If `TRUE`, prints debug info; used to control `echo` level of `ellmer`. Default is `TRUE`.}
-
-\item{\code{api_key}}{Optional. If not provided, it will use `Sys.getenv("OPENAI_API_KEY")`.}
+\item{\code{llm_object}}{The LLM object generate by ellmer (eg. output of ellmer::chat_openai)}
 }
 \if{html}{\out{</div>}}
 }

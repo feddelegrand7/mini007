@@ -130,8 +130,8 @@ LeadAgent <- R6::R6Class(
     #' @description
     #' Initializes the LeadAgent with a built-in task-decomposition prompt.
     #' @param name A short name for the coordinator (e.g. `"lead"`).
-    #' @param model The LLM model to use for decomposition and matching.
-    #' @param api_key Optional. OpenAI API key; defaults to environment variable.
+    #' @param llm_object The LLM object generate by ellmer (eg. output of ellmer::chat_openai)
+
     initialize = function(name, llm_object) {
 
       system_prompt <- paste0(

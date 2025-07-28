@@ -52,7 +52,7 @@ result <- lead$invoke("Summarize a topic and translate to German.")
 \subsection{Method \code{new()}}{
 Initializes the LeadAgent with a built-in task-decomposition prompt.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LeadAgent$new(name, model, api_key = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LeadAgent$new(name, llm_object)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -60,9 +60,7 @@ Initializes the LeadAgent with a built-in task-decomposition prompt.
 \describe{
 \item{\code{name}}{A short name for the coordinator (e.g. `"lead"`).}
 
-\item{\code{model}}{The LLM model to use for decomposition and matching.}
-
-\item{\code{api_key}}{Optional. OpenAI API key; defaults to environment variable.}
+\item{\code{llm_object}}{The LLM object generate by ellmer (eg. output of ellmer::chat_openai)}
 }
 \if{html}{\out{</div>}}
 }
