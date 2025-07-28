@@ -36,7 +36,7 @@ Each `agent` is an extension of an `ellmer` object. `mini007` relies heavily on 
 
 🔄 Agent-to-agent orchestration with result chaining.
 
-🌐 Compatible with any OpenAI-style chat model via `ellmer`.
+🌐 Compatible with any chat model supported by `ellmer`.
 
 You can install the development version of `mini007` like so:
 
@@ -45,44 +45,51 @@ devtools::install_github("feddelegrand7/mini007")
 ```
 
 
-### Creating an Agent
-
-Creating an agent is really easy, you need to provide the `OpenAI` API key and the `model` name. Note that at the moment, only `OpenAI` models are supported but if needed, feel free to open an issue: 
-
-
 ```{r}
 library(mini007)
 ```
 
 
+### Creating an Agent
+
+
+
+An Agent is built upon an LLM object created by the `ellmer` package, in the following examples, we'll work with the `OpenAI` models, however you can use any model/combination of models you want: 
+
+
+
+```{r}
+# no need to provide the system prompt, it will be set when creating the
+# agent (see the 'instruction' parameter)
+
+openai_llm_object <- ellmer::chat_openai(
+  model = "gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"), 
+  echo = "none"
+)
+
+```
+
+After initialising the `ellmer` LLM object, creating the Agent is straightforward: 
+
 ```{r}
 polar_bear_researcher <- Agent$new(
   name = "POLAR BEAR RESEARCHER",
   instruction = "You are an expert in polar bears, you task is to collect information about polar bears.",
-  model = "gpt-4.1-mini", 
-  api_key = Sys.getenv("OPENAI_API_KEY")
+  llm_object = openai_llm_object
 )
 ```
 
-Each created Agent has an `agent_id`, a `name` and an `instruction`. 
+Each created Agent has an `agent_id` (among other meta information): 
+
 ```{r}
 polar_bear_researcher$agent_id
 ```
 
-```{r}
-polar_bear_researcher$name
-```
-
-```{r}
-polar_bear_researcher$instruction
-```
-As mentioned previously, in a technical term, an Agent is an extension of an `ellmer` object. You can execute the following in order to access the underlying `ellmer` object:
-
-
+At any time, you can tweak the `llm_object`: 
 ```{r}
 polar_bear_researcher$llm_object
 ```
-You can tweak the `llm_object` the same way as an `ellmer` object (set a structured output, define a set of tools and so on). 
 
 An agent can provide the answer to a prompt using the `invoke` method: 
 
@@ -106,7 +113,7 @@ polar_bear_researcher$llm_object
 ### Creating a multi-agents orchestraction 
 
 
-We can create as many Agents as we want, the `LeadAgent` will dispatch the instructions to the agents and provide with the final answer back. Let's create two other Agents, a `summarizer` and a `translator`: 
+We can create as many Agents as we want, the `LeadAgent` will dispatch the instructions to the agents and provide with the final answer back.
 
 
 ```{r}
@@ -114,54 +121,30 @@ We can create as many Agents as we want, the `LeadAgent` will dispatch the instr
 researcher <- Agent$new(
   name = "researcher",
   instruction = "You are a research assistant. Your job is to answer factual questions with detailed and accurate information. Do not answer with more than 2 lines",
-  model = "gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY")
+  llm_object = openai_llm_object
 )
 
 summarizer <- Agent$new(
   name = "summarizer",
   instruction = "You are agent designed to summarise a give text into 3 distinct bullet points.",
-  model = "gpt-4.1-mini", 
-  api_key = Sys.getenv("OPENAI_API_KEY")
+  llm_object = openai_llm_object
 )
 
 translator <- Agent$new(
   name = "translator",
   instruction = "Your role is to translate a text from English to German",
-  model = "gpt-4.1-mini", 
-  api_key = Sys.getenv("OPENAI_API_KEY")
+  llm_object = openai_llm_object
 )
-```
 
-
-Now, the most important part is to create a `LeadAgent`: 
-
-```{r}
 lead_agent <- LeadAgent$new(
   name = "Leader", 
-  model = "gpt-4.1-mini", 
-  api_key = Sys.getenv("OPENAI_API_KEY")
+  llm_object = openai_llm_object
 )
-```
 
-Note that the `LeadAgent` cannot receive an `instruction` as it has already the necessary instructions. 
-
-Next, we need to assign the Agents to `LeadAgent`, we do it as follows: 
-
-```{r}
 lead_agent$register_agents(c(researcher, summarizer, translator))
-lead_agent$agents
-```
-You can see from above that the above defined Agents are now assigned to the `LeadAgent`. 
 
-In order now to execute the workflow, we just need to call the `invoke` method which will behind the scene delegate the prompts to suitable Agents and retrieve back the final information: 
-
-```{r}
 response <- lead_agent$invoke("Tell me about the economic situation in Algeria, summarize it in 3 bullet points, then translate it into German.")
-```
 
-```{r}
-response
 ```
 
 If you want to inspect the multi-agents orchestration, you have access to the `agents_interaction` object: 
