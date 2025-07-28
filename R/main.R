@@ -58,7 +58,7 @@ Agent <- R6::R6Class(
         system_prompt = instruction,
         api_key = api_key,
         model = model,
-        echo = "none"
+        echo = echo
       )
 
       self$messages <- list(
