@@ -25,7 +25,7 @@ Agent <- R6::R6Class(
     #' @param verbose If `TRUE`, prints debug info; used to control `echo` level of `ellmer`. Default is `TRUE`.
     #' @param api_key Optional. If not provided, it will use `Sys.getenv("OPENAI_API_KEY")`.
 
-    initialize = function(name, instruction, model, verbose = TRUE, api_key = NULL) {
+    initialize = function(name, instruction, model, verbose = FALSE, api_key = NULL) {
 
       if (is.null(api_key)) {
         api_key <- Sys.getenv("OPENAI_API_KEY", unset = NA)

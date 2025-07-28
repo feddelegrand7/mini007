@@ -61,7 +61,7 @@ Each created Agent has an `agent_id`, a `name` and an `instruction`.
 
 ``` r
 polar_bear_researcher$agent_id
-#> [1] "f0fd7d3f-74cc-4757-aca4-19574bce5d3a"
+#> [1] "3302e693-393f-487c-bca9-5c8761c0f0a9"
 ```
 
 ``` r
@@ -92,7 +92,7 @@ An agent can provide the answer to a prompt using the `invoke` method:
 
 ``` r
 polar_bear_researcher$invoke("Are polar bears dangerous for humans?")
-#> [1] "Yes, polar bears can be dangerous to humans. They are large, powerful predators and are known to be curious and sometimes aggressive, particularly when they feel threatened or are hungry. Polar bears primarily live in the Arctic region and have limited natural predators, which makes them confident hunters. \n\nWhile attacks on humans are relatively rare, they have occurred, especially in areas where human activity overlaps with polar bear habitats. It's important to exercise caution and take safety measures when in polar bear territory, such as carrying deterrents, traveling in groups, and making noise to avoid surprising a bear.\n\nIn summary, polar bears are potentially dangerous to humans and should be treated with respect and caution in the wild."
+#> [1] "Yes, polar bears can be dangerous to humans. As apex predators, they are powerful and capable hunters. While polar bears generally avoid human contact, they may become aggressive if they feel threatened, are surprised, or if they are hungry. Attacks on humans, although rare, have occurred, especially in areas where humans and polar bears share habitat.\n\nKey points about polar bear danger to humans:\n\n1. **Predatory Behavior**: Polar bears primarily hunt seals but may view humans as prey in extreme circumstances, especially when food is scarce.\n\n2. **Territoriality and Protection**: A mother polar bear with cubs is particularly defensive and can be highly aggressive to protect her young.\n\n3. **Habitat Overlap**: In Arctic regions where humans live or work, encounters with polar bears are more common, increasing the risk of dangerous encounters.\n\n4. **Precautions**: People in polar bear territory are advised to carry deterrents such as bear spray, use proper safety protocols, and avoid attracting bears with food.\n\nIn summary, while polar bears don't typically seek out humans as prey, they are potentially dangerous due to their size, strength, and predatory nature, and caution should always be exercised in polar bear habitats."
 ```
 
 You can also retrieve a list that displays the history of the agent:
@@ -120,24 +120,32 @@ polar_bear_researcher$messages
 #> [1] "assistant"
 #> 
 #> [[3]]$content
-#> [1] "Yes, polar bears can be dangerous to humans. They are large, powerful predators and are known to be curious and sometimes aggressive, particularly when they feel threatened or are hungry. Polar bears primarily live in the Arctic region and have limited natural predators, which makes them confident hunters. \n\nWhile attacks on humans are relatively rare, they have occurred, especially in areas where human activity overlaps with polar bear habitats. It's important to exercise caution and take safety measures when in polar bear territory, such as carrying deterrents, traveling in groups, and making noise to avoid surprising a bear.\n\nIn summary, polar bears are potentially dangerous to humans and should be treated with respect and caution in the wild."
+#> [1] "Yes, polar bears can be dangerous to humans. As apex predators, they are powerful and capable hunters. While polar bears generally avoid human contact, they may become aggressive if they feel threatened, are surprised, or if they are hungry. Attacks on humans, although rare, have occurred, especially in areas where humans and polar bears share habitat.\n\nKey points about polar bear danger to humans:\n\n1. **Predatory Behavior**: Polar bears primarily hunt seals but may view humans as prey in extreme circumstances, especially when food is scarce.\n\n2. **Territoriality and Protection**: A mother polar bear with cubs is particularly defensive and can be highly aggressive to protect her young.\n\n3. **Habitat Overlap**: In Arctic regions where humans live or work, encounters with polar bears are more common, increasing the risk of dangerous encounters.\n\n4. **Precautions**: People in polar bear territory are advised to carry deterrents such as bear spray, use proper safety protocols, and avoid attracting bears with food.\n\nIn summary, while polar bears don't typically seek out humans as prey, they are potentially dangerous due to their size, strength, and predatory nature, and caution should always be exercised in polar bear habitats."
 ```
 
 Or the `ellmer` way:
 
 ``` r
 polar_bear_researcher$llm_object
-#> <Chat OpenAI/gpt-4.1-mini turns=3 tokens=36/136 $0.00>
+#> <Chat OpenAI/gpt-4.1-mini turns=3 tokens=36/246 $0.00>
 #> ── system [0] ──────────────────────────────────────────────────────────────────
 #> You are an expert in polar bears, you task is to collect information about polar bears.
 #> ── user [36] ───────────────────────────────────────────────────────────────────
 #> Are polar bears dangerous for humans?
-#> ── assistant [136] ─────────────────────────────────────────────────────────────
-#> Yes, polar bears can be dangerous to humans. They are large, powerful predators and are known to be curious and sometimes aggressive, particularly when they feel threatened or are hungry. Polar bears primarily live in the Arctic region and have limited natural predators, which makes them confident hunters. 
+#> ── assistant [246] ─────────────────────────────────────────────────────────────
+#> Yes, polar bears can be dangerous to humans. As apex predators, they are powerful and capable hunters. While polar bears generally avoid human contact, they may become aggressive if they feel threatened, are surprised, or if they are hungry. Attacks on humans, although rare, have occurred, especially in areas where humans and polar bears share habitat.
 #> 
-#> While attacks on humans are relatively rare, they have occurred, especially in areas where human activity overlaps with polar bear habitats. It's important to exercise caution and take safety measures when in polar bear territory, such as carrying deterrents, traveling in groups, and making noise to avoid surprising a bear.
+#> Key points about polar bear danger to humans:
 #> 
-#> In summary, polar bears are potentially dangerous to humans and should be treated with respect and caution in the wild.
+#> 1. **Predatory Behavior**: Polar bears primarily hunt seals but may view humans as prey in extreme circumstances, especially when food is scarce.
+#> 
+#> 2. **Territoriality and Protection**: A mother polar bear with cubs is particularly defensive and can be highly aggressive to protect her young.
+#> 
+#> 3. **Habitat Overlap**: In Arctic regions where humans live or work, encounters with polar bears are more common, increasing the risk of dangerous encounters.
+#> 
+#> 4. **Precautions**: People in polar bear territory are advised to carry deterrents such as bear spray, use proper safety protocols, and avoid attracting bears with food.
+#> 
+#> In summary, while polar bears don't typically seek out humans as prey, they are potentially dangerous due to their size, strength, and predatory nature, and caution should always be exercised in polar bear habitats.
 ```
 
 ### Creating a multi-agents orchestraction
@@ -188,12 +196,12 @@ Next, we need to assign the Agents to `LeadAgent`, we do it as follows:
 ``` r
 lead_agent$register_agents(c(researcher, summarizer, translator))
 lead_agent$agents
-#> $`407666bf-a8c4-43e6-8e85-cba375fdfd95`
+#> $`c5026e39-21fb-468d-b739-15e128a2b4b9`
 #> <Agent>
 #>   Public:
-#>     agent_id: 407666bf-a8c4-43e6-8e85-cba375fdfd95
+#>     agent_id: c5026e39-21fb-468d-b739-15e128a2b4b9
 #>     clone: function (deep = FALSE) 
-#>     initialize: function (name, instruction, model, verbose = TRUE, api_key = NULL) 
+#>     initialize: function (name, instruction, model, verbose = FALSE, api_key = NULL) 
 #>     instruction: You are a research assistant. Your job is to answer fact ...
 #>     invoke: function (prompt) 
 #>     llm_object: Chat, R6
@@ -204,12 +212,12 @@ lead_agent$agents
 #>     .add_message: function (message, type) 
 #>     .add_user_message: function (message, type = "user") 
 #> 
-#> $`564a8e35-9a51-4aa0-b626-195b02647a3f`
+#> $`e83902b7-133f-4595-947d-a5b6a8ec492c`
 #> <Agent>
 #>   Public:
-#>     agent_id: 564a8e35-9a51-4aa0-b626-195b02647a3f
+#>     agent_id: e83902b7-133f-4595-947d-a5b6a8ec492c
 #>     clone: function (deep = FALSE) 
-#>     initialize: function (name, instruction, model, verbose = TRUE, api_key = NULL) 
+#>     initialize: function (name, instruction, model, verbose = FALSE, api_key = NULL) 
 #>     instruction: You are agent designed to summarise a give text into 3 d ...
 #>     invoke: function (prompt) 
 #>     llm_object: Chat, R6
@@ -220,12 +228,12 @@ lead_agent$agents
 #>     .add_message: function (message, type) 
 #>     .add_user_message: function (message, type = "user") 
 #> 
-#> $`87d71bca-bf5c-40d6-b5d3-4e3ed5b66259`
+#> $`096c581b-86e8-44c4-a442-05c073c9cd77`
 #> <Agent>
 #>   Public:
-#>     agent_id: 87d71bca-bf5c-40d6-b5d3-4e3ed5b66259
+#>     agent_id: 096c581b-86e8-44c4-a442-05c073c9cd77
 #>     clone: function (deep = FALSE) 
-#>     initialize: function (name, instruction, model, verbose = TRUE, api_key = NULL) 
+#>     initialize: function (name, instruction, model, verbose = FALSE, api_key = NULL) 
 #>     instruction: Your role is to translate a text from English to German
 #>     invoke: function (prompt) 
 #>     llm_object: Chat, R6
@@ -250,7 +258,7 @@ response <- lead_agent$invoke("Tell me about the economic situation in Algeria, 
 
 ``` r
 response
-#> [1] "- Das BIP-Wachstum Algeriens im Jahr 2024 liegt bei etwa 2-3 %, was auf eine wirtschaftliche Erholung hinweist.\n- Die Inflation ist moderat und beträgt rund 5-7 %.\n- Die Wirtschaft wird hauptsächlich von den Bereichen Kohlenwasserstoffe (Öl und Gas), Landwirtschaft und verarbeitendem Gewerbe getragen."
+#> [1] "- Das BIP-Wachstum Algeriens für 2024 wird auf etwa 2,5 % prognostiziert.  \n- Die Inflation wird voraussichtlich rund 6 % betragen, mit Arbeitslosenquoten zwischen 11 und 12 %.  \n- Die Wirtschaft wird hauptsächlich von den kohlenwasserstoffbasierten Sektoren (Öl und Gas) angetrieben, daneben spielen Landwirtschaft und Bergbau eine Rolle."
 ```
 
 If you want to inspect the multi-agents orchestration, you have access
@@ -260,44 +268,44 @@ to the `agents_interaction` object:
 lead_agent$agents_interaction
 #> [[1]]
 #> [[1]]$agent_id
-#> [1] "407666bf-a8c4-43e6-8e85-cba375fdfd95"
+#> [1] "c5026e39-21fb-468d-b739-15e128a2b4b9"
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
 #> 
 #> [[1]]$prompt
-#> [1] "1. Research the current economic situation in Algeria, including key indicators such as GDP growth, inflation rate, and major industries."
+#> [1] "1. Research the current economic situation in Algeria, including key indicators such as GDP growth, inflation rate, unemployment, and major industries."
 #> 
 #> [[1]]$response
-#> [1] "As of 2024, Algeria's GDP growth is around 2-3%, recovering from previous downturns; inflation rate is approximately 5-7%. Key industries include hydrocarbons (oil and gas), agriculture, and manufacturing."
+#> [1] "Algeria's 2024 GDP growth is projected at around 2.5%, with inflation near 6%, and unemployment rates about 11-12%. Key industries include hydrocarbons (oil and gas, which dominate the economy), agriculture, and mining."
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> [1] "564a8e35-9a51-4aa0-b626-195b02647a3f"
+#> [1] "e83902b7-133f-4595-947d-a5b6a8ec492c"
 #> 
 #> [[2]]$agent_name
 #> [1] "summarizer"
 #> 
 #> [[2]]$prompt
-#> [1] "2. Summarize the researched information into three concise bullet points highlighting the most important aspects."
+#> [1] "2. Summarize the researched information into 3 concise bullet points."
 #> 
 #> [[2]]$response
-#> [1] "- Algeria's GDP growth in 2024 is approximately 2-3%, indicating economic recovery.\n- Inflation is moderate, at around 5-7%.\n- The economy is primarily driven by hydrocarbons (oil and gas), agriculture, and manufacturing sectors."
+#> [1] "- Algeria's GDP growth for 2024 is projected at approximately 2.5%.  \n- Inflation is expected to be around 6%, with unemployment rates between 11-12%.  \n- The economy is primarily driven by hydrocarbons (oil and gas), alongside agriculture and mining sectors."
 #> 
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> [1] "87d71bca-bf5c-40d6-b5d3-4e3ed5b66259"
+#> [1] "096c581b-86e8-44c4-a442-05c073c9cd77"
 #> 
 #> [[3]]$agent_name
 #> [1] "translator"
 #> 
 #> [[3]]$prompt
-#> [1] "3. Translate the three bullet points from English into German accurately."
+#> [1] "3. Translate the 3 bullet points summary into German."
 #> 
 #> [[3]]$response
-#> [1] "- Das BIP-Wachstum Algeriens im Jahr 2024 liegt bei etwa 2-3 %, was auf eine wirtschaftliche Erholung hinweist.\n- Die Inflation ist moderat und beträgt rund 5-7 %.\n- Die Wirtschaft wird hauptsächlich von den Bereichen Kohlenwasserstoffe (Öl und Gas), Landwirtschaft und verarbeitendem Gewerbe getragen."
+#> [1] "- Das BIP-Wachstum Algeriens für 2024 wird auf etwa 2,5 % prognostiziert.  \n- Die Inflation wird voraussichtlich rund 6 % betragen, mit Arbeitslosenquoten zwischen 11 und 12 %.  \n- Die Wirtschaft wird hauptsächlich von den kohlenwasserstoffbasierten Sektoren (Öl und Gas) angetrieben, daneben spielen Landwirtschaft und Bergbau eine Rolle."
 ```
 
 The above example is extremely simple, the usefulness of `mini007` would
