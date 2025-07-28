@@ -32,7 +32,7 @@ Agent <- R6::R6Class(
       self$name <- name
       self$instruction <- instruction
 
-      self$llm_object <- llm_object
+      self$llm_object <- llm_object$clone(deep = TRUE)
 
       meta_data <-  self$llm_object$get_provider()
 
@@ -184,6 +184,8 @@ LeadAgent <- R6::R6Class(
         list(
           agent_id = agent_id,
           agent_name = agent_name,
+          model_name = model_name,
+          model_provider = model_provider,
           prompt = task
         )
 
@@ -252,17 +254,12 @@ LeadAgent <- R6::R6Class(
 
     .analyze_prompt = function(prompt) {
 
-      browser()
-
       result <- self$llm_object$chat(prompt)
 
       tasks <- unlist(strsplit(result, "\n"))
       tasks <- trimws(tasks)
       tasks <- tasks[tasks != ""]
 
-      if (!length(tasks) == 3) {
-        stop("tasks tooo many")
-      }
       return(tasks)
     },
 

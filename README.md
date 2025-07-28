@@ -74,7 +74,7 @@ Each created Agent has an `agent_id` (among other meta information):
 
 ``` r
 polar_bear_researcher$agent_id
-#> [1] "b2e814d5-8432-4b6f-b4f2-0d66225a11ce"
+#> [1] "765e0360-51ac-42b1-8537-86c406193936"
 ```
 
 At any time, you can tweak the `llm_object`:
@@ -90,7 +90,7 @@ An agent can provide the answer to a prompt using the `invoke` method:
 
 ``` r
 polar_bear_researcher$invoke("Are polar bears dangerous for humans?")
-#> [1] "Yes, polar bears can be dangerous to humans. They are large, powerful predators with strong hunting instincts. While polar bear attacks on humans are relatively rare, when encounters occur, the bears can be aggressive and potentially deadly. Polar bears may see humans as a threat or as prey, especially when food is scarce. It is important to exercise extreme caution when in polar bear habitats, follow safety guidelines, and avoid attracting bears to human settlements or campsites. Proper knowledge and preparedness are essential to minimize risks during polar bear encounters."
+#> [1] "Yes, polar bears can be dangerous to humans. They are large, powerful predators and are considered one of the most dangerous bears due to their size, strength, and hunting capabilities. Polar bears primarily hunt seals and live in the Arctic region, where human encounters are relatively rare but can be risky.\n\nPolar bears may become aggressive if they feel threatened, are surprised, or are protecting their cubs. In some cases, polar bears have attacked humans, particularly when food is scarce or when bears become habituated to human presence.\n\nIf you are in polar bear territory, it is important to take precautions, such as carrying deterrents like bear spray, making noise to avoid surprising bears, and storing food securely to prevent attracting them. It’s also advised to travel in groups and follow local guidelines to minimize the risk of dangerous encounters."
 ```
 
 You can also retrieve a list that displays the history of the agent:
@@ -118,26 +118,32 @@ polar_bear_researcher$messages
 #> [1] "assistant"
 #> 
 #> [[3]]$content
-#> [1] "Yes, polar bears can be dangerous to humans. They are large, powerful predators with strong hunting instincts. While polar bear attacks on humans are relatively rare, when encounters occur, the bears can be aggressive and potentially deadly. Polar bears may see humans as a threat or as prey, especially when food is scarce. It is important to exercise extreme caution when in polar bear habitats, follow safety guidelines, and avoid attracting bears to human settlements or campsites. Proper knowledge and preparedness are essential to minimize risks during polar bear encounters."
+#> [1] "Yes, polar bears can be dangerous to humans. They are large, powerful predators and are considered one of the most dangerous bears due to their size, strength, and hunting capabilities. Polar bears primarily hunt seals and live in the Arctic region, where human encounters are relatively rare but can be risky.\n\nPolar bears may become aggressive if they feel threatened, are surprised, or are protecting their cubs. In some cases, polar bears have attacked humans, particularly when food is scarce or when bears become habituated to human presence.\n\nIf you are in polar bear territory, it is important to take precautions, such as carrying deterrents like bear spray, making noise to avoid surprising bears, and storing food securely to prevent attracting them. It’s also advised to travel in groups and follow local guidelines to minimize the risk of dangerous encounters."
 ```
 
 Or the `ellmer` way:
 
 ``` r
 polar_bear_researcher$llm_object
-#> <Chat OpenAI/gpt-4.1-mini turns=3 tokens=36/104 $0.00>
+#> <Chat OpenAI/gpt-4.1-mini turns=3 tokens=36/164 $0.00>
 #> ── system [0] ──────────────────────────────────────────────────────────────────
 #> You are an expert in polar bears, you task is to collect information about polar bears.
 #> ── user [36] ───────────────────────────────────────────────────────────────────
 #> Are polar bears dangerous for humans?
-#> ── assistant [104] ─────────────────────────────────────────────────────────────
-#> Yes, polar bears can be dangerous to humans. They are large, powerful predators with strong hunting instincts. While polar bear attacks on humans are relatively rare, when encounters occur, the bears can be aggressive and potentially deadly. Polar bears may see humans as a threat or as prey, especially when food is scarce. It is important to exercise extreme caution when in polar bear habitats, follow safety guidelines, and avoid attracting bears to human settlements or campsites. Proper knowledge and preparedness are essential to minimize risks during polar bear encounters.
+#> ── assistant [164] ─────────────────────────────────────────────────────────────
+#> Yes, polar bears can be dangerous to humans. They are large, powerful predators and are considered one of the most dangerous bears due to their size, strength, and hunting capabilities. Polar bears primarily hunt seals and live in the Arctic region, where human encounters are relatively rare but can be risky.
+#> 
+#> Polar bears may become aggressive if they feel threatened, are surprised, or are protecting their cubs. In some cases, polar bears have attacked humans, particularly when food is scarce or when bears become habituated to human presence.
+#> 
+#> If you are in polar bear territory, it is important to take precautions, such as carrying deterrents like bear spray, making noise to avoid surprising bears, and storing food securely to prevent attracting them. It’s also advised to travel in groups and follow local guidelines to minimize the risk of dangerous encounters.
 ```
 
 ### Creating a multi-agents orchestraction
 
 We can create as many Agents as we want, the `LeadAgent` will dispatch
 the instructions to the agents and provide with the final answer back.
+Let’s create three Agents, a `researcher`, a `summarizer` and a
+`translator`:
 
 ``` r
 
@@ -158,24 +164,91 @@ translator <- Agent$new(
   instruction = "Your role is to translate a text from English to German",
   llm_object = openai_llm_object
 )
+```
 
+Now, the most important part is to create a `LeadAgent`:
+
+``` r
 lead_agent <- LeadAgent$new(
   name = "Leader", 
   llm_object = openai_llm_object
 )
+```
 
+Note that the `LeadAgent` cannot receive an `instruction` as it has
+already the necessary instructions.
+
+Next, we need to assign the Agents to `LeadAgent`, we do it as follows:
+
+``` r
 lead_agent$register_agents(c(researcher, summarizer, translator))
+lead_agent$agents
+#> $`b474a5e8-d600-4256-aa4e-509777bbada8`
+#> <Agent>
+#>   Public:
+#>     agent_id: b474a5e8-d600-4256-aa4e-509777bbada8
+#>     clone: function (deep = FALSE) 
+#>     initialize: function (name, instruction, llm_object) 
+#>     instruction: You are a research assistant. Your job is to answer fact ...
+#>     invoke: function (prompt) 
+#>     llm_object: Chat, R6
+#>     messages: list
+#>     model_name: gpt-4.1-mini
+#>     model_provider: OpenAI
+#>     name: researcher
+#>   Private:
+#>     .add_assistant_message: function (message, type = "assistant") 
+#>     .add_message: function (message, type) 
+#>     .add_user_message: function (message, type = "user") 
+#> 
+#> $`6067c0f9-3c8a-4245-98d1-8a2fc8511fdc`
+#> <Agent>
+#>   Public:
+#>     agent_id: 6067c0f9-3c8a-4245-98d1-8a2fc8511fdc
+#>     clone: function (deep = FALSE) 
+#>     initialize: function (name, instruction, llm_object) 
+#>     instruction: You are agent designed to summarise a give text into 3 d ...
+#>     invoke: function (prompt) 
+#>     llm_object: Chat, R6
+#>     messages: list
+#>     model_name: gpt-4.1-mini
+#>     model_provider: OpenAI
+#>     name: summarizer
+#>   Private:
+#>     .add_assistant_message: function (message, type = "assistant") 
+#>     .add_message: function (message, type) 
+#>     .add_user_message: function (message, type = "user") 
+#> 
+#> $`0162f54b-d99d-4c75-8407-d674cbfc6237`
+#> <Agent>
+#>   Public:
+#>     agent_id: 0162f54b-d99d-4c75-8407-d674cbfc6237
+#>     clone: function (deep = FALSE) 
+#>     initialize: function (name, instruction, llm_object) 
+#>     instruction: Your role is to translate a text from English to German
+#>     invoke: function (prompt) 
+#>     llm_object: Chat, R6
+#>     messages: list
+#>     model_name: gpt-4.1-mini
+#>     model_provider: OpenAI
+#>     name: translator
+#>   Private:
+#>     .add_assistant_message: function (message, type = "assistant") 
+#>     .add_message: function (message, type) 
+#>     .add_user_message: function (message, type = "user")
+```
 
+In order now to execute the workflow, we just need to call the `invoke`
+method which will behind the scene delegate the prompts to suitable
+Agents and retrieve back the final information:
+
+``` r
 response <- lead_agent$invoke("Tell me about the economic situation in Algeria, summarize it in 3 bullet points, then translate it into German.")
-#> Called from: private$.analyze_prompt(prompt)
-#> debug at /Users/mohamedelfodilihaddaden/Desktop/gitlab/mini007/R/main.R#257: result <- self$llm_object$chat(prompt)
-#> debug at /Users/mohamedelfodilihaddaden/Desktop/gitlab/mini007/R/main.R#259: tasks <- unlist(strsplit(result, "\n"))
-#> debug at /Users/mohamedelfodilihaddaden/Desktop/gitlab/mini007/R/main.R#260: tasks <- trimws(tasks)
-#> debug at /Users/mohamedelfodilihaddaden/Desktop/gitlab/mini007/R/main.R#261: tasks <- tasks[tasks != ""]
-#> debug at /Users/mohamedelfodilihaddaden/Desktop/gitlab/mini007/R/main.R#263: if (!length(tasks) == 3) {
-#>     stop("tasks tooo many")
-#> }
-#> debug at /Users/mohamedelfodilihaddaden/Desktop/gitlab/mini007/R/main.R#266: return(tasks)
+```
+
+``` r
+response
+#> [1] "- Die algerische Wirtschaft ist stark von Kohlenwasserstoffen abhängig, die etwa 95 % der Exporte und 30 % des BIP ausmachen.  \n- Es werden Anstrengungen unternommen, die Wirtschaft zu diversifizieren, mit langsamem Wachstum im Landwirtschafts- und Industriesektor.  \n- Die Inflation liegt moderat bei 6-7 %, während die Arbeitslosigkeit mit etwa 12-14 % hoch bleibt."
 ```
 
 If you want to inspect the multi-agents orchestration, you have access
@@ -185,44 +258,62 @@ to the `agents_interaction` object:
 lead_agent$agents_interaction
 #> [[1]]
 #> [[1]]$agent_id
-#> [1] "0edd2e06-a9a2-4f40-818a-9529938b0643"
+#> [1] "b474a5e8-d600-4256-aa4e-509777bbada8"
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
 #> 
+#> [[1]]$model_name
+#> [1] "gpt-4.1-mini"
+#> 
+#> [[1]]$model_provider
+#> [1] "OpenAI"
+#> 
 #> [[1]]$prompt
-#> [1] "Gather up-to-date information on Algeria's economic situation, including key indicators such as GDP growth, main industries, unemployment rate, inflation, and recent economic challenges or reforms."
+#> [1] "Gather current information about the economic situation in Algeria, including key statistics and trends."
 #> 
 #> [[1]]$response
-#> [1] "Research the latest data on Algeria's GDP growth rate from reliable economic sources.\nCollect information on Algeria's main industries, such as hydrocarbons, agriculture, and manufacturing.\nFind current statistics on Algeria's unemployment rate and inflation.\nIdentify recent economic challenges Algeria is facing, including budget deficits or external debt.\nLook for recent economic reforms or government initiatives aimed at improving the economy."
+#> [1] "As of mid-2024, Algeria's economy is marked by dependence on hydrocarbons, contributing about 95% of exports and 30% of GDP; oil prices and output cuts impact revenue. The government is focusing on diversification, with sectors like agriculture and manufacturing growing slowly; inflation is moderate around 6-7%, and unemployment remains high near 12-14%."
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> [1] "3d5e2527-ed63-4c44-9e96-4c54dc8ae930"
+#> [1] "6067c0f9-3c8a-4245-98d1-8a2fc8511fdc"
 #> 
 #> [[2]]$agent_name
 #> [1] "summarizer"
 #> 
+#> [[2]]$model_name
+#> [1] "gpt-4.1-mini"
+#> 
+#> [[2]]$model_provider
+#> [1] "OpenAI"
+#> 
 #> [[2]]$prompt
-#> [1] "Identify the three most important points that succinctly describe the current economic status of Algeria."
+#> [1] "Summarize the economic situation in Algeria in three concise bullet points."
 #> 
 #> [[2]]$response
-#> [1] "Identify the three key aspects of Algeria's economy: reliance on hydrocarbons and its impact on GDP growth.\nHighlight the unemployment rate and inflation as major economic challenges.\nSummarize recent economic reforms and initiatives aimed at diversification and fiscal stability."
+#> [1] "- Algeria's economy heavily relies on hydrocarbons, which make up around 95% of exports and 30% of GDP.  \n- Efforts to diversify the economy are underway, with slow growth in agriculture and manufacturing sectors.  \n- Inflation is moderate at 6-7%, while unemployment remains high at approximately 12-14%."
 #> 
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> [1] "c3ffa3c5-368a-4a72-87e0-913d59abc315"
+#> [1] "0162f54b-d99d-4c75-8407-d674cbfc6237"
 #> 
 #> [[3]]$agent_name
 #> [1] "translator"
 #> 
+#> [[3]]$model_name
+#> [1] "gpt-4.1-mini"
+#> 
+#> [[3]]$model_provider
+#> [1] "OpenAI"
+#> 
 #> [[3]]$prompt
-#> [1] "Translate the three bullet points accurately into German."
+#> [1] "Translate the three bullet points about Algeria's economic situation into German."
 #> 
 #> [[3]]$response
-#> [1] "Identifizieren Sie die drei wichtigsten Aspekte der algerischen Wirtschaft: die Abhängigkeit von Erdöl und Erdgas und deren Auswirkungen auf das BIP-Wachstum.  \nHeben Sie die Arbeitslosenquote und die Inflation als große wirtschaftliche Herausforderungen hervor.  \nFassen Sie die jüngsten Wirtschaftsreformen und Initiativen zur Diversifizierung und fiskalischen Stabilität zusammen."
+#> [1] "- Die algerische Wirtschaft ist stark von Kohlenwasserstoffen abhängig, die etwa 95 % der Exporte und 30 % des BIP ausmachen.  \n- Es werden Anstrengungen unternommen, die Wirtschaft zu diversifizieren, mit langsamem Wachstum im Landwirtschafts- und Industriesektor.  \n- Die Inflation liegt moderat bei 6-7 %, während die Arbeitslosigkeit mit etwa 12-14 % hoch bleibt."
 ```
 
 The above example is extremely simple, the usefulness of `mini007` would

@@ -112,8 +112,7 @@ polar_bear_researcher$llm_object
 
 ### Creating a multi-agents orchestraction 
 
-
-We can create as many Agents as we want, the `LeadAgent` will dispatch the instructions to the agents and provide with the final answer back.
+We can create as many Agents as we want, the `LeadAgent` will dispatch the instructions to the agents and provide with the final answer back. Let's create three Agents, a `researcher`, a `summarizer` and a `translator`: 
 
 
 ```{r}
@@ -135,16 +134,35 @@ translator <- Agent$new(
   instruction = "Your role is to translate a text from English to German",
   llm_object = openai_llm_object
 )
+```
 
+
+Now, the most important part is to create a `LeadAgent`: 
+
+```{r}
 lead_agent <- LeadAgent$new(
   name = "Leader", 
   llm_object = openai_llm_object
 )
+```
 
+Note that the `LeadAgent` cannot receive an `instruction` as it has already the necessary instructions. 
+
+Next, we need to assign the Agents to `LeadAgent`, we do it as follows: 
+
+```{r}
 lead_agent$register_agents(c(researcher, summarizer, translator))
+lead_agent$agents
+```
 
+In order now to execute the workflow, we just need to call the `invoke` method which will behind the scene delegate the prompts to suitable Agents and retrieve back the final information: 
+
+```{r}
 response <- lead_agent$invoke("Tell me about the economic situation in Algeria, summarize it in 3 bullet points, then translate it into German.")
+```
 
+```{r}
+response
 ```
 
 If you want to inspect the multi-agents orchestration, you have access to the `agents_interaction` object: 
@@ -159,16 +177,3 @@ The above example is extremely simple, the usefulness of `mini007` would shine i
 ## Code of Conduct
 
 Please note that the mini007 project is released with a [Contributor Code of Conduct](https://contributor-covenant.org/version/2/1/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.
-
-
-
-
-
-
-
-
-
-
-
-
-
