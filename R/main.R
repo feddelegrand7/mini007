@@ -85,7 +85,9 @@ Agent <- R6::R6Class(
     #'@field model_provider The name of the entity providing the model (eg. OpenAI)
     model_provider = NULL,
     #'@field model_name The name of the model to be used (eg. gpt-4.1-mini)
-    model_name = NULL
+    model_name = NULL,
+    #' @field broadcast_history A list of all past broadcast interactions.
+    broadcast_history = list()
 
   ),
 
@@ -147,6 +149,12 @@ LeadAgent <- R6::R6Class(
       )
 
       super$initialize(name = name, instruction = system_prompt, llm_object = llm_object)
+    },
+
+    #' @description
+    #' Clear out the registered Agents
+    clear_agents = function() {
+      self$agents <- list()
     },
 
     #' @description
@@ -257,6 +265,37 @@ LeadAgent <- R6::R6Class(
 
       prompts_res[[length(prompts_res)]]$response
 
+    },
+
+    #' @description
+    #' Broadcasts a prompt to all registered agents and collects their responses.
+    #' This does not affect the main agent orchestration logic or history.
+    #' @param prompt A user prompt to send to all agents.
+    #' @return A list of responses from all agents.
+    broadcast = function(prompt) {
+      checkmate::assert_string(prompt)
+
+      if (length(self$agents) == 0) {
+        stop("No agents have been registered. Use `register_agents()` first.")
+      }
+
+      responses <- lapply(self$agents, function(agent) {
+        response <- agent$invoke(prompt)
+        list(
+          agent_id = agent$agent_id,
+          agent_name = agent$name,
+          model_provider = agent$model_provider,
+          model_name = agent$model_name,
+          response = response
+        )
+      })
+
+      self$broadcast_history[[length(self$broadcast_history) + 1]] <- list(
+        prompt = prompt,
+        responses = responses
+      )
+
+      return(responses)
     }
   ),
 

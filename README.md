@@ -52,7 +52,7 @@ can use any model/combination of models you want:
 # no need to provide the system prompt, it will be set when creating the
 # agent (see the 'instruction' parameter)
 
-openai_llm_object <- ellmer::chat(
+openai_4_1_mini <- ellmer::chat(
   name = "openai/gpt-4.1-mini",
   api_key = Sys.getenv("OPENAI_API_KEY"), 
   echo = "none"
@@ -66,7 +66,7 @@ straightforward:
 polar_bear_researcher <- Agent$new(
   name = "POLAR BEAR RESEARCHER",
   instruction = "You are an expert in polar bears, you task is to collect information about polar bears.",
-  llm_object = openai_llm_object
+  llm_object = openai_4_1_mini
 )
 ```
 
@@ -74,7 +74,7 @@ Each created Agent has an `agent_id` (among other meta information):
 
 ``` r
 polar_bear_researcher$agent_id
-#> [1] "28e71f6a-3432-417d-afba-2db99a62296d"
+#> [1] "f47583f5-944d-4793-bad4-29eb696c933e"
 ```
 
 At any time, you can tweak the `llm_object`:
@@ -90,25 +90,15 @@ An agent can provide the answer to a prompt using the `invoke` method:
 
 ``` r
 polar_bear_researcher$invoke("Are polar bears dangerous for humans?")
-#> Yes, polar bears can be dangerous to humans. They are large, powerful predators
-#> and are known to be more aggressive compared to other bear species. Polar bears
-#> primarily hunt seals and are adapted to the Arctic environment, but if they 
-#> feel threatened or are hungry and see humans as potential prey, they may 
-#> attack. 
-#> 
-#> Encounters between polar bears and humans can be risky, especially in regions 
-#> where bears are common and humans venture out for research, hunting, or 
-#> tourism. It is important to exercise caution in polar bear habitats by:
-#> 
-#> - Making noise to alert bears of human presence
-#> - Carrying deterrents like bear spray
-#> - Avoiding areas with recent bear activity
-#> - Traveling in groups
-#> - Securing food and waste to avoid attracting bears
-#> 
-#> Overall, while polar bears do not typically seek out humans as prey, they are 
-#> capable of causing serious injury or death and should be respected and handled 
-#> with caution.
+#> Yes, polar bears can be dangerous for humans. They are powerful predators and 
+#> are known to be aggressive if they feel threatened or are hungry. Polar bears 
+#> are the largest land carnivores, with adult males weighing between 900 to 1,600
+#> pounds (410 to 720 kg), and they have strong jaws and sharp claws. Because they
+#> live in remote Arctic regions where human presence is limited, encounters are 
+#> rare, but when they do occur, polar bears can pose a significant threat to 
+#> human safety. It is important for people in polar bear habitats to take 
+#> precautions, such as carrying deterrents and avoiding surprise encounters, to 
+#> minimize the risk of attacks.
 ```
 
 You can also retrieve a list that displays the history of the agent:
@@ -136,48 +126,28 @@ polar_bear_researcher$messages
 #> [1] "assistant"
 #> 
 #> [[3]]$content
-#> Yes, polar bears can be dangerous to humans. They are large, powerful predators
-#> and are known to be more aggressive compared to other bear species. Polar bears
-#> primarily hunt seals and are adapted to the Arctic environment, but if they 
-#> feel threatened or are hungry and see humans as potential prey, they may 
-#> attack. 
-#> 
-#> Encounters between polar bears and humans can be risky, especially in regions 
-#> where bears are common and humans venture out for research, hunting, or 
-#> tourism. It is important to exercise caution in polar bear habitats by:
-#> 
-#> - Making noise to alert bears of human presence
-#> - Carrying deterrents like bear spray
-#> - Avoiding areas with recent bear activity
-#> - Traveling in groups
-#> - Securing food and waste to avoid attracting bears
-#> 
-#> Overall, while polar bears do not typically seek out humans as prey, they are 
-#> capable of causing serious injury or death and should be respected and handled 
-#> with caution.
+#> Yes, polar bears can be dangerous for humans. They are powerful predators and 
+#> are known to be aggressive if they feel threatened or are hungry. Polar bears 
+#> are the largest land carnivores, with adult males weighing between 900 to 1,600
+#> pounds (410 to 720 kg), and they have strong jaws and sharp claws. Because they
+#> live in remote Arctic regions where human presence is limited, encounters are 
+#> rare, but when they do occur, polar bears can pose a significant threat to 
+#> human safety. It is important for people in polar bear habitats to take 
+#> precautions, such as carrying deterrents and avoiding surprise encounters, to 
+#> minimize the risk of attacks.
 ```
 
 Or the `ellmer` way:
 
 ``` r
 polar_bear_researcher$llm_object
-#> <Chat OpenAI/gpt-4.1-mini turns=3 tokens=36/180 $0.00>
+#> <Chat OpenAI/gpt-4.1-mini turns=3 tokens=36/131 $0.00>
 #> ── system [0] ──────────────────────────────────────────────────────────────────
 #> You are an expert in polar bears, you task is to collect information about polar bears.
 #> ── user [36] ───────────────────────────────────────────────────────────────────
 #> Are polar bears dangerous for humans?
-#> ── assistant [180] ─────────────────────────────────────────────────────────────
-#> Yes, polar bears can be dangerous to humans. They are large, powerful predators and are known to be more aggressive compared to other bear species. Polar bears primarily hunt seals and are adapted to the Arctic environment, but if they feel threatened or are hungry and see humans as potential prey, they may attack. 
-#> 
-#> Encounters between polar bears and humans can be risky, especially in regions where bears are common and humans venture out for research, hunting, or tourism. It is important to exercise caution in polar bear habitats by:
-#> 
-#> - Making noise to alert bears of human presence
-#> - Carrying deterrents like bear spray
-#> - Avoiding areas with recent bear activity
-#> - Traveling in groups
-#> - Securing food and waste to avoid attracting bears
-#> 
-#> Overall, while polar bears do not typically seek out humans as prey, they are capable of causing serious injury or death and should be respected and handled with caution.
+#> ── assistant [131] ─────────────────────────────────────────────────────────────
+#> Yes, polar bears can be dangerous for humans. They are powerful predators and are known to be aggressive if they feel threatened or are hungry. Polar bears are the largest land carnivores, with adult males weighing between 900 to 1,600 pounds (410 to 720 kg), and they have strong jaws and sharp claws. Because they live in remote Arctic regions where human presence is limited, encounters are rare, but when they do occur, polar bears can pose a significant threat to human safety. It is important for people in polar bear habitats to take precautions, such as carrying deterrents and avoiding surprise encounters, to minimize the risk of attacks.
 ```
 
 ### Creating a multi-agents orchestraction
@@ -192,19 +162,19 @@ Let’s create three Agents, a `researcher`, a `summarizer` and a
 researcher <- Agent$new(
   name = "researcher",
   instruction = "You are a research assistant. Your job is to answer factual questions with detailed and accurate information. Do not answer with more than 2 lines",
-  llm_object = openai_llm_object
+  llm_object = openai_4_1_mini
 )
 
 summarizer <- Agent$new(
   name = "summarizer",
   instruction = "You are agent designed to summarise a give text into 3 distinct bullet points.",
-  llm_object = openai_llm_object
+  llm_object = openai_4_1_mini
 )
 
 translator <- Agent$new(
   name = "translator",
   instruction = "Your role is to translate a text from English to German",
-  llm_object = openai_llm_object
+  llm_object = openai_4_1_mini
 )
 ```
 
@@ -213,7 +183,7 @@ Now, the most important part is to create a `LeadAgent`:
 ``` r
 lead_agent <- LeadAgent$new(
   name = "Leader", 
-  llm_object = openai_llm_object
+  llm_object = openai_4_1_mini
 )
 ```
 
@@ -228,7 +198,8 @@ lead_agent$agents
 #> [[1]]
 #> <Agent>
 #>   Public:
-#>     agent_id: 0fac0f6f-2239-4d57-b993-d9c0830cf9e8
+#>     agent_id: 8da36dee-f15a-49da-ba98-edfa95eeb029
+#>     broadcast_history: list
 #>     clone: function (deep = FALSE) 
 #>     initialize: function (name, instruction, llm_object) 
 #>     instruction: You are a research assistant. Your job is to answer fact ...
@@ -246,7 +217,8 @@ lead_agent$agents
 #> [[2]]
 #> <Agent>
 #>   Public:
-#>     agent_id: 18fcaf8b-0c6a-48e6-a72c-11a3bd382bff
+#>     agent_id: 91301051-ea22-41e4-b2b9-ed82832ed6ba
+#>     broadcast_history: list
 #>     clone: function (deep = FALSE) 
 #>     initialize: function (name, instruction, llm_object) 
 #>     instruction: You are agent designed to summarise a give text into 3 d ...
@@ -264,7 +236,8 @@ lead_agent$agents
 #> [[3]]
 #> <Agent>
 #>   Public:
-#>     agent_id: e4c99024-8442-4521-8f5a-87130912ede1
+#>     agent_id: 997f9209-bac2-45e1-bf07-de8968e2a5c2
+#>     broadcast_history: list
 #>     clone: function (deep = FALSE) 
 #>     initialize: function (name, instruction, llm_object) 
 #>     instruction: Your role is to translate a text from English to German
@@ -290,14 +263,12 @@ response <- lead_agent$invoke("Tell me about the economic situation in Algeria, 
 
 ``` r
 response
-#> - Das BIP-Wachstum Algeriens ist mit 2-3 % bescheiden und wird hauptsächlich 
-#> durch die Erholung nach COVID vorangetrieben.  
-#> - Die Wirtschaft ist stark von Kohlenwasserstoffen abhängig, die über 90 % der 
-#> Exporte und 30 % des BIP ausmachen, was zu einer Anfälligkeit gegenüber 
-#> Schwankungen der Ölpreise führt.  
-#> - Wichtige Herausforderungen sind Arbeitslosigkeit und mangelnde 
-#> wirtschaftliche Diversifizierung, während Chancen im Bereich der erneuerbaren 
-#> Energien und der Anziehung ausländischer Investitionen bestehen.
+#> - Das Wirtschaftswachstum Algeriens ist bescheiden, mit einem Anstieg des BIP 
+#> um etwa 2-3 %, hauptsächlich getragen von Öl- und Gaseinfuhren.  
+#> - Die Arbeitslosenquote ist hoch, insbesondere bei Jugendlichen, mit Raten 
+#> zwischen 12-15 %.  
+#> - Die Wirtschaft ist stark von Kohlenwasserstoffen abhängig (über 90 % der 
+#> Exporte), neben den Sektoren Landwirtschaft und Dienstleistungen.
 ```
 
 If you want to inspect the multi-agents orchestration, you have access
@@ -307,7 +278,7 @@ to the `agents_interaction` object:
 lead_agent$agents_interaction
 #> [[1]]
 #> [[1]]$agent_id
-#> 0fac0f6f-2239-4d57-b993-d9c0830cf9e8
+#> 8da36dee-f15a-49da-ba98-edfa95eeb029
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
@@ -319,20 +290,18 @@ lead_agent$agents_interaction
 #> [1] "OpenAI"
 #> 
 #> [[1]]$prompt
-#> [1] "Research the current economic situation in Algeria, including key indicators such as GDP growth, main economic sectors, and recent challenges or opportunities."
+#> [1] "Research the current economic situation in Algeria, including key indicators like GDP growth, unemployment rate, and major sectors."
 #> 
 #> [[1]]$response
-#> As of early 2024, Algeria's GDP growth is modest, around 2-3%, recovering 
-#> post-COVID; the economy heavily relies on hydrocarbons (oil and gas), which 
-#> constitute over 90% of exports and 30% of GDP. Challenges include dependence on
-#> volatile oil prices, unemployment, and economic diversification, while 
-#> opportunities lie in renewable energy development and attracting foreign 
-#> investment.
+#> As of early 2024, Algeria's GDP growth is modest at around 2-3%, driven by oil 
+#> and gas exports. The unemployment rate remains high, approximately 12-15%, 
+#> particularly among youth. Key sectors include hydrocarbons (over 90% of 
+#> exports), agriculture, and services.
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> 18fcaf8b-0c6a-48e6-a72c-11a3bd382bff
+#> 91301051-ea22-41e4-b2b9-ed82832ed6ba
 #> 
 #> [[2]]$agent_name
 #> [1] "summarizer"
@@ -344,21 +313,19 @@ lead_agent$agents_interaction
 #> [1] "OpenAI"
 #> 
 #> [[2]]$prompt
-#> [1] "Summarize the findings into 3 clear and concise bullet points."
+#> [1] "Summarize the findings into 3 concise bullet points that capture the main aspects of Algeria's economic situation."
 #> 
 #> [[2]]$response
-#> - Algeria's GDP growth is modest at 2-3%, driven largely by post-COVID 
-#> recovery.  
-#> - The economy is highly dependent on hydrocarbons, accounting for over 90% of 
-#> exports and 30% of GDP, creating vulnerability to oil price fluctuations.  
-#> - Key challenges include unemployment and lack of economic diversification, 
-#> while opportunities exist in renewable energy and foreign investment 
-#> attraction.
+#> - Algeria's economic growth is modest, with GDP increasing around 2-3%, mainly 
+#> supported by oil and gas exports.  
+#> - Unemployment is high, especially among youth, with rates between 12-15%.  
+#> - The economy is heavily reliant on hydrocarbons (over 90% of exports), 
+#> alongside agriculture and services sectors.
 #> 
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> e4c99024-8442-4521-8f5a-87130912ede1
+#> 997f9209-bac2-45e1-bf07-de8968e2a5c2
 #> 
 #> [[3]]$agent_name
 #> [1] "translator"
@@ -370,22 +337,146 @@ lead_agent$agents_interaction
 #> [1] "OpenAI"
 #> 
 #> [[3]]$prompt
-#> [1] "Translate the 3 bullet points into German accurately."
+#> [1] "Translate the 3 bullet points from English into German accurately."
 #> 
 #> [[3]]$response
-#> - Das BIP-Wachstum Algeriens ist mit 2-3 % bescheiden und wird hauptsächlich 
-#> durch die Erholung nach COVID vorangetrieben.  
-#> - Die Wirtschaft ist stark von Kohlenwasserstoffen abhängig, die über 90 % der 
-#> Exporte und 30 % des BIP ausmachen, was zu einer Anfälligkeit gegenüber 
-#> Schwankungen der Ölpreise führt.  
-#> - Wichtige Herausforderungen sind Arbeitslosigkeit und mangelnde 
-#> wirtschaftliche Diversifizierung, während Chancen im Bereich der erneuerbaren 
-#> Energien und der Anziehung ausländischer Investitionen bestehen.
+#> - Das Wirtschaftswachstum Algeriens ist bescheiden, mit einem Anstieg des BIP 
+#> um etwa 2-3 %, hauptsächlich getragen von Öl- und Gaseinfuhren.  
+#> - Die Arbeitslosenquote ist hoch, insbesondere bei Jugendlichen, mit Raten 
+#> zwischen 12-15 %.  
+#> - Die Wirtschaft ist stark von Kohlenwasserstoffen abhängig (über 90 % der 
+#> Exporte), neben den Sektoren Landwirtschaft und Dienstleistungen.
 ```
 
 The above example is extremely simple, the usefulness of `mini007` would
 shine in more complex processes where a multi-agent sequential
 orchestration has a higher value added.
+
+## Broadcasting
+
+If you want to compare several `LLM` models, the `LeadAgent` provides a
+`broadcast` method that allows you to send a prompt to several different
+agents and get the result for each agent back in order to make a
+comparison and potentially choose the best agent/model for the defined
+prompt:
+
+Let’s go through an example:
+
+``` r
+openai_4_1 <- ellmer::chat(
+  name = "openai/gpt-4.1",
+  api_key = Sys.getenv("OPENAI_API_KEY"), 
+  echo = "none"
+)
+
+openai_4_1_agent <- Agent$new(
+  name = "openai_4_1_agent", 
+  instruction = "You are an AI assistant. Answer in 1 sentence max.", 
+  llm_object = openai_4_1
+)
+
+openai_4_1_nano <- ellmer::chat(
+  name = "openai/gpt-4.1-nano",
+  api_key = Sys.getenv("OPENAI_API_KEY"), 
+  echo = "none"
+)
+
+openai_4_1_nano_agent <- Agent$new(
+  name = "openai_4_1_nano_agent", 
+  instruction = "You are an AI assistant. Answer in 1 sentence max.", 
+  llm_object = openai_4_1_nano
+)
+```
+
+``` r
+
+lead_agent$clear_agents() # removing previous agents
+lead_agent$register_agents(c(openai_4_1_agent, openai_4_1_nano_agent))
+```
+
+``` r
+lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to sing when running under the rain? how about a flower?")
+#> [[1]]
+#> [[1]]$agent_id
+#> [1] "89adf885-9007-44ce-add1-2f5b02084dc2"
+#> 
+#> [[1]]$agent_name
+#> [1] "openai_4_1_agent"
+#> 
+#> [[1]]$model_provider
+#> [1] "OpenAI"
+#> 
+#> [[1]]$model_name
+#> [1] "gpt-4.1"
+#> 
+#> [[1]]$response
+#> If you were Algerian, you might sing "Ya Rayah" under the rain, while a flower 
+#> might "sing" the gentle melody of "Fleur d'Algérie."
+#> 
+#> 
+#> [[2]]
+#> [[2]]$agent_id
+#> [1] "9f6b97f1-8c52-4357-acdc-9bb3b860a337"
+#> 
+#> [[2]]$agent_name
+#> [1] "openai_4_1_nano_agent"
+#> 
+#> [[2]]$model_provider
+#> [1] "OpenAI"
+#> 
+#> [[2]]$model_name
+#> [1] "gpt-4.1-nano"
+#> 
+#> [[2]]$response
+#> If you were Algerian, you might enjoy singing "Zina" by Souad Massi when 
+#> running under the rain and "Azzam" by Cheb Khaled when admiring a flower.
+```
+
+You can also access the history of the `broadcasting` using the
+`broadcast_history` attribute:
+
+``` r
+lead_agent$broadcast_history
+#> [[1]]
+#> [[1]]$prompt
+#> [1] "If I were Algerian, which song would I like to sing when running under the rain? how about a flower?"
+#> 
+#> [[1]]$responses
+#> [[1]]$responses[[1]]
+#> [[1]]$responses[[1]]$agent_id
+#> [1] "89adf885-9007-44ce-add1-2f5b02084dc2"
+#> 
+#> [[1]]$responses[[1]]$agent_name
+#> [1] "openai_4_1_agent"
+#> 
+#> [[1]]$responses[[1]]$model_provider
+#> [1] "OpenAI"
+#> 
+#> [[1]]$responses[[1]]$model_name
+#> [1] "gpt-4.1"
+#> 
+#> [[1]]$responses[[1]]$response
+#> If you were Algerian, you might sing "Ya Rayah" under the rain, while a flower 
+#> might "sing" the gentle melody of "Fleur d'Algérie."
+#> 
+#> 
+#> [[1]]$responses[[2]]
+#> [[1]]$responses[[2]]$agent_id
+#> [1] "9f6b97f1-8c52-4357-acdc-9bb3b860a337"
+#> 
+#> [[1]]$responses[[2]]$agent_name
+#> [1] "openai_4_1_nano_agent"
+#> 
+#> [[1]]$responses[[2]]$model_provider
+#> [1] "OpenAI"
+#> 
+#> [[1]]$responses[[2]]$model_name
+#> [1] "gpt-4.1-nano"
+#> 
+#> [[1]]$responses[[2]]$response
+#> If you were Algerian, you might enjoy singing "Zina" by Souad Massi when 
+#> running under the rain and "Azzam" by Cheb Khaled when admiring a flower.
+```
 
 ## Code of Conduct
 

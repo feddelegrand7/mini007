@@ -62,7 +62,7 @@ An Agent is built upon an LLM object created by the `ellmer` package, in the fol
 # no need to provide the system prompt, it will be set when creating the
 # agent (see the 'instruction' parameter)
 
-openai_llm_object <- ellmer::chat(
+openai_4_1_mini <- ellmer::chat(
   name = "openai/gpt-4.1-mini",
   api_key = Sys.getenv("OPENAI_API_KEY"), 
   echo = "none"
@@ -76,7 +76,7 @@ After initialising the `ellmer` LLM object, creating the Agent is straightforwar
 polar_bear_researcher <- Agent$new(
   name = "POLAR BEAR RESEARCHER",
   instruction = "You are an expert in polar bears, you task is to collect information about polar bears.",
-  llm_object = openai_llm_object
+  llm_object = openai_4_1_mini
 )
 ```
 
@@ -120,19 +120,19 @@ We can create as many Agents as we want, the `LeadAgent` will dispatch the instr
 researcher <- Agent$new(
   name = "researcher",
   instruction = "You are a research assistant. Your job is to answer factual questions with detailed and accurate information. Do not answer with more than 2 lines",
-  llm_object = openai_llm_object
+  llm_object = openai_4_1_mini
 )
 
 summarizer <- Agent$new(
   name = "summarizer",
   instruction = "You are agent designed to summarise a give text into 3 distinct bullet points.",
-  llm_object = openai_llm_object
+  llm_object = openai_4_1_mini
 )
 
 translator <- Agent$new(
   name = "translator",
   instruction = "Your role is to translate a text from English to German",
-  llm_object = openai_llm_object
+  llm_object = openai_4_1_mini
 )
 ```
 
@@ -142,7 +142,7 @@ Now, the most important part is to create a `LeadAgent`:
 ```{r}
 lead_agent <- LeadAgent$new(
   name = "Leader", 
-  llm_object = openai_llm_object
+  llm_object = openai_4_1_mini
 )
 ```
 
@@ -173,6 +173,59 @@ lead_agent$agents_interaction
 
 
 The above example is extremely simple, the usefulness of `mini007` would shine in more complex processes where a multi-agent sequential orchestration has a higher value added. 
+
+
+## Broadcasting 
+
+If you want to compare several `LLM` models, the `LeadAgent` provides a `broadcast` method that allows you to send a prompt to several different agents and get the result for each agent back in order to make a comparison and potentially choose the best agent/model for the defined prompt: 
+
+Let's go through an example: 
+
+
+```{r}
+openai_4_1 <- ellmer::chat(
+  name = "openai/gpt-4.1",
+  api_key = Sys.getenv("OPENAI_API_KEY"), 
+  echo = "none"
+)
+
+openai_4_1_agent <- Agent$new(
+  name = "openai_4_1_agent", 
+  instruction = "You are an AI assistant. Answer in 1 sentence max.", 
+  llm_object = openai_4_1
+)
+
+openai_4_1_nano <- ellmer::chat(
+  name = "openai/gpt-4.1-nano",
+  api_key = Sys.getenv("OPENAI_API_KEY"), 
+  echo = "none"
+)
+
+openai_4_1_nano_agent <- Agent$new(
+  name = "openai_4_1_nano_agent", 
+  instruction = "You are an AI assistant. Answer in 1 sentence max.", 
+  llm_object = openai_4_1_nano
+)
+```
+
+```{r}
+
+lead_agent$clear_agents() # removing previous agents
+lead_agent$register_agents(c(openai_4_1_agent, openai_4_1_nano_agent))
+```
+
+
+```{r}
+lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to sing when running under the rain? how about a flower?")
+```
+
+You can also access the history of the `broadcasting` using the `broadcast_history` attribute: 
+
+
+```{r}
+lead_agent$broadcast_history
+```
+
 
 ## Code of Conduct
 
