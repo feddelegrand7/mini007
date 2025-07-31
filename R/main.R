@@ -154,14 +154,11 @@ LeadAgent <- R6::R6Class(
     #' @param agents A vector of `Agent` objects to register.
     register_agents = function(agents) {
 
-      if (length(agents$agent_id) == 1) {
-        self$agents[[agent$agent_id]] <- agent
-        return(invisible(NULL))
-      }
+      length_agents <- length(self$agents)
 
       for (i in seq_along(agents)) {
         agent <- agents[[i]]
-        self$agents[[agent$agent_id]] <- agent
+        self$agents[[length_agents + i]] <- agent
       }
 
       return(invisible(NULL))
@@ -181,11 +178,15 @@ LeadAgent <- R6::R6Class(
 
         agent_id <- private$.match_agent_to_task(task)
 
-        agent_name <- self$agents[[agent_id]]$name
+        idx <- which(sapply(self$agents, function(agent) agent$agent_id == agent_id))
 
-        model_provider <- self$agents[[agent_id]]$model_provider
+        selected_agent <- self$agents[[idx]]
 
-        model_name <- self$agents[[agent_id]]$model_name
+        agent_name <- selected_agent$name
+
+        model_provider <- selected_agent$model_provider
+
+        model_name <- selected_agent$model_name
 
         list(
           agent_id = agent_id,
@@ -232,7 +233,10 @@ LeadAgent <- R6::R6Class(
       for (i in seq_along(prompts_res)) {
 
         agent_id <- prompts_res[[i]]$agent_id
-        agent <- self$agents[[agent_id]]
+
+        idx <- which(sapply(self$agents, function(agent) agent$agent_id == agent_id))
+        selected_agent <- self$agents[[idx]]
+
         prompt_to_consider <- prompts_res[[i]]$prompt
 
         if (i > 1) {
@@ -245,7 +249,7 @@ LeadAgent <- R6::R6Class(
           )
         }
 
-        response <- agent$invoke(prompt_to_consider)
+        response <- selected_agent$invoke(prompt_to_consider)
         prompts_res[[i]]$response <- response
       }
 
@@ -306,7 +310,9 @@ LeadAgent <- R6::R6Class(
 
       agent_id <- trimws(agent_id)
 
-      if (!agent_id %in% names(self$agents)) {
+      agent_ids <- unlist(lapply(self$agents, function(agent) agent$agent_id))
+
+      if (!agent_id %in% agent_ids) {
         stop("LLM returned invalid agent_id: ", agent_id)
       }
 
