@@ -18,9 +18,9 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-`mini007` provides a lightweight and extensible framework multi-agents orchestration processes capable of decomposing complex tasks and assigning them to specialized agents. 
+`mini007` provides a lightweight and extensible framework for multi-agents orchestration processes capable of decomposing complex tasks and assigning them to specialized agents. 
 
-Each `agent` is an extension of an `ellmer` object. `mini007` relies heavily on the excellent `ellmer` package but aims to make it easy to create a process where multiple specialized agents help each other in order to execute a task.
+Each `agent` is an extension of an `ellmer` object. `mini007` relies heavily on the excellent `ellmer` package but aims to make it easy to create a process where multiple specialized agents help each other sequentially in order to execute a task.
 
 `mini007` provides two types of agents: 
 
@@ -62,8 +62,8 @@ An Agent is built upon an LLM object created by the `ellmer` package, in the fol
 # no need to provide the system prompt, it will be set when creating the
 # agent (see the 'instruction' parameter)
 
-openai_llm_object <- ellmer::chat_openai(
-  model = "gpt-4.1-mini",
+openai_llm_object <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
   api_key = Sys.getenv("OPENAI_API_KEY"), 
   echo = "none"
 )
