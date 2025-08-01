@@ -36,6 +36,8 @@ agent$invoke("Hello world")
 \item{\code{model_provider}}{The name of the entity providing the model (eg. OpenAI)}
 
 \item{\code{model_name}}{The name of the model to be used (eg. gpt-4.1-mini)}
+
+\item{\code{broadcast_history}}{A list of all past broadcast interactions.}
 }
 \if{html}{\out{</div>}}
 }

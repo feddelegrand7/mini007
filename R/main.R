@@ -133,6 +133,8 @@ LeadAgent <- R6::R6Class(
     agents = list(),
     #' @field agents_interaction A list of delegated task history with agent IDs, prompts, and responses.
     agents_interaction = list(),
+    #' @field plan A list containing the most recently generated task plan.
+    plan = list(),
     #' @description
     #' Initializes the LeadAgent with a built-in task-decomposition prompt.
     #' @param name A short name for the coordinator (e.g. `"lead"`).
@@ -265,6 +267,39 @@ LeadAgent <- R6::R6Class(
 
       prompts_res[[length(prompts_res)]]$response
 
+    },
+
+    #' @description
+    #' Generates a task execution plan without executing the subtasks.
+    #' It returns a structured list containing the subtask, the selected agent, and metadata.
+    #' @param prompt A complex instruction to be broken into subtasks.
+    #' @return A list of lists containing agent_id, agent_name, model_name, model_provider, and the assigned prompt.
+    generate_plan = function(prompt) {
+
+      if (length(self$agents) == 0) {
+        stop("No agents registered. Use `register_agents()` to add sub-agents before generating a plan.")
+      }
+
+      subtasks <- private$.analyze_prompt(prompt)
+
+      plan <- lapply(subtasks, function(task) {
+        agent_id <- private$.match_agent_to_task(task)
+
+        idx <- which(sapply(self$agents, function(agent) agent$agent_id == agent_id))
+        selected_agent <- self$agents[[idx]]
+
+        list(
+          agent_id = agent_id,
+          agent_name = selected_agent$name,
+          model_provider = selected_agent$model_provider,
+          model_name = selected_agent$model_name,
+          prompt = task
+        )
+      })
+
+      self$plan <- plan
+
+      return(plan)
     },
 
     #' @description

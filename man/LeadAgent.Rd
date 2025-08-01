@@ -33,6 +33,8 @@ result <- lead$invoke("Summarize a topic and translate to German.")
 \item{\code{agents}}{A named list of registered sub-agents (by UUID).}
 
 \item{\code{agents_interaction}}{A list of delegated task history with agent IDs, prompts, and responses.}
+
+\item{\code{plan}}{A list containing the most recently generated task plan.}
 }
 \if{html}{\out{</div>}}
 }
@@ -40,9 +42,12 @@ result <- lead$invoke("Summarize a topic and translate to German.")
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-LeadAgent-new}{\code{LeadAgent$new()}}
+\item \href{#method-LeadAgent-clear_agents}{\code{LeadAgent$clear_agents()}}
 \item \href{#method-LeadAgent-register_agents}{\code{LeadAgent$register_agents()}}
 \item \href{#method-LeadAgent-delegate_prompt}{\code{LeadAgent$delegate_prompt()}}
 \item \href{#method-LeadAgent-invoke}{\code{LeadAgent$invoke()}}
+\item \href{#method-LeadAgent-generate_plan}{\code{LeadAgent$generate_plan()}}
+\item \href{#method-LeadAgent-broadcast}{\code{LeadAgent$broadcast()}}
 \item \href{#method-LeadAgent-clone}{\code{LeadAgent$clone()}}
 }
 }
@@ -64,6 +69,16 @@ Initializes the LeadAgent with a built-in task-decomposition prompt.
 }
 \if{html}{\out{</div>}}
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-LeadAgent-clear_agents"></a>}}
+\if{latex}{\out{\hypertarget{method-LeadAgent-clear_agents}{}}}
+\subsection{Method \code{clear_agents()}}{
+Clear out the registered Agents
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{LeadAgent$clear_agents()}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-LeadAgent-register_agents"></a>}}
@@ -133,6 +148,48 @@ result <- lead$invoke("Summarize a topic and translate to German.")
 
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-LeadAgent-generate_plan"></a>}}
+\if{latex}{\out{\hypertarget{method-LeadAgent-generate_plan}{}}}
+\subsection{Method \code{generate_plan()}}{
+Generates a task execution plan without executing the subtasks.
+It returns a structured list containing the subtask, the selected agent, and metadata.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{LeadAgent$generate_plan(prompt)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{prompt}}{A complex instruction to be broken into subtasks.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A list of lists containing agent_id, agent_name, model_name, model_provider, and the assigned prompt.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-LeadAgent-broadcast"></a>}}
+\if{latex}{\out{\hypertarget{method-LeadAgent-broadcast}{}}}
+\subsection{Method \code{broadcast()}}{
+Broadcasts a prompt to all registered agents and collects their responses.
+This does not affect the main agent orchestration logic or history.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{LeadAgent$broadcast(prompt)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{prompt}}{A user prompt to send to all agents.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A list of responses from all agents.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-LeadAgent-clone"></a>}}
