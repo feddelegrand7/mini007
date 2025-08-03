@@ -35,6 +35,8 @@ result <- lead$invoke("Summarize a topic and translate to German.")
 \item{\code{agents_interaction}}{A list of delegated task history with agent IDs, prompts, and responses.}
 
 \item{\code{plan}}{A list containing the most recently generated task plan.}
+
+\item{\code{hitl_steps}}{The steps where the workflow should be stopped in order to allow for a human interaction}
 }
 \if{html}{\out{</div>}}
 }
@@ -43,11 +45,13 @@ result <- lead$invoke("Summarize a topic and translate to German.")
 \itemize{
 \item \href{#method-LeadAgent-new}{\code{LeadAgent$new()}}
 \item \href{#method-LeadAgent-clear_agents}{\code{LeadAgent$clear_agents()}}
+\item \href{#method-LeadAgent-remove_agents}{\code{LeadAgent$remove_agents()}}
 \item \href{#method-LeadAgent-register_agents}{\code{LeadAgent$register_agents()}}
 \item \href{#method-LeadAgent-delegate_prompt}{\code{LeadAgent$delegate_prompt()}}
 \item \href{#method-LeadAgent-invoke}{\code{LeadAgent$invoke()}}
 \item \href{#method-LeadAgent-generate_plan}{\code{LeadAgent$generate_plan()}}
 \item \href{#method-LeadAgent-broadcast}{\code{LeadAgent$broadcast()}}
+\item \href{#method-LeadAgent-set_hitl}{\code{LeadAgent$set_hitl()}}
 \item \href{#method-LeadAgent-clone}{\code{LeadAgent$clone()}}
 }
 }
@@ -79,6 +83,23 @@ Clear out the registered Agents
 \if{html}{\out{<div class="r">}}\preformatted{LeadAgent$clear_agents()}\if{html}{\out{</div>}}
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-LeadAgent-remove_agents"></a>}}
+\if{latex}{\out{\hypertarget{method-LeadAgent-remove_agents}{}}}
+\subsection{Method \code{remove_agents()}}{
+Remove registered agents by IDs
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{LeadAgent$remove_agents(agent_ids)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{agent_ids}}{The Agent ID to remove from the registered Agents}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-LeadAgent-register_agents"></a>}}
@@ -184,6 +205,26 @@ This does not affect the main agent orchestration logic or history.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{prompt}}{A user prompt to send to all agents.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A list of responses from all agents.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-LeadAgent-set_hitl"></a>}}
+\if{latex}{\out{\hypertarget{method-LeadAgent-set_hitl}{}}}
+\subsection{Method \code{set_hitl()}}{
+Set Human In The Loop (HITL) interaction at determined steps within the workflow
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{LeadAgent$set_hitl(steps)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{steps}}{At which steps the Human In The Loop is required?}
 }
 \if{html}{\out{</div>}}
 }

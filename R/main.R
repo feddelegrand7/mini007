@@ -135,6 +135,9 @@ LeadAgent <- R6::R6Class(
     agents_interaction = list(),
     #' @field plan A list containing the most recently generated task plan.
     plan = list(),
+    #' @field hitl_steps The steps where the workflow should be stopped in order to allow for a human interaction
+    hitl_steps = NULL,
+
     #' @description
     #' Initializes the LeadAgent with a built-in task-decomposition prompt.
     #' @param name A short name for the coordinator (e.g. `"lead"`).
@@ -161,7 +164,7 @@ LeadAgent <- R6::R6Class(
 
     #' @description
     #' Remove registered agents by IDs
-    #' @param agent_id The Agent ID to remove from the registered Agents
+    #' @param agent_ids The Agent ID to remove from the registered Agents
     remove_agents = function(agent_ids) {
 
       checkmate::assert_character(agent_ids, any.missing = FALSE)
@@ -250,32 +253,32 @@ LeadAgent <- R6::R6Class(
         prompts_res[[i]]$response <- NA
       }
 
-      for (i in seq_along(prompts_res)) {
+      self$agents_interaction <- prompts_res
 
-        agent_id <- prompts_res[[i]]$agent_id
+      for (i in seq_along(self$agents_interaction)) {
+        step <- self$agents_interaction[[i]]
 
-        idx <- which(sapply(self$agents, function(agent) agent$agent_id == agent_id))
+        idx <- which(sapply(self$agents, function(agent) agent$agent_id == step$agent_id))
         selected_agent <- self$agents[[idx]]
 
-        prompt_to_consider <- prompts_res[[i]]$prompt
-
+        prompt_to_consider <- step$prompt
         if (i > 1) {
-          previous_response <- prompts_res[[i - 1]]$response
+          prev_resp <- self$agents_interaction[[i - 1]]$response
           prompt_to_consider <- paste(
-            "\n\nBefore answering consider the Previous answer:\n",
-            previous_response,
-            "\n\n--- This is what you should do with the previous answer ---\n",
-            prompt_to_consider
+            "\n\nBefore answering consider the previous response:\n", prev_resp,
+            "\n\n--- Task ---\n", prompt_to_consider
           )
         }
 
         response <- selected_agent$invoke(prompt_to_consider)
-        prompts_res[[i]]$response <- response
+        step$response <- response
+        step$edited_by_hitl <- FALSE
+        self$agents_interaction[[i]] <- step
+
+        if (i %in% self$hitl_steps && !is.null(hitl_steps)) {
+          private$.human_confirm(i)
+        }
       }
-
-      self$agents_interaction <- prompts_res
-
-      prompts_res[[length(prompts_res)]]$response
 
     },
 
@@ -341,6 +344,15 @@ LeadAgent <- R6::R6Class(
       )
 
       return(responses)
+    },
+
+    #' @description
+    #' Set Human In The Loop (HITL) interaction at determined steps within the workflow
+    #' @param steps At which steps the Human In The Loop is required?
+    #' @return A list of responses from all agents.
+    set_hitl = function(steps) {
+      checkmate::assert_integerish(steps, lower = 1, any.missing = FALSE)
+      self$hitl_steps <- unique(as.integer(steps))
     }
   ),
 
@@ -404,6 +416,48 @@ LeadAgent <- R6::R6Class(
 
       return(agent_id)
 
+    },
+
+    .human_confirm = function(step_index) {
+
+      step <- self$agents_interaction[[step_index]]
+
+      cli::cli_rule(left = "HITL Step {step_index}")
+      cli::cli_text("Agent: {.strong {step$agent_name}}")
+      cli::cli_alert_info("Prompt:")
+      cli::cli_text("{.italic {step$prompt}}")
+
+      if (!is.null(step$response)) {
+        cli::cli_alert_info("Response:")
+        cli::cli_text("{.italic {step$response}}")
+      }
+
+      cli::cli_text()
+      cli::cli_text(cli::cli_ul(c(
+        "[1] Continue with this response",
+        "[2] Edit the response",
+        "[3] Stop the workflow"
+      )))
+
+      repeat {
+        answer <- readline("Your choice [1/2/3]: ")
+        if (nzchar(answer) && answer %in% c("1", "2", "3")) break
+        cli::cli_alert_warning("Invalid input. Please enter 1, 2, or 3.")
+      }
+
+      if (answer == "2") {
+        new_response <- readline("✏️ Enter edited response: ")
+        step$response <- new_response
+        step$edited_by_hitl <- TRUE
+        cli::cli_alert_success("Response updated.")
+      } else if (answer == "3") {
+        cli::cli_alert_danger("Workflow manually stopped at step {step_index}.")
+        cli::cli_abort("HITL: Execution stopped by user.")
+      } else {
+        cli::cli_alert_success("Continuing with original response.")
+      }
+
+      self$agents_interaction[[step_index]] <- step
     }
   )
 )
