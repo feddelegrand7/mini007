@@ -74,7 +74,7 @@ Each created Agent has an `agent_id` (among other meta information):
 
 ``` r
 polar_bear_researcher$agent_id
-#> [1] "371721b6-b4dd-467b-b0bc-63ea4f0962f1"
+#> [1] "1828a16f-7b7a-4a53-a5d4-ea540b57e690"
 ```
 
 At any time, you can tweak the `llm_object`:
@@ -90,7 +90,7 @@ An agent can provide the answer to a prompt using the `invoke` method:
 
 ``` r
 polar_bear_researcher$invoke("Are polar bears dangerous for humans?")
-#> Yes, polar bears can be dangerous to humans as they are large predators and may
+#> Yes, polar bears are dangerous to humans as they are powerful predators and can
 #> attack if threatened or hungry.
 ```
 
@@ -119,7 +119,7 @@ polar_bear_researcher$messages
 #> [1] "assistant"
 #> 
 #> [[3]]$content
-#> Yes, polar bears can be dangerous to humans as they are large predators and may
+#> Yes, polar bears are dangerous to humans as they are powerful predators and can
 #> attack if threatened or hungry.
 ```
 
@@ -127,13 +127,13 @@ Or the `ellmer` way:
 
 ``` r
 polar_bear_researcher$llm_object
-#> <Chat OpenAI/gpt-4.1-mini turns=3 tokens=43/22 $0.00>
+#> <Chat OpenAI/gpt-4.1-mini turns=3 tokens=43/21 $0.00>
 #> ── system [0] ──────────────────────────────────────────────────────────────────
 #> You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max.
 #> ── user [43] ───────────────────────────────────────────────────────────────────
 #> Are polar bears dangerous for humans?
-#> ── assistant [22] ──────────────────────────────────────────────────────────────
-#> Yes, polar bears can be dangerous to humans as they are large predators and may attack if threatened or hungry.
+#> ── assistant [21] ──────────────────────────────────────────────────────────────
+#> Yes, polar bears are dangerous to humans as they are powerful predators and can attack if threatened or hungry.
 ```
 
 ### Creating a multi-agents orchestraction
@@ -184,7 +184,7 @@ lead_agent$agents
 #> [[1]]
 #> <Agent>
 #>   Public:
-#>     agent_id: db08eb26-2110-4128-98d7-c2beea1b08f0
+#>     agent_id: b56e3c42-fbfc-4ae6-9eac-52a64ac369d7
 #>     broadcast_history: list
 #>     clone: function (deep = FALSE) 
 #>     initialize: function (name, instruction, llm_object) 
@@ -203,7 +203,7 @@ lead_agent$agents
 #> [[2]]
 #> <Agent>
 #>   Public:
-#>     agent_id: 20760285-4b1b-48cf-a7df-7ffb60eea2b0
+#>     agent_id: efd3639d-8e21-498f-bf76-c2896aaffeda
 #>     broadcast_history: list
 #>     clone: function (deep = FALSE) 
 #>     initialize: function (name, instruction, llm_object) 
@@ -222,7 +222,7 @@ lead_agent$agents
 #> [[3]]
 #> <Agent>
 #>   Public:
-#>     agent_id: 408c25c6-0a05-4c2e-8ec0-288e95844e37
+#>     agent_id: 47739289-8bd5-4db5-97c6-d45707f25417
 #>     broadcast_history: list
 #>     clone: function (deep = FALSE) 
 #>     initialize: function (name, instruction, llm_object) 
@@ -250,7 +250,7 @@ plan <- lead_agent$generate_plan(prompt_to_execute)
 plan
 #> [[1]]
 #> [[1]]$agent_id
-#> db08eb26-2110-4128-98d7-c2beea1b08f0
+#> b56e3c42-fbfc-4ae6-9eac-52a64ac369d7
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
@@ -262,12 +262,12 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[1]]$prompt
-#> [1] "Research the current economic situation in Algeria, focusing on key indicators like GDP growth, unemployment rate, and major industries."
+#> [1] "Gather the latest data and information on the economic situation in Algeria, including key indicators such as GDP, inflation, and major economic sectors."
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> 20760285-4b1b-48cf-a7df-7ffb60eea2b0
+#> efd3639d-8e21-498f-bf76-c2896aaffeda
 #> 
 #> [[2]]$agent_name
 #> [1] "summarizer"
@@ -279,12 +279,12 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[2]]$prompt
-#> [1] "Summarize the researched information into three concise bullet points highlighting the main aspects of Algeria's economy."
+#> [1] "Summarize the gathered information into 3 concise bullet points highlighting the main aspects of Algeria's economic situation."
 #> 
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> 408c25c6-0a05-4c2e-8ec0-288e95844e37
+#> 47739289-8bd5-4db5-97c6-d45707f25417
 #> 
 #> [[3]]$agent_name
 #> [1] "translator"
@@ -296,7 +296,7 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[3]]$prompt
-#> [1] "Translate the three bullet points summary into German accurately."
+#> [1] "Translate the 3 bullet points summary into German accurately."
 ```
 
 Now, in order now to execute the workflow, we just need to call the
@@ -309,7 +309,12 @@ response <- lead_agent$invoke("Tell me about the economic situation in Algeria, 
 
 ``` r
 response
-#> NULL
+#> - Das BIP Algeriens beträgt etwa 170 Milliarden US-Dollar mit einer 
+#> Wachstumsrate von 2-3 % Anfang 2024.
+#> - Die Inflation ist moderat und wird auf etwa 4-5 % geschätzt.
+#> - Die Wirtschaft wird hauptsächlich von Kohlenwasserstoffen getragen, die über 
+#> 90 % der Exporte und 30-40 % des BIP ausmachen, wobei die Landwirtschaft und 
+#> der Bausektor zunehmend an Bedeutung gewinnen.
 ```
 
 If you want to inspect the multi-agents orchestration, you have access
@@ -319,7 +324,7 @@ to the `agents_interaction` object:
 lead_agent$agents_interaction
 #> [[1]]
 #> [[1]]$agent_id
-#> db08eb26-2110-4128-98d7-c2beea1b08f0
+#> b56e3c42-fbfc-4ae6-9eac-52a64ac369d7
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
@@ -331,13 +336,14 @@ lead_agent$agents_interaction
 #> [1] "OpenAI"
 #> 
 #> [[1]]$prompt
-#> [1] "Research the current economic situation in Algeria, focusing on key indicators like GDP growth, unemployment rate, and major industries."
+#> [1] "Gather the latest data and information on the economic situation in Algeria, including key indicators such as GDP, inflation, and major economic sectors."
 #> 
 #> [[1]]$response
-#> As of early 2024, Algeria's GDP growth is modest, around 2-3%, recovering from 
-#> oil revenue fluctuations; unemployment remains high at approximately 12-14%, 
-#> especially among youth. Key industries include hydrocarbons (oil and gas), 
-#> agriculture, and mining.
+#> As of early 2024, Algeria's GDP is around $170 billion, with an estimated 
+#> growth rate of 2-3%. Inflation is moderate at about 4-5%. The economy is 
+#> heavily reliant on hydrocarbons, which constitute over 90% of exports and 
+#> around 30-40% of GDP, alongside growing sectors like agriculture and 
+#> construction.
 #> 
 #> [[1]]$edited_by_hitl
 #> [1] FALSE
@@ -345,7 +351,7 @@ lead_agent$agents_interaction
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> 20760285-4b1b-48cf-a7df-7ffb60eea2b0
+#> efd3639d-8e21-498f-bf76-c2896aaffeda
 #> 
 #> [[2]]$agent_name
 #> [1] "summarizer"
@@ -357,14 +363,15 @@ lead_agent$agents_interaction
 #> [1] "OpenAI"
 #> 
 #> [[2]]$prompt
-#> [1] "Summarize the researched information into three concise bullet points highlighting the main aspects of Algeria's economy."
+#> [1] "Summarize the gathered information into 3 concise bullet points highlighting the main aspects of Algeria's economic situation."
 #> 
 #> [[2]]$response
-#> - Algeria's GDP growth is modest at 2-3% in early 2024, showing recovery from 
-#> oil revenue fluctuations.  
-#> - Unemployment remains high, particularly among youth, at around 12-14%.  
-#> - The economy is driven by key sectors including hydrocarbons (oil and gas), 
-#> agriculture, and mining.
+#> - Algeria's GDP stands at approximately $170 billion with a growth rate of 2-3%
+#> as of early 2024.
+#> - Inflation is moderate, estimated between 4-5%.
+#> - The economy is primarily driven by hydrocarbons, accounting for over 90% of 
+#> exports and 30-40% of GDP, with emerging contributions from agriculture and 
+#> construction sectors.
 #> 
 #> [[2]]$edited_by_hitl
 #> [1] FALSE
@@ -372,7 +379,7 @@ lead_agent$agents_interaction
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> 408c25c6-0a05-4c2e-8ec0-288e95844e37
+#> 47739289-8bd5-4db5-97c6-d45707f25417
 #> 
 #> [[3]]$agent_name
 #> [1] "translator"
@@ -384,15 +391,15 @@ lead_agent$agents_interaction
 #> [1] "OpenAI"
 #> 
 #> [[3]]$prompt
-#> [1] "Translate the three bullet points summary into German accurately."
+#> [1] "Translate the 3 bullet points summary into German accurately."
 #> 
 #> [[3]]$response
-#> - Das BIP-Wachstum Algeriens liegt Anfang 2024 moderat bei 2-3 % und zeigt eine
-#> Erholung von Schwankungen der Öleinnahmen.  
-#> - Die Arbeitslosigkeit bleibt hoch, besonders unter Jugendlichen, und beträgt 
-#> etwa 12-14 %.  
-#> - Die Wirtschaft wird von wichtigen Sektoren wie Kohlenwasserstoffen (Öl und 
-#> Gas), Landwirtschaft und Bergbau angetrieben.
+#> - Das BIP Algeriens beträgt etwa 170 Milliarden US-Dollar mit einer 
+#> Wachstumsrate von 2-3 % Anfang 2024.
+#> - Die Inflation ist moderat und wird auf etwa 4-5 % geschätzt.
+#> - Die Wirtschaft wird hauptsächlich von Kohlenwasserstoffen getragen, die über 
+#> 90 % der Exporte und 30-40 % des BIP ausmachen, wobei die Landwirtschaft und 
+#> der Bausektor zunehmend an Bedeutung gewinnen.
 #> 
 #> [[3]]$edited_by_hitl
 #> [1] FALSE
@@ -448,7 +455,7 @@ lead_agent$register_agents(c(openai_4_1_agent, openai_4_1_nano_agent))
 lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to sing when running under the rain? how about a flower?")
 #> [[1]]
 #> [[1]]$agent_id
-#> [1] "3f8dc0aa-6197-4d67-90e4-6286dadc5c8a"
+#> [1] "48a82b28-e46e-4029-be9b-58759084f9ee"
 #> 
 #> [[1]]$agent_name
 #> [1] "openai_4_1_agent"
@@ -460,14 +467,14 @@ lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to si
 #> [1] "gpt-4.1"
 #> 
 #> [[1]]$response
-#> If you were Algerian, you might sing "Ya Rayah" when running under the rain, 
-#> and if you were a flower, perhaps "El Bent El Shalabeya," both expressing 
-#> longing and beauty in unique ways.
+#> If you were Algerian, you might enjoy singing "Ya Rayah" while running under 
+#> the rain, and if you were a flower, perhaps you'd "hum" to the rhythm of the 
+#> soft raindrops instead.
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> [1] "9621f7d4-b968-4db4-8bf8-abec203f590f"
+#> [1] "e48b9419-1801-4f85-a8c8-8f4b6d8432d6"
 #> 
 #> [[2]]$agent_name
 #> [1] "openai_4_1_nano_agent"
@@ -479,8 +486,8 @@ lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to si
 #> [1] "gpt-4.1-nano"
 #> 
 #> [[2]]$response
-#> You might enjoy singing "Abdel Kader" by Khaled or "Ya Rayah," and for a 
-#> flower, perhaps "Lili Boujarah" celebrating beauty and nature.
+#> You might enjoy singing "Ya Rayah" by Rachid Taha when running under the rain 
+#> and "Lalla Fatma" when admiring a flower.
 ```
 
 You can also access the history of the `broadcasting` using the
@@ -495,7 +502,7 @@ lead_agent$broadcast_history
 #> [[1]]$responses
 #> [[1]]$responses[[1]]
 #> [[1]]$responses[[1]]$agent_id
-#> [1] "3f8dc0aa-6197-4d67-90e4-6286dadc5c8a"
+#> [1] "48a82b28-e46e-4029-be9b-58759084f9ee"
 #> 
 #> [[1]]$responses[[1]]$agent_name
 #> [1] "openai_4_1_agent"
@@ -507,14 +514,14 @@ lead_agent$broadcast_history
 #> [1] "gpt-4.1"
 #> 
 #> [[1]]$responses[[1]]$response
-#> If you were Algerian, you might sing "Ya Rayah" when running under the rain, 
-#> and if you were a flower, perhaps "El Bent El Shalabeya," both expressing 
-#> longing and beauty in unique ways.
+#> If you were Algerian, you might enjoy singing "Ya Rayah" while running under 
+#> the rain, and if you were a flower, perhaps you'd "hum" to the rhythm of the 
+#> soft raindrops instead.
 #> 
 #> 
 #> [[1]]$responses[[2]]
 #> [[1]]$responses[[2]]$agent_id
-#> [1] "9621f7d4-b968-4db4-8bf8-abec203f590f"
+#> [1] "e48b9419-1801-4f85-a8c8-8f4b6d8432d6"
 #> 
 #> [[1]]$responses[[2]]$agent_name
 #> [1] "openai_4_1_nano_agent"
@@ -526,8 +533,8 @@ lead_agent$broadcast_history
 #> [1] "gpt-4.1-nano"
 #> 
 #> [[1]]$responses[[2]]$response
-#> You might enjoy singing "Abdel Kader" by Khaled or "Ya Rayah," and for a 
-#> flower, perhaps "Lili Boujarah" celebrating beauty and nature.
+#> You might enjoy singing "Ya Rayah" by Rachid Taha when running under the rain 
+#> and "Lalla Fatma" when admiring a flower.
 ```
 
 ## Code of Conduct

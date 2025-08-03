@@ -280,6 +280,8 @@ LeadAgent <- R6::R6Class(
         }
       }
 
+      self$agents_interaction[[length(self$agents_interaction)]]$response
+
     },
 
     #' @description
