@@ -160,6 +160,16 @@ LeadAgent <- R6::R6Class(
     },
 
     #' @description
+    #' Remove registered agents by IDs
+    #' @param agent_id The Agent ID to remove from the registered Agents
+    remove_agents = function(agent_ids) {
+
+      checkmate::assert_character(agent_ids, any.missing = FALSE)
+      self$agents <- Filter(function(a) !(a$agent_id %in% agent_ids), self$agents)
+
+    },
+
+    #' @description
     #' Register one or more agents for delegation.
     #' @param agents A vector of `Agent` objects to register.
     register_agents = function(agents) {
