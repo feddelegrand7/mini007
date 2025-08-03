@@ -59,13 +59,13 @@ openai_4_1_mini <- ellmer::chat(
 )
 ```
 
-After initialising the `ellmer` LLM object, creating the Agent is
+After initializing the `ellmer` LLM object, creating the Agent is
 straightforward:
 
 ``` r
 polar_bear_researcher <- Agent$new(
   name = "POLAR BEAR RESEARCHER",
-  instruction = "You are an expert in polar bears, you task is to collect information about polar bears.",
+  instruction = "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max.",
   llm_object = openai_4_1_mini
 )
 ```
@@ -74,7 +74,7 @@ Each created Agent has an `agent_id` (among other meta information):
 
 ``` r
 polar_bear_researcher$agent_id
-#> [1] "f47583f5-944d-4793-bad4-29eb696c933e"
+#> [1] "27c720c0-0762-47b8-b401-2afa8995014b"
 ```
 
 At any time, you can tweak the `llm_object`:
@@ -83,22 +83,15 @@ At any time, you can tweak the `llm_object`:
 polar_bear_researcher$llm_object
 #> <Chat OpenAI/gpt-4.1-mini turns=1 tokens=0/0 $0.00>
 #> ── system [0] ──────────────────────────────────────────────────────────────────
-#> You are an expert in polar bears, you task is to collect information about polar bears.
+#> You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max.
 ```
 
 An agent can provide the answer to a prompt using the `invoke` method:
 
 ``` r
 polar_bear_researcher$invoke("Are polar bears dangerous for humans?")
-#> Yes, polar bears can be dangerous for humans. They are powerful predators and 
-#> are known to be aggressive if they feel threatened or are hungry. Polar bears 
-#> are the largest land carnivores, with adult males weighing between 900 to 1,600
-#> pounds (410 to 720 kg), and they have strong jaws and sharp claws. Because they
-#> live in remote Arctic regions where human presence is limited, encounters are 
-#> rare, but when they do occur, polar bears can pose a significant threat to 
-#> human safety. It is important for people in polar bear habitats to take 
-#> precautions, such as carrying deterrents and avoiding surprise encounters, to 
-#> minimize the risk of attacks.
+#> Yes, polar bears can be dangerous to humans as they are powerful predators and 
+#> may attack if threatened or hungry.
 ```
 
 You can also retrieve a list that displays the history of the agent:
@@ -110,7 +103,7 @@ polar_bear_researcher$messages
 #> [1] "system"
 #> 
 #> [[1]]$content
-#> [1] "You are an expert in polar bears, you task is to collect information about polar bears."
+#> [1] "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max."
 #> 
 #> 
 #> [[2]]
@@ -126,28 +119,21 @@ polar_bear_researcher$messages
 #> [1] "assistant"
 #> 
 #> [[3]]$content
-#> Yes, polar bears can be dangerous for humans. They are powerful predators and 
-#> are known to be aggressive if they feel threatened or are hungry. Polar bears 
-#> are the largest land carnivores, with adult males weighing between 900 to 1,600
-#> pounds (410 to 720 kg), and they have strong jaws and sharp claws. Because they
-#> live in remote Arctic regions where human presence is limited, encounters are 
-#> rare, but when they do occur, polar bears can pose a significant threat to 
-#> human safety. It is important for people in polar bear habitats to take 
-#> precautions, such as carrying deterrents and avoiding surprise encounters, to 
-#> minimize the risk of attacks.
+#> Yes, polar bears can be dangerous to humans as they are powerful predators and 
+#> may attack if threatened or hungry.
 ```
 
 Or the `ellmer` way:
 
 ``` r
 polar_bear_researcher$llm_object
-#> <Chat OpenAI/gpt-4.1-mini turns=3 tokens=36/131 $0.00>
+#> <Chat OpenAI/gpt-4.1-mini turns=3 tokens=43/22 $0.00>
 #> ── system [0] ──────────────────────────────────────────────────────────────────
-#> You are an expert in polar bears, you task is to collect information about polar bears.
-#> ── user [36] ───────────────────────────────────────────────────────────────────
+#> You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max.
+#> ── user [43] ───────────────────────────────────────────────────────────────────
 #> Are polar bears dangerous for humans?
-#> ── assistant [131] ─────────────────────────────────────────────────────────────
-#> Yes, polar bears can be dangerous for humans. They are powerful predators and are known to be aggressive if they feel threatened or are hungry. Polar bears are the largest land carnivores, with adult males weighing between 900 to 1,600 pounds (410 to 720 kg), and they have strong jaws and sharp claws. Because they live in remote Arctic regions where human presence is limited, encounters are rare, but when they do occur, polar bears can pose a significant threat to human safety. It is important for people in polar bear habitats to take precautions, such as carrying deterrents and avoiding surprise encounters, to minimize the risk of attacks.
+#> ── assistant [22] ──────────────────────────────────────────────────────────────
+#> Yes, polar bears can be dangerous to humans as they are powerful predators and may attack if threatened or hungry.
 ```
 
 ### Creating a multi-agents orchestraction
@@ -198,7 +184,7 @@ lead_agent$agents
 #> [[1]]
 #> <Agent>
 #>   Public:
-#>     agent_id: 8da36dee-f15a-49da-ba98-edfa95eeb029
+#>     agent_id: 80a2ee74-e998-4d25-b5c9-92b2afd101f0
 #>     broadcast_history: list
 #>     clone: function (deep = FALSE) 
 #>     initialize: function (name, instruction, llm_object) 
@@ -217,7 +203,7 @@ lead_agent$agents
 #> [[2]]
 #> <Agent>
 #>   Public:
-#>     agent_id: 91301051-ea22-41e4-b2b9-ed82832ed6ba
+#>     agent_id: b3b0f513-3742-4d5f-90d3-7d75fd242e09
 #>     broadcast_history: list
 #>     clone: function (deep = FALSE) 
 #>     initialize: function (name, instruction, llm_object) 
@@ -236,7 +222,7 @@ lead_agent$agents
 #> [[3]]
 #> <Agent>
 #>   Public:
-#>     agent_id: 997f9209-bac2-45e1-bf07-de8968e2a5c2
+#>     agent_id: 3d860b46-b530-4ba0-99dc-601b4b3b36a8
 #>     broadcast_history: list
 #>     clone: function (deep = FALSE) 
 #>     initialize: function (name, instruction, llm_object) 
@@ -253,9 +239,69 @@ lead_agent$agents
 #>     .add_user_message: function (message, type = "user")
 ```
 
-In order now to execute the workflow, we just need to call the `invoke`
-method which will behind the scene delegate the prompts to suitable
-Agents and retrieve back the final information:
+Before executing your prompt, you can ask the `LeadAgent` to generate a
+plan so that you can see which `Agent` will be used for which prompt,
+you can do it as follows:
+
+``` r
+prompt_to_execute <- "Tell me about the economic situation in Algeria, summarize it in 3 bullet points, then translate it into German."
+
+plan <- lead_agent$generate_plan(prompt_to_execute)
+plan
+#> [[1]]
+#> [[1]]$agent_id
+#> 80a2ee74-e998-4d25-b5c9-92b2afd101f0
+#> 
+#> [[1]]$agent_name
+#> [1] "researcher"
+#> 
+#> [[1]]$model_provider
+#> [1] "OpenAI"
+#> 
+#> [[1]]$model_name
+#> [1] "gpt-4.1-mini"
+#> 
+#> [[1]]$prompt
+#> [1] "Research the current economic situation in Algeria, focusing on key indicators such as GDP growth, main industries, unemployment rate, and inflation."
+#> 
+#> 
+#> [[2]]
+#> [[2]]$agent_id
+#> b3b0f513-3742-4d5f-90d3-7d75fd242e09
+#> 
+#> [[2]]$agent_name
+#> [1] "summarizer"
+#> 
+#> [[2]]$model_provider
+#> [1] "OpenAI"
+#> 
+#> [[2]]$model_name
+#> [1] "gpt-4.1-mini"
+#> 
+#> [[2]]$prompt
+#> [1] "Summarize the researched information into 3 clear and concise bullet points."
+#> 
+#> 
+#> [[3]]
+#> [[3]]$agent_id
+#> 3d860b46-b530-4ba0-99dc-601b4b3b36a8
+#> 
+#> [[3]]$agent_name
+#> [1] "translator"
+#> 
+#> [[3]]$model_provider
+#> [1] "OpenAI"
+#> 
+#> [[3]]$model_name
+#> [1] "gpt-4.1-mini"
+#> 
+#> [[3]]$prompt
+#> [1] "Translate the 3 bullet points from English into German accurately."
+```
+
+Now, in order now to execute the workflow, we just need to call the
+`invoke` method which will behind the scene delegate the prompts to
+suitable Agents and retrieve back the final information:
 
 ``` r
 response <- lead_agent$invoke("Tell me about the economic situation in Algeria, summarize it in 3 bullet points, then translate it into German.")
@@ -263,12 +309,11 @@ response <- lead_agent$invoke("Tell me about the economic situation in Algeria, 
 
 ``` r
 response
-#> - Das Wirtschaftswachstum Algeriens ist bescheiden, mit einem Anstieg des BIP 
-#> um etwa 2-3 %, hauptsächlich getragen von Öl- und Gaseinfuhren.  
-#> - Die Arbeitslosenquote ist hoch, insbesondere bei Jugendlichen, mit Raten 
-#> zwischen 12-15 %.  
-#> - Die Wirtschaft ist stark von Kohlenwasserstoffen abhängig (über 90 % der 
-#> Exporte), neben den Sektoren Landwirtschaft und Dienstleistungen.
+#> - Das BIP-Wachstum Algeriens Anfang 2024 ist moderat, etwa 2-3 %, hauptsächlich
+#> angetrieben vom Energiesektor.  
+#> - Das Land hat hohe Arbeitslosenquoten, besonders unter Jugendlichen, bei etwa 
+#> 11-12 %.  
+#> - Die Inflation bleibt relativ niedrig und kontrolliert, nahe bei 4-5 %.
 ```
 
 If you want to inspect the multi-agents orchestration, you have access
@@ -278,7 +323,7 @@ to the `agents_interaction` object:
 lead_agent$agents_interaction
 #> [[1]]
 #> [[1]]$agent_id
-#> 8da36dee-f15a-49da-ba98-edfa95eeb029
+#> 80a2ee74-e998-4d25-b5c9-92b2afd101f0
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
@@ -290,18 +335,18 @@ lead_agent$agents_interaction
 #> [1] "OpenAI"
 #> 
 #> [[1]]$prompt
-#> [1] "Research the current economic situation in Algeria, including key indicators like GDP growth, unemployment rate, and major sectors."
+#> [1] "Research the current economic situation in Algeria, focusing on key indicators such as GDP growth, main industries, unemployment rate, and inflation."
 #> 
 #> [[1]]$response
-#> As of early 2024, Algeria's GDP growth is modest at around 2-3%, driven by oil 
-#> and gas exports. The unemployment rate remains high, approximately 12-15%, 
-#> particularly among youth. Key sectors include hydrocarbons (over 90% of 
-#> exports), agriculture, and services.
+#> As of early 2024, Algeria's GDP growth is moderate, around 2-3%, driven mainly 
+#> by hydrocarbons (oil and gas) which dominate the economy. Unemployment remains 
+#> high, approximately 11-12%, especially among youth, while inflation is 
+#> relatively low, near 4-5%, reflecting controlled price pressures.
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> 91301051-ea22-41e4-b2b9-ed82832ed6ba
+#> b3b0f513-3742-4d5f-90d3-7d75fd242e09
 #> 
 #> [[2]]$agent_name
 #> [1] "summarizer"
@@ -313,19 +358,19 @@ lead_agent$agents_interaction
 #> [1] "OpenAI"
 #> 
 #> [[2]]$prompt
-#> [1] "Summarize the findings into 3 concise bullet points that capture the main aspects of Algeria's economic situation."
+#> [1] "Summarize the researched information into 3 clear and concise bullet points."
 #> 
 #> [[2]]$response
-#> - Algeria's economic growth is modest, with GDP increasing around 2-3%, mainly 
-#> supported by oil and gas exports.  
-#> - Unemployment is high, especially among youth, with rates between 12-15%.  
-#> - The economy is heavily reliant on hydrocarbons (over 90% of exports), 
-#> alongside agriculture and services sectors.
+#> - Algeria's GDP growth in early 2024 is moderate, around 2-3%, primarily fueled
+#> by the hydrocarbons sector.  
+#> - The country faces high unemployment rates, particularly among youth, at 
+#> approximately 11-12%.  
+#> - Inflation remains relatively low and controlled, near 4-5%.
 #> 
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> 997f9209-bac2-45e1-bf07-de8968e2a5c2
+#> 3d860b46-b530-4ba0-99dc-601b4b3b36a8
 #> 
 #> [[3]]$agent_name
 #> [1] "translator"
@@ -340,12 +385,11 @@ lead_agent$agents_interaction
 #> [1] "Translate the 3 bullet points from English into German accurately."
 #> 
 #> [[3]]$response
-#> - Das Wirtschaftswachstum Algeriens ist bescheiden, mit einem Anstieg des BIP 
-#> um etwa 2-3 %, hauptsächlich getragen von Öl- und Gaseinfuhren.  
-#> - Die Arbeitslosenquote ist hoch, insbesondere bei Jugendlichen, mit Raten 
-#> zwischen 12-15 %.  
-#> - Die Wirtschaft ist stark von Kohlenwasserstoffen abhängig (über 90 % der 
-#> Exporte), neben den Sektoren Landwirtschaft und Dienstleistungen.
+#> - Das BIP-Wachstum Algeriens Anfang 2024 ist moderat, etwa 2-3 %, hauptsächlich
+#> angetrieben vom Energiesektor.  
+#> - Das Land hat hohe Arbeitslosenquoten, besonders unter Jugendlichen, bei etwa 
+#> 11-12 %.  
+#> - Die Inflation bleibt relativ niedrig und kontrolliert, nahe bei 4-5 %.
 ```
 
 The above example is extremely simple, the usefulness of `mini007` would
@@ -398,7 +442,7 @@ lead_agent$register_agents(c(openai_4_1_agent, openai_4_1_nano_agent))
 lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to sing when running under the rain? how about a flower?")
 #> [[1]]
 #> [[1]]$agent_id
-#> [1] "89adf885-9007-44ce-add1-2f5b02084dc2"
+#> [1] "ace717bc-0504-4ad1-9a9c-c00d26cc1bcc"
 #> 
 #> [[1]]$agent_name
 #> [1] "openai_4_1_agent"
@@ -410,13 +454,13 @@ lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to si
 #> [1] "gpt-4.1"
 #> 
 #> [[1]]$response
-#> If you were Algerian, you might sing "Ya Rayah" under the rain, while a flower 
-#> might "sing" the gentle melody of "Fleur d'Algérie."
+#> If you were Algerian, you might sing "Ya Rayah" while running under the rain, 
+#> and if you were a flower, you might hum "Bent Bladi."
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> [1] "9f6b97f1-8c52-4357-acdc-9bb3b860a337"
+#> [1] "feb249e2-07a9-4259-b327-8dea6d74e85d"
 #> 
 #> [[2]]$agent_name
 #> [1] "openai_4_1_nano_agent"
@@ -428,8 +472,8 @@ lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to si
 #> [1] "gpt-4.1-nano"
 #> 
 #> [[2]]$response
-#> If you were Algerian, you might enjoy singing "Zina" by Souad Massi when 
-#> running under the rain and "Azzam" by Cheb Khaled when admiring a flower.
+#> If you are Algerian, you might enjoy singing "Ya Rayah" by Rachid Taha when 
+#> running under the rain, and "Aïcha" by Cheb Khaled when thinking of a flower.
 ```
 
 You can also access the history of the `broadcasting` using the
@@ -444,7 +488,7 @@ lead_agent$broadcast_history
 #> [[1]]$responses
 #> [[1]]$responses[[1]]
 #> [[1]]$responses[[1]]$agent_id
-#> [1] "89adf885-9007-44ce-add1-2f5b02084dc2"
+#> [1] "ace717bc-0504-4ad1-9a9c-c00d26cc1bcc"
 #> 
 #> [[1]]$responses[[1]]$agent_name
 #> [1] "openai_4_1_agent"
@@ -456,13 +500,13 @@ lead_agent$broadcast_history
 #> [1] "gpt-4.1"
 #> 
 #> [[1]]$responses[[1]]$response
-#> If you were Algerian, you might sing "Ya Rayah" under the rain, while a flower 
-#> might "sing" the gentle melody of "Fleur d'Algérie."
+#> If you were Algerian, you might sing "Ya Rayah" while running under the rain, 
+#> and if you were a flower, you might hum "Bent Bladi."
 #> 
 #> 
 #> [[1]]$responses[[2]]
 #> [[1]]$responses[[2]]$agent_id
-#> [1] "9f6b97f1-8c52-4357-acdc-9bb3b860a337"
+#> [1] "feb249e2-07a9-4259-b327-8dea6d74e85d"
 #> 
 #> [[1]]$responses[[2]]$agent_name
 #> [1] "openai_4_1_nano_agent"
@@ -474,8 +518,8 @@ lead_agent$broadcast_history
 #> [1] "gpt-4.1-nano"
 #> 
 #> [[1]]$responses[[2]]$response
-#> If you were Algerian, you might enjoy singing "Zina" by Souad Massi when 
-#> running under the rain and "Azzam" by Cheb Khaled when admiring a flower.
+#> If you are Algerian, you might enjoy singing "Ya Rayah" by Rachid Taha when 
+#> running under the rain, and "Aïcha" by Cheb Khaled when thinking of a flower.
 ```
 
 ## Code of Conduct

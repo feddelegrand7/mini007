@@ -70,12 +70,12 @@ openai_4_1_mini <- ellmer::chat(
 
 ```
 
-After initialising the `ellmer` LLM object, creating the Agent is straightforward: 
+After initializing the `ellmer` LLM object, creating the Agent is straightforward: 
 
 ```{r}
 polar_bear_researcher <- Agent$new(
   name = "POLAR BEAR RESEARCHER",
-  instruction = "You are an expert in polar bears, you task is to collect information about polar bears.",
+  instruction = "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max.",
   llm_object = openai_4_1_mini
 )
 ```
@@ -155,7 +155,16 @@ lead_agent$register_agents(c(researcher, summarizer, translator))
 lead_agent$agents
 ```
 
-In order now to execute the workflow, we just need to call the `invoke` method which will behind the scene delegate the prompts to suitable Agents and retrieve back the final information: 
+Before executing your prompt, you can ask the `LeadAgent` to generate a plan so that you can see which `Agent` will be used for which prompt, you can do it as follows:
+
+```{r}
+prompt_to_execute <- "Tell me about the economic situation in Algeria, summarize it in 3 bullet points, then translate it into German."
+
+plan <- lead_agent$generate_plan(prompt_to_execute)
+plan
+```
+
+Now, in order now to execute the workflow, we just need to call the `invoke` method which will behind the scene delegate the prompts to suitable Agents and retrieve back the final information: 
 
 ```{r}
 response <- lead_agent$invoke("Tell me about the economic situation in Algeria, summarize it in 3 bullet points, then translate it into German.")
