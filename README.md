@@ -74,7 +74,7 @@ Each created Agent has an `agent_id` (among other meta information):
 
 ``` r
 polar_bear_researcher$agent_id
-#> [1] "1828a16f-7b7a-4a53-a5d4-ea540b57e690"
+#> [1] "eff41a9c-c8ed-4a0b-80ef-e458c74a4925"
 ```
 
 At any time, you can tweak the `llm_object`:
@@ -90,8 +90,8 @@ An agent can provide the answer to a prompt using the `invoke` method:
 
 ``` r
 polar_bear_researcher$invoke("Are polar bears dangerous for humans?")
-#> Yes, polar bears are dangerous to humans as they are powerful predators and can
-#> attack if threatened or hungry.
+#> Yes, polar bears can be dangerous to humans as they are powerful predators and 
+#> may attack if threatened or hungry.
 ```
 
 You can also retrieve a list that displays the history of the agent:
@@ -119,21 +119,21 @@ polar_bear_researcher$messages
 #> [1] "assistant"
 #> 
 #> [[3]]$content
-#> Yes, polar bears are dangerous to humans as they are powerful predators and can
-#> attack if threatened or hungry.
+#> Yes, polar bears can be dangerous to humans as they are powerful predators and 
+#> may attack if threatened or hungry.
 ```
 
 Or the `ellmer` way:
 
 ``` r
 polar_bear_researcher$llm_object
-#> <Chat OpenAI/gpt-4.1-mini turns=3 tokens=43/21 $0.00>
+#> <Chat OpenAI/gpt-4.1-mini turns=3 tokens=43/22 $0.00>
 #> ── system [0] ──────────────────────────────────────────────────────────────────
 #> You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max.
 #> ── user [43] ───────────────────────────────────────────────────────────────────
 #> Are polar bears dangerous for humans?
-#> ── assistant [21] ──────────────────────────────────────────────────────────────
-#> Yes, polar bears are dangerous to humans as they are powerful predators and can attack if threatened or hungry.
+#> ── assistant [22] ──────────────────────────────────────────────────────────────
+#> Yes, polar bears can be dangerous to humans as they are powerful predators and may attack if threatened or hungry.
 ```
 
 ### Creating a multi-agents orchestraction
@@ -180,11 +180,12 @@ Next, we need to assign the Agents to `LeadAgent`, we do it as follows:
 
 ``` r
 lead_agent$register_agents(c(researcher, summarizer, translator))
+#> ✔ Agent(s) successfully registered.
 lead_agent$agents
 #> [[1]]
 #> <Agent>
 #>   Public:
-#>     agent_id: b56e3c42-fbfc-4ae6-9eac-52a64ac369d7
+#>     agent_id: cd07e59b-4171-424a-9aef-e8cdc53b95b3
 #>     broadcast_history: list
 #>     clone: function (deep = FALSE) 
 #>     initialize: function (name, instruction, llm_object) 
@@ -203,7 +204,7 @@ lead_agent$agents
 #> [[2]]
 #> <Agent>
 #>   Public:
-#>     agent_id: efd3639d-8e21-498f-bf76-c2896aaffeda
+#>     agent_id: e49ab00e-074b-459c-a496-5f66e452b233
 #>     broadcast_history: list
 #>     clone: function (deep = FALSE) 
 #>     initialize: function (name, instruction, llm_object) 
@@ -222,7 +223,7 @@ lead_agent$agents
 #> [[3]]
 #> <Agent>
 #>   Public:
-#>     agent_id: 47739289-8bd5-4db5-97c6-d45707f25417
+#>     agent_id: 505d92af-47ad-4855-b119-c8823e5dea20
 #>     broadcast_history: list
 #>     clone: function (deep = FALSE) 
 #>     initialize: function (name, instruction, llm_object) 
@@ -247,10 +248,11 @@ you can do it as follows:
 prompt_to_execute <- "Tell me about the economic situation in Algeria, summarize it in 3 bullet points, then translate it into German."
 
 plan <- lead_agent$generate_plan(prompt_to_execute)
+#> ✔ Plan successfully generated.
 plan
 #> [[1]]
 #> [[1]]$agent_id
-#> b56e3c42-fbfc-4ae6-9eac-52a64ac369d7
+#> cd07e59b-4171-424a-9aef-e8cdc53b95b3
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
@@ -262,12 +264,12 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[1]]$prompt
-#> [1] "Gather the latest data and information on the economic situation in Algeria, including key indicators such as GDP, inflation, and major economic sectors."
+#> [1] "Research and gather up-to-date information on the economic situation in Algeria, including key indicators such as GDP growth, main industries, and challenges."
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> efd3639d-8e21-498f-bf76-c2896aaffeda
+#> e49ab00e-074b-459c-a496-5f66e452b233
 #> 
 #> [[2]]$agent_name
 #> [1] "summarizer"
@@ -279,12 +281,12 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[2]]$prompt
-#> [1] "Summarize the gathered information into 3 concise bullet points highlighting the main aspects of Algeria's economic situation."
+#> [1] "Summarize the gathered information into 3 clear and concise bullet points in English."
 #> 
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> 47739289-8bd5-4db5-97c6-d45707f25417
+#> 505d92af-47ad-4855-b119-c8823e5dea20
 #> 
 #> [[3]]$agent_name
 #> [1] "translator"
@@ -296,7 +298,7 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[3]]$prompt
-#> [1] "Translate the 3 bullet points summary into German accurately."
+#> [1] "Translate the 3 bullet points from English into German accurately."
 ```
 
 Now, in order now to execute the workflow, we just need to call the
@@ -309,12 +311,12 @@ response <- lead_agent$invoke("Tell me about the economic situation in Algeria, 
 
 ``` r
 response
-#> - Das BIP Algeriens beträgt etwa 170 Milliarden US-Dollar mit einer 
-#> Wachstumsrate von 2-3 % Anfang 2024.
-#> - Die Inflation ist moderat und wird auf etwa 4-5 % geschätzt.
-#> - Die Wirtschaft wird hauptsächlich von Kohlenwasserstoffen getragen, die über 
-#> 90 % der Exporte und 30-40 % des BIP ausmachen, wobei die Landwirtschaft und 
-#> der Bausektor zunehmend an Bedeutung gewinnen.
+#> - Das BIP-Wachstum Algeriens ist moderat, mit einer jährlichen Prognose von 2-3
+#> %, hauptsächlich getrieben durch Öl- und Gasexporte.  
+#> - Die wichtigsten Industriezweige sind Kohlenwasserstoffe, Landwirtschaft und 
+#> verarbeitende Industrie.  
+#> - Zu den Hauptproblemen gehören die wirtschaftliche Diversifizierung, hohe 
+#> Arbeitslosigkeit und die Abhängigkeit von volatilen Energiepreisen.
 ```
 
 If you want to inspect the multi-agents orchestration, you have access
@@ -324,7 +326,7 @@ to the `agents_interaction` object:
 lead_agent$agents_interaction
 #> [[1]]
 #> [[1]]$agent_id
-#> b56e3c42-fbfc-4ae6-9eac-52a64ac369d7
+#> cd07e59b-4171-424a-9aef-e8cdc53b95b3
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
@@ -336,14 +338,14 @@ lead_agent$agents_interaction
 #> [1] "OpenAI"
 #> 
 #> [[1]]$prompt
-#> [1] "Gather the latest data and information on the economic situation in Algeria, including key indicators such as GDP, inflation, and major economic sectors."
+#> [1] "Research and gather up-to-date information on the economic situation in Algeria, including key indicators such as GDP growth, main industries, and challenges."
 #> 
 #> [[1]]$response
-#> As of early 2024, Algeria's GDP is around $170 billion, with an estimated 
-#> growth rate of 2-3%. Inflation is moderate at about 4-5%. The economy is 
-#> heavily reliant on hydrocarbons, which constitute over 90% of exports and 
-#> around 30-40% of GDP, alongside growing sectors like agriculture and 
-#> construction.
+#> As of early 2024, Algeria's GDP growth is moderate, projected around 2-3% 
+#> annually, driven by oil and gas exports which dominate its economy. Key 
+#> industries include hydrocarbons, agriculture, and manufacturing, while 
+#> challenges involve economic diversification, high unemployment, and reliance on
+#> volatile energy prices.
 #> 
 #> [[1]]$edited_by_hitl
 #> [1] FALSE
@@ -351,7 +353,7 @@ lead_agent$agents_interaction
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> efd3639d-8e21-498f-bf76-c2896aaffeda
+#> e49ab00e-074b-459c-a496-5f66e452b233
 #> 
 #> [[2]]$agent_name
 #> [1] "summarizer"
@@ -363,15 +365,14 @@ lead_agent$agents_interaction
 #> [1] "OpenAI"
 #> 
 #> [[2]]$prompt
-#> [1] "Summarize the gathered information into 3 concise bullet points highlighting the main aspects of Algeria's economic situation."
+#> [1] "Summarize the gathered information into 3 clear and concise bullet points in English."
 #> 
 #> [[2]]$response
-#> - Algeria's GDP stands at approximately $170 billion with a growth rate of 2-3%
-#> as of early 2024.
-#> - Inflation is moderate, estimated between 4-5%.
-#> - The economy is primarily driven by hydrocarbons, accounting for over 90% of 
-#> exports and 30-40% of GDP, with emerging contributions from agriculture and 
-#> construction sectors.
+#> - Algeria's GDP growth is moderate, projected at 2-3% annually, primarily 
+#> driven by oil and gas exports.
+#> - The main industries are hydrocarbons, agriculture, and manufacturing.
+#> - Key challenges include economic diversification, high unemployment, and 
+#> dependence on volatile energy prices.
 #> 
 #> [[2]]$edited_by_hitl
 #> [1] FALSE
@@ -379,7 +380,7 @@ lead_agent$agents_interaction
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> 47739289-8bd5-4db5-97c6-d45707f25417
+#> 505d92af-47ad-4855-b119-c8823e5dea20
 #> 
 #> [[3]]$agent_name
 #> [1] "translator"
@@ -391,15 +392,15 @@ lead_agent$agents_interaction
 #> [1] "OpenAI"
 #> 
 #> [[3]]$prompt
-#> [1] "Translate the 3 bullet points summary into German accurately."
+#> [1] "Translate the 3 bullet points from English into German accurately."
 #> 
 #> [[3]]$response
-#> - Das BIP Algeriens beträgt etwa 170 Milliarden US-Dollar mit einer 
-#> Wachstumsrate von 2-3 % Anfang 2024.
-#> - Die Inflation ist moderat und wird auf etwa 4-5 % geschätzt.
-#> - Die Wirtschaft wird hauptsächlich von Kohlenwasserstoffen getragen, die über 
-#> 90 % der Exporte und 30-40 % des BIP ausmachen, wobei die Landwirtschaft und 
-#> der Bausektor zunehmend an Bedeutung gewinnen.
+#> - Das BIP-Wachstum Algeriens ist moderat, mit einer jährlichen Prognose von 2-3
+#> %, hauptsächlich getrieben durch Öl- und Gasexporte.  
+#> - Die wichtigsten Industriezweige sind Kohlenwasserstoffe, Landwirtschaft und 
+#> verarbeitende Industrie.  
+#> - Zu den Hauptproblemen gehören die wirtschaftliche Diversifizierung, hohe 
+#> Arbeitslosigkeit und die Abhängigkeit von volatilen Energiepreisen.
 #> 
 #> [[3]]$edited_by_hitl
 #> [1] FALSE
@@ -449,13 +450,14 @@ openai_4_1_nano_agent <- Agent$new(
 
 lead_agent$clear_agents() # removing previous agents
 lead_agent$register_agents(c(openai_4_1_agent, openai_4_1_nano_agent))
+#> ✔ Agent(s) successfully registered.
 ```
 
 ``` r
 lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to sing when running under the rain? how about a flower?")
 #> [[1]]
 #> [[1]]$agent_id
-#> [1] "48a82b28-e46e-4029-be9b-58759084f9ee"
+#> [1] "351c00a2-7f73-4762-8d5a-fc514ebac035"
 #> 
 #> [[1]]$agent_name
 #> [1] "openai_4_1_agent"
@@ -467,14 +469,14 @@ lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to si
 #> [1] "gpt-4.1"
 #> 
 #> [[1]]$response
-#> If you were Algerian, you might enjoy singing "Ya Rayah" while running under 
-#> the rain, and if you were a flower, perhaps you'd "hum" to the rhythm of the 
-#> soft raindrops instead.
+#> If you were Algerian, you might sing "Ya Rayah" while running under the rain, 
+#> and if you were a flower, you might "hum" to the rain itself, enjoying its 
+#> nourishing touch.
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> [1] "e48b9419-1801-4f85-a8c8-8f4b6d8432d6"
+#> [1] "0e3ea130-c315-4ba5-ba35-8d768caefa38"
 #> 
 #> [[2]]$agent_name
 #> [1] "openai_4_1_nano_agent"
@@ -486,8 +488,8 @@ lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to si
 #> [1] "gpt-4.1-nano"
 #> 
 #> [[2]]$response
-#> You might enjoy singing "Ya Rayah" by Rachid Taha when running under the rain 
-#> and "Lalla Fatma" when admiring a flower.
+#> You might enjoy singing "Aziza" by Cheb Khaled when running under the rain, and
+#> "Lily of the Valley" when thinking of a flower.
 ```
 
 You can also access the history of the `broadcasting` using the
@@ -502,7 +504,7 @@ lead_agent$broadcast_history
 #> [[1]]$responses
 #> [[1]]$responses[[1]]
 #> [[1]]$responses[[1]]$agent_id
-#> [1] "48a82b28-e46e-4029-be9b-58759084f9ee"
+#> [1] "351c00a2-7f73-4762-8d5a-fc514ebac035"
 #> 
 #> [[1]]$responses[[1]]$agent_name
 #> [1] "openai_4_1_agent"
@@ -514,14 +516,14 @@ lead_agent$broadcast_history
 #> [1] "gpt-4.1"
 #> 
 #> [[1]]$responses[[1]]$response
-#> If you were Algerian, you might enjoy singing "Ya Rayah" while running under 
-#> the rain, and if you were a flower, perhaps you'd "hum" to the rhythm of the 
-#> soft raindrops instead.
+#> If you were Algerian, you might sing "Ya Rayah" while running under the rain, 
+#> and if you were a flower, you might "hum" to the rain itself, enjoying its 
+#> nourishing touch.
 #> 
 #> 
 #> [[1]]$responses[[2]]
 #> [[1]]$responses[[2]]$agent_id
-#> [1] "e48b9419-1801-4f85-a8c8-8f4b6d8432d6"
+#> [1] "0e3ea130-c315-4ba5-ba35-8d768caefa38"
 #> 
 #> [[1]]$responses[[2]]$agent_name
 #> [1] "openai_4_1_nano_agent"
@@ -533,8 +535,74 @@ lead_agent$broadcast_history
 #> [1] "gpt-4.1-nano"
 #> 
 #> [[1]]$responses[[2]]$response
-#> You might enjoy singing "Ya Rayah" by Rachid Taha when running under the rain 
-#> and "Lalla Fatma" when admiring a flower.
+#> You might enjoy singing "Aziza" by Cheb Khaled when running under the rain, and
+#> "Lily of the Valley" when thinking of a flower.
+```
+
+## Tool specification
+
+As mentioned previously, an `Agent` is an extension of an `ellmer`
+object. As such, you can define a tool that will be used, the exact same
+way as in `ellmer`. Suppose, we want to get the weather in `Algiers`
+through a function (Tool). Let’s first create the `Agents`:
+
+``` r
+openai_llm_object <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"), 
+  echo = "none"
+)
+
+assistant <- Agent$new(
+  name = "assistant",
+  instruction = "You are an AI assistant that answers question. Do not answer with more than 1 sentence.",
+  llm_object = openai_llm_object
+)
+
+weather_assistant <- Agent$new(
+  name = "weather_assistant",
+  instruction = "You role is to provide weather assistance.",
+  llm_object = openai_llm_object
+)
+```
+
+Now, let’s define the `tool` that we’ll be using, using `ellmer` it’s
+quite straightforward:
+
+``` r
+get_weather_in_algiers <- ellmer::tool(
+  function() {
+    "35 degrees Celcius, it's sunny and there's no precipitation."
+  },
+  name = "get_weather_in_algiers",
+  description = "Provide the current weather in Algiers, Algeria."
+)
+```
+
+Our `tool` defined, the next step is to register it within the suitable
+`Agent`, in our case, the `weather_assistant` `Agent`:
+
+``` r
+weather_assistant$llm_object$register_tool(get_weather_in_algiers)
+```
+
+That’s it, now the last step is to create the `LeadAgent`, register the
+`Agents` that we need and call the `invoke` method:
+
+``` r
+lead_agent <- LeadAgent$new(
+  name = "Leader", 
+  llm_object = openai_llm_object
+)
+
+lead_agent$register_agents(c(assistant, weather_assistant))
+#> ✔ Agent(s) successfully registered.
+
+lead_agent$invoke(
+  "Tell me about the economic situation in Algeria, then tell me how's the weather in Algiers?"
+)
+#> The weather in Algiers right now is hot and sunny, with a temperature of 35°C 
+#> and no rain.
 ```
 
 ## Code of Conduct

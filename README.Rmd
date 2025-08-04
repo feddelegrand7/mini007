@@ -187,7 +187,6 @@ If you want to compare several `LLM` models, the `LeadAgent` provides a `broadca
 
 Let's go through an example: 
 
-
 ```{r}
 openai_4_1 <- ellmer::chat(
   name = "openai/gpt-4.1",
@@ -232,6 +231,64 @@ You can also access the history of the `broadcasting` using the `broadcast_histo
 lead_agent$broadcast_history
 ```
 
+
+## Tool specification 
+
+As mentioned previously, an `Agent` is an extension of an `ellmer` object. As such, you can define a tool that will be used, the exact same way as in `ellmer`. Suppose, we want to get the weather in `Algiers` through a function (Tool). Let's first create the `Agents`: 
+
+
+```{r}
+openai_llm_object <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"), 
+  echo = "none"
+)
+
+assistant <- Agent$new(
+  name = "assistant",
+  instruction = "You are an AI assistant that answers question. Do not answer with more than 1 sentence.",
+  llm_object = openai_llm_object
+)
+
+weather_assistant <- Agent$new(
+  name = "weather_assistant",
+  instruction = "You role is to provide weather assistance.",
+  llm_object = openai_llm_object
+)
+```
+
+Now, let's define the `tool` that we'll be using, using `ellmer` it's quite straightforward: 
+
+```{r}
+get_weather_in_algiers <- ellmer::tool(
+  function() {
+    "35 degrees Celcius, it's sunny and there's no precipitation."
+  },
+  name = "get_weather_in_algiers",
+  description = "Provide the current weather in Algiers, Algeria."
+)
+```
+
+Our `tool` defined, the next step is to register it within the suitable `Agent`, in our case, the `weather_assistant` `Agent`: 
+
+```{r}
+weather_assistant$llm_object$register_tool(get_weather_in_algiers)
+```
+
+That's it, now the last step is to create the `LeadAgent`, register the `Agents` that we need and call the `invoke` method:  
+
+```{r}
+lead_agent <- LeadAgent$new(
+  name = "Leader", 
+  llm_object = openai_llm_object
+)
+
+lead_agent$register_agents(c(assistant, weather_assistant))
+
+lead_agent$invoke(
+  "Tell me about the economic situation in Algeria, then tell me how's the weather in Algiers?"
+)
+```
 
 ## Code of Conduct
 
