@@ -10,7 +10,6 @@
 #' @importFrom R6 R6Class
 #' @importFrom uuid UUIDgenerate
 #' @importFrom checkmate assert_string assert_flag
-#' @importFrom ellmer chat_openai
 #' @export
 Agent <- R6::R6Class(
   classname = "Agent",
