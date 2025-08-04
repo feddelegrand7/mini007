@@ -184,6 +184,8 @@ LeadAgent <- R6::R6Class(
         self$agents[[length_agents + i]] <- agent
       }
 
+      cli::cli_alert_success("Agent(s) successfully registered.")
+
       return(invisible(NULL))
 
     },
@@ -312,6 +314,8 @@ LeadAgent <- R6::R6Class(
         )
       })
 
+      cli::cli_alert_success("Plan successfully generated.")
+
       self$plan <- plan
 
       return(plan)
@@ -355,6 +359,12 @@ LeadAgent <- R6::R6Class(
     set_hitl = function(steps) {
       checkmate::assert_integerish(steps, lower = 1, any.missing = FALSE)
       self$hitl_steps <- unique(as.integer(steps))
+
+      steps_chr <- as.character(steps)
+      steps_chr <- toString(steps_chr)
+
+      cli::cli_alert_success("HITL successfully set at step(s) {steps_chr}.")
+
     }
   ),
 
