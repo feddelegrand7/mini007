@@ -9,7 +9,8 @@
 #'
 #' @importFrom R6 R6Class
 #' @importFrom uuid UUIDgenerate
-#' @importFrom checkmate assert_string assert_flag
+#' @importFrom checkmate assert_string assert_flag assert_character assert_integerish
+#' @importFrom cli cli_abort cli_alert_success cli_alert_warning cli_alert_info cli_rule cli_text cli_ul
 #' @export
 Agent <- R6::R6Class(
   classname = "Agent",
@@ -453,7 +454,7 @@ LeadAgent <- R6::R6Class(
       }
 
       if (answer == "2") {
-        new_response <- readline("✏️ Enter edited response: ")
+        new_response <- readline("(->) Enter edited response: ")
         step$response <- new_response
         step$edited_by_hitl <- TRUE
         cli::cli_alert_success("Response updated.")
