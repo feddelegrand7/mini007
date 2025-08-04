@@ -27,7 +27,6 @@ Each `agent` is an extension of an `ellmer` object. `mini007` relies heavily on 
 - A normal `Agent` containing a name and an instruction, 
 - and a `LeadAgent` which will take a complex prompt, split it, assign to the adequate agents and retrieve the response. 
 
-
 #### Highlights
 
 🧠 Memory and identity for each agent via `uuid` and message history.
@@ -55,8 +54,6 @@ library(mini007)
 
 
 An Agent is built upon an LLM object created by the `ellmer` package, in the following examples, we'll work with the `OpenAI` models, however you can use any model/combination of models you want: 
-
-
 
 ```{r}
 # no need to provide the system prompt, it will be set when creating the
