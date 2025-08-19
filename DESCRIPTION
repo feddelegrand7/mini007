@@ -1,12 +1,15 @@
 Package: mini007
 Type: Package
-Title: Lightweight Framework for Building Multi-Agents LLM Sequential Orchestration Processes
+Title: Lightweight Framework for Building Multi-Agent Large Language Model Sequential Orchestration Processes
 Version: 0.1.0
-Author: Mohamed El Fodil Ihaddaden
-Maintainer: Mohamed El Fodil Ihaddaden <ihaddaden.fodeil@gmail.com>
-Description: Provides tools for creating stateful LLM agents using R6 classes and
-    the 'ellmer' package. Tracks prompts, messages, and agent metadata for 
-    reproducible, multi-turn LLM sessions.
+Authors@R: 
+    person(given = c("Mohamed", "El", "Fodil"),
+           family = "Ihaddaden",
+           role = c("aut", "cre"),
+           email = "ihaddaden.fodeil@gmail.com")
+Description: Provides tools for creating agents with persistent state using 
+    R6 classes and the 'ellmer' package. Tracks prompts, messages, and agent 
+    metadata for reproducible, multi-turn large language model sessions.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
