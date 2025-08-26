@@ -8,7 +8,7 @@ Authors@R:
            role = c("aut", "cre"),
            email = "ihaddaden.fodeil@gmail.com")
 Description: Provides tools for creating agents with persistent state using 
-    R6 classes <https://cran.r-project.org/package=r6> and the 'ellmer' 
+    R6 classes <https://cran.r-project.org/package=R6> and the 'ellmer' 
     package <https://cran.r-project.org/package=ellmer>. Tracks prompts, 
     messages, and agent metadata for reproducible, multi-turn large language 
     model sessions.
