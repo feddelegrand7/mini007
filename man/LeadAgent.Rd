@@ -45,13 +45,20 @@ executing them with `invoke()`, and storing the results in the `agents_interacti
   )
  researcher <- Agent$new(
    name = "researcher",
-   instruction = "You are a research assistant. Your job is to answer factual questions with detailed and accurate information. Do not answer with more than 2 lines",
+   instruction = paste0(
+   "You are a research assistant. ",
+   "Your job is to answer factual questions with detailed and accurate information. ",
+   "Do not answer with more than 2 lines"
+   ),
    llm_object = openai_4_1_mini
  )
 
  summarizer <- Agent$new(
    name = "summarizer",
-   instruction = "You are agent designed to summarise a give text into 3 distinct bullet points.",
+   instruction = paste0(
+   "You are an agent designed to summarise ",
+   "a given text into 3 distinct bullet points."
+   ),
    llm_object = openai_4_1_mini
  )
 
@@ -86,13 +93,17 @@ executing them with `invoke()`, and storing the results in the `agents_interacti
   )
  researcher <- Agent$new(
    name = "researcher",
-   instruction = "You are a research assistant. Your job is to answer factual questions with detailed and accurate information. Do not answer with more than 2 lines",
+   instruction = paste0(
+   "You are a research assistant. ",
+   "Your job is to answer factual questions with detailed and accurate information. ",
+   "Do not answer with more than 2 lines"
+   ),
    llm_object = openai_4_1_mini
  )
 
  summarizer <- Agent$new(
    name = "summarizer",
-   instruction = "You are agent designed to summarise a give text into 3 distinct bullet points.",
+   instruction = "You are agent designed to summarise a given text into 3 distinct bullet points.",
    llm_object = openai_4_1_mini
  )
 
@@ -133,13 +144,17 @@ executing them with `invoke()`, and storing the results in the `agents_interacti
   )
  researcher <- Agent$new(
    name = "researcher",
-   instruction = "You are a research assistant. Your job is to answer factual questions with detailed and accurate information. Do not answer with more than 2 lines",
+   instruction = paste0(
+   "You are a research assistant. ",
+   "Your job is to answer factual questions with detailed and accurate information. ",
+   "Do not answer with more than 2 lines"
+   ),
    llm_object = openai_4_1_mini
  )
 
  summarizer <- Agent$new(
    name = "summarizer",
-   instruction = "You are agent designed to summarise a give text into 3 distinct bullet points.",
+   instruction = "You are agent designed to summarise a given text into 3 distinct bullet points.",
    llm_object = openai_4_1_mini
  )
 
@@ -171,13 +186,17 @@ executing them with `invoke()`, and storing the results in the `agents_interacti
   )
  researcher <- Agent$new(
    name = "researcher",
-   instruction = "You are a research assistant. Your job is to answer factual questions with detailed and accurate information. Do not answer with more than 2 lines",
+   instruction = paste0(
+   "You are a research assistant. ",
+   "Your job is to answer factual questions with detailed ",
+   "and accurate information. Do not answer with more than 2 lines"
+   ),
    llm_object = openai_4_1_mini
  )
 
  summarizer <- Agent$new(
    name = "summarizer",
-   instruction = "You are agent designed to summarise a give text into 3 distinct bullet points.",
+   instruction = "You are agent designed to summarise a given text into 3 distinct bullet points.",
    llm_object = openai_4_1_mini
  )
 
@@ -215,13 +234,16 @@ executing them with `invoke()`, and storing the results in the `agents_interacti
   )
  researcher <- Agent$new(
    name = "researcher",
-   instruction = "You are a research assistant. Your job is to answer factual questions with detailed and accurate information. Do not answer with more than 2 lines",
+   instruction = paste0(
+   "You are a research assistant. Your job is to answer factual questions ",
+   "with detailed and accurate information. Do not answer with more than 2 lines"
+   ),
    llm_object = openai_4_1_mini
  )
 
  summarizer <- Agent$new(
    name = "summarizer",
-   instruction = "You are agent designed to summarise a give text into 3 distinct bullet points.",
+   instruction = "You are agent designed to summarise a given text into 3 distinct bullet points.",
    llm_object = openai_4_1_mini
  )
 
@@ -308,13 +330,20 @@ lead_agent$broadcast(
   )
  researcher <- Agent$new(
    name = "researcher",
-   instruction = "You are a research assistant. Your job is to answer factual questions with detailed and accurate information. Do not answer with more than 2 lines",
+   instruction = paste0(
+    "You are a research assistant. ",
+    "Your job is to answer factual questions with detailed and accurate information. ",
+    "Do not answer with more than 2 lines"
+   ),
    llm_object = openai_4_1_mini
  )
 
  summarizer <- Agent$new(
    name = "summarizer",
-   instruction = "You are agent designed to summarise a give text into 3 distinct bullet points.",
+   instruction = paste0(
+   "You are agent designed to summarise a give text ",
+   "into 3 distinct bullet points."
+   ),
    llm_object = openai_4_1_mini
  )
 
@@ -436,13 +465,20 @@ Clear out the registered Agents
   )
  researcher <- Agent$new(
    name = "researcher",
-   instruction = "You are a research assistant. Your job is to answer factual questions with detailed and accurate information. Do not answer with more than 2 lines",
+   instruction = paste0(
+   "You are a research assistant. ",
+   "Your job is to answer factual questions with detailed and accurate information. ",
+   "Do not answer with more than 2 lines"
+   ),
    llm_object = openai_4_1_mini
  )
 
  summarizer <- Agent$new(
    name = "summarizer",
-   instruction = "You are agent designed to summarise a give text into 3 distinct bullet points.",
+   instruction = paste0(
+   "You are an agent designed to summarise ",
+   "a given text into 3 distinct bullet points."
+   ),
    llm_object = openai_4_1_mini
  )
 
@@ -496,13 +532,17 @@ Remove registered agents by IDs
   )
  researcher <- Agent$new(
    name = "researcher",
-   instruction = "You are a research assistant. Your job is to answer factual questions with detailed and accurate information. Do not answer with more than 2 lines",
+   instruction = paste0(
+   "You are a research assistant. ",
+   "Your job is to answer factual questions with detailed and accurate information. ",
+   "Do not answer with more than 2 lines"
+   ),
    llm_object = openai_4_1_mini
  )
 
  summarizer <- Agent$new(
    name = "summarizer",
-   instruction = "You are agent designed to summarise a give text into 3 distinct bullet points.",
+   instruction = "You are agent designed to summarise a given text into 3 distinct bullet points.",
    llm_object = openai_4_1_mini
  )
 
@@ -562,13 +602,17 @@ Register one or more agents for delegation.
   )
  researcher <- Agent$new(
    name = "researcher",
-   instruction = "You are a research assistant. Your job is to answer factual questions with detailed and accurate information. Do not answer with more than 2 lines",
+   instruction = paste0(
+   "You are a research assistant. ",
+   "Your job is to answer factual questions with detailed and accurate information. ",
+   "Do not answer with more than 2 lines"
+   ),
    llm_object = openai_4_1_mini
  )
 
  summarizer <- Agent$new(
    name = "summarizer",
-   instruction = "You are agent designed to summarise a give text into 3 distinct bullet points.",
+   instruction = "You are agent designed to summarise a given text into 3 distinct bullet points.",
    llm_object = openai_4_1_mini
  )
 
@@ -642,13 +686,17 @@ The final response (from the last agent in the sequence).
   )
  researcher <- Agent$new(
    name = "researcher",
-   instruction = "You are a research assistant. Your job is to answer factual questions with detailed and accurate information. Do not answer with more than 2 lines",
+   instruction = paste0(
+   "You are a research assistant. ",
+   "Your job is to answer factual questions with detailed ",
+   "and accurate information. Do not answer with more than 2 lines"
+   ),
    llm_object = openai_4_1_mini
  )
 
  summarizer <- Agent$new(
    name = "summarizer",
-   instruction = "You are agent designed to summarise a give text into 3 distinct bullet points.",
+   instruction = "You are agent designed to summarise a given text into 3 distinct bullet points.",
    llm_object = openai_4_1_mini
  )
 
@@ -709,13 +757,16 @@ A list of lists containing agent_id, agent_name, model_name, model_provider, and
   )
  researcher <- Agent$new(
    name = "researcher",
-   instruction = "You are a research assistant. Your job is to answer factual questions with detailed and accurate information. Do not answer with more than 2 lines",
+   instruction = paste0(
+   "You are a research assistant. Your job is to answer factual questions ",
+   "with detailed and accurate information. Do not answer with more than 2 lines"
+   ),
    llm_object = openai_4_1_mini
  )
 
  summarizer <- Agent$new(
    name = "summarizer",
-   instruction = "You are agent designed to summarise a give text into 3 distinct bullet points.",
+   instruction = "You are agent designed to summarise a given text into 3 distinct bullet points.",
    llm_object = openai_4_1_mini
  )
 
@@ -847,13 +898,20 @@ A list of responses from all agents.+
   )
  researcher <- Agent$new(
    name = "researcher",
-   instruction = "You are a research assistant. Your job is to answer factual questions with detailed and accurate information. Do not answer with more than 2 lines",
+   instruction = paste0(
+    "You are a research assistant. ",
+    "Your job is to answer factual questions with detailed and accurate information. ",
+    "Do not answer with more than 2 lines"
+   ),
    llm_object = openai_4_1_mini
  )
 
  summarizer <- Agent$new(
    name = "summarizer",
-   instruction = "You are agent designed to summarise a give text into 3 distinct bullet points.",
+   instruction = paste0(
+   "You are agent designed to summarise a give text ",
+   "into 3 distinct bullet points."
+   ),
    llm_object = openai_4_1_mini
  )
 

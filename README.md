@@ -74,7 +74,7 @@ Each created Agent has an `agent_id` (among other meta information):
 
 ``` r
 polar_bear_researcher$agent_id
-#> [1] "eff41a9c-c8ed-4a0b-80ef-e458c74a4925"
+#> [1] "ea8564be-e312-4c56-a187-7cdf8927286f"
 ```
 
 At any time, you can tweak the `llm_object`:
@@ -185,7 +185,7 @@ lead_agent$agents
 #> [[1]]
 #> <Agent>
 #>   Public:
-#>     agent_id: cd07e59b-4171-424a-9aef-e8cdc53b95b3
+#>     agent_id: 68f595e3-45d5-4e11-a40f-5c5163393487
 #>     broadcast_history: list
 #>     clone: function (deep = FALSE) 
 #>     initialize: function (name, instruction, llm_object) 
@@ -204,7 +204,7 @@ lead_agent$agents
 #> [[2]]
 #> <Agent>
 #>   Public:
-#>     agent_id: e49ab00e-074b-459c-a496-5f66e452b233
+#>     agent_id: 4df4da63-2e4b-48a7-a6b3-f76dbf649a2b
 #>     broadcast_history: list
 #>     clone: function (deep = FALSE) 
 #>     initialize: function (name, instruction, llm_object) 
@@ -223,7 +223,7 @@ lead_agent$agents
 #> [[3]]
 #> <Agent>
 #>   Public:
-#>     agent_id: 505d92af-47ad-4855-b119-c8823e5dea20
+#>     agent_id: 5195c82e-3fa7-4922-9516-90a54583f61a
 #>     broadcast_history: list
 #>     clone: function (deep = FALSE) 
 #>     initialize: function (name, instruction, llm_object) 
@@ -252,7 +252,7 @@ plan <- lead_agent$generate_plan(prompt_to_execute)
 plan
 #> [[1]]
 #> [[1]]$agent_id
-#> cd07e59b-4171-424a-9aef-e8cdc53b95b3
+#> 68f595e3-45d5-4e11-a40f-5c5163393487
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
@@ -264,12 +264,12 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[1]]$prompt
-#> [1] "Research and gather up-to-date information on the economic situation in Algeria, including key indicators such as GDP growth, main industries, and challenges."
+#> [1] "Research the current economic situation in Algeria, including GDP growth, key industries, and challenges."
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> e49ab00e-074b-459c-a496-5f66e452b233
+#> 4df4da63-2e4b-48a7-a6b3-f76dbf649a2b
 #> 
 #> [[2]]$agent_name
 #> [1] "summarizer"
@@ -286,7 +286,7 @@ plan
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> 505d92af-47ad-4855-b119-c8823e5dea20
+#> 5195c82e-3fa7-4922-9516-90a54583f61a
 #> 
 #> [[3]]$agent_name
 #> [1] "translator"
@@ -298,7 +298,7 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[3]]$prompt
-#> [1] "Translate the 3 bullet points from English into German accurately."
+#> [1] "Translate the 3 bullet points from English into German."
 ```
 
 Now, in order now to execute the workflow, we just need to call the
@@ -311,12 +311,13 @@ response <- lead_agent$invoke("Tell me about the economic situation in Algeria, 
 
 ``` r
 response
-#> - Das BIP-Wachstum Algeriens ist moderat, mit einer jährlichen Prognose von 2-3
-#> %, hauptsächlich getrieben durch Öl- und Gasexporte.  
-#> - Die wichtigsten Industriezweige sind Kohlenwasserstoffe, Landwirtschaft und 
-#> verarbeitende Industrie.  
-#> - Zu den Hauptproblemen gehören die wirtschaftliche Diversifizierung, hohe 
-#> Arbeitslosigkeit und die Abhängigkeit von volatilen Energiepreisen.
+#> - Die algerische Wirtschaft wächst moderat um 2-3 % jährlich, hauptsächlich 
+#> angetrieben durch den Öl- und Gassektor.
+#> - Wichtige Industriezweige sind Energie, Landwirtschaft und verarbeitendes 
+#> Gewerbe, wobei Kohlenwasserstoffe den Export und die Staatseinnahmen 
+#> dominieren.
+#> - Wirtschaftliche Herausforderungen umfassen die Abhängigkeit von den volatilen
+#> Ölpreisen, den Bedarf an Diversifizierung und hohe Arbeitslosenquoten.
 ```
 
 If you want to inspect the multi-agents orchestration, you have access
@@ -326,7 +327,7 @@ to the `agents_interaction` object:
 lead_agent$agents_interaction
 #> [[1]]
 #> [[1]]$agent_id
-#> cd07e59b-4171-424a-9aef-e8cdc53b95b3
+#> 68f595e3-45d5-4e11-a40f-5c5163393487
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
@@ -338,14 +339,14 @@ lead_agent$agents_interaction
 #> [1] "OpenAI"
 #> 
 #> [[1]]$prompt
-#> [1] "Research and gather up-to-date information on the economic situation in Algeria, including key indicators such as GDP growth, main industries, and challenges."
+#> [1] "Research the current economic situation in Algeria, including GDP growth, key industries, and challenges."
 #> 
 #> [[1]]$response
-#> As of early 2024, Algeria's GDP growth is moderate, projected around 2-3% 
-#> annually, driven by oil and gas exports which dominate its economy. Key 
-#> industries include hydrocarbons, agriculture, and manufacturing, while 
-#> challenges involve economic diversification, high unemployment, and reliance on
-#> volatile energy prices.
+#> As of 2024, Algeria's GDP growth is moderate, around 2-3% annually, driven by 
+#> hydrocarbons (oil and gas) which dominate exports and government revenue. Key 
+#> industries include energy, agriculture, and manufacturing; challenges involve 
+#> economic diversification, high unemployment, and reliance on volatile oil 
+#> prices.
 #> 
 #> [[1]]$edited_by_hitl
 #> [1] FALSE
@@ -353,7 +354,7 @@ lead_agent$agents_interaction
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> e49ab00e-074b-459c-a496-5f66e452b233
+#> 4df4da63-2e4b-48a7-a6b3-f76dbf649a2b
 #> 
 #> [[2]]$agent_name
 #> [1] "summarizer"
@@ -368,11 +369,12 @@ lead_agent$agents_interaction
 #> [1] "Summarize the gathered information into 3 clear and concise bullet points in English."
 #> 
 #> [[2]]$response
-#> - Algeria's GDP growth is moderate, projected at 2-3% annually, primarily 
-#> driven by oil and gas exports.
-#> - The main industries are hydrocarbons, agriculture, and manufacturing.
-#> - Key challenges include economic diversification, high unemployment, and 
-#> dependence on volatile energy prices.
+#> - Algeria's economy grows moderately at 2-3% annually, primarily fueled by the 
+#> oil and gas sector.
+#> - Major industries include energy, agriculture, and manufacturing, with 
+#> hydrocarbons leading exports and government income.
+#> - Economic challenges encompass dependence on volatile oil prices, the need for
+#> diversification, and high unemployment rates.
 #> 
 #> [[2]]$edited_by_hitl
 #> [1] FALSE
@@ -380,7 +382,7 @@ lead_agent$agents_interaction
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> 505d92af-47ad-4855-b119-c8823e5dea20
+#> 5195c82e-3fa7-4922-9516-90a54583f61a
 #> 
 #> [[3]]$agent_name
 #> [1] "translator"
@@ -392,15 +394,16 @@ lead_agent$agents_interaction
 #> [1] "OpenAI"
 #> 
 #> [[3]]$prompt
-#> [1] "Translate the 3 bullet points from English into German accurately."
+#> [1] "Translate the 3 bullet points from English into German."
 #> 
 #> [[3]]$response
-#> - Das BIP-Wachstum Algeriens ist moderat, mit einer jährlichen Prognose von 2-3
-#> %, hauptsächlich getrieben durch Öl- und Gasexporte.  
-#> - Die wichtigsten Industriezweige sind Kohlenwasserstoffe, Landwirtschaft und 
-#> verarbeitende Industrie.  
-#> - Zu den Hauptproblemen gehören die wirtschaftliche Diversifizierung, hohe 
-#> Arbeitslosigkeit und die Abhängigkeit von volatilen Energiepreisen.
+#> - Die algerische Wirtschaft wächst moderat um 2-3 % jährlich, hauptsächlich 
+#> angetrieben durch den Öl- und Gassektor.
+#> - Wichtige Industriezweige sind Energie, Landwirtschaft und verarbeitendes 
+#> Gewerbe, wobei Kohlenwasserstoffe den Export und die Staatseinnahmen 
+#> dominieren.
+#> - Wirtschaftliche Herausforderungen umfassen die Abhängigkeit von den volatilen
+#> Ölpreisen, den Bedarf an Diversifizierung und hohe Arbeitslosenquoten.
 #> 
 #> [[3]]$edited_by_hitl
 #> [1] FALSE
@@ -457,7 +460,7 @@ lead_agent$register_agents(c(openai_4_1_agent, openai_4_1_nano_agent))
 lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to sing when running under the rain? how about a flower?")
 #> [[1]]
 #> [[1]]$agent_id
-#> [1] "351c00a2-7f73-4762-8d5a-fc514ebac035"
+#> [1] "2dac58a4-3ea2-4454-8369-0dea0b3785f8"
 #> 
 #> [[1]]$agent_name
 #> [1] "openai_4_1_agent"
@@ -469,14 +472,13 @@ lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to si
 #> [1] "gpt-4.1"
 #> 
 #> [[1]]$response
-#> If you were Algerian, you might sing "Ya Rayah" while running under the rain, 
-#> and if you were a flower, you might "hum" to the rain itself, enjoying its 
-#> nourishing touch.
+#> As an Algerian, you might sing "Ya Rayah" when running under the rain, while a 
+#> flower would "sing" by blooming quietly into the fresh droplets.
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> [1] "0e3ea130-c315-4ba5-ba35-8d768caefa38"
+#> [1] "705fa37b-3ba3-4b35-8410-34cd432c162a"
 #> 
 #> [[2]]$agent_name
 #> [1] "openai_4_1_nano_agent"
@@ -488,8 +490,8 @@ lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to si
 #> [1] "gpt-4.1-nano"
 #> 
 #> [[2]]$response
-#> You might enjoy singing "Aziza" by Cheb Khaled when running under the rain, and
-#> "Lily of the Valley" when thinking of a flower.
+#> You might enjoy singing "Ayoune" by Cheb Khaled when running under the rain, 
+#> and "Oud El Dahab" by Khaled or a traditional Algerian song for a flower.
 ```
 
 You can also access the history of the `broadcasting` using the
@@ -504,7 +506,7 @@ lead_agent$broadcast_history
 #> [[1]]$responses
 #> [[1]]$responses[[1]]
 #> [[1]]$responses[[1]]$agent_id
-#> [1] "351c00a2-7f73-4762-8d5a-fc514ebac035"
+#> [1] "2dac58a4-3ea2-4454-8369-0dea0b3785f8"
 #> 
 #> [[1]]$responses[[1]]$agent_name
 #> [1] "openai_4_1_agent"
@@ -516,14 +518,13 @@ lead_agent$broadcast_history
 #> [1] "gpt-4.1"
 #> 
 #> [[1]]$responses[[1]]$response
-#> If you were Algerian, you might sing "Ya Rayah" while running under the rain, 
-#> and if you were a flower, you might "hum" to the rain itself, enjoying its 
-#> nourishing touch.
+#> As an Algerian, you might sing "Ya Rayah" when running under the rain, while a 
+#> flower would "sing" by blooming quietly into the fresh droplets.
 #> 
 #> 
 #> [[1]]$responses[[2]]
 #> [[1]]$responses[[2]]$agent_id
-#> [1] "0e3ea130-c315-4ba5-ba35-8d768caefa38"
+#> [1] "705fa37b-3ba3-4b35-8410-34cd432c162a"
 #> 
 #> [[1]]$responses[[2]]$agent_name
 #> [1] "openai_4_1_nano_agent"
@@ -535,8 +536,8 @@ lead_agent$broadcast_history
 #> [1] "gpt-4.1-nano"
 #> 
 #> [[1]]$responses[[2]]$response
-#> You might enjoy singing "Aziza" by Cheb Khaled when running under the rain, and
-#> "Lily of the Valley" when thinking of a flower.
+#> You might enjoy singing "Ayoune" by Cheb Khaled when running under the rain, 
+#> and "Oud El Dahab" by Khaled or a traditional Algerian song for a flower.
 ```
 
 ## Tool specification
@@ -601,8 +602,9 @@ lead_agent$register_agents(c(assistant, weather_assistant))
 lead_agent$invoke(
   "Tell me about the economic situation in Algeria, then tell me how's the weather in Algiers?"
 )
-#> The weather in Algiers right now is hot and sunny, with a temperature of 35°C 
-#> and no rain.
+#> The current weather in Algiers is clear and sunny with a temperature of 35 
+#> degrees Celsius. There is no precipitation at the moment, indicating dry 
+#> conditions.
 ```
 
 ## Code of Conduct

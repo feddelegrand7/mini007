@@ -32,7 +32,10 @@ Agent <- R6::R6Class(
     #'
     #'   polar_bear_researcher <- Agent$new(
     #'     name = "POLAR BEAR RESEARCHER",
-    #'     instruction = "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max.",
+    #'     instruction = paste0(
+    #'     "You are an expert in polar bears, ",
+    #'     "you task is to collect information about polar bears. Answer in 1 sentence max."
+    #'     ),
     #'     llm_object = openai_4_1_mini
     #'   )
     #'
@@ -109,7 +112,9 @@ Agent <- R6::R6Class(
     #'@field model_provider The name of the entity providing the model (eg. OpenAI)
     model_provider = NULL,
     #'@field model_name The name of the model to be used (eg. gpt-4.1-mini)
-    model_name = NULL
+    model_name = NULL,
+    #'@field broadcast_history A list of all past broadcast interactions.
+    broadcast_history = list()
   ),
 
   private = list(
@@ -202,13 +207,20 @@ LeadAgent <- R6::R6Class(
     #'   )
     #'  researcher <- Agent$new(
     #'    name = "researcher",
-    #'    instruction = "You are a research assistant. Your job is to answer factual questions with detailed and accurate information. Do not answer with more than 2 lines",
+    #'    instruction = paste0(
+    #'    "You are a research assistant. ",
+    #'    "Your job is to answer factual questions with detailed and accurate information. ",
+    #'    "Do not answer with more than 2 lines"
+    #'    ),
     #'    llm_object = openai_4_1_mini
     #'  )
     #'
     #'  summarizer <- Agent$new(
     #'    name = "summarizer",
-    #'    instruction = "You are agent designed to summarise a give text into 3 distinct bullet points.",
+    #'    instruction = paste0(
+    #'    "You are an agent designed to summarise ",
+    #'    "a given text into 3 distinct bullet points."
+    #'    ),
     #'    llm_object = openai_4_1_mini
     #'  )
     #'
@@ -247,13 +259,17 @@ LeadAgent <- R6::R6Class(
     #'   )
     #'  researcher <- Agent$new(
     #'    name = "researcher",
-    #'    instruction = "You are a research assistant. Your job is to answer factual questions with detailed and accurate information. Do not answer with more than 2 lines",
+    #'    instruction = paste0(
+    #'    "You are a research assistant. ",
+    #'    "Your job is to answer factual questions with detailed and accurate information. ",
+    #'    "Do not answer with more than 2 lines"
+    #'    ),
     #'    llm_object = openai_4_1_mini
     #'  )
     #'
     #'  summarizer <- Agent$new(
     #'    name = "summarizer",
-    #'    instruction = "You are agent designed to summarise a give text into 3 distinct bullet points.",
+    #'    instruction = "You are agent designed to summarise a given text into 3 distinct bullet points.",
     #'    llm_object = openai_4_1_mini
     #'  )
     #'
@@ -300,13 +316,17 @@ LeadAgent <- R6::R6Class(
     #'   )
     #'  researcher <- Agent$new(
     #'    name = "researcher",
-    #'    instruction = "You are a research assistant. Your job is to answer factual questions with detailed and accurate information. Do not answer with more than 2 lines",
+    #'    instruction = paste0(
+    #'    "You are a research assistant. ",
+    #'    "Your job is to answer factual questions with detailed and accurate information. ",
+    #'    "Do not answer with more than 2 lines"
+    #'    ),
     #'    llm_object = openai_4_1_mini
     #'  )
     #'
     #'  summarizer <- Agent$new(
     #'    name = "summarizer",
-    #'    instruction = "You are agent designed to summarise a give text into 3 distinct bullet points.",
+    #'    instruction = "You are agent designed to summarise a given text into 3 distinct bullet points.",
     #'    llm_object = openai_4_1_mini
     #'  )
     #'
@@ -389,13 +409,17 @@ LeadAgent <- R6::R6Class(
     #'   )
     #'  researcher <- Agent$new(
     #'    name = "researcher",
-    #'    instruction = "You are a research assistant. Your job is to answer factual questions with detailed and accurate information. Do not answer with more than 2 lines",
+    #'    instruction = paste0(
+    #'    "You are a research assistant. ",
+    #'    "Your job is to answer factual questions with detailed ",
+    #'    "and accurate information. Do not answer with more than 2 lines"
+    #'    ),
     #'    llm_object = openai_4_1_mini
     #'  )
     #'
     #'  summarizer <- Agent$new(
     #'    name = "summarizer",
-    #'    instruction = "You are agent designed to summarise a give text into 3 distinct bullet points.",
+    #'    instruction = "You are agent designed to summarise a given text into 3 distinct bullet points.",
     #'    llm_object = openai_4_1_mini
     #'  )
     #'
@@ -483,13 +507,16 @@ LeadAgent <- R6::R6Class(
     #'   )
     #'  researcher <- Agent$new(
     #'    name = "researcher",
-    #'    instruction = "You are a research assistant. Your job is to answer factual questions with detailed and accurate information. Do not answer with more than 2 lines",
+    #'    instruction = paste0(
+    #'    "You are a research assistant. Your job is to answer factual questions ",
+    #'    "with detailed and accurate information. Do not answer with more than 2 lines"
+    #'    ),
     #'    llm_object = openai_4_1_mini
     #'  )
     #'
     #'  summarizer <- Agent$new(
     #'    name = "summarizer",
-    #'    instruction = "You are agent designed to summarise a give text into 3 distinct bullet points.",
+    #'    instruction = "You are agent designed to summarise a given text into 3 distinct bullet points.",
     #'    llm_object = openai_4_1_mini
     #'  )
     #'
@@ -631,13 +658,20 @@ LeadAgent <- R6::R6Class(
     #'   )
     #'  researcher <- Agent$new(
     #'    name = "researcher",
-    #'    instruction = "You are a research assistant. Your job is to answer factual questions with detailed and accurate information. Do not answer with more than 2 lines",
+    #'    instruction = paste0(
+    #'     "You are a research assistant. ",
+    #'     "Your job is to answer factual questions with detailed and accurate information. ",
+    #'     "Do not answer with more than 2 lines"
+    #'    ),
     #'    llm_object = openai_4_1_mini
     #'  )
     #'
     #'  summarizer <- Agent$new(
     #'    name = "summarizer",
-    #'    instruction = "You are agent designed to summarise a give text into 3 distinct bullet points.",
+    #'    instruction = paste0(
+    #'    "You are agent designed to summarise a give text ",
+    #'    "into 3 distinct bullet points."
+    #'    ),
     #'    llm_object = openai_4_1_mini
     #'  )
     #'

@@ -24,7 +24,10 @@ Each agent maintains its own message history and unique identity.
 
   polar_bear_researcher <- Agent$new(
     name = "POLAR BEAR RESEARCHER",
-    instruction = "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max.",
+    instruction = paste0(
+    "You are an expert in polar bears, ",
+    "you task is to collect information about polar bears. Answer in 1 sentence max."
+    ),
     llm_object = openai_4_1_mini
   )
 
@@ -65,6 +68,8 @@ agent$invoke("Continue this sentence: 1 2 3 viva")
 \item{\code{model_provider}}{The name of the entity providing the model (eg. OpenAI)}
 
 \item{\code{model_name}}{The name of the model to be used (eg. gpt-4.1-mini)}
+
+\item{\code{broadcast_history}}{A list of all past broadcast interactions.}
 }
 \if{html}{\out{</div>}}
 }
@@ -107,7 +112,10 @@ Initializes a new Agent with a specific role/instruction.
 
   polar_bear_researcher <- Agent$new(
     name = "POLAR BEAR RESEARCHER",
-    instruction = "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max.",
+    instruction = paste0(
+    "You are an expert in polar bears, ",
+    "you task is to collect information about polar bears. Answer in 1 sentence max."
+    ),
     llm_object = openai_4_1_mini
   )
 
