@@ -12,12 +12,41 @@ Each agent maintains its own message history and unique identity.
 \examples{
 
 ## ------------------------------------------------
+## Method `Agent$new`
+## ------------------------------------------------
+
+  # An API KEY is required in order to invoke the Agent
+  openai_4_1_mini <- ellmer::chat(
+    name = "openai/gpt-4.1-mini",
+    api_key = Sys.getenv("OPENAI_API_KEY"),
+    echo = "none"
+  )
+
+  polar_bear_researcher <- Agent$new(
+    name = "POLAR BEAR RESEARCHER",
+    instruction = "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max.",
+    llm_object = openai_4_1_mini
+  )
+
+
+
+## ------------------------------------------------
 ## Method `Agent$invoke`
 ## ------------------------------------------------
 
 \dontrun{
-agent <- Agent$new("translator", "Translate to French.", "gpt-4.1-mini")
-agent$invoke("Hello world")
+# An API KEY is required in order to invoke the Agent
+openai_4_1_mini <- ellmer::chat(
+    name = "openai/gpt-4.1-mini",
+    api_key = Sys.getenv("OPENAI_API_KEY"),
+    echo = "none"
+)
+agent <- Agent$new(
+ name = "translator",
+ instruction = "You are an Algerian citizen",
+ llm_object = openai_4_1_mini
+)
+agent$invoke("Continue this sentence: 1 2 3 viva")
 }
 }
 \section{Public fields}{
@@ -36,8 +65,6 @@ agent$invoke("Hello world")
 \item{\code{model_provider}}{The name of the entity providing the model (eg. OpenAI)}
 
 \item{\code{model_name}}{The name of the model to be used (eg. gpt-4.1-mini)}
-
-\item{\code{broadcast_history}}{A list of all past broadcast interactions.}
 }
 \if{html}{\out{</div>}}
 }
@@ -69,6 +96,27 @@ Initializes a new Agent with a specific role/instruction.
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{  # An API KEY is required in order to invoke the Agent
+  openai_4_1_mini <- ellmer::chat(
+    name = "openai/gpt-4.1-mini",
+    api_key = Sys.getenv("OPENAI_API_KEY"),
+    echo = "none"
+  )
+
+  polar_bear_researcher <- Agent$new(
+    name = "POLAR BEAR RESEARCHER",
+    instruction = "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max.",
+    llm_object = openai_4_1_mini
+  )
+
+
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Agent-invoke"></a>}}
@@ -92,8 +140,18 @@ The LLM-generated response as a character string.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{\dontrun{
-agent <- Agent$new("translator", "Translate to French.", "gpt-4.1-mini")
-agent$invoke("Hello world")
+# An API KEY is required in order to invoke the Agent
+openai_4_1_mini <- ellmer::chat(
+    name = "openai/gpt-4.1-mini",
+    api_key = Sys.getenv("OPENAI_API_KEY"),
+    echo = "none"
+)
+agent <- Agent$new(
+ name = "translator",
+ instruction = "You are an Algerian citizen",
+ llm_object = openai_4_1_mini
+)
+agent$invoke("Continue this sentence: 1 2 3 viva")
 }
 }
 \if{html}{\out{</div>}}

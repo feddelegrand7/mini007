@@ -1,6 +1,6 @@
 Package: mini007
 Type: Package
-Title: Lightweight Framework for Building Multi-Agent Large Language Model Sequential Orchestration Processes
+Title: Lightweight Framework for Multi-Agent LLM Orchestration
 Version: 0.1.0
 Authors@R: 
     person(given = c("Mohamed", "El", "Fodil"),
@@ -8,8 +8,10 @@ Authors@R:
            role = c("aut", "cre"),
            email = "ihaddaden.fodeil@gmail.com")
 Description: Provides tools for creating agents with persistent state using 
-    R6 classes and the 'ellmer' package. Tracks prompts, messages, and agent 
-    metadata for reproducible, multi-turn large language model sessions.
+    R6 classes <https://cran.r-project.org/package=r6> and the 'ellmer' 
+    package <https://cran.r-project.org/package=ellmer>. Tracks prompts, 
+    messages, and agent metadata for reproducible, multi-turn large language 
+    model sessions.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

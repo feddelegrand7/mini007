@@ -22,7 +22,21 @@ Agent <- R6::R6Class(
     #' @param name A short identifier for the agent (e.g. `"translator"`).
     #' @param instruction The system prompt that defines the agent's role.
     #' @param llm_object The LLM object generate by ellmer (eg. output of ellmer::chat_openai)
-
+    #' @examples
+    #'   # An API KEY is required in order to invoke the Agent
+    #'   openai_4_1_mini <- ellmer::chat(
+    #'     name = "openai/gpt-4.1-mini",
+    #'     api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'     echo = "none"
+    #'   )
+    #'
+    #'   polar_bear_researcher <- Agent$new(
+    #'     name = "POLAR BEAR RESEARCHER",
+    #'     instruction = "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max.",
+    #'     llm_object = openai_4_1_mini
+    #'   )
+    #'
+    #'
 
     initialize = function(name, instruction, llm_object) {
 
@@ -59,8 +73,18 @@ Agent <- R6::R6Class(
     #' @param prompt A character string prompt for the agent to respond to.
     #' @return The LLM-generated response as a character string.
     #' @examples \dontrun{
-    #' agent <- Agent$new("translator", "Translate to French.", "gpt-4.1-mini")
-    #' agent$invoke("Hello world")
+    #' # An API KEY is required in order to invoke the Agent
+    #' openai_4_1_mini <- ellmer::chat(
+    #'     name = "openai/gpt-4.1-mini",
+    #'     api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'     echo = "none"
+    #' )
+    #' agent <- Agent$new(
+    #'  name = "translator",
+    #'  instruction = "You are an Algerian citizen",
+    #'  llm_object = openai_4_1_mini
+    #' )
+    #' agent$invoke("Continue this sentence: 1 2 3 viva")
     #' }
     invoke = function(prompt) {
 
@@ -85,10 +109,7 @@ Agent <- R6::R6Class(
     #'@field model_provider The name of the entity providing the model (eg. OpenAI)
     model_provider = NULL,
     #'@field model_name The name of the model to be used (eg. gpt-4.1-mini)
-    model_name = NULL,
-    #' @field broadcast_history A list of all past broadcast interactions.
-    broadcast_history = list()
-
+    model_name = NULL
   ),
 
   private = list(
@@ -142,7 +163,21 @@ LeadAgent <- R6::R6Class(
     #' Initializes the LeadAgent with a built-in task-decomposition prompt.
     #' @param name A short name for the coordinator (e.g. `"lead"`).
     #' @param llm_object The LLM object generate by ellmer (eg. output of ellmer::chat_openai)
-
+    #' @examples
+    #'
+    #'   # An API KEY is required in order to invoke the agents
+    #'   openai_4_1_mini <- ellmer::chat(
+    #'     name = "openai/gpt-4.1-mini",
+    #'     api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'     echo = "none"
+    #'   )
+    #'
+    #'  lead_agent <- LeadAgent$new(
+    #'   name = "Leader",
+    #'   llm_object = openai_4_1_mini
+    #'  )
+    #'
+    #'
     initialize = function(name, llm_object) {
 
       system_prompt <- paste0(
@@ -158,6 +193,44 @@ LeadAgent <- R6::R6Class(
 
     #' @description
     #' Clear out the registered Agents
+    #' @examples
+    #'   # An API KEY is required in order to invoke the agents
+    #'   openai_4_1_mini <- ellmer::chat(
+    #'     name = "openai/gpt-4.1-mini",
+    #'     api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'     echo = "none"
+    #'   )
+    #'  researcher <- Agent$new(
+    #'    name = "researcher",
+    #'    instruction = "You are a research assistant. Your job is to answer factual questions with detailed and accurate information. Do not answer with more than 2 lines",
+    #'    llm_object = openai_4_1_mini
+    #'  )
+    #'
+    #'  summarizer <- Agent$new(
+    #'    name = "summarizer",
+    #'    instruction = "You are agent designed to summarise a give text into 3 distinct bullet points.",
+    #'    llm_object = openai_4_1_mini
+    #'  )
+    #'
+    #'  translator <- Agent$new(
+    #'    name = "translator",
+    #'    instruction = "Your role is to translate a text from English to German",
+    #'    llm_object = openai_4_1_mini
+    #'  )
+    #'  lead_agent <- LeadAgent$new(
+    #'   name = "Leader",
+    #'   llm_object = openai_4_1_mini
+    #'  )
+    #'
+    #'  lead_agent$register_agents(c(researcher, summarizer, translator))
+    #'
+    #'  lead_agent$agents
+    #'
+    #'  lead_agent$clear_agents()
+    #'
+    #'  lead_agent$agents
+    #'
+
     clear_agents = function() {
       self$agents <- list()
     },
@@ -165,6 +238,49 @@ LeadAgent <- R6::R6Class(
     #' @description
     #' Remove registered agents by IDs
     #' @param agent_ids The Agent ID to remove from the registered Agents
+    #' @examples
+    #'   # An API KEY is required in order to invoke the agents
+    #'   openai_4_1_mini <- ellmer::chat(
+    #'     name = "openai/gpt-4.1-mini",
+    #'     api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'     echo = "none"
+    #'   )
+    #'  researcher <- Agent$new(
+    #'    name = "researcher",
+    #'    instruction = "You are a research assistant. Your job is to answer factual questions with detailed and accurate information. Do not answer with more than 2 lines",
+    #'    llm_object = openai_4_1_mini
+    #'  )
+    #'
+    #'  summarizer <- Agent$new(
+    #'    name = "summarizer",
+    #'    instruction = "You are agent designed to summarise a give text into 3 distinct bullet points.",
+    #'    llm_object = openai_4_1_mini
+    #'  )
+    #'
+    #'  translator <- Agent$new(
+    #'    name = "translator",
+    #'    instruction = "Your role is to translate a text from English to German",
+    #'    llm_object = openai_4_1_mini
+    #'  )
+    #'
+    #'
+    #'  lead_agent <- LeadAgent$new(
+    #'   name = "Leader",
+    #'   llm_object = openai_4_1_mini
+    #'  )
+    #'
+    #'  lead_agent$register_agents(c(researcher, summarizer, translator))
+    #'
+    #'  lead_agent$agents
+    #'
+    #'  # deleting the translator agent
+    #'
+    #'  id_translator_agent <- translator$agent_id
+    #'
+    #'  lead_agent$remove_agents(id_translator_agent)
+    #'
+    #'  lead_agent$agents
+    #'
     remove_agents = function(agent_ids) {
 
       checkmate::assert_character(agent_ids, any.missing = FALSE)
@@ -175,6 +291,39 @@ LeadAgent <- R6::R6Class(
     #' @description
     #' Register one or more agents for delegation.
     #' @param agents A vector of `Agent` objects to register.
+    #' @examples
+    #'   # An API KEY is required in order to invoke the agents
+    #'   openai_4_1_mini <- ellmer::chat(
+    #'     name = "openai/gpt-4.1-mini",
+    #'     api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'     echo = "none"
+    #'   )
+    #'  researcher <- Agent$new(
+    #'    name = "researcher",
+    #'    instruction = "You are a research assistant. Your job is to answer factual questions with detailed and accurate information. Do not answer with more than 2 lines",
+    #'    llm_object = openai_4_1_mini
+    #'  )
+    #'
+    #'  summarizer <- Agent$new(
+    #'    name = "summarizer",
+    #'    instruction = "You are agent designed to summarise a give text into 3 distinct bullet points.",
+    #'    llm_object = openai_4_1_mini
+    #'  )
+    #'
+    #'  translator <- Agent$new(
+    #'    name = "translator",
+    #'    instruction = "Your role is to translate a text from English to German",
+    #'    llm_object = openai_4_1_mini
+    #'  )
+    #'
+    #'  lead_agent <- LeadAgent$new(
+    #'   name = "Leader",
+    #'   llm_object = openai_4_1_mini
+    #'  )
+    #'
+    #'  lead_agent$register_agents(c(researcher, summarizer, translator))
+    #'
+    #'  lead_agent$agents
     register_agents = function(agents) {
 
       length_agents <- length(self$agents)
@@ -232,9 +381,43 @@ LeadAgent <- R6::R6Class(
     #' @param prompt The complex user instruction to process.
     #' @return The final response (from the last agent in the sequence).
     #' @examples \dontrun{
-    #' lead <- LeadAgent$new("lead", "gpt-4.1-mini")
-    #' lead$register_agents(list(agent1, agent2))
-    #' result <- lead$invoke("Summarize a topic and translate to German.")
+    #'  # An API KEY is required in order to invoke the agents
+    #'   openai_4_1_mini <- ellmer::chat(
+    #'     name = "openai/gpt-4.1-mini",
+    #'     api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'     echo = "none"
+    #'   )
+    #'  researcher <- Agent$new(
+    #'    name = "researcher",
+    #'    instruction = "You are a research assistant. Your job is to answer factual questions with detailed and accurate information. Do not answer with more than 2 lines",
+    #'    llm_object = openai_4_1_mini
+    #'  )
+    #'
+    #'  summarizer <- Agent$new(
+    #'    name = "summarizer",
+    #'    instruction = "You are agent designed to summarise a give text into 3 distinct bullet points.",
+    #'    llm_object = openai_4_1_mini
+    #'  )
+    #'
+    #'  translator <- Agent$new(
+    #'    name = "translator",
+    #'    instruction = "Your role is to translate a text from English to German",
+    #'    llm_object = openai_4_1_mini
+    #'  )
+    #'
+    #'  lead_agent <- LeadAgent$new(
+    #'   name = "Leader",
+    #'   llm_object = openai_4_1_mini
+    #'  )
+    #'
+    #'  lead_agent$register_agents(c(researcher, summarizer, translator))
+    #'
+    #'  lead_agent$invoke(
+    #'  paste0(
+    #'   "Describe the economic situation in Algeria in 3 sentences. ",
+    #'   "Answer in German"
+    #'   )
+    #'  )
     #' }
 
     invoke = function(prompt) {
@@ -277,7 +460,7 @@ LeadAgent <- R6::R6Class(
         step$edited_by_hitl <- FALSE
         self$agents_interaction[[i]] <- step
 
-        if (i %in% self$hitl_steps && !is.null(hitl_steps)) {
+        if (i %in% self$hitl_steps && !is.null(self$hitl_steps)) {
           private$.human_confirm(i)
         }
       }
@@ -291,6 +474,45 @@ LeadAgent <- R6::R6Class(
     #' It returns a structured list containing the subtask, the selected agent, and metadata.
     #' @param prompt A complex instruction to be broken into subtasks.
     #' @return A list of lists containing agent_id, agent_name, model_name, model_provider, and the assigned prompt.
+    #' @examples \dontrun{
+    #'  # An API KEY is required in order to invoke the agents
+    #'   openai_4_1_mini <- ellmer::chat(
+    #'     name = "openai/gpt-4.1-mini",
+    #'     api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'     echo = "none"
+    #'   )
+    #'  researcher <- Agent$new(
+    #'    name = "researcher",
+    #'    instruction = "You are a research assistant. Your job is to answer factual questions with detailed and accurate information. Do not answer with more than 2 lines",
+    #'    llm_object = openai_4_1_mini
+    #'  )
+    #'
+    #'  summarizer <- Agent$new(
+    #'    name = "summarizer",
+    #'    instruction = "You are agent designed to summarise a give text into 3 distinct bullet points.",
+    #'    llm_object = openai_4_1_mini
+    #'  )
+    #'
+    #'  translator <- Agent$new(
+    #'    name = "translator",
+    #'    instruction = "Your role is to translate a text from English to German",
+    #'    llm_object = openai_4_1_mini
+    #'  )
+    #'
+    #'  lead_agent <- LeadAgent$new(
+    #'   name = "Leader",
+    #'   llm_object = openai_4_1_mini
+    #'  )
+    #'
+    #'  lead_agent$register_agents(c(researcher, summarizer, translator))
+    #'
+    #'  lead_agent$generate_plan(
+    #'  paste0(
+    #'   "Describe the economic situation in Algeria in 3 sentences. ",
+    #'   "Answer in German"
+    #'   )
+    #'  )
+    #' }
     generate_plan = function(prompt) {
 
       if (length(self$agents) == 0) {
@@ -326,6 +548,50 @@ LeadAgent <- R6::R6Class(
     #' This does not affect the main agent orchestration logic or history.
     #' @param prompt A user prompt to send to all agents.
     #' @return A list of responses from all agents.
+    #' @examples \dontrun{
+    #'  # An API KEY is required in order to invoke the agents
+    #' openai_4_1_mini <- ellmer::chat(
+    #'     name = "openai/gpt-4.1-mini",
+    #'     api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'     echo = "none"
+    #'   )
+    #' openai_4_1 <- ellmer::chat(
+    #'   name = "openai/gpt-4.1",
+    #'   api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'   echo = "none"
+    #' )
+    #'
+    #' openai_4_1_agent <- Agent$new(
+    #'   name = "openai_4_1_agent",
+    #'   instruction = "You are an AI assistant. Answer in 1 sentence max.",
+    #'   llm_object = openai_4_1
+    #' )
+    #'
+    #' openai_4_1_nano <- ellmer::chat(
+    #'   name = "openai/gpt-4.1-nano",
+    #'   api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'   echo = "none"
+    #' )
+    #'
+    #' openai_4_1_nano_agent <- Agent$new(
+    #'   name = "openai_4_1_nano_agent",
+    #'   instruction = "You are an AI assistant. Answer in 1 sentence max.",
+    #'   llm_object = openai_4_1_nano
+    #'   )
+    #'
+    #'  lead_agent <- LeadAgent$new(
+    #'   name = "Leader",
+    #'   llm_object = openai_4_1_mini
+    #'  )
+    #'
+    #' lead_agent$register_agents(c(openai_4_1_agent, openai_4_1_nano_agent))
+    #' lead_agent$broadcast(
+    #'   prompt = paste0(
+    #'     "If I were Algerian, which song would I like to sing ",
+    #'     "when running under the rain? how about a flower?"
+    #'   )
+    #'   )
+    #' }
     broadcast = function(prompt) {
       checkmate::assert_string(prompt)
 
@@ -355,7 +621,53 @@ LeadAgent <- R6::R6Class(
     #' @description
     #' Set Human In The Loop (HITL) interaction at determined steps within the workflow
     #' @param steps At which steps the Human In The Loop is required?
-    #' @return A list of responses from all agents.
+    #' @return A list of responses from all agents.+
+    #' @examples \dontrun{
+    #'  # An API KEY is required in order to invoke the agents
+    #'   openai_4_1_mini <- ellmer::chat(
+    #'     name = "openai/gpt-4.1-mini",
+    #'     api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'     echo = "none"
+    #'   )
+    #'  researcher <- Agent$new(
+    #'    name = "researcher",
+    #'    instruction = "You are a research assistant. Your job is to answer factual questions with detailed and accurate information. Do not answer with more than 2 lines",
+    #'    llm_object = openai_4_1_mini
+    #'  )
+    #'
+    #'  summarizer <- Agent$new(
+    #'    name = "summarizer",
+    #'    instruction = "You are agent designed to summarise a give text into 3 distinct bullet points.",
+    #'    llm_object = openai_4_1_mini
+    #'  )
+    #'
+    #'  translator <- Agent$new(
+    #'    name = "translator",
+    #'    instruction = "Your role is to translate a text from English to German",
+    #'    llm_object = openai_4_1_mini
+    #'  )
+    #'
+    #'  lead_agent <- LeadAgent$new(
+    #'   name = "Leader",
+    #'   llm_object = openai_4_1_mini
+    #'  )
+    #'
+    #'  lead_agent$register_agents(c(researcher, summarizer, translator))
+    #'
+    #'  # setting a human in the loop in step 2
+    #'  lead_agent$set_hitl(1)
+    #'
+    #'  # The execution will stop at step 2 and a human will be able
+    #'  # to either accept the answer, modify it or stop the execution of
+    #'  # the workflow
+    #'
+    #'  lead_agent$invoke(
+    #'  paste0(
+    #'   "Describe the economic situation in Algeria in 3 sentences. ",
+    #'   "Answer in German"
+    #'   )
+    #'  )
+    #' }
     set_hitl = function(steps) {
       checkmate::assert_integerish(steps, lower = 1, any.missing = FALSE)
       self$hitl_steps <- unique(as.integer(steps))
