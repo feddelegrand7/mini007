@@ -1,6 +1,6 @@
 Package: mini007
 Type: Package
-Title: Lightweight Framework for Multi-Agent LLM Orchestration
+Title: Lightweight Framework for Orchestrating Multi-Agent Large Language Models
 Version: 0.1.0
 Authors@R: 
     person(given = c("Mohamed", "El", "Fodil"),

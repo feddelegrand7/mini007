@@ -9,3 +9,5 @@
 
 - I have added examples, whenever an example cannot be executed (because it needs an API KEY), I wrapped it inside a 'dontrun', the example would be executed otherwise.
 
+- fixing: R6 instead of r6 in the CRAN url.
+- fixing misspelled LLM in DESCRIPTION
