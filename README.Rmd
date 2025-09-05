@@ -16,7 +16,6 @@ knitr::opts_chunk$set(
 # mini007 <a><img src='man/figures/mini007cute.png' align="right" height="200" /></a>
 
 <!-- badges: start -->
-[![CRAN status](https://www.r-pkg.org/badges/version/mini007)](https://CRAN.R-project.org/package=mini007)
 <!-- badges: end -->
 
 `mini007` provides a lightweight and extensible framework for multi-agents orchestration processes capable of decomposing complex tasks and assigning them to specialized agents. 
@@ -38,12 +37,13 @@ Each `agent` is an extension of an `ellmer` object. `mini007` relies heavily on 
 
 🌐 Compatible with any chat model supported by `ellmer`.
 
-You can install the development version of `mini007` like so:
+🧑 Possibility to set a Human In The Loop (`HITL`) at various execution steps
+
+You can install `mini007` from `CRAN` with: 
 
 ```{r, eval=FALSE}
-devtools::install_github("feddelegrand7/mini007")
+install.packages("mini007")
 ```
-
 
 ```{r}
 library(mini007)
@@ -51,8 +51,6 @@ library(mini007)
 
 
 ### Creating an Agent
-
-
 
 An Agent is built upon an LLM object created by the `ellmer` package, in the following examples, we'll work with the `OpenAI` models, however you can use any model/combination of models you want: 
 
@@ -290,6 +288,29 @@ lead_agent$invoke(
   "Tell me about the economic situation in Algeria, then tell me how's the weather in Algiers?"
 )
 ```
+
+
+## Human In The Loop (HITL)
+
+When executing an LLM workflow that relies on many steps, you can set `Human In The Loop` (`HITL`) trigger that will check the model's response at a specific step. You can define a `HITL` trigger after defining a `LeadAgent` as follows:
+
+```{r}
+lead_agent <- LeadAgent$new(
+  name = "Leader", 
+  llm_object = openai_llm_object
+)
+
+lead_agent$set_hitl(steps = 1)
+
+lead_agent$hitl_steps
+```
+After setting the `HITL` to step 1, the workflow execution will pose and give the user 3 choices: 
+
+1. Continue the execution of the workflow as it is;
+2. Change manually the answer of the specified step and continue the execution of the workflow;
+3. Stop the execution of the workflow (hard error);
+
+Note that you can set a `HITL` at several steps, for example `lead_agent$set_hitl(steps = c(1, 2))` will set the `HITL` at step 1 and step 2. 
 
 ## Code of Conduct
 
