@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 # mini007 <a><img src='man/figures/mini007cute.png' align="right" height="200" /></a>
 
 <!-- badges: start -->
+[![CRAN status](https://www.r-pkg.org/badges/version/mini007)](https://CRAN.R-project.org/package=mini007)
 <!-- badges: end -->
 
 `mini007` provides a lightweight and extensible framework for multi-agents orchestration processes capable of decomposing complex tasks and assigning them to specialized agents. 
