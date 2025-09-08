@@ -1,4 +1,3 @@
-
 #' Agent: A General-Purpose LLM Agent
 #'
 #' @description
@@ -39,10 +38,7 @@ Agent <- R6::R6Class(
     #'     llm_object = openai_4_1_mini
     #'   )
     #'
-    #'
-
     initialize = function(name, instruction, llm_object) {
-
       checkmate::assert_string(name)
       checkmate::assert_string(instruction)
 
@@ -52,18 +48,15 @@ Agent <- R6::R6Class(
 
       self$name <- name
       self$instruction <- instruction
-
       self$llm_object <- llm_object$clone(deep = TRUE)
 
-      meta_data <-  self$llm_object$get_provider()
-
+      meta_data <- self$llm_object$get_provider()
       self$model_provider <- meta_data@name
-
       self$model_name <- meta_data@model
 
       self$llm_object$set_system_prompt(value = instruction)
 
-      self$messages <- list(
+      private$._messages <- list(
         list(role = "system", content = instruction)
       )
 
@@ -90,9 +83,7 @@ Agent <- R6::R6Class(
     #' agent$invoke("Continue this sentence: 1 2 3 viva")
     #' }
     invoke = function(prompt) {
-
       checkmate::assert_string(prompt)
-
       private$.add_user_message(prompt)
       response <- self$llm_object$chat(prompt)
       private$.add_assistant_message(response)
@@ -102,8 +93,7 @@ Agent <- R6::R6Class(
     #' @description
     #' Keep only the most recent `n` messages, discarding older ones.
     #' @param n Number of most recent messages to keep.
-    truncate_history = function(n = 5) {
-
+    truncate_messages_history = function(n = 5) {
       turns <- self$llm_object$get_turns(include_system_prompt = TRUE)
       total_turns <- length(turns)
 
@@ -118,7 +108,6 @@ Agent <- R6::R6Class(
       self$messages <- self$messages[(total_turns - n + 1):total_turns]
 
       cli::cli_alert_success("Conversation truncated to last {n} messages.")
-
     },
 
     #' @field name The agent's name.
@@ -127,8 +116,6 @@ Agent <- R6::R6Class(
     instruction = NULL,
     #' @field llm_object The underlying `ellmer::chat_openai` object.
     llm_object = NULL,
-    #' @field messages A list of past messages (system, user, assistant).
-    messages = NULL,
     #' @field agent_id A UUID uniquely identifying the agent.
     agent_id = NULL,
     #'@field model_provider The name of the entity providing the model (eg. OpenAI)
@@ -139,10 +126,38 @@ Agent <- R6::R6Class(
     broadcast_history = list()
   ),
 
-  private = list(
-    .add_message = function(message, type) {
+  active = list(
+    #' @field messages Public active binding for the conversation history.
+    #' Assignment is validated automatically.
+    messages = function(value) {
+      if (missing(value)) {
+        return(private$._messages)
+      }
 
-      self$messages[[length(self$messages) + 1]] <- list(
+      if (!is.list(value)) {
+        cli::cli_abort("messages must be a list of message objects")
+      }
+
+      for (msg in value) {
+        if (!is.list(msg) || !all(c("role", "content") %in% names(msg))) {
+          cli::cli_abort("Each message must be a list with 'role' and 'content'")
+        }
+        if (!msg$role %in% c("system", "user", "assistant")) {
+          cli::cli_abort(paste0("Invalid role: ", msg$role))
+        }
+      }
+
+      private$._messages <- value
+
+      private$.set_turns_from_messages()
+
+    }
+  ),
+
+  private = list(
+    ._messages = NULL,
+    .add_message = function(message, type) {
+      private$._messages[[length(private$._messages) + 1]] <- list(
         role = type,
         content = message
       )
@@ -154,6 +169,23 @@ Agent <- R6::R6Class(
 
     .add_user_message = function(message, type = "user") {
       private$.add_message(message, type)
+    },
+
+    .set_turns_from_messages = function() {
+
+      messages <- self$messages
+      turns <- list()
+
+      for (msg in messages) {
+        turn <- ellmer::Turn(
+          role = msg$role,
+          contents = list(ellmer::ContentText(msg$content))
+        )
+        turns <- append(turns, list(turn))
+      }
+
+      self$llm_object$set_turns(turns)
+
     }
   )
 )

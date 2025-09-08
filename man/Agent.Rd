@@ -32,7 +32,6 @@ Each agent maintains its own message history and unique identity.
   )
 
 
-
 ## ------------------------------------------------
 ## Method `Agent$invoke`
 ## ------------------------------------------------
@@ -61,8 +60,6 @@ agent$invoke("Continue this sentence: 1 2 3 viva")
 
 \item{\code{llm_object}}{The underlying `ellmer::chat_openai` object.}
 
-\item{\code{messages}}{A list of past messages (system, user, assistant).}
-
 \item{\code{agent_id}}{A UUID uniquely identifying the agent.}
 
 \item{\code{model_provider}}{The name of the entity providing the model (eg. OpenAI)}
@@ -73,12 +70,20 @@ agent$invoke("Continue this sentence: 1 2 3 viva")
 }
 \if{html}{\out{</div>}}
 }
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
+\describe{
+\item{\code{messages}}{Public active binding for the conversation history.
+Assignment is validated automatically.}
+}
+\if{html}{\out{</div>}}
+}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-Agent-new}{\code{Agent$new()}}
 \item \href{#method-Agent-invoke}{\code{Agent$invoke()}}
-\item \href{#method-Agent-truncate_history}{\code{Agent$truncate_history()}}
+\item \href{#method-Agent-truncate_messages_history}{\code{Agent$truncate_messages_history()}}
 \item \href{#method-Agent-clone}{\code{Agent$clone()}}
 }
 }
@@ -119,7 +124,6 @@ Initializes a new Agent with a specific role/instruction.
     ),
     llm_object = openai_4_1_mini
   )
-
 
 }
 \if{html}{\out{</div>}}
@@ -169,12 +173,12 @@ agent$invoke("Continue this sentence: 1 2 3 viva")
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Agent-truncate_history"></a>}}
-\if{latex}{\out{\hypertarget{method-Agent-truncate_history}{}}}
-\subsection{Method \code{truncate_history()}}{
+\if{html}{\out{<a id="method-Agent-truncate_messages_history"></a>}}
+\if{latex}{\out{\hypertarget{method-Agent-truncate_messages_history}{}}}
+\subsection{Method \code{truncate_messages_history()}}{
 Keep only the most recent `n` messages, discarding older ones.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Agent$truncate_history(n = 5)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Agent$truncate_messages_history(n = 5)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
