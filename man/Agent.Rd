@@ -78,6 +78,7 @@ agent$invoke("Continue this sentence: 1 2 3 viva")
 \itemize{
 \item \href{#method-Agent-new}{\code{Agent$new()}}
 \item \href{#method-Agent-invoke}{\code{Agent$invoke()}}
+\item \href{#method-Agent-truncate_history}{\code{Agent$truncate_history()}}
 \item \href{#method-Agent-clone}{\code{Agent$clone()}}
 }
 }
@@ -166,6 +167,23 @@ agent$invoke("Continue this sentence: 1 2 3 viva")
 
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Agent-truncate_history"></a>}}
+\if{latex}{\out{\hypertarget{method-Agent-truncate_history}{}}}
+\subsection{Method \code{truncate_history()}}{
+Keep only the most recent `n` messages, discarding older ones.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Agent$truncate_history(n = 5)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{n}}{Number of most recent messages to keep.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Agent-clone"></a>}}

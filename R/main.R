@@ -99,6 +99,28 @@ Agent <- R6::R6Class(
       return(response)
     },
 
+    #' @description
+    #' Keep only the most recent `n` messages, discarding older ones.
+    #' @param n Number of most recent messages to keep.
+    truncate_history = function(n = 5) {
+
+      turns <- self$llm_object$get_turns(include_system_prompt = TRUE)
+      total_turns <- length(turns)
+
+      if (total_turns <= n) {
+        cli::cli_alert_info("Nothing to truncate, history already short.")
+        return(invisible(NULL))
+      }
+
+      new_turns <- turns[(total_turns - n + 1):total_turns]
+      self$llm_object$set_turns(new_turns)
+
+      self$messages <- self$messages[(total_turns - n + 1):total_turns]
+
+      cli::cli_alert_success("Conversation truncated to last {n} messages.")
+
+    },
+
     #' @field name The agent's name.
     name = NULL,
     #' @field instruction The agent's role/system prompt.

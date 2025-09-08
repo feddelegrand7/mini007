@@ -406,6 +406,13 @@ lead_agent$broadcast(
 \item \href{#method-LeadAgent-clone}{\code{LeadAgent$clone()}}
 }
 }
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="truncate_history"><a href='../../mini007/html/Agent.html#method-Agent-truncate_history'><code>mini007::Agent$truncate_history()</code></a></span></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-LeadAgent-new"></a>}}
 \if{latex}{\out{\hypertarget{method-LeadAgent-new}{}}}
