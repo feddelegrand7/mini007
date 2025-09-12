@@ -5,6 +5,7 @@
 Adding the following new methods: 
 - `truncate_history()`
 - `update_instruction()`
+- `clear_and_summarise_messages()`
 
 
 

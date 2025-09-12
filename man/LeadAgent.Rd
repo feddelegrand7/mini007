@@ -409,7 +409,9 @@ lead_agent$broadcast(
 \if{html}{\out{
 <details open><summary>Inherited methods</summary>
 <ul>
+<li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="clear_and_summarise_messages"><a href='../../mini007/html/Agent.html#method-Agent-clear_and_summarise_messages'><code>mini007::Agent$clear_and_summarise_messages()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="truncate_messages_history"><a href='../../mini007/html/Agent.html#method-Agent-truncate_messages_history'><code>mini007::Agent$truncate_messages_history()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="update_instruction"><a href='../../mini007/html/Agent.html#method-Agent-update_instruction'><code>mini007::Agent$update_instruction()</code></a></span></li>
 </ul>
 </details>
 }}

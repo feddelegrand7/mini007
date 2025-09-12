@@ -108,6 +108,81 @@ Agent <- R6::R6Class(
       self$messages <- self$messages[(total_turns - n + 1):total_turns]
 
       cli::cli_alert_success("Conversation truncated to last {n} messages.")
+
+      invisible(self)
+
+    },
+
+    #' @description
+    #' Summarises the agent's conversation history into a concise form and appends it
+    #' to the system prompt. Unlike `update_instruction()`, this method does not override
+    #' the existing instruction but augments it with a summary for future context.
+    #'
+    #' After creating the summary, the method clears the conversation history and
+    #' retains only the updated system prompt. This ensures that subsequent interactions
+    #' start fresh but with the summary preserved as context.
+    #'
+    #' @examples \dontrun{
+    #'   # Requires an OpenAI-compatible LLM from `ellmer`
+    #'   openai_4_1_mini <- ellmer::chat(
+    #'     name = "openai/gpt-4.1-mini",
+    #'     api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'     echo = "none"
+    #'   )
+    #'
+    #'   agent <- Agent$new(
+    #'     name = "summariser",
+    #'     instruction = "You are a summarising assistant",
+    #'     llm_object = openai_4_1_mini
+    #'   )
+    #'
+    #'   agent$invoke("The quick brown fox jumps over the lazy dog.")
+    #'   agent$invoke("This is another example sentence.")
+    #'
+    #'   # Summarises and resets history
+    #'   agent$summarise_messages()
+    #'
+    #'   # Now only the system prompt (with summary) remains
+    #'   agent$messages
+    #' }
+
+    clear_and_summarise_messages = function() {
+
+      if (length(self$messages) <= 1) {
+        cli::cli_alert_info("No conversation history to summarise.")
+        return(invisible(NULL))
+      }
+
+      summary_prompt <- paste0(
+        "Summarise the following conversation history in a concise paragraph:\n\n",
+        paste(
+          vapply(self$messages, function(m) {
+            paste0(m$role, ": ", m$content)
+          }, character(1)),
+          collapse = " \n "
+        )
+      )
+
+      summary <- self$llm_object$chat(summary_prompt)
+
+      new_system_prompt <- paste(
+        self$instruction,
+        "\n\n--- Conversation Summary ---\n",
+        summary
+      )
+
+      self$llm_object$set_system_prompt(value = new_system_prompt)
+
+      private$._messages <- list(
+        list(role = "system", content = new_system_prompt)
+      )
+
+      private$.set_turns_from_messages()
+
+      cli::cli_alert_success("Conversation history summarised and appended to system prompt.")
+      cli::cli_alert_info("Summary: {substr(summary, 1, 100)}...")
+
+      invisible(self)
     },
 
     #' @description

@@ -50,6 +50,34 @@ agent <- Agent$new(
 )
 agent$invoke("Continue this sentence: 1 2 3 viva")
 }
+
+## ------------------------------------------------
+## Method `Agent$clear_and_summarise_messages`
+## ------------------------------------------------
+
+\dontrun{
+  # Requires an OpenAI-compatible LLM from `ellmer`
+  openai_4_1_mini <- ellmer::chat(
+    name = "openai/gpt-4.1-mini",
+    api_key = Sys.getenv("OPENAI_API_KEY"),
+    echo = "none"
+  )
+
+  agent <- Agent$new(
+    name = "summariser",
+    instruction = "You are a summarising assistant",
+    llm_object = openai_4_1_mini
+  )
+
+  agent$invoke("The quick brown fox jumps over the lazy dog.")
+  agent$invoke("This is another example sentence.")
+
+  # Summarises and resets history
+  agent$summarise_messages()
+
+  # Now only the system prompt (with summary) remains
+  agent$messages
+}
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -84,6 +112,8 @@ Assignment is validated automatically.}
 \item \href{#method-Agent-new}{\code{Agent$new()}}
 \item \href{#method-Agent-invoke}{\code{Agent$invoke()}}
 \item \href{#method-Agent-truncate_messages_history}{\code{Agent$truncate_messages_history()}}
+\item \href{#method-Agent-clear_and_summarise_messages}{\code{Agent$clear_and_summarise_messages()}}
+\item \href{#method-Agent-update_instruction}{\code{Agent$update_instruction()}}
 \item \href{#method-Agent-clone}{\code{Agent$clone()}}
 }
 }
@@ -185,6 +215,70 @@ Keep only the most recent `n` messages, discarding older ones.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{n}}{Number of most recent messages to keep.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Agent-clear_and_summarise_messages"></a>}}
+\if{latex}{\out{\hypertarget{method-Agent-clear_and_summarise_messages}{}}}
+\subsection{Method \code{clear_and_summarise_messages()}}{
+Summarises the agent's conversation history into a concise form and appends it
+to the system prompt. Unlike `update_instruction()`, this method does not override
+the existing instruction but augments it with a summary for future context.
+
+After creating the summary, the method clears the conversation history and
+retains only the updated system prompt. This ensures that subsequent interactions
+start fresh but with the summary preserved as context.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Agent$clear_and_summarise_messages()}\if{html}{\out{</div>}}
+}
+
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+  # Requires an OpenAI-compatible LLM from `ellmer`
+  openai_4_1_mini <- ellmer::chat(
+    name = "openai/gpt-4.1-mini",
+    api_key = Sys.getenv("OPENAI_API_KEY"),
+    echo = "none"
+  )
+
+  agent <- Agent$new(
+    name = "summariser",
+    instruction = "You are a summarising assistant",
+    llm_object = openai_4_1_mini
+  )
+
+  agent$invoke("The quick brown fox jumps over the lazy dog.")
+  agent$invoke("This is another example sentence.")
+
+  # Summarises and resets history
+  agent$summarise_messages()
+
+  # Now only the system prompt (with summary) remains
+  agent$messages
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Agent-update_instruction"></a>}}
+\if{latex}{\out{\hypertarget{method-Agent-update_instruction}{}}}
+\subsection{Method \code{update_instruction()}}{
+Update the system prompt/instruction
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Agent$update_instruction(new_instruction)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{new_instruction}}{New instruction to use. Not that the new instruction
+will override the old one}
 }
 \if{html}{\out{</div>}}
 }
