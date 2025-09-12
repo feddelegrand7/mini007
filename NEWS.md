@@ -4,6 +4,7 @@
 
 Adding the following new methods: 
 - `truncate_history()`
+- `update_instruction()`
 
 
 

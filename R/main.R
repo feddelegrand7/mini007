@@ -110,6 +110,28 @@ Agent <- R6::R6Class(
       cli::cli_alert_success("Conversation truncated to last {n} messages.")
     },
 
+    #' @description
+    #' Update the system prompt/instruction
+    #' @param new_instruction New instruction to use. Not that the new instruction
+    #' will override the old one
+    update_instruction = function(new_instruction) {
+
+      checkmate::assert_string(new_instruction)
+
+      old_instruction <- self$instruction
+      self$instruction <- new_instruction
+      self$llm_object$set_system_prompt(value = new_instruction)
+
+      private$._messages[[1]]$content <- new_instruction
+
+      cli::cli_alert_success("Instruction successfully updated")
+      cli::cli_alert_info("Old: {substr(old_instruction, 1, 50)}...")
+      cli::cli_alert_info("New: {substr(new_instruction, 1, 50)}...")
+
+      invisible(self)
+
+    },
+
     #' @field name The agent's name.
     name = NULL,
     #' @field instruction The agent's role/system prompt.
