@@ -862,6 +862,52 @@ LeadAgent <- R6::R6Class(
 
       cli::cli_alert_success("HITL successfully set at step(s) {steps_chr}.")
 
+    },
+
+    judge_and_chose_best_response = function(prompt) {
+
+      checkmate::assert_string(prompt)
+
+      if (length(self$agents) == 0) {
+        cli::cli_abort("No agents registered. Use `register_agents()` first.")
+      }
+
+      proposals <- lapply(self$agents, function(agent) {
+        resp <- agent$invoke(prompt)
+        list(
+          agent_id = agent$agent_id,
+          agent_name = agent$name,
+          response = resp
+        )
+      })
+
+      responses_summary <- paste(
+        vapply(proposals, function(x) {x$response}, character(1)),
+        collapse = "\n------------\n"
+      )
+
+      judge_prompt <- glue::glue(
+        "The following prompt was previously executed: {prompt}. ",
+        "We got back the following responses from several agents: ",
+        "Each response is separated by a ------------",
+        "\nResponses:\n\n",
+        "<<<<",
+        responses_summary,
+        ">>>>",
+        "\n",
+        "\nChoose the best response according to initial prompt.",
+        "\nReturn ONLY the final response text. Nothing else. Do not talk. Just return the best response"
+      )
+
+      result <- self$llm_object$chat(judge_prompt)
+
+      final_result <- list(
+        proposals = proposals,
+        chosen_response = result
+      )
+
+      return(final_result)
+
     }
   ),
 
