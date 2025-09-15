@@ -77,7 +77,7 @@ Each created Agent has an `agent_id` (among other meta information):
 
 ``` r
 polar_bear_researcher$agent_id
-#> [1] "4a0fd654-cb9e-41e3-b4f1-5cab40f21caf"
+#> [1] "3eb4b97b-f1eb-42e4-9c98-0f62befbb81e"
 ```
 
 At any time, you can tweak the `llm_object`:
@@ -93,8 +93,8 @@ An agent can provide the answer to a prompt using the `invoke` method:
 
 ``` r
 polar_bear_researcher$invoke("Are polar bears dangerous for humans?")
-#> Yes, polar bears are dangerous to humans as they are powerful predators and may
-#> attack if threatened or hungry.
+#> Yes, polar bears can be dangerous to humans as they are powerful predators and 
+#> may attack if threatened or hungry.
 ```
 
 You can also retrieve a list that displays the history of the agent:
@@ -122,21 +122,21 @@ polar_bear_researcher$messages
 #> [1] "assistant"
 #> 
 #> [[3]]$content
-#> Yes, polar bears are dangerous to humans as they are powerful predators and may
-#> attack if threatened or hungry.
+#> Yes, polar bears can be dangerous to humans as they are powerful predators and 
+#> may attack if threatened or hungry.
 ```
 
 Or the `ellmer` way:
 
 ``` r
 polar_bear_researcher$llm_object
-#> <Chat OpenAI/gpt-4.1-mini turns=3 tokens=43/21 $0.00>
+#> <Chat OpenAI/gpt-4.1-mini turns=3 tokens=43/22 $0.00>
 #> ── system [0] ──────────────────────────────────────────────────────────────────
 #> You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max.
 #> ── user [43] ───────────────────────────────────────────────────────────────────
 #> Are polar bears dangerous for humans?
-#> ── assistant [21] ──────────────────────────────────────────────────────────────
-#> Yes, polar bears are dangerous to humans as they are powerful predators and may attack if threatened or hungry.
+#> ── assistant [22] ──────────────────────────────────────────────────────────────
+#> Yes, polar bears can be dangerous to humans as they are powerful predators and may attack if threatened or hungry.
 ```
 
 ### Creating a multi-agents orchestraction
@@ -188,59 +188,74 @@ lead_agent$agents
 #> [[1]]
 #> <Agent>
 #>   Public:
-#>     agent_id: e492ba76-df1a-43b0-bbac-77f25dad3ef6
+#>     agent_id: 991d41d8-9a68-43b9-bf25-0f7c6d1bd8d5
 #>     broadcast_history: list
+#>     clear_and_summarise_messages: function () 
 #>     clone: function (deep = FALSE) 
 #>     initialize: function (name, instruction, llm_object) 
 #>     instruction: You are a research assistant. Your job is to answer fact ...
 #>     invoke: function (prompt) 
 #>     llm_object: Chat, R6
-#>     messages: list
+#>     messages: active binding
 #>     model_name: gpt-4.1-mini
 #>     model_provider: OpenAI
 #>     name: researcher
+#>     truncate_messages_history: function (n = 5) 
+#>     update_instruction: function (new_instruction) 
 #>   Private:
+#>     ._messages: list
 #>     .add_assistant_message: function (message, type = "assistant") 
 #>     .add_message: function (message, type) 
 #>     .add_user_message: function (message, type = "user") 
+#>     .set_turns_from_messages: function () 
 #> 
 #> [[2]]
 #> <Agent>
 #>   Public:
-#>     agent_id: 24236c05-08a4-4e53-866e-c8e02b714286
+#>     agent_id: 05acf77c-5e1a-4b20-bf4f-4512b174c65c
 #>     broadcast_history: list
+#>     clear_and_summarise_messages: function () 
 #>     clone: function (deep = FALSE) 
 #>     initialize: function (name, instruction, llm_object) 
 #>     instruction: You are agent designed to summarise a give text into 3 d ...
 #>     invoke: function (prompt) 
 #>     llm_object: Chat, R6
-#>     messages: list
+#>     messages: active binding
 #>     model_name: gpt-4.1-mini
 #>     model_provider: OpenAI
 #>     name: summarizer
+#>     truncate_messages_history: function (n = 5) 
+#>     update_instruction: function (new_instruction) 
 #>   Private:
+#>     ._messages: list
 #>     .add_assistant_message: function (message, type = "assistant") 
 #>     .add_message: function (message, type) 
 #>     .add_user_message: function (message, type = "user") 
+#>     .set_turns_from_messages: function () 
 #> 
 #> [[3]]
 #> <Agent>
 #>   Public:
-#>     agent_id: f0609dd8-32b9-4dc0-b75d-5781fcb17632
+#>     agent_id: cbe9df6b-25ea-41e9-986d-8e81fa9494d9
 #>     broadcast_history: list
+#>     clear_and_summarise_messages: function () 
 #>     clone: function (deep = FALSE) 
 #>     initialize: function (name, instruction, llm_object) 
 #>     instruction: Your role is to translate a text from English to German
 #>     invoke: function (prompt) 
 #>     llm_object: Chat, R6
-#>     messages: list
+#>     messages: active binding
 #>     model_name: gpt-4.1-mini
 #>     model_provider: OpenAI
 #>     name: translator
+#>     truncate_messages_history: function (n = 5) 
+#>     update_instruction: function (new_instruction) 
 #>   Private:
+#>     ._messages: list
 #>     .add_assistant_message: function (message, type = "assistant") 
 #>     .add_message: function (message, type) 
-#>     .add_user_message: function (message, type = "user")
+#>     .add_user_message: function (message, type = "user") 
+#>     .set_turns_from_messages: function ()
 ```
 
 Before executing your prompt, you can ask the `LeadAgent` to generate a
@@ -255,7 +270,7 @@ plan <- lead_agent$generate_plan(prompt_to_execute)
 plan
 #> [[1]]
 #> [[1]]$agent_id
-#> e492ba76-df1a-43b0-bbac-77f25dad3ef6
+#> 991d41d8-9a68-43b9-bf25-0f7c6d1bd8d5
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
@@ -267,12 +282,12 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[1]]$prompt
-#> [1] "Research the current economic situation in Algeria, gathering recent data and reports."
+#> [1] "Research the current economic situation in Algeria, including key factors such as GDP growth, main industries, unemployment rate, and any recent economic challenges or developments."
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> 24236c05-08a4-4e53-866e-c8e02b714286
+#> 05acf77c-5e1a-4b20-bf4f-4512b174c65c
 #> 
 #> [[2]]$agent_name
 #> [1] "summarizer"
@@ -284,12 +299,12 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[2]]$prompt
-#> [1] "Summarize the key points of Algeria's economic situation into three concise bullet points."
+#> [1] "Summarize the researched information into 3 concise bullet points highlighting the most important aspects."
 #> 
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> f0609dd8-32b9-4dc0-b75d-5781fcb17632
+#> cbe9df6b-25ea-41e9-986d-8e81fa9494d9
 #> 
 #> [[3]]$agent_name
 #> [1] "translator"
@@ -301,7 +316,7 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[3]]$prompt
-#> [1] "Translate the three bullet points from English into German accurately."
+#> [1] "Translate the 3 bullet points from English into German accurately."
 ```
 
 Now, in order now to execute the workflow, we just need to call the
@@ -314,13 +329,15 @@ response <- lead_agent$invoke("Tell me about the economic situation in Algeria, 
 
 ``` r
 response
-#> - Die Wirtschaft Algeriens hängt stark von Kohlenwasserstoffen ab, wobei Öl und
-#> Gas etwa 95 % der Exporte und 60 % der Haushaltseinnahmen ausmachen.  
-#> - Das Wirtschaftswachstum bleibt mit etwa 2-3 % im Jahr 2023 angesichts 
-#> inflationsbedingter Belastungen moderat.  
-#> - Die Regierung konzentriert sich darauf, die Wirtschaft zu diversifizieren und
-#> ausländische Investitionen anzuziehen, um die Abhängigkeit von 
-#> Kohlenwasserstoffen zu verringern.
+#> - Das BIP-Wachstum Algeriens im Jahr 2024 ist moderat und liegt bei etwa 2-3 %,
+#> wobei es stark von Kohlenwasserstoffen abhängt, die etwa 95 % seiner Exporte 
+#> ausmachen.  
+#> - Wichtige Wirtschaftssektoren sind Energie, Landwirtschaft und 
+#> Dienstleistungen, wobei die Arbeitslosigkeit mit etwa 11-12 % hoch ist und 
+#> insbesondere die Jugend betrifft.  
+#> - Das Land steht vor Herausforderungen wie schwankenden Ölpreisen, Inflation 
+#> und anhaltenden Bemühungen zur Diversifizierung der Wirtschaft angesichts 
+#> sozialer Unruhen und globaler wirtschaftlicher Belastungen.
 ```
 
 If you want to inspect the multi-agents orchestration, you have access
@@ -330,7 +347,7 @@ to the `agents_interaction` object:
 lead_agent$agents_interaction
 #> [[1]]
 #> [[1]]$agent_id
-#> e492ba76-df1a-43b0-bbac-77f25dad3ef6
+#> 991d41d8-9a68-43b9-bf25-0f7c6d1bd8d5
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
@@ -342,14 +359,14 @@ lead_agent$agents_interaction
 #> [1] "OpenAI"
 #> 
 #> [[1]]$prompt
-#> [1] "Research the current economic situation in Algeria, gathering recent data and reports."
+#> [1] "Research the current economic situation in Algeria, including key factors such as GDP growth, main industries, unemployment rate, and any recent economic challenges or developments."
 #> 
 #> [[1]]$response
-#> As of mid-2024, Algeria's economy faces challenges including dependence on 
-#> hydrocarbons, with oil and gas revenues making up around 95% of exports and 60%
-#> of budget revenue. Growth is moderate (~2-3% in 2023), with inflation 
-#> pressures, a need for diversification, and efforts to attract foreign 
-#> investment ongoing per IMF and World Bank reports.
+#> Algeria's 2024 GDP growth is modest, around 2-3%, reliant on hydrocarbons (oil 
+#> and gas account for ~95% of exports). Main sectors: energy, agriculture, and 
+#> services. Unemployment remains high at ~11-12%, especially among youth. Recent 
+#> challenges include fluctuating oil prices, inflation, and efforts to diversify 
+#> the economy amid social unrest and global economic pressures.
 #> 
 #> [[1]]$edited_by_hitl
 #> [1] FALSE
@@ -357,7 +374,7 @@ lead_agent$agents_interaction
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> 24236c05-08a4-4e53-866e-c8e02b714286
+#> 05acf77c-5e1a-4b20-bf4f-4512b174c65c
 #> 
 #> [[2]]$agent_name
 #> [1] "summarizer"
@@ -369,15 +386,16 @@ lead_agent$agents_interaction
 #> [1] "OpenAI"
 #> 
 #> [[2]]$prompt
-#> [1] "Summarize the key points of Algeria's economic situation into three concise bullet points."
+#> [1] "Summarize the researched information into 3 concise bullet points highlighting the most important aspects."
 #> 
 #> [[2]]$response
-#> - Algeria's economy heavily depends on hydrocarbons, with oil and gas 
-#> accounting for about 95% of exports and 60% of budget revenue.  
-#> - Economic growth remains moderate at approximately 2-3% in 2023 amid 
-#> inflationary pressures.  
-#> - The government is focused on diversifying the economy and attracting foreign 
-#> investment to reduce reliance on hydrocarbons.
+#> - Algeria's 2024 GDP growth is modest, around 2-3%, heavily dependent on 
+#> hydrocarbons, which constitute approximately 95% of its exports.  
+#> - Key economic sectors include energy, agriculture, and services, with 
+#> unemployment high at about 11-12%, particularly affecting youth.  
+#> - The country faces challenges such as fluctuating oil prices, inflation, and 
+#> ongoing efforts to diversify its economy amid social unrest and global economic
+#> pressures.
 #> 
 #> [[2]]$edited_by_hitl
 #> [1] FALSE
@@ -385,7 +403,7 @@ lead_agent$agents_interaction
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> f0609dd8-32b9-4dc0-b75d-5781fcb17632
+#> cbe9df6b-25ea-41e9-986d-8e81fa9494d9
 #> 
 #> [[3]]$agent_name
 #> [1] "translator"
@@ -397,16 +415,18 @@ lead_agent$agents_interaction
 #> [1] "OpenAI"
 #> 
 #> [[3]]$prompt
-#> [1] "Translate the three bullet points from English into German accurately."
+#> [1] "Translate the 3 bullet points from English into German accurately."
 #> 
 #> [[3]]$response
-#> - Die Wirtschaft Algeriens hängt stark von Kohlenwasserstoffen ab, wobei Öl und
-#> Gas etwa 95 % der Exporte und 60 % der Haushaltseinnahmen ausmachen.  
-#> - Das Wirtschaftswachstum bleibt mit etwa 2-3 % im Jahr 2023 angesichts 
-#> inflationsbedingter Belastungen moderat.  
-#> - Die Regierung konzentriert sich darauf, die Wirtschaft zu diversifizieren und
-#> ausländische Investitionen anzuziehen, um die Abhängigkeit von 
-#> Kohlenwasserstoffen zu verringern.
+#> - Das BIP-Wachstum Algeriens im Jahr 2024 ist moderat und liegt bei etwa 2-3 %,
+#> wobei es stark von Kohlenwasserstoffen abhängt, die etwa 95 % seiner Exporte 
+#> ausmachen.  
+#> - Wichtige Wirtschaftssektoren sind Energie, Landwirtschaft und 
+#> Dienstleistungen, wobei die Arbeitslosigkeit mit etwa 11-12 % hoch ist und 
+#> insbesondere die Jugend betrifft.  
+#> - Das Land steht vor Herausforderungen wie schwankenden Ölpreisen, Inflation 
+#> und anhaltenden Bemühungen zur Diversifizierung der Wirtschaft angesichts 
+#> sozialer Unruhen und globaler wirtschaftlicher Belastungen.
 #> 
 #> [[3]]$edited_by_hitl
 #> [1] FALSE
@@ -463,7 +483,7 @@ lead_agent$register_agents(c(openai_4_1_agent, openai_4_1_nano_agent))
 lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to sing when running under the rain? how about a flower?")
 #> [[1]]
 #> [[1]]$agent_id
-#> [1] "408024c2-f401-4b4c-98bb-6e11edd86dc9"
+#> [1] "05246f62-bb7c-4d03-9d42-a692d0a48b51"
 #> 
 #> [[1]]$agent_name
 #> [1] "openai_4_1_agent"
@@ -476,13 +496,13 @@ lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to si
 #> 
 #> [[1]]$response
 #> If you were Algerian, you might enjoy singing "Ya Rayah" while running under 
-#> the rain, and for a flower, you might choose the classic "Wardat Hob" ("Rose of
-#> Love").
+#> the rain, and if you were a flower, perhaps you'd prefer humming with the soft 
+#> patter of raindrops as your melody.
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> [1] "77eab6e1-e834-4763-bcd6-7d83888616d1"
+#> [1] "4118916b-2546-4f62-8df7-92c811ad8f65"
 #> 
 #> [[2]]$agent_name
 #> [1] "openai_4_1_nano_agent"
@@ -494,8 +514,8 @@ lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to si
 #> [1] "gpt-4.1-nano"
 #> 
 #> [[2]]$response
-#> You might enjoy singing "Habibi" by Khaled when running under the rain, and 
-#> "Lily" (or a song about a flower) by ISABELLE BOULAY when thinking of a flower.
+#> You might enjoy singing "Ya Rayah" by Rachid Taha when running under the rain 
+#> and "Lily" by Khaled if you like a flower.
 ```
 
 You can also access the history of the `broadcasting` using the
@@ -510,7 +530,7 @@ lead_agent$broadcast_history
 #> [[1]]$responses
 #> [[1]]$responses[[1]]
 #> [[1]]$responses[[1]]$agent_id
-#> [1] "408024c2-f401-4b4c-98bb-6e11edd86dc9"
+#> [1] "05246f62-bb7c-4d03-9d42-a692d0a48b51"
 #> 
 #> [[1]]$responses[[1]]$agent_name
 #> [1] "openai_4_1_agent"
@@ -523,13 +543,13 @@ lead_agent$broadcast_history
 #> 
 #> [[1]]$responses[[1]]$response
 #> If you were Algerian, you might enjoy singing "Ya Rayah" while running under 
-#> the rain, and for a flower, you might choose the classic "Wardat Hob" ("Rose of
-#> Love").
+#> the rain, and if you were a flower, perhaps you'd prefer humming with the soft 
+#> patter of raindrops as your melody.
 #> 
 #> 
 #> [[1]]$responses[[2]]
 #> [[1]]$responses[[2]]$agent_id
-#> [1] "77eab6e1-e834-4763-bcd6-7d83888616d1"
+#> [1] "4118916b-2546-4f62-8df7-92c811ad8f65"
 #> 
 #> [[1]]$responses[[2]]$agent_name
 #> [1] "openai_4_1_nano_agent"
@@ -541,8 +561,8 @@ lead_agent$broadcast_history
 #> [1] "gpt-4.1-nano"
 #> 
 #> [[1]]$responses[[2]]$response
-#> You might enjoy singing "Habibi" by Khaled when running under the rain, and 
-#> "Lily" (or a song about a flower) by ISABELLE BOULAY when thinking of a flower.
+#> You might enjoy singing "Ya Rayah" by Rachid Taha when running under the rain 
+#> and "Lily" by Khaled if you like a flower.
 ```
 
 ## Tool specification
@@ -607,9 +627,8 @@ lead_agent$register_agents(c(assistant, weather_assistant))
 lead_agent$invoke(
   "Tell me about the economic situation in Algeria, then tell me how's the weather in Algiers?"
 )
-#> The current weather in Algiers is quite warm with a temperature of 35 degrees 
-#> Celsius. The skies are clear and sunny, and there is no precipitation at all, 
-#> making it a bright and dry day.
+#> Current weather in Algiers: Sunny with a temperature of 35 degrees Celsius and 
+#> no precipitation.
 ```
 
 ## Human In The Loop (HITL)
@@ -643,6 +662,93 @@ give the user 3 choices:
 Note that you can set a `HITL` at several steps, for example
 `lead_agent$set_hitl(steps = c(1, 2))` will set the `HITL` at step 1 and
 step 2.
+
+## Judge as a decision process
+
+#### Only in the development version at the moment
+
+Sometimes you want to send a prompt to several agents and pick the best
+answer. In order to choose the best prompt, you can also rely on the
+`Lead` Agent which will act a dudge and pick for you the best answer.
+You can use the `judge_and_chose_best_response` method as follows:
+
+``` r
+openai_4_1 <- ellmer::chat(
+  name = "openai/gpt-4.1",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+
+stylist_1 <- Agent$new(
+  name = "stylist",
+  instruction = "You are an AI assistant. Answer in 1 sentence max.",
+  llm_object = openai_4_1
+)
+
+openai_4_1_nano <- ellmer::chat(
+  name = "openai/gpt-4.1-nano",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+
+stylist_2 <- Agent$new(
+  name = "stylist2",
+  instruction = "You are an AI assistant. Answer in 1 sentence max.",
+  llm_object = openai_4_1_nano
+)
+
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+
+stylist_lead_agent <- LeadAgent$new(
+  name = "Stylist Leader",
+  llm_object = openai_4_1_mini
+)
+
+stylist_lead_agent$register_agents(c(stylist_1, stylist_2))
+#> ✔ Agent(s) successfully registered.
+
+best_answer <- stylist_lead_agent$judge_and_chose_best_response(
+  "what's the best way to wear a blue kalvin klein shirt in winter with a pink pair of trousers?"
+)
+
+best_answer
+#> $proposals
+#> $proposals[[1]]
+#> $proposals[[1]]$agent_id
+#> [1] "b561cef1-7e3f-4631-9b53-ddef3099e606"
+#> 
+#> $proposals[[1]]$agent_name
+#> [1] "stylist"
+#> 
+#> $proposals[[1]]$response
+#> Layer the blue Calvin Klein shirt with a neutral-toned (like gray or navy) 
+#> sweater or blazer, add a matching scarf for warmth, and wear neutral shoes to 
+#> balance the bold pink trousers.
+#> 
+#> 
+#> $proposals[[2]]
+#> $proposals[[2]]$agent_id
+#> [1] "ebe499b1-77b3-44c1-9e7f-0d5ab5daa3c5"
+#> 
+#> $proposals[[2]]$agent_name
+#> [1] "stylist2"
+#> 
+#> $proposals[[2]]$response
+#> Pair the blue Calvin Klein shirt and pink trousers with a neutral-colored (gray
+#> or navy) sweater or blazer and complete the look with stylish boots or loafers 
+#> for a chic winter outfit.
+#> 
+#> 
+#> 
+#> $chosen_response
+#> Layer the blue Calvin Klein shirt with a neutral-toned (like gray or navy) 
+#> sweater or blazer, add a matching scarf for warmth, and wear neutral shoes to 
+#> balance the bold pink trousers.
+```
 
 ## Code of Conduct
 

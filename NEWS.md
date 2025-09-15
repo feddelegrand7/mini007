@@ -9,7 +9,6 @@ Adding the following new methods:
 - `judge_and_chose_best_response()`
 
 
-
 # mini007 0.1.0
 
 * Initial CRAN submission.
