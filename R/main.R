@@ -799,7 +799,7 @@ LeadAgent <- R6::R6Class(
     #' @description
     #' Set Human In The Loop (HITL) interaction at determined steps within the workflow
     #' @param steps At which steps the Human In The Loop is required?
-    #' @return A list of responses from all agents.+
+    #' @return A list of responses from all agents.
     #' @examples \dontrun{
     #'  # An API KEY is required in order to invoke the agents
     #'   openai_4_1_mini <- ellmer::chat(
@@ -864,6 +864,51 @@ LeadAgent <- R6::R6Class(
 
     },
 
+    #' @description
+    #' The Lead Agent send a prompt to its registered agents and choose the best response
+    #' from the agents' responses
+    #' @param prompt The prompt to send to the registered agents
+    #' @return A list of responses from all agents, including the chosen response
+    #' @examples \dontrun{
+    #' openai_4_1_mini <- ellmer::chat(
+    #'   name = "openai/gpt-4.1-mini",
+    #'   api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'   echo = "none"
+    #' )
+    #' openai_4_1 <- ellmer::chat(
+    #'   name = "openai/gpt-4.1",
+    #'   api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'   echo = "none"
+    #' )
+    #'
+    #' stylist <- Agent$new(
+    #'   name = "stylist",
+    #'   instruction = "You are an AI assistant. Answer in 1 sentence max.",
+    #'   llm_object = openai_4_1
+    #' )
+    #'
+    #' openai_4_1_nano <- ellmer::chat(
+    #'   name = "openai/gpt-4.1-nano",
+    #'   api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'   echo = "none"
+    #' )
+    #'
+    #' stylist2 <- Agent$new(
+    #'   name = "stylist2",
+    #'   instruction = "You are an AI assistant. Answer in 1 sentence max.",
+    #'   llm_object = openai_4_1_nano
+    #' )
+    #'
+    #' lead_agent <- LeadAgent$new(
+    #'   name = "Leader",
+    #'   llm_object = openai_4_1_mini
+    #' )
+    #'
+    #' lead_agent$register_agents(c(stylist, stylist2))
+    #'
+    #' lead_agent$judge_and_chose_best_response("what's the best way to war a kalvin klein shirt?")
+    #'
+    #' }
     judge_and_chose_best_response = function(prompt) {
 
       checkmate::assert_string(prompt)

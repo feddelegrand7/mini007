@@ -374,6 +374,51 @@ lead_agent$broadcast(
   )
  )
 }
+
+## ------------------------------------------------
+## Method `LeadAgent$judge_and_chose_best_response`
+## ------------------------------------------------
+
+\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+openai_4_1 <- ellmer::chat(
+  name = "openai/gpt-4.1",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+
+stylist <- Agent$new(
+  name = "stylist",
+  instruction = "You are an AI assistant. Answer in 1 sentence max.",
+  llm_object = openai_4_1
+)
+
+openai_4_1_nano <- ellmer::chat(
+  name = "openai/gpt-4.1-nano",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+
+stylist2 <- Agent$new(
+  name = "stylist2",
+  instruction = "You are an AI assistant. Answer in 1 sentence max.",
+  llm_object = openai_4_1_nano
+)
+
+lead_agent <- LeadAgent$new(
+  name = "Leader",
+  llm_object = openai_4_1_mini
+)
+
+lead_agent$register_agents(c(stylist, stylist2))
+
+lead_agent$judge_and_chose_best_response("what's the best way to war a kalvin klein shirt?")
+
+}
 }
 \section{Super class}{
 \code{\link[mini007:Agent]{mini007::Agent}} -> \code{LeadAgent}
@@ -403,6 +448,7 @@ lead_agent$broadcast(
 \item \href{#method-LeadAgent-generate_plan}{\code{LeadAgent$generate_plan()}}
 \item \href{#method-LeadAgent-broadcast}{\code{LeadAgent$broadcast()}}
 \item \href{#method-LeadAgent-set_hitl}{\code{LeadAgent$set_hitl()}}
+\item \href{#method-LeadAgent-judge_and_chose_best_response}{\code{LeadAgent$judge_and_chose_best_response()}}
 \item \href{#method-LeadAgent-clone}{\code{LeadAgent$clone()}}
 }
 }
@@ -894,7 +940,7 @@ Set Human In The Loop (HITL) interaction at determined steps within the workflow
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A list of responses from all agents.+
+A list of responses from all agents.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -950,6 +996,74 @@ A list of responses from all agents.+
   "Answer in German"
   )
  )
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-LeadAgent-judge_and_chose_best_response"></a>}}
+\if{latex}{\out{\hypertarget{method-LeadAgent-judge_and_chose_best_response}{}}}
+\subsection{Method \code{judge_and_chose_best_response()}}{
+The Lead Agent send a prompt to its registered agents and choose the best response
+from the agents' responses
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{LeadAgent$judge_and_chose_best_response(prompt)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{prompt}}{The prompt to send to the registered agents}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A list of responses from all agents, including the chosen response
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+openai_4_1 <- ellmer::chat(
+  name = "openai/gpt-4.1",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+
+stylist <- Agent$new(
+  name = "stylist",
+  instruction = "You are an AI assistant. Answer in 1 sentence max.",
+  llm_object = openai_4_1
+)
+
+openai_4_1_nano <- ellmer::chat(
+  name = "openai/gpt-4.1-nano",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+
+stylist2 <- Agent$new(
+  name = "stylist2",
+  instruction = "You are an AI assistant. Answer in 1 sentence max.",
+  llm_object = openai_4_1_nano
+)
+
+lead_agent <- LeadAgent$new(
+  name = "Leader",
+  llm_object = openai_4_1_mini
+)
+
+lead_agent$register_agents(c(stylist, stylist2))
+
+lead_agent$judge_and_chose_best_response("what's the best way to war a kalvin klein shirt?")
+
 }
 }
 \if{html}{\out{</div>}}

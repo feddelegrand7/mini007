@@ -77,7 +77,7 @@ Each created Agent has an `agent_id` (among other meta information):
 
 ``` r
 polar_bear_researcher$agent_id
-#> [1] "3eb4b97b-f1eb-42e4-9c98-0f62befbb81e"
+#> [1] "2733c149-964f-46cd-969f-59dda8ce02cf"
 ```
 
 At any time, you can tweak the `llm_object`:
@@ -93,7 +93,7 @@ An agent can provide the answer to a prompt using the `invoke` method:
 
 ``` r
 polar_bear_researcher$invoke("Are polar bears dangerous for humans?")
-#> Yes, polar bears can be dangerous to humans as they are powerful predators and 
+#> Yes, polar bears are dangerous for humans as they are powerful predators and 
 #> may attack if threatened or hungry.
 ```
 
@@ -122,7 +122,7 @@ polar_bear_researcher$messages
 #> [1] "assistant"
 #> 
 #> [[3]]$content
-#> Yes, polar bears can be dangerous to humans as they are powerful predators and 
+#> Yes, polar bears are dangerous for humans as they are powerful predators and 
 #> may attack if threatened or hungry.
 ```
 
@@ -130,14 +130,41 @@ Or the `ellmer` way:
 
 ``` r
 polar_bear_researcher$llm_object
-#> <Chat OpenAI/gpt-4.1-mini turns=3 tokens=43/22 $0.00>
+#> <Chat OpenAI/gpt-4.1-mini turns=3 tokens=43/21 $0.00>
 #> ── system [0] ──────────────────────────────────────────────────────────────────
 #> You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max.
 #> ── user [43] ───────────────────────────────────────────────────────────────────
 #> Are polar bears dangerous for humans?
-#> ── assistant [22] ──────────────────────────────────────────────────────────────
-#> Yes, polar bears can be dangerous to humans as they are powerful predators and may attack if threatened or hungry.
+#> ── assistant [21] ──────────────────────────────────────────────────────────────
+#> Yes, polar bears are dangerous for humans as they are powerful predators and may attack if threatened or hungry.
 ```
+
+### Managing Agent Conversation History
+
+##### Only in the development version at the moment
+
+The `clear_and_summarise_messages` method allows you to compress an
+agent’s conversation history into a concise summary and clear the
+message history while preserving context. This is useful for maintaining
+memory efficiency while keeping important conversation context.
+
+``` r
+# After several interactions, summarise and clear the conversation history
+polar_bear_researcher$clear_and_summarise_messages()
+#> ✔ Conversation history summarised and appended to system prompt.
+#> ℹ Summary: The user requested information about polar bears, specifically asking if they are dangerous to human...
+polar_bear_researcher$messages
+#> [[1]]
+#> [[1]]$role
+#> [1] "system"
+#> 
+#> [[1]]$content
+#> [1] "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max. \n\n--- Conversation Summary ---\n The user requested information about polar bears, specifically asking if they are dangerous to humans, and the expert assistant responded that polar bears are indeed dangerous as they are powerful predators that may attack when threatened or hungry."
+```
+
+This method summarises all previous conversations into a paragraph and
+appends it to the system prompt, then clears the conversation history.
+The agent retains the context but with reduced memory usage.
 
 ### Creating a multi-agents orchestraction
 
@@ -188,7 +215,7 @@ lead_agent$agents
 #> [[1]]
 #> <Agent>
 #>   Public:
-#>     agent_id: 991d41d8-9a68-43b9-bf25-0f7c6d1bd8d5
+#>     agent_id: dd8756e2-aba3-46b5-bfd8-eae921180435
 #>     broadcast_history: list
 #>     clear_and_summarise_messages: function () 
 #>     clone: function (deep = FALSE) 
@@ -212,7 +239,7 @@ lead_agent$agents
 #> [[2]]
 #> <Agent>
 #>   Public:
-#>     agent_id: 05acf77c-5e1a-4b20-bf4f-4512b174c65c
+#>     agent_id: d9db2422-0d6b-4968-96b9-acdffe6df431
 #>     broadcast_history: list
 #>     clear_and_summarise_messages: function () 
 #>     clone: function (deep = FALSE) 
@@ -236,7 +263,7 @@ lead_agent$agents
 #> [[3]]
 #> <Agent>
 #>   Public:
-#>     agent_id: cbe9df6b-25ea-41e9-986d-8e81fa9494d9
+#>     agent_id: a2884c22-9ccc-44fc-9ffe-3309d9fa629d
 #>     broadcast_history: list
 #>     clear_and_summarise_messages: function () 
 #>     clone: function (deep = FALSE) 
@@ -270,7 +297,7 @@ plan <- lead_agent$generate_plan(prompt_to_execute)
 plan
 #> [[1]]
 #> [[1]]$agent_id
-#> 991d41d8-9a68-43b9-bf25-0f7c6d1bd8d5
+#> dd8756e2-aba3-46b5-bfd8-eae921180435
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
@@ -282,12 +309,12 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[1]]$prompt
-#> [1] "Research the current economic situation in Algeria, including key factors such as GDP growth, main industries, unemployment rate, and any recent economic challenges or developments."
+#> [1] "Research the current economic situation in Algeria, including key indicators such as GDP growth, inflation, unemployment, and major industries."
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> 05acf77c-5e1a-4b20-bf4f-4512b174c65c
+#> d9db2422-0d6b-4968-96b9-acdffe6df431
 #> 
 #> [[2]]$agent_name
 #> [1] "summarizer"
@@ -299,12 +326,12 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[2]]$prompt
-#> [1] "Summarize the researched information into 3 concise bullet points highlighting the most important aspects."
+#> [1] "Summarize the gathered information into 3 concise bullet points highlighting the main aspects of Algeria's economy."
 #> 
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> cbe9df6b-25ea-41e9-986d-8e81fa9494d9
+#> a2884c22-9ccc-44fc-9ffe-3309d9fa629d
 #> 
 #> [[3]]$agent_name
 #> [1] "translator"
@@ -316,7 +343,7 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[3]]$prompt
-#> [1] "Translate the 3 bullet points from English into German accurately."
+#> [1] "Translate the 3 bullet points about Algeria's economic situation into German."
 ```
 
 Now, in order now to execute the workflow, we just need to call the
@@ -329,15 +356,11 @@ response <- lead_agent$invoke("Tell me about the economic situation in Algeria, 
 
 ``` r
 response
-#> - Das BIP-Wachstum Algeriens im Jahr 2024 ist moderat und liegt bei etwa 2-3 %,
-#> wobei es stark von Kohlenwasserstoffen abhängt, die etwa 95 % seiner Exporte 
-#> ausmachen.  
-#> - Wichtige Wirtschaftssektoren sind Energie, Landwirtschaft und 
-#> Dienstleistungen, wobei die Arbeitslosigkeit mit etwa 11-12 % hoch ist und 
-#> insbesondere die Jugend betrifft.  
-#> - Das Land steht vor Herausforderungen wie schwankenden Ölpreisen, Inflation 
-#> und anhaltenden Bemühungen zur Diversifizierung der Wirtschaft angesichts 
-#> sozialer Unruhen und globaler wirtschaftlicher Belastungen.
+#> - Das BIP-Wachstum Algeriens ist moderat und liegt Anfang 2024 bei etwa 2-3 %.
+#> - Die Inflationsrate beträgt rund 5-6 %, wobei die Jugendarbeitslosigkeit mit 
+#> 12-15 % weiterhin hoch ist.
+#> - Die Wirtschaft wird hauptsächlich von den Sektoren Kohlenwasserstoffe, 
+#> Landwirtschaft und verarbeitendes Gewerbe getragen.
 ```
 
 If you want to inspect the multi-agents orchestration, you have access
@@ -347,7 +370,7 @@ to the `agents_interaction` object:
 lead_agent$agents_interaction
 #> [[1]]
 #> [[1]]$agent_id
-#> 991d41d8-9a68-43b9-bf25-0f7c6d1bd8d5
+#> dd8756e2-aba3-46b5-bfd8-eae921180435
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
@@ -359,14 +382,13 @@ lead_agent$agents_interaction
 #> [1] "OpenAI"
 #> 
 #> [[1]]$prompt
-#> [1] "Research the current economic situation in Algeria, including key factors such as GDP growth, main industries, unemployment rate, and any recent economic challenges or developments."
+#> [1] "Research the current economic situation in Algeria, including key indicators such as GDP growth, inflation, unemployment, and major industries."
 #> 
 #> [[1]]$response
-#> Algeria's 2024 GDP growth is modest, around 2-3%, reliant on hydrocarbons (oil 
-#> and gas account for ~95% of exports). Main sectors: energy, agriculture, and 
-#> services. Unemployment remains high at ~11-12%, especially among youth. Recent 
-#> challenges include fluctuating oil prices, inflation, and efforts to diversify 
-#> the economy amid social unrest and global economic pressures.
+#> As of early 2024, Algeria's GDP growth is modest, estimated around 2-3%, with 
+#> inflation rates near 5-6%. Unemployment remains high, particularly among youth,
+#> at about 12-15%. Major industries include hydrocarbons (oil and natural gas), 
+#> agriculture, and manufacturing.
 #> 
 #> [[1]]$edited_by_hitl
 #> [1] FALSE
@@ -374,7 +396,7 @@ lead_agent$agents_interaction
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> 05acf77c-5e1a-4b20-bf4f-4512b174c65c
+#> d9db2422-0d6b-4968-96b9-acdffe6df431
 #> 
 #> [[2]]$agent_name
 #> [1] "summarizer"
@@ -386,16 +408,14 @@ lead_agent$agents_interaction
 #> [1] "OpenAI"
 #> 
 #> [[2]]$prompt
-#> [1] "Summarize the researched information into 3 concise bullet points highlighting the most important aspects."
+#> [1] "Summarize the gathered information into 3 concise bullet points highlighting the main aspects of Algeria's economy."
 #> 
 #> [[2]]$response
-#> - Algeria's 2024 GDP growth is modest, around 2-3%, heavily dependent on 
-#> hydrocarbons, which constitute approximately 95% of its exports.  
-#> - Key economic sectors include energy, agriculture, and services, with 
-#> unemployment high at about 11-12%, particularly affecting youth.  
-#> - The country faces challenges such as fluctuating oil prices, inflation, and 
-#> ongoing efforts to diversify its economy amid social unrest and global economic
-#> pressures.
+#> - Algeria's GDP growth is modest, approximately 2-3% as of early 2024.
+#> - Inflation rates are around 5-6%, with youth unemployment remaining high at 
+#> 12-15%.
+#> - The economy is primarily driven by hydrocarbons, agriculture, and 
+#> manufacturing sectors.
 #> 
 #> [[2]]$edited_by_hitl
 #> [1] FALSE
@@ -403,7 +423,7 @@ lead_agent$agents_interaction
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> cbe9df6b-25ea-41e9-986d-8e81fa9494d9
+#> a2884c22-9ccc-44fc-9ffe-3309d9fa629d
 #> 
 #> [[3]]$agent_name
 #> [1] "translator"
@@ -415,18 +435,14 @@ lead_agent$agents_interaction
 #> [1] "OpenAI"
 #> 
 #> [[3]]$prompt
-#> [1] "Translate the 3 bullet points from English into German accurately."
+#> [1] "Translate the 3 bullet points about Algeria's economic situation into German."
 #> 
 #> [[3]]$response
-#> - Das BIP-Wachstum Algeriens im Jahr 2024 ist moderat und liegt bei etwa 2-3 %,
-#> wobei es stark von Kohlenwasserstoffen abhängt, die etwa 95 % seiner Exporte 
-#> ausmachen.  
-#> - Wichtige Wirtschaftssektoren sind Energie, Landwirtschaft und 
-#> Dienstleistungen, wobei die Arbeitslosigkeit mit etwa 11-12 % hoch ist und 
-#> insbesondere die Jugend betrifft.  
-#> - Das Land steht vor Herausforderungen wie schwankenden Ölpreisen, Inflation 
-#> und anhaltenden Bemühungen zur Diversifizierung der Wirtschaft angesichts 
-#> sozialer Unruhen und globaler wirtschaftlicher Belastungen.
+#> - Das BIP-Wachstum Algeriens ist moderat und liegt Anfang 2024 bei etwa 2-3 %.
+#> - Die Inflationsrate beträgt rund 5-6 %, wobei die Jugendarbeitslosigkeit mit 
+#> 12-15 % weiterhin hoch ist.
+#> - Die Wirtschaft wird hauptsächlich von den Sektoren Kohlenwasserstoffe, 
+#> Landwirtschaft und verarbeitendes Gewerbe getragen.
 #> 
 #> [[3]]$edited_by_hitl
 #> [1] FALSE
@@ -483,7 +499,7 @@ lead_agent$register_agents(c(openai_4_1_agent, openai_4_1_nano_agent))
 lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to sing when running under the rain? how about a flower?")
 #> [[1]]
 #> [[1]]$agent_id
-#> [1] "05246f62-bb7c-4d03-9d42-a692d0a48b51"
+#> [1] "c3cc889c-c47c-4b36-ad61-e01c830665a5"
 #> 
 #> [[1]]$agent_name
 #> [1] "openai_4_1_agent"
@@ -495,14 +511,14 @@ lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to si
 #> [1] "gpt-4.1"
 #> 
 #> [[1]]$response
-#> If you were Algerian, you might enjoy singing "Ya Rayah" while running under 
-#> the rain, and if you were a flower, perhaps you'd prefer humming with the soft 
-#> patter of raindrops as your melody.
+#> If you were Algerian, you might enjoy singing "Ya Rayah" when running under the
+#> rain, and if you were a flower, perhaps you'd softly hum "Tellement N'Brick" as
+#> the raindrops fall.
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> [1] "4118916b-2546-4f62-8df7-92c811ad8f65"
+#> [1] "df369a97-97ab-437d-988d-b174f1c0cfc3"
 #> 
 #> [[2]]$agent_name
 #> [1] "openai_4_1_nano_agent"
@@ -514,8 +530,8 @@ lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to si
 #> [1] "gpt-4.1-nano"
 #> 
 #> [[2]]$response
-#> You might enjoy singing "Ya Rayah" by Rachid Taha when running under the rain 
-#> and "Lily" by Khaled if you like a flower.
+#> You might enjoy singing "Azzaman" by Khaled while running under the rain and 
+#> "Ya Rayah" by Rachid Taha when thinking of a flower.
 ```
 
 You can also access the history of the `broadcasting` using the
@@ -530,7 +546,7 @@ lead_agent$broadcast_history
 #> [[1]]$responses
 #> [[1]]$responses[[1]]
 #> [[1]]$responses[[1]]$agent_id
-#> [1] "05246f62-bb7c-4d03-9d42-a692d0a48b51"
+#> [1] "c3cc889c-c47c-4b36-ad61-e01c830665a5"
 #> 
 #> [[1]]$responses[[1]]$agent_name
 #> [1] "openai_4_1_agent"
@@ -542,14 +558,14 @@ lead_agent$broadcast_history
 #> [1] "gpt-4.1"
 #> 
 #> [[1]]$responses[[1]]$response
-#> If you were Algerian, you might enjoy singing "Ya Rayah" while running under 
-#> the rain, and if you were a flower, perhaps you'd prefer humming with the soft 
-#> patter of raindrops as your melody.
+#> If you were Algerian, you might enjoy singing "Ya Rayah" when running under the
+#> rain, and if you were a flower, perhaps you'd softly hum "Tellement N'Brick" as
+#> the raindrops fall.
 #> 
 #> 
 #> [[1]]$responses[[2]]
 #> [[1]]$responses[[2]]$agent_id
-#> [1] "4118916b-2546-4f62-8df7-92c811ad8f65"
+#> [1] "df369a97-97ab-437d-988d-b174f1c0cfc3"
 #> 
 #> [[1]]$responses[[2]]$agent_name
 #> [1] "openai_4_1_nano_agent"
@@ -561,8 +577,8 @@ lead_agent$broadcast_history
 #> [1] "gpt-4.1-nano"
 #> 
 #> [[1]]$responses[[2]]$response
-#> You might enjoy singing "Ya Rayah" by Rachid Taha when running under the rain 
-#> and "Lily" by Khaled if you like a flower.
+#> You might enjoy singing "Azzaman" by Khaled while running under the rain and 
+#> "Ya Rayah" by Rachid Taha when thinking of a flower.
 ```
 
 ## Tool specification
@@ -627,8 +643,8 @@ lead_agent$register_agents(c(assistant, weather_assistant))
 lead_agent$invoke(
   "Tell me about the economic situation in Algeria, then tell me how's the weather in Algiers?"
 )
-#> Current weather in Algiers: Sunny with a temperature of 35 degrees Celsius and 
-#> no precipitation.
+#> The current weather in Algiers is sunny with a temperature of 35 degrees 
+#> Celsius and no precipitation.
 ```
 
 ## Human In The Loop (HITL)
@@ -719,35 +735,35 @@ best_answer
 #> $proposals
 #> $proposals[[1]]
 #> $proposals[[1]]$agent_id
-#> [1] "b561cef1-7e3f-4631-9b53-ddef3099e606"
+#> [1] "155ce505-fd4b-400e-92bb-4f53255e7ee9"
 #> 
 #> $proposals[[1]]$agent_name
 #> [1] "stylist"
 #> 
 #> $proposals[[1]]$response
-#> Layer the blue Calvin Klein shirt with a neutral-toned (like gray or navy) 
-#> sweater or blazer, add a matching scarf for warmth, and wear neutral shoes to 
-#> balance the bold pink trousers.
+#> Layer the blue Calvin Klein shirt under a neutral-colored sweater or blazer, 
+#> add a scarf that ties in either the blue or pink, and finish with sleek boots 
+#> for a stylish winter look.
 #> 
 #> 
 #> $proposals[[2]]
 #> $proposals[[2]]$agent_id
-#> [1] "ebe499b1-77b3-44c1-9e7f-0d5ab5daa3c5"
+#> [1] "8ebbeaa8-8398-46dd-b0e5-b27ecd425548"
 #> 
 #> $proposals[[2]]$agent_name
 #> [1] "stylist2"
 #> 
 #> $proposals[[2]]$response
-#> Pair the blue Calvin Klein shirt and pink trousers with a neutral-colored (gray
-#> or navy) sweater or blazer and complete the look with stylish boots or loafers 
-#> for a chic winter outfit.
+#> Pair the blue Calvin Klein shirt with a dark winter coat, neutral-colored 
+#> sweater or turtleneck underneath, and complementary accessories for a polished,
+#> stylish look.
 #> 
 #> 
 #> 
 #> $chosen_response
-#> Layer the blue Calvin Klein shirt with a neutral-toned (like gray or navy) 
-#> sweater or blazer, add a matching scarf for warmth, and wear neutral shoes to 
-#> balance the bold pink trousers.
+#> Layer the blue Calvin Klein shirt under a neutral-colored sweater or blazer, 
+#> add a scarf that ties in either the blue or pink, and finish with sleek boots 
+#> for a stylish winter look.
 ```
 
 ## Code of Conduct
