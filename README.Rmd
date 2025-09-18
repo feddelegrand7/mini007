@@ -105,6 +105,18 @@ Or the `ellmer` way:
 polar_bear_researcher$llm_object
 ```
 
+### Managing Agent Conversation History
+##### Only in the development version at the moment
+
+The `clear_and_summarise_messages` method allows you to compress an agent's conversation history into a concise summary and clear the message history while preserving context. This is useful for maintaining memory efficiency while keeping important conversation context.
+
+```{r}
+# After several interactions, summarise and clear the conversation history
+polar_bear_researcher$clear_and_summarise_messages()
+polar_bear_researcher$messages()
+```
+
+This method summarises all previous conversations into a paragraph and appends it to the system prompt, then clears the conversation history. The agent retains the context but with reduced memory usage.
 
 ### Creating a multi-agents orchestraction 
 
