@@ -91,9 +91,9 @@ Agent <- R6::R6Class(
     },
 
     #' @description
-    #' Keep only the most recent `n` messages, discarding older ones.
+    #' Keep only the most recent `n` messages, discarding older ones while keeping
+    #' the system prompt.
     #' @param n Number of most recent messages to keep.
-    #' @param keep_systemp_prompt Whether to keep the system prompt or not. Defaults to TRUE.
     #' @examples \dontrun{
     #' openai_4_1_mini <- ellmer::chat(
     #'   name = "openai/gpt-4.1-mini",
@@ -110,7 +110,7 @@ Agent <- R6::R6Class(
     #' agent$invoke("What is the capital of Italy")
     #' agent$keep_last_n_messages(n = 2)
     #' }
-    keep_last_n_messages = function(n = 2, keep_systemp_prompt = TRUE) {
+    keep_last_n_messages = function(n = 2) {
 
       checkmate::assert_integerish(n, lower = 1)
 
@@ -118,15 +118,13 @@ Agent <- R6::R6Class(
 
       messages_to_keep <- self$messages[(ln_messags - n + 1):ln_messags]
 
-      if (keep_systemp_prompt) {
-        system_prompt <- self$llm_object$get_system_prompt()
-        tmp_sp <- list(
-          list(role = "system", content = system_prompt)
-        )
-        private$._messages <- append(tmp_sp, messages_to_keep)
-      } else {
-        private$._messages <- messages_to_keep
-      }
+      system_prompt <- self$llm_object$get_system_prompt()
+
+      tmp_sp <- list(
+        list(role = "system", content = system_prompt)
+      )
+
+      private$._messages <- append(tmp_sp, messages_to_keep)
 
       private$.set_turns_from_messages()
 

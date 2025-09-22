@@ -245,17 +245,16 @@ agent$invoke("Continue this sentence: 1 2 3 viva")
 \if{html}{\out{<a id="method-Agent-keep_last_n_messages"></a>}}
 \if{latex}{\out{\hypertarget{method-Agent-keep_last_n_messages}{}}}
 \subsection{Method \code{keep_last_n_messages()}}{
-Keep only the most recent `n` messages, discarding older ones.
+Keep only the most recent `n` messages, discarding older ones while keeping
+the system prompt.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Agent$keep_last_n_messages(n = 2, keep_systemp_prompt = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Agent$keep_last_n_messages(n = 2)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{n}}{Number of most recent messages to keep.}
-
-\item{\code{keep_systemp_prompt}}{Whether to keep the system prompt or not. Defaults to TRUE.}
 }
 \if{html}{\out{</div>}}
 }
