@@ -93,6 +93,7 @@ Agent <- R6::R6Class(
     #' @description
     #' Keep only the most recent `n` messages, discarding older ones.
     #' @param n Number of most recent messages to keep.
+    #' @param keep_systemp_prompt Whether to keep the system prompt or not. Defaults to TRUE.
     #' @examples \dontrun{
     #' openai_4_1_mini <- ellmer::chat(
     #'   name = "openai/gpt-4.1-mini",
@@ -107,21 +108,27 @@ Agent <- R6::R6Class(
     #' agent$invoke("What is the capital of Algeria")
     #' agent$invoke("What is the capital of Germany")
     #' agent$invoke("What is the capital of Italy")
-    #' agent$truncate_messages_history(2)
+    #' agent$keep_last_n_messages(n = 2)
     #' }
-    truncate_messages_history = function(n = 5) {
-      turns <- self$llm_object$get_turns(include_system_prompt = TRUE)
-      total_turns <- length(turns)
+    keep_last_n_messages = function(n = 2, keep_systemp_prompt = TRUE) {
 
-      if (total_turns <= n) {
-        cli::cli_alert_info("Nothing to truncate, history already short.")
-        return(invisible(NULL))
+      checkmate::assert_integerish(n, lower = 1)
+
+      ln_messags <- length(self$messages)
+
+      messages_to_keep <- self$messages[(ln_messags - n + 1):ln_messags]
+
+      if (keep_systemp_prompt) {
+        system_prompt <- self$llm_object$get_system_prompt()
+        tmp_sp <- list(
+          list(role = "system", content = system_prompt)
+        )
+        private$._messages <- append(tmp_sp, messages_to_keep)
+      } else {
+        private$._messages <- messages_to_keep
       }
 
-      new_turns <- turns[(total_turns - n + 1):total_turns]
-      self$llm_object$set_turns(new_turns)
-
-      self$messages <- self$messages[(total_turns - n + 1):total_turns]
+      private$.set_turns_from_messages()
 
       cli::cli_alert_success("Conversation truncated to last {n} messages.")
 

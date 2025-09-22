@@ -52,7 +52,7 @@ agent$invoke("Continue this sentence: 1 2 3 viva")
 }
 
 ## ------------------------------------------------
-## Method `Agent$truncate_messages_history`
+## Method `Agent$keep_last_n_messages`
 ## ------------------------------------------------
 
 \dontrun{
@@ -69,7 +69,7 @@ agent <- Agent$new(
 agent$invoke("What is the capital of Algeria")
 agent$invoke("What is the capital of Germany")
 agent$invoke("What is the capital of Italy")
-agent$truncate_messages_history(2)
+agent$keep_last_n_messages(n = 2)
 }
 
 ## ------------------------------------------------
@@ -150,7 +150,7 @@ Assignment is validated automatically.}
 \itemize{
 \item \href{#method-Agent-new}{\code{Agent$new()}}
 \item \href{#method-Agent-invoke}{\code{Agent$invoke()}}
-\item \href{#method-Agent-truncate_messages_history}{\code{Agent$truncate_messages_history()}}
+\item \href{#method-Agent-keep_last_n_messages}{\code{Agent$keep_last_n_messages()}}
 \item \href{#method-Agent-clear_and_summarise_messages}{\code{Agent$clear_and_summarise_messages()}}
 \item \href{#method-Agent-update_instruction}{\code{Agent$update_instruction()}}
 \item \href{#method-Agent-clone}{\code{Agent$clone()}}
@@ -242,18 +242,20 @@ agent$invoke("Continue this sentence: 1 2 3 viva")
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Agent-truncate_messages_history"></a>}}
-\if{latex}{\out{\hypertarget{method-Agent-truncate_messages_history}{}}}
-\subsection{Method \code{truncate_messages_history()}}{
+\if{html}{\out{<a id="method-Agent-keep_last_n_messages"></a>}}
+\if{latex}{\out{\hypertarget{method-Agent-keep_last_n_messages}{}}}
+\subsection{Method \code{keep_last_n_messages()}}{
 Keep only the most recent `n` messages, discarding older ones.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Agent$truncate_messages_history(n = 5)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Agent$keep_last_n_messages(n = 2, keep_systemp_prompt = TRUE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{n}}{Number of most recent messages to keep.}
+
+\item{\code{keep_systemp_prompt}}{Whether to keep the system prompt or not. Defaults to TRUE.}
 }
 \if{html}{\out{</div>}}
 }
@@ -273,7 +275,7 @@ agent <- Agent$new(
 agent$invoke("What is the capital of Algeria")
 agent$invoke("What is the capital of Germany")
 agent$invoke("What is the capital of Italy")
-agent$truncate_messages_history(2)
+agent$keep_last_n_messages(n = 2)
 }
 }
 \if{html}{\out{</div>}}
