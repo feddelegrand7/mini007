@@ -327,8 +327,8 @@ Note that you can set a `HITL` at several steps, for example `lead_agent$set_hit
 
 ## Budget enforcement
 
-You can cap the cost, tokens, or number of calls an `Agent` may spend. If the
-budget is reached, an error is raised immediately.
+You can cap the cost an `Agent` may spend in USD. If the budget is reached,
+an error is raised immediately.
 
 ```{r}
 openai_llm_object <- ellmer::chat(
@@ -344,11 +344,7 @@ assistant <- Agent$new(
 )
 
 # Set a small USD budget
-assistant$set_budget(0.001, unit = "usd")
-
-# Or limit by tokens or calls
-# assistant$set_budget(200, unit = "tokens")
-# assistant$set_budget(2, unit = "calls")
+assistant$set_budget(0.001)
 
 try({
   assistant$invoke("Write a short haiku about the sea")
