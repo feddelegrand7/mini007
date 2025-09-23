@@ -325,6 +325,40 @@ After setting the `HITL` to step 1, the workflow execution will pose and give th
 Note that you can set a `HITL` at several steps, for example `lead_agent$set_hitl(steps = c(1, 2))` will set the `HITL` at step 1 and step 2. 
 
 
+## Budget enforcement
+
+You can cap the cost, tokens, or number of calls an `Agent` may spend. If the
+budget is reached, an error is raised immediately.
+
+```{r}
+openai_llm_object <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"), 
+  echo = "none"
+)
+
+assistant <- Agent$new(
+  name = "assistant",
+  instruction = "You are an AI assistant that answers question.",
+  llm_object = openai_llm_object
+)
+
+# Set a small USD budget
+assistant$set_budget(0.001, unit = "usd")
+
+# Or limit by tokens or calls
+# assistant$set_budget(200, unit = "tokens")
+# assistant$set_budget(2, unit = "calls")
+
+try({
+  assistant$invoke("Write a short haiku about the sea")
+  assistant$invoke("Write a second short haiku about the sea")
+})
+
+assistant$get_spend()
+```
+
+
 ## Judge as a decision process 
 #### Only in the development version at the moment 
 

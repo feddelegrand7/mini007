@@ -678,7 +678,7 @@ LeadAgent <- R6::R6Class(
         "\nReturn ONLY the final response text. Nothing else. Do not talk. Just return the best response"
       )
 
-      result <- self$llm_object$chat(judge_prompt)
+      result <- self$chat_with_budget(judge_prompt)
 
       final_result <- list(
         proposals = proposals,
@@ -694,7 +694,7 @@ LeadAgent <- R6::R6Class(
 
     .analyze_prompt = function(prompt) {
 
-      result <- self$llm_object$chat(prompt)
+      result <- self$chat_with_budget(prompt)
 
       tasks <- unlist(strsplit(result, "\n"))
       tasks <- trimws(tasks)
@@ -732,7 +732,7 @@ LeadAgent <- R6::R6Class(
         paste(agent_descriptions, collapse = "\n\n")
       )
 
-      agent_id <- self$llm_object$chat(
+      agent_id <- self$chat_with_budget(
         user_message
       )
 

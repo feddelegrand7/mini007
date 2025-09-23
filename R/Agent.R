@@ -9,6 +9,7 @@
 #' @importFrom R6 R6Class
 #' @importFrom uuid UUIDgenerate
 #' @importFrom checkmate assert_string assert_flag assert_character assert_integerish
+#' @importFrom checkmate assert_number
 #' @importFrom cli cli_abort cli_alert_success cli_alert_warning cli_alert_info cli_rule cli_text cli_ul
 #' @export
 Agent <- R6::R6Class(
@@ -61,6 +62,13 @@ Agent <- R6::R6Class(
       )
 
       self$agent_id <- uuid::UUIDgenerate()
+
+      # Budget tracking defaults
+      self$budget <- Inf
+      self$budget_unit <- "usd"
+      self$spent_usd <- 0
+      self$spent_tokens <- 0
+      self$spent_calls <- 0
     },
 
     #' @description
@@ -85,9 +93,94 @@ Agent <- R6::R6Class(
     invoke = function(prompt) {
       checkmate::assert_string(prompt)
       private$.add_user_message(prompt)
-      response <- self$llm_object$chat(prompt)
+      response <- self$chat_with_budget(prompt)
       private$.add_assistant_message(response)
       return(response)
+    },
+
+    #' @description
+    #' Set a budget for the agent and choose the unit to enforce on.
+    #' Supported units are: "usd" (dollars), "tokens" (sum of prompt+completion), "calls" (number of chat calls).
+    #' @param value Non-negative numeric budget value. Use Inf to disable.
+    #' @param unit One of "usd", "tokens", or "calls".
+    #' @examples \dontrun{
+    #'   agent$set_budget(0.02, unit = "usd")
+    #'   agent$set_budget(2000, unit = "tokens")
+    #'   agent$set_budget(5, unit = "calls")
+    #' }
+    set_budget = function(value, unit = c("usd", "tokens", "calls")) {
+      unit <- match.arg(unit)
+      checkmate::assert_number(value, lower = 0, finite = FALSE)
+      self$budget <- value
+      self$budget_unit <- unit
+      invisible(self)
+    },
+
+    #' @description
+    #' Reset the tracked spend counters to zero.
+    reset_spend = function() {
+      self$spent_usd <- 0
+      self$spent_tokens <- 0
+      self$spent_calls <- 0
+      invisible(self)
+    },
+
+    #' @description
+    #' Get the current spend counters.
+    #' @return A named list with usd, tokens, and calls spent so far.
+    get_spend = function() {
+      list(
+        usd = self$spent_usd,
+        tokens = self$spent_tokens,
+        calls = self$spent_calls
+      )
+    },
+
+    #' @description
+    #' Low-level chat wrapper that enforces budget and records spend.
+    #' Prefer using invoke() unless you need a raw chat with the LLM.
+    #' @param prompt The prompt to send to the underlying LLM.
+    #' @return The model's response as a character string.
+    chat_with_budget = function(prompt) {
+      checkmate::assert_string(prompt)
+
+      # Pre-check for call-count budget
+      if (identical(self$budget_unit, "calls") && is.finite(self$budget)) {
+        if ((self$spent_calls + 1) > self$budget) {
+          cli::cli_abort(
+            "Budget reached: next call would exceed the allowed number of calls ({self$budget})."
+          )
+        }
+      }
+
+      before_stats <- private$.llm_parse_stats()
+      before_usd <- before_stats$usd
+      before_tokens <- before_stats$tokens
+
+      result <- self$llm_object$chat(prompt)
+
+      after_stats <- private$.llm_parse_stats()
+      after_usd <- after_stats$usd
+      after_tokens <- after_stats$tokens
+
+      delta_usd <- 0
+      delta_tokens <- 0
+      if (!is.na(before_usd) && !is.na(after_usd)) {
+        delta_usd <- max(0, after_usd - before_usd)
+      }
+      if (!is.na(before_tokens) && !is.na(after_tokens)) {
+        delta_tokens <- max(0, after_tokens - before_tokens)
+      }
+
+      # Update counters
+      self$spent_calls <- self$spent_calls + 1
+      self$spent_usd <- self$spent_usd + delta_usd
+      self$spent_tokens <- self$spent_tokens + delta_tokens
+
+      # Enforce budgets post-call
+      private$.enforce_budget_or_abort()
+
+      return(result)
     },
 
     #' @description
@@ -254,7 +347,17 @@ Agent <- R6::R6Class(
     #'@field model_name The name of the model to be used (eg. gpt-4.1-mini)
     model_name = NULL,
     #'@field broadcast_history A list of all past broadcast interactions.
-    broadcast_history = list()
+    broadcast_history = list(),
+    #' @field budget Configured budget value (numeric); Inf by default (no limit).
+    budget = NULL,
+    #' @field budget_unit Unit of the budget: one of "usd", "tokens", or "calls".
+    budget_unit = NULL,
+    #' @field spent_usd Accumulated USD spent as tracked via LLM stats.
+    spent_usd = NULL,
+    #' @field spent_tokens Accumulated tokens spent (prompt + completion).
+    spent_tokens = NULL,
+    #' @field spent_calls Number of LLM chat calls performed by this agent.
+    spent_calls = NULL
   ),
 
   active = list(
@@ -317,6 +420,65 @@ Agent <- R6::R6Class(
 
       self$llm_object$set_turns(turns)
 
+    }
+    ,
+    # Parse LLM object printed header to extract tokens and usd, best-effort.
+    .llm_parse_stats = function() {
+      # Expected header example:
+      # <Chat OpenAI/gpt-4.1-mini turns=3 tokens=43/21 $0.00>
+      header <- NA_character_
+      out <- utils::capture.output(self$llm_object)
+      if (length(out) >= 1) header <- out[[1]]
+
+      usd <- NA_real_
+      tokens <- NA_real_
+
+      if (!is.na(header)) {
+        # Extract cost
+        m_cost <- regexec("\\$([0-9]+(?:\\.[0-9]+)?)", header)
+        reg_cost <- regmatches(header, m_cost)
+        if (length(reg_cost) == 1 && length(reg_cost[[1]]) >= 2) {
+          usd <- suppressWarnings(as.numeric(reg_cost[[1]][2]))
+        }
+
+        # Extract tokens a/b and sum them
+        m_tok <- regexec("tokens=([0-9]+)\/([0-9]+)", header)
+        reg_tok <- regmatches(header, m_tok)
+        if (length(reg_tok) == 1 && length(reg_tok[[1]]) >= 3) {
+          a <- suppressWarnings(as.numeric(reg_tok[[1]][2]))
+          b <- suppressWarnings(as.numeric(reg_tok[[1]][3]))
+          if (!is.na(a) && !is.na(b)) tokens <- a + b
+        }
+      }
+
+      list(usd = usd, tokens = tokens)
+    },
+
+    .enforce_budget_or_abort = function() {
+      if (!is.finite(self$budget)) return(invisible(NULL))
+
+      unit <- self$budget_unit
+      exceeded <- FALSE
+      used <- NA_real_
+
+      if (identical(unit, "usd")) {
+        used <- self$spent_usd
+        exceeded <- used > self$budget
+      } else if (identical(unit, "tokens")) {
+        used <- self$spent_tokens
+        exceeded <- used > self$budget
+      } else if (identical(unit, "calls")) {
+        used <- self$spent_calls
+        exceeded <- used > self$budget
+      }
+
+      if (isTRUE(exceeded)) {
+        cli::cli_abort(
+          "Budget exceeded: used {round(used, 4)} {unit} (limit = {self$budget})."
+        )
+      }
+
+      invisible(NULL)
     }
   )
 )
