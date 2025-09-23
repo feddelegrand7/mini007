@@ -7,6 +7,7 @@ Adding the following new methods:
 - `update_instruction()`
 - `clear_and_summarise_messages()`
 - `judge_and_chose_best_response()`
+- `set_budget()`
 
 
 # mini007 0.1.0

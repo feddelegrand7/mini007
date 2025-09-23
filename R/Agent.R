@@ -61,6 +61,8 @@ Agent <- R6::R6Class(
       )
 
       self$agent_id <- uuid::UUIDgenerate()
+
+      self$budget <- NULL
     },
 
     #' @description
@@ -83,11 +85,54 @@ Agent <- R6::R6Class(
     #' agent$invoke("Continue this sentence: 1 2 3 viva")
     #' }
     invoke = function(prompt) {
+
       checkmate::assert_string(prompt)
+
+      if (!is.null(self$budget)) {
+
+        current_cost <- self$llm_object$get_cost()
+
+        budget_exceeded <- current_cost > self$budget
+
+        if (budget_exceeded) {
+          cli::cli_abort(glue::glue(
+            "{self$name} agent has exceeded its budget. Cost: {current_cost}, Budget: {self$budget}"
+          ))
+        }
+      }
+
       private$.add_user_message(prompt)
       response <- self$llm_object$chat(prompt)
       private$.add_assistant_message(response)
       return(response)
+    },
+
+    #' @description
+    #' Set a budget to a specific agent, if the budget is reached, an error will be thrown
+    #'
+    #' @param amount_in_usd Numerical value denoting the amount to set for the budget,
+    #' @examples \dontrun{
+    #' # An API KEY is required in order to invoke the Agent
+    #' openai_4_1_mini <- ellmer::chat(
+    #'     name = "openai/gpt-4.1-mini",
+    #'     api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'     echo = "none"
+    #' )
+    #' agent <- Agent$new(
+    #'  name = "translator",
+    #'  instruction = "You are an Algerian citizen",
+    #'  llm_object = openai_4_1_mini
+    #' )
+    #' agent$set_budget(amount_in_usd = 10.5) # this is equivalent to 10.5$
+    #' }
+    set_budget = function(amount_in_usd) {
+
+      checkmate::assert_number(amount_in_usd, lower = 0)
+
+      self$budget <- amount_in_usd
+
+      cli::cli_alert_success(glue::glue("Budget successfully set to {amount_in_usd}$"))
+
     },
 
     #' @description
@@ -238,7 +283,6 @@ Agent <- R6::R6Class(
       cli::cli_alert_info("New: {substr(new_instruction, 1, 50)}...")
 
       invisible(self)
-
     },
 
     #' @field name The agent's name.
@@ -254,7 +298,9 @@ Agent <- R6::R6Class(
     #'@field model_name The name of the model to be used (eg. gpt-4.1-mini)
     model_name = NULL,
     #'@field broadcast_history A list of all past broadcast interactions.
-    broadcast_history = list()
+    broadcast_history = list(),
+    #'@field budget A budget in $ that the agent should not exceed.
+    budget = NULL
   ),
 
   active = list(

@@ -52,6 +52,25 @@ agent$invoke("Continue this sentence: 1 2 3 viva")
 }
 
 ## ------------------------------------------------
+## Method `Agent$set_budget`
+## ------------------------------------------------
+
+\dontrun{
+# An API KEY is required in order to invoke the Agent
+openai_4_1_mini <- ellmer::chat(
+    name = "openai/gpt-4.1-mini",
+    api_key = Sys.getenv("OPENAI_API_KEY"),
+    echo = "none"
+)
+agent <- Agent$new(
+ name = "translator",
+ instruction = "You are an Algerian citizen",
+ llm_object = openai_4_1_mini
+)
+agent$set_budget(amount_in_usd = 10.5) # this is equivalent to 10.5$
+}
+
+## ------------------------------------------------
 ## Method `Agent$keep_last_n_messages`
 ## ------------------------------------------------
 
@@ -134,6 +153,8 @@ agent$update_instruction("You are a concise assistant.")
 \item{\code{model_name}}{The name of the model to be used (eg. gpt-4.1-mini)}
 
 \item{\code{broadcast_history}}{A list of all past broadcast interactions.}
+
+\item{\code{budget}}{A budget in $ that the agent should not exceed.}
 }
 \if{html}{\out{</div>}}
 }
@@ -150,6 +171,7 @@ Assignment is validated automatically.}
 \itemize{
 \item \href{#method-Agent-new}{\code{Agent$new()}}
 \item \href{#method-Agent-invoke}{\code{Agent$invoke()}}
+\item \href{#method-Agent-set_budget}{\code{Agent$set_budget()}}
 \item \href{#method-Agent-keep_last_n_messages}{\code{Agent$keep_last_n_messages()}}
 \item \href{#method-Agent-clear_and_summarise_messages}{\code{Agent$clear_and_summarise_messages()}}
 \item \href{#method-Agent-update_instruction}{\code{Agent$update_instruction()}}
@@ -234,6 +256,44 @@ agent <- Agent$new(
  llm_object = openai_4_1_mini
 )
 agent$invoke("Continue this sentence: 1 2 3 viva")
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Agent-set_budget"></a>}}
+\if{latex}{\out{\hypertarget{method-Agent-set_budget}{}}}
+\subsection{Method \code{set_budget()}}{
+Set a budget to a specific agent, if the budget is reached, an error will be thrown
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Agent$set_budget(amount_in_usd)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{amount_in_usd}}{Numerical value denoting the amount to set for the budget,}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+# An API KEY is required in order to invoke the Agent
+openai_4_1_mini <- ellmer::chat(
+    name = "openai/gpt-4.1-mini",
+    api_key = Sys.getenv("OPENAI_API_KEY"),
+    echo = "none"
+)
+agent <- Agent$new(
+ name = "translator",
+ instruction = "You are an Algerian citizen",
+ llm_object = openai_4_1_mini
+)
+agent$set_budget(amount_in_usd = 10.5) # this is equivalent to 10.5$
 }
 }
 \if{html}{\out{</div>}}
