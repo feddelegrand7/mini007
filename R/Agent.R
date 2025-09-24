@@ -311,17 +311,13 @@ Agent <- R6::R6Class(
         return(private$._messages)
       }
 
-      if (!is.list(value)) {
-        cli::cli_abort("messages must be a list of message objects")
-      }
+      checkmate::assert_list(value, any.missing = FALSE)
 
       for (msg in value) {
-        if (!is.list(msg) || !all(c("role", "content") %in% names(msg))) {
-          cli::cli_abort("Each message must be a list with 'role' and 'content'")
-        }
-        if (!msg$role %in% c("system", "user", "assistant")) {
-          cli::cli_abort(paste0("Invalid role: ", msg$role))
-        }
+        checkmate::assert_list(msg)
+        checkmate::assert_true(all(c("role", "content") %in% names(msg)), .var.name = "message has required names")
+        checkmate::assert_choice(msg$role, choices = c("system", "user", "assistant"))
+        checkmate::assert_string(msg$content)
       }
 
       private$._messages <- value
@@ -334,6 +330,8 @@ Agent <- R6::R6Class(
   private = list(
     ._messages = NULL,
     .add_message = function(message, type) {
+      checkmate::assert_string(message)
+      checkmate::assert_choice(type, choices = c("system", "user", "assistant"))
       private$._messages[[length(private$._messages) + 1]] <- list(
         role = type,
         content = message

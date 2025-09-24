@@ -45,6 +45,7 @@ LeadAgent <- R6::R6Class(
     #'
     #'
     initialize = function(name, llm_object) {
+      checkmate::assert_string(name)
 
       system_prompt <- paste0(
         "You are a task decomposition assistant. ",
@@ -207,6 +208,11 @@ LeadAgent <- R6::R6Class(
     #'  lead_agent$agents
     register_agents = function(agents) {
 
+      checkmate::assert_list(agents, any.missing = FALSE, min.len = 1)
+
+      are_agents <- vapply(agents, function(a) inherits(a, "Agent"), logical(1))
+      checkmate::assert_true(all(are_agents), .var.name = "agents must all inherit from 'Agent'")
+
       length_agents <- length(self$agents)
 
       for (i in seq_along(agents)) {
@@ -250,6 +256,8 @@ LeadAgent <- R6::R6Class(
     #'   lead$delegate_prompt("Research Algeria's economy, summarise in 3 bullets, translate to German")
     #' }
     delegate_prompt = function(prompt) {
+
+      checkmate::assert_string(prompt)
 
       task_analysis <- private$.analyze_prompt(prompt)
 
@@ -330,6 +338,8 @@ LeadAgent <- R6::R6Class(
     #' }
 
     invoke = function(prompt) {
+
+      checkmate::assert_string(prompt)
 
       if (length(self$agents) == 0) {
 
@@ -426,6 +436,8 @@ LeadAgent <- R6::R6Class(
     #'  )
     #' }
     generate_plan = function(prompt) {
+
+      checkmate::assert_string(prompt)
 
       if (length(self$agents) == 0) {
         cli::cli_abort("No agents registered. Use `register_agents()` to add sub-agents before generating a plan.")
@@ -694,6 +706,8 @@ LeadAgent <- R6::R6Class(
 
     .analyze_prompt = function(prompt) {
 
+      checkmate::assert_string(prompt)
+
       result <- self$llm_object$chat(prompt)
 
       tasks <- unlist(strsplit(result, "\n"))
@@ -704,6 +718,9 @@ LeadAgent <- R6::R6Class(
     },
 
     .match_agent_to_task = function(task) {
+
+      checkmate::assert_string(task, min.chars = 1)
+      checkmate::assert_true(length(self$agents) > 0, .var.name = "No agents registered")
 
       agent_descriptions <- vapply(self$agents, function(agent) {
         paste0(
@@ -753,6 +770,8 @@ LeadAgent <- R6::R6Class(
     },
 
     .human_confirm = function(step_index) {
+
+      checkmate::assert_integerish(step_index, lower = 1, upper = length(self$agents_interaction), len = 1)
 
       step <- self$agents_interaction[[step_index]]
 
