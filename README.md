@@ -4,7 +4,10 @@
 # mini007 <a><img src='man/figures/mini007cute.png' align="right" height="200" /></a>
 
 <!-- badges: start -->
-
+[![metacran
+downloads](https://cranlogs.r-pkg.org/badges/ralger)](https://cran.r-project.org/package=mini007)
+[![metacran
+downloads](https://cranlogs.r-pkg.org/badges/grand-total/ralger)](https://cran.r-project.org/package=mini007)
 <!-- badges: end -->
 
 `mini007` provides a lightweight and extensible framework for
