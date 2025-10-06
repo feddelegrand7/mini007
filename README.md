@@ -5,9 +5,9 @@
 
 <!-- badges: start -->
 [![metacran
-downloads](https://cranlogs.r-pkg.org/badges/ralger)](https://cran.r-project.org/package=mini007)
+downloads](https://cranlogs.r-pkg.org/badges/mini007)](https://cran.r-project.org/package=mini007)
 [![metacran
-downloads](https://cranlogs.r-pkg.org/badges/grand-total/ralger)](https://cran.r-project.org/package=mini007)
+downloads](https://cranlogs.r-pkg.org/badges/grand-total/mini007)](https://cran.r-project.org/package=mini007)
 <!-- badges: end -->
 
 `mini007` provides a lightweight and extensible framework for
