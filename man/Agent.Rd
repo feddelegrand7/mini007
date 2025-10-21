@@ -138,6 +138,46 @@ agent$update_instruction("You are a concise assistant.")
 }
 
 ## ------------------------------------------------
+## Method `Agent$get_usage_stats`
+## ------------------------------------------------
+
+\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+agent <- Agent$new(
+  name = "assistant",
+  instruction = "You are an assistant.",
+  llm_object = openai_4_1_mini
+)
+agent$set_budget(1)
+agent$invoke("What is the capital of Algeria?")
+stats <- agent$get_usage_stats()
+stats
+}
+
+## ------------------------------------------------
+## Method `Agent$add_message`
+## ------------------------------------------------
+
+\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+agent <- Agent$new(
+  name = "AI assistant",
+  instruction = "You are an assistant.",
+  llm_object = openai_4_1_mini
+)
+agent$add_message("user", "Hello, how are you?")
+agent$add_message("assistant", "I'm doing well, thank you!")
+}
+
+## ------------------------------------------------
 ## Method `Agent$reset_conversation_history`
 ## ------------------------------------------------
 
@@ -242,6 +282,8 @@ Assignment is validated automatically.}
 \item \href{#method-Agent-keep_last_n_messages}{\code{Agent$keep_last_n_messages()}}
 \item \href{#method-Agent-clear_and_summarise_messages}{\code{Agent$clear_and_summarise_messages()}}
 \item \href{#method-Agent-update_instruction}{\code{Agent$update_instruction()}}
+\item \href{#method-Agent-get_usage_stats}{\code{Agent$get_usage_stats()}}
+\item \href{#method-Agent-add_message}{\code{Agent$add_message()}}
 \item \href{#method-Agent-reset_conversation_history}{\code{Agent$reset_conversation_history()}}
 \item \href{#method-Agent-export_messages_history}{\code{Agent$export_messages_history()}}
 \item \href{#method-Agent-load_messages_history}{\code{Agent$load_messages_history()}}
@@ -254,7 +296,7 @@ Assignment is validated automatically.}
 \subsection{Method \code{new()}}{
 Initializes a new Agent with a specific role/instruction.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Agent$new(name, instruction, llm_object)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Agent$new(name, instruction, llm_object, budget = NA)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -265,6 +307,9 @@ Initializes a new Agent with a specific role/instruction.
 \item{\code{instruction}}{The system prompt that defines the agent's role.}
 
 \item{\code{llm_object}}{The LLM object generate by ellmer (eg. output of ellmer::chat_openai)}
+
+\item{\code{budget}}{Numerical value denoting the amount to set for the budget in US$ to a specific agent,
+if the budget is reached, an error will be thrown.}
 }
 \if{html}{\out{</div>}}
 }
@@ -489,6 +534,82 @@ agent <- Agent$new(
   llm_object = openai_4_1_mini
 )
 agent$update_instruction("You are a concise assistant.")
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Agent-get_usage_stats"></a>}}
+\if{latex}{\out{\hypertarget{method-Agent-get_usage_stats}{}}}
+\subsection{Method \code{get_usage_stats()}}{
+Get the current token count and estimated cost of the conversation
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Agent$get_usage_stats()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A list with token counts and cost information
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+agent <- Agent$new(
+  name = "assistant",
+  instruction = "You are an assistant.",
+  llm_object = openai_4_1_mini
+)
+agent$set_budget(1)
+agent$invoke("What is the capital of Algeria?")
+stats <- agent$get_usage_stats()
+stats
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Agent-add_message"></a>}}
+\if{latex}{\out{\hypertarget{method-Agent-add_message}{}}}
+\subsection{Method \code{add_message()}}{
+Add a pre-formatted message to the conversation history
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Agent$add_message(role, content)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{role}}{The role of the message ("user", "assistant", or "system")}
+
+\item{\code{content}}{The content of the message}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+agent <- Agent$new(
+  name = "AI assistant",
+  instruction = "You are an assistant.",
+  llm_object = openai_4_1_mini
+)
+agent$add_message("user", "Hello, how are you?")
+agent$add_message("assistant", "I'm doing well, thank you!")
 }
 }
 \if{html}{\out{</div>}}

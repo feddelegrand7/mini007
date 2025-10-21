@@ -9,7 +9,8 @@ Adding the following new methods:
 - `judge_and_choose_best_response()`
 - `set_budget()`
 - `export_messages_history()` and `load_messages_history()`
-- `reset_conversation_history()` 
+- `reset_conversation_history()`
+- `add_message()`
 
 
 # mini007 0.1.0

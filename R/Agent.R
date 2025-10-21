@@ -21,6 +21,8 @@ Agent <- R6::R6Class(
     #' @param name A short identifier for the agent (e.g. `"translator"`).
     #' @param instruction The system prompt that defines the agent's role.
     #' @param llm_object The LLM object generate by ellmer (eg. output of ellmer::chat_openai)
+    #' @param budget Numerical value denoting the amount to set for the budget in US$ to a specific agent,
+    #' if the budget is reached, an error will be thrown.
     #' @examples
     #'   # An API KEY is required in order to invoke the Agent
     #'   openai_4_1_mini <- ellmer::chat(
@@ -38,7 +40,7 @@ Agent <- R6::R6Class(
     #'     llm_object = openai_4_1_mini
     #'   )
     #'
-    initialize = function(name, instruction, llm_object) {
+    initialize = function(name, instruction, llm_object, budget = NA) {
       checkmate::assert_string(name)
       checkmate::assert_string(instruction)
 
@@ -62,7 +64,9 @@ Agent <- R6::R6Class(
 
       self$agent_id <- uuid::UUIDgenerate()
 
-      self$budget <- NULL
+      checkmate::assert_numeric(budget)
+
+      self$budget <- budget
     },
 
     #' @description
@@ -88,7 +92,7 @@ Agent <- R6::R6Class(
 
       checkmate::assert_string(prompt)
 
-      if (!is.null(self$budget)) {
+      if (!is.na(self$budget)) {
 
         current_cost <- self$llm_object$get_cost()
 
@@ -284,6 +288,84 @@ Agent <- R6::R6Class(
       cli::cli_alert_info("Old: {substr(old_instruction, 1, 50)}...")
       cli::cli_alert_info("New: {substr(new_instruction, 1, 50)}...")
 
+      invisible(self)
+    },
+
+    #' @description
+    #' Get the current token count and estimated cost of the conversation
+    #'
+    #' @return A list with token counts and cost information
+    #' @examples
+    #' \dontrun{
+    #' openai_4_1_mini <- ellmer::chat(
+    #'   name = "openai/gpt-4.1-mini",
+    #'   api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'   echo = "none"
+    #' )
+    #' agent <- Agent$new(
+    #'   name = "assistant",
+    #'   instruction = "You are an assistant.",
+    #'   llm_object = openai_4_1_mini
+    #' )
+    #' agent$set_budget(1)
+    #' agent$invoke("What is the capital of Algeria?")
+    #' stats <- agent$get_usage_stats()
+    #' stats
+    #' }
+    get_usage_stats = function() {
+
+      current_cost <- self$llm_object$get_cost()
+
+      budget_remaining <- NA
+
+      if (!is.na(self$budget)) {
+        budget_remaining <- self$budget - as.numeric(current_cost)
+      }
+
+      total_tokens_df <- self$llm_object$get_tokens()
+
+      total_tokens <- sum(total_tokens_df$tokens_total)
+
+      llm_costs <- list(
+        total_tokens = total_tokens,
+        estimated_cost = round(as.numeric(current_cost), 4),
+        budget = round(self$budget, 4),
+        budget_remaining = round(budget_remaining, 4)
+      )
+
+      llm_costs
+
+    },
+
+    #' @description
+    #' Add a pre-formatted message to the conversation history
+    #'
+    #' @param role The role of the message ("user", "assistant", or "system")
+    #' @param content The content of the message
+    #' @examples
+    #' \dontrun{
+    #' openai_4_1_mini <- ellmer::chat(
+    #'   name = "openai/gpt-4.1-mini",
+    #'   api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'   echo = "none"
+    #' )
+    #' agent <- Agent$new(
+    #'   name = "AI assistant",
+    #'   instruction = "You are an assistant.",
+    #'   llm_object = openai_4_1_mini
+    #')
+    #' agent$add_message("user", "Hello, how are you?")
+    #' agent$add_message("assistant", "I'm doing well, thank you!")
+    #' }
+    add_message = function(role, content) {
+      checkmate::assert_string(role)
+      checkmate::assert_string(content)
+      checkmate::assert_choice(role, c("user", "assistant", "system"))
+
+      private$.add_message(content, role)
+      private$.set_turns_from_messages()
+
+      cli::cli_alert_success("Added {role} message: {substr(content, 1, 50)}...")
       invisible(self)
     },
 
