@@ -138,6 +138,26 @@ agent$update_instruction("You are a concise assistant.")
 }
 
 ## ------------------------------------------------
+## Method `Agent$reset_conversation_history`
+## ------------------------------------------------
+
+\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+agent <- Agent$new(
+  name = "AI assistant",
+  instruction = "You are an assistant.",
+  llm_object = openai_4_1_mini
+)
+agent$invoke("Hello, how are you?")
+agent$invoke("Tell me about machine learning")
+agent$reset_conversation_history()  # Clears all messages except system prompt
+}
+
+## ------------------------------------------------
 ## Method `Agent$export_messages_history`
 ## ------------------------------------------------
 
@@ -148,7 +168,7 @@ openai_4_1_mini <- ellmer::chat(
   echo = "none"
 )
 agent <- Agent$new(
-  name = "capital finder",
+  name = "capital_finder",
   instruction = "You are an assistant.",
   llm_object = openai_4_1_mini
 )
@@ -169,7 +189,7 @@ openai_4_1_mini <- ellmer::chat(
   echo = "none"
 )
 agent <- Agent$new(
-  name = "capital finder",
+  name = "capital_finder",
   instruction = "You are an assistant.",
   llm_object = openai_4_1_mini
 )
@@ -222,6 +242,7 @@ Assignment is validated automatically.}
 \item \href{#method-Agent-keep_last_n_messages}{\code{Agent$keep_last_n_messages()}}
 \item \href{#method-Agent-clear_and_summarise_messages}{\code{Agent$clear_and_summarise_messages()}}
 \item \href{#method-Agent-update_instruction}{\code{Agent$update_instruction()}}
+\item \href{#method-Agent-reset_conversation_history}{\code{Agent$reset_conversation_history()}}
 \item \href{#method-Agent-export_messages_history}{\code{Agent$export_messages_history()}}
 \item \href{#method-Agent-load_messages_history}{\code{Agent$load_messages_history()}}
 \item \href{#method-Agent-clone}{\code{Agent$clone()}}
@@ -476,6 +497,38 @@ agent$update_instruction("You are a concise assistant.")
 
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Agent-reset_conversation_history"></a>}}
+\if{latex}{\out{\hypertarget{method-Agent-reset_conversation_history}{}}}
+\subsection{Method \code{reset_conversation_history()}}{
+Reset the agent's conversation history while keeping the system instruction
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Agent$reset_conversation_history()}\if{html}{\out{</div>}}
+}
+
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+agent <- Agent$new(
+  name = "AI assistant",
+  instruction = "You are an assistant.",
+  llm_object = openai_4_1_mini
+)
+agent$invoke("Hello, how are you?")
+agent$invoke("Tell me about machine learning")
+agent$reset_conversation_history()  # Clears all messages except system prompt
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Agent-export_messages_history"></a>}}
 \if{latex}{\out{\hypertarget{method-Agent-export_messages_history}{}}}
 \subsection{Method \code{export_messages_history()}}{
@@ -504,7 +557,7 @@ openai_4_1_mini <- ellmer::chat(
   echo = "none"
 )
 agent <- Agent$new(
-  name = "capital finder",
+  name = "capital_finder",
   instruction = "You are an assistant.",
   llm_object = openai_4_1_mini
 )
@@ -548,7 +601,7 @@ openai_4_1_mini <- ellmer::chat(
   echo = "none"
 )
 agent <- Agent$new(
-  name = "capital finder",
+  name = "capital_finder",
   instruction = "You are an assistant.",
   llm_object = openai_4_1_mini
 )

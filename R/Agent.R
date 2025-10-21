@@ -288,6 +288,38 @@ Agent <- R6::R6Class(
     },
 
     #' @description
+    #' Reset the agent's conversation history while keeping the system instruction
+    #'
+    #' @examples
+    #' \dontrun{
+    #' openai_4_1_mini <- ellmer::chat(
+    #'   name = "openai/gpt-4.1-mini",
+    #'   api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'   echo = "none"
+    #' )
+    #' agent <- Agent$new(
+    #'   name = "AI assistant",
+    #'   instruction = "You are an assistant.",
+    #'   llm_object = openai_4_1_mini
+    #')
+    #' agent$invoke("Hello, how are you?")
+    #' agent$invoke("Tell me about machine learning")
+    #' agent$reset_conversation_history()  # Clears all messages except system prompt
+    #' }
+    reset_conversation_history = function() {
+      system_prompt <- self$llm_object$get_system_prompt()
+
+      private$._messages <- list(
+        list(role = "system", content = system_prompt)
+      )
+
+      private$.set_turns_from_messages()
+
+      cli::cli_alert_success("Conversation history reset. System prompt preserved.")
+      invisible(self)
+    },
+
+    #' @description
     #' Saves the agent's current conversation history as a JSON file on disk.
     #' @param file_path Character string specifying the file path where the JSON
     #' file should be saved. Defaults to a file named
@@ -301,7 +333,7 @@ Agent <- R6::R6Class(
     #'   echo = "none"
     #' )
     #' agent <- Agent$new(
-    #'   name = "capital finder",
+    #'   name = "capital_finder",
     #'   instruction = "You are an assistant.",
     #'   llm_object = openai_4_1_mini
     #')
@@ -343,7 +375,7 @@ Agent <- R6::R6Class(
     #'   echo = "none"
     #' )
     #' agent <- Agent$new(
-    #'   name = "capital finder",
+    #'   name = "capital_finder",
     #'   instruction = "You are an assistant.",
     #'   llm_object = openai_4_1_mini
     #')
