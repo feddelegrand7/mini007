@@ -136,6 +136,53 @@ agent <- Agent$new(
 )
 agent$update_instruction("You are a concise assistant.")
 }
+
+## ------------------------------------------------
+## Method `Agent$export_messages_history`
+## ------------------------------------------------
+
+\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+agent <- Agent$new(
+  name = "capital finder",
+  instruction = "You are an assistant.",
+  llm_object = openai_4_1_mini
+)
+agent$invoke("What is the capital of Algeria")
+agent$invoke("What is the capital of Italy")
+agent$export_messages_history()
+}
+
+
+## ------------------------------------------------
+## Method `Agent$load_messages_history`
+## ------------------------------------------------
+
+\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+agent <- Agent$new(
+  name = "capital finder",
+  instruction = "You are an assistant.",
+  llm_object = openai_4_1_mini
+)
+agent$load_messages_history("path/to/messages.json")
+agent$messages
+agent$llm_object
+}
+
+}
+\seealso{
+[load_messages_history()] for reloading a saved message history.
+
+[export_messages_history()] for exporting the messages object to json.
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -175,6 +222,8 @@ Assignment is validated automatically.}
 \item \href{#method-Agent-keep_last_n_messages}{\code{Agent$keep_last_n_messages()}}
 \item \href{#method-Agent-clear_and_summarise_messages}{\code{Agent$clear_and_summarise_messages()}}
 \item \href{#method-Agent-update_instruction}{\code{Agent$update_instruction()}}
+\item \href{#method-Agent-export_messages_history}{\code{Agent$export_messages_history()}}
+\item \href{#method-Agent-load_messages_history}{\code{Agent$load_messages_history()}}
 \item \href{#method-Agent-clone}{\code{Agent$clone()}}
 }
 }
@@ -420,6 +469,94 @@ agent <- Agent$new(
 )
 agent$update_instruction("You are a concise assistant.")
 }
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Agent-export_messages_history"></a>}}
+\if{latex}{\out{\hypertarget{method-Agent-export_messages_history}{}}}
+\subsection{Method \code{export_messages_history()}}{
+Saves the agent's current conversation history as a JSON file on disk.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Agent$export_messages_history(
+  file_path = paste0(getwd(), "/", paste0(self$name, "_messages.json"))
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{file_path}}{Character string specifying the file path where the JSON
+file should be saved. Defaults to a file named
+`"<agent_name>_messages.json"` in the current working directory.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+agent <- Agent$new(
+  name = "capital finder",
+  instruction = "You are an assistant.",
+  llm_object = openai_4_1_mini
+)
+agent$invoke("What is the capital of Algeria")
+agent$invoke("What is the capital of Italy")
+agent$export_messages_history()
+}
+
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Agent-load_messages_history"></a>}}
+\if{latex}{\out{\hypertarget{method-Agent-load_messages_history}{}}}
+\subsection{Method \code{load_messages_history()}}{
+Saves the agent's current conversation history as a JSON file on disk.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Agent$load_messages_history(
+  file_path = paste0(getwd(), "/", paste0(self$name, "_messages.json"))
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{file_path}}{Character string specifying the file path where the JSON
+file is stored. Defaults to a file named
+`"<agent_name>_messages.json"` in the current working directory.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+agent <- Agent$new(
+  name = "capital finder",
+  instruction = "You are an assistant.",
+  llm_object = openai_4_1_mini
+)
+agent$load_messages_history("path/to/messages.json")
+agent$messages
+agent$llm_object
+}
+
 }
 \if{html}{\out{</div>}}
 

@@ -103,6 +103,7 @@ Agent <- R6::R6Class(
 
       private$.add_user_message(prompt)
       response <- self$llm_object$chat(prompt)
+      response <- as.character(response)
       private$.add_assistant_message(response)
       return(response)
     },
@@ -230,6 +231,7 @@ Agent <- R6::R6Class(
       )
 
       summary <- self$llm_object$chat(summary_prompt)
+      summary <- as.character(summary)
 
       new_system_prompt <- paste(
         self$instruction,
@@ -283,6 +285,91 @@ Agent <- R6::R6Class(
       cli::cli_alert_info("New: {substr(new_instruction, 1, 50)}...")
 
       invisible(self)
+    },
+
+    #' @description
+    #' Saves the agent's current conversation history as a JSON file on disk.
+    #' @param file_path Character string specifying the file path where the JSON
+    #' file should be saved. Defaults to a file named
+    #' `"<agent_name>_messages.json"` in the current working directory.
+    #'
+    #' @examples
+    #' \dontrun{
+    #' openai_4_1_mini <- ellmer::chat(
+    #'   name = "openai/gpt-4.1-mini",
+    #'   api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'   echo = "none"
+    #' )
+    #' agent <- Agent$new(
+    #'   name = "capital finder",
+    #'   instruction = "You are an assistant.",
+    #'   llm_object = openai_4_1_mini
+    #')
+    #' agent$invoke("What is the capital of Algeria")
+    #' agent$invoke("What is the capital of Italy")
+    #' agent$export_messages_history()
+    #' }
+    #'
+    #' @seealso [load_messages_history()] for reloading a saved message history.
+    #'
+    export_messages_history = function(
+    file_path = paste0(getwd(), "/", paste0(self$name, "_messages.json"))
+    ) {
+
+      checkmate::assert_string(file_path)
+
+      jsonlite::write_json(
+        self$messages,
+        path = file_path,
+        auto_unbox = TRUE,
+        pretty = TRUE
+      )
+
+      cli::cli_alert_success(glue::glue("Conversation saved to {file_path}"))
+
+    },
+
+    #' @description
+    #' Saves the agent's current conversation history as a JSON file on disk.
+    #' @param file_path Character string specifying the file path where the JSON
+    #' file is stored. Defaults to a file named
+    #' `"<agent_name>_messages.json"` in the current working directory.
+    #'
+    #' @examples
+    #' \dontrun{
+    #' openai_4_1_mini <- ellmer::chat(
+    #'   name = "openai/gpt-4.1-mini",
+    #'   api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'   echo = "none"
+    #' )
+    #' agent <- Agent$new(
+    #'   name = "capital finder",
+    #'   instruction = "You are an assistant.",
+    #'   llm_object = openai_4_1_mini
+    #')
+    #' agent$load_messages_history("path/to/messages.json")
+    #' agent$messages
+    #' agent$llm_object
+    #' }
+    #'
+    #' @seealso [export_messages_history()] for exporting the messages object to json.
+    #'
+    load_messages_history = function(
+    file_path = paste0(getwd(), "/", paste0(self$name, "_messages.json"))
+    ) {
+
+      checkmate::assert_string(file_path)
+
+      if (!file.exists(file_path)) {
+        cli::cli_abort("File does not exist.")
+      }
+
+      messages <- jsonlite::read_json(file_path, simplifyVector = FALSE)
+
+      self$messages <- messages
+
+      cli::cli_alert_success(glue::glue("Conversation history loaded from {file_path}"))
+
     },
 
     #' @field name The agent's name.

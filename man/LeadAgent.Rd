@@ -483,10 +483,12 @@ lead_agent$judge_and_choose_best_response("what's the best way to war a kalvin k
 }
 }
 \if{html}{\out{
-<details open><summary>Inherited methods</summary>
+<details><summary>Inherited methods</summary>
 <ul>
 <li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="clear_and_summarise_messages"><a href='../../mini007/html/Agent.html#method-Agent-clear_and_summarise_messages'><code>mini007::Agent$clear_and_summarise_messages()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="export_messages_history"><a href='../../mini007/html/Agent.html#method-Agent-export_messages_history'><code>mini007::Agent$export_messages_history()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="keep_last_n_messages"><a href='../../mini007/html/Agent.html#method-Agent-keep_last_n_messages'><code>mini007::Agent$keep_last_n_messages()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="load_messages_history"><a href='../../mini007/html/Agent.html#method-Agent-load_messages_history'><code>mini007::Agent$load_messages_history()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="set_budget"><a href='../../mini007/html/Agent.html#method-Agent-set_budget'><code>mini007::Agent$set_budget()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="update_instruction"><a href='../../mini007/html/Agent.html#method-Agent-update_instruction'><code>mini007::Agent$update_instruction()</code></a></span></li>
 </ul>
