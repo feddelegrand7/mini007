@@ -406,7 +406,7 @@ lead_agent$broadcast(
 }
 
 ## ------------------------------------------------
-## Method `LeadAgent$judge_and_chose_best_response`
+## Method `LeadAgent$judge_and_choose_best_response`
 ## ------------------------------------------------
 
 \dontrun{
@@ -446,7 +446,7 @@ lead_agent <- LeadAgent$new(
 
 lead_agent$register_agents(c(stylist, stylist2))
 
-lead_agent$judge_and_chose_best_response("what's the best way to war a kalvin klein shirt?")
+lead_agent$judge_and_choose_best_response("what's the best way to war a kalvin klein shirt?")
 
 }
 }
@@ -478,7 +478,7 @@ lead_agent$judge_and_chose_best_response("what's the best way to war a kalvin kl
 \item \href{#method-LeadAgent-generate_plan}{\code{LeadAgent$generate_plan()}}
 \item \href{#method-LeadAgent-broadcast}{\code{LeadAgent$broadcast()}}
 \item \href{#method-LeadAgent-set_hitl}{\code{LeadAgent$set_hitl()}}
-\item \href{#method-LeadAgent-judge_and_chose_best_response}{\code{LeadAgent$judge_and_chose_best_response()}}
+\item \href{#method-LeadAgent-judge_and_choose_best_response}{\code{LeadAgent$judge_and_choose_best_response()}}
 \item \href{#method-LeadAgent-clone}{\code{LeadAgent$clone()}}
 }
 }
@@ -1067,13 +1067,13 @@ A list of responses from all agents.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-LeadAgent-judge_and_chose_best_response"></a>}}
-\if{latex}{\out{\hypertarget{method-LeadAgent-judge_and_chose_best_response}{}}}
-\subsection{Method \code{judge_and_chose_best_response()}}{
+\if{html}{\out{<a id="method-LeadAgent-judge_and_choose_best_response"></a>}}
+\if{latex}{\out{\hypertarget{method-LeadAgent-judge_and_choose_best_response}{}}}
+\subsection{Method \code{judge_and_choose_best_response()}}{
 The Lead Agent send a prompt to its registered agents and choose the best response
 from the agents' responses
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LeadAgent$judge_and_chose_best_response(prompt)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LeadAgent$judge_and_choose_best_response(prompt)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -1125,7 +1125,7 @@ lead_agent <- LeadAgent$new(
 
 lead_agent$register_agents(c(stylist, stylist2))
 
-lead_agent$judge_and_chose_best_response("what's the best way to war a kalvin klein shirt?")
+lead_agent$judge_and_choose_best_response("what's the best way to war a kalvin klein shirt?")
 
 }
 }

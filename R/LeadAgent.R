@@ -640,10 +640,10 @@ LeadAgent <- R6::R6Class(
     #'
     #' lead_agent$register_agents(c(stylist, stylist2))
     #'
-    #' lead_agent$judge_and_chose_best_response("what's the best way to war a kalvin klein shirt?")
+    #' lead_agent$judge_and_choose_best_response("what's the best way to war a kalvin klein shirt?")
     #'
     #' }
-    judge_and_chose_best_response = function(prompt) {
+    judge_and_choose_best_response = function(prompt) {
 
       checkmate::assert_string(prompt)
 

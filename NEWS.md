@@ -6,7 +6,7 @@ Adding the following new methods:
 - `keep_last_n_messages()`
 - `update_instruction()`
 - `clear_and_summarise_messages()`
-- `judge_and_chose_best_response()`
+- `judge_and_choose_best_response()`
 - `set_budget()`
 
 
