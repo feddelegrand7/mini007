@@ -11,6 +11,7 @@ Adding the following new methods:
 - `export_messages_history()` and `load_messages_history()`
 - `reset_conversation_history()`
 - `add_message()`
+- `generate_r_code()`
 
 
 # mini007 0.1.0

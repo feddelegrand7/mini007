@@ -113,6 +113,109 @@ Agent <- R6::R6Class(
     },
 
     #' @description
+    #' Generate R code from natural language descriptions and optionally validate/execute it
+    #'
+    #' @param code_description Character string describing the R code to generate
+    #' @param validate Logical indicating whether to validate the generated code syntax
+    #' @param execute Logical indicating whether to execute the generated code (use with caution)
+    #' @param env Environment in which to execute the code if execute = TRUE. Default to \code{globalenv}
+    #' @return A list containing the generated code and validation/execution results
+    #' @examples
+    #' \dontrun{
+    #' openai_4_1_mini <- ellmer::chat(
+    #'   name = "openai/gpt-4.1-mini",
+    #'   api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'   echo = "none"
+    #' )
+    #'
+    #' r_assistant <- Agent$new(
+    #'   name = "R Code Assistant",
+    #'   instruction = paste("You are an expert R programmer",
+    #'   llm_object = openai_4_1_mini
+    #' )
+    #'
+    #' # Generate code for data manipulation
+    #' result <- r_assistant$generate_r_code(
+    #'   code_description = "Calculate the summary of the mtcars dataframe",
+    #'   validate = TRUE,
+    #'   execute = TRUE
+    #' )
+    #' print(result)
+    #' }
+    generate_r_code = function(code_description, validate = FALSE, execute = FALSE, env = globalenv()) {
+
+      checkmate::assert_string(code_description)
+      checkmate::assert_flag(validate)
+      checkmate::assert_flag(execute)
+      checkmate::assert_environment(env)
+
+      code_prompt <- paste0(
+        "Generate R code for the following task. Return ONLY the R code without any explanations, ",
+        "markdown formatting, or additional text:\n\n",
+        code_description
+      )
+
+      generated_code <- self$invoke(code_prompt)
+
+      clean_code <- gsub("```\\{?r\\}?|```", "", generated_code)
+      clean_code <- trimws(clean_code)
+
+      result <- list(
+        description = code_description,
+        code = clean_code,
+        validated = FALSE,
+        validation_message = NA_character_,
+        executed = FALSE,
+        execution_result = NULL,
+        execution_error = NULL
+      )
+
+      if (validate) {
+        validation <- tryCatch({
+          parsed <- parse(text = clean_code)
+          result$validated <- TRUE
+          result$validation_message <- "Syntax is valid"
+          list(valid = TRUE, message = "Syntax is valid")
+        }, error = function(e) {
+          result$validated <- FALSE
+          result$validation_message <- paste("Syntax error:", e$message)
+          list(valid = FALSE, message = e$message)
+        })
+      }
+
+      if (execute) {
+        if (!validate || !result$validated) {
+          cli::cli_alert_warning("Code execution skipped: code must be validated first")
+          return(result)
+        }
+
+        cli::cli_alert_info("Executing generated R code...")
+
+        execution_result <- tryCatch({
+          output <- capture.output({
+            eval_result <- eval(parse(text = clean_code), envir = env)
+          })
+
+          result$executed <- TRUE
+          result$execution_result <- list(
+            value = eval_result,
+            output = output
+          )
+          result$execution_error <- NULL
+
+          cli::cli_alert_success("Code executed successfully")
+
+        }, error = function(e) {
+          result$executed <- FALSE
+          result$execution_error <- e$message
+          cli::cli_alert_danger(paste("Execution error:", e$message))
+        })
+      }
+
+      return(result)
+    },
+
+    #' @description
     #' Set a budget to a specific agent, if the budget is reached, an error will be thrown
     #'
     #' @param amount_in_usd Numerical value denoting the amount to set for the budget,

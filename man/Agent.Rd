@@ -52,6 +52,32 @@ agent$invoke("Continue this sentence: 1 2 3 viva")
 }
 
 ## ------------------------------------------------
+## Method `Agent$generate_r_code`
+## ------------------------------------------------
+
+\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+
+r_assistant <- Agent$new(
+  name = "R Code Assistant",
+  instruction = paste("You are an expert R programmer",
+  llm_object = openai_4_1_mini
+)
+
+# Generate code for data manipulation
+result <- r_assistant$generate_r_code(
+  code_description = "Calculate the summary of the mtcars dataframe",
+  validate = TRUE,
+  execute = TRUE
+)
+print(result)
+}
+
+## ------------------------------------------------
 ## Method `Agent$set_budget`
 ## ------------------------------------------------
 
@@ -278,6 +304,7 @@ Assignment is validated automatically.}
 \itemize{
 \item \href{#method-Agent-new}{\code{Agent$new()}}
 \item \href{#method-Agent-invoke}{\code{Agent$invoke()}}
+\item \href{#method-Agent-generate_r_code}{\code{Agent$generate_r_code()}}
 \item \href{#method-Agent-set_budget}{\code{Agent$set_budget()}}
 \item \href{#method-Agent-keep_last_n_messages}{\code{Agent$keep_last_n_messages()}}
 \item \href{#method-Agent-clear_and_summarise_messages}{\code{Agent$clear_and_summarise_messages()}}
@@ -371,6 +398,65 @@ agent <- Agent$new(
  llm_object = openai_4_1_mini
 )
 agent$invoke("Continue this sentence: 1 2 3 viva")
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Agent-generate_r_code"></a>}}
+\if{latex}{\out{\hypertarget{method-Agent-generate_r_code}{}}}
+\subsection{Method \code{generate_r_code()}}{
+Generate R code from natural language descriptions and optionally validate/execute it
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Agent$generate_r_code(
+  code_description,
+  validate = FALSE,
+  execute = FALSE,
+  env = globalenv()
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{code_description}}{Character string describing the R code to generate}
+
+\item{\code{validate}}{Logical indicating whether to validate the generated code syntax}
+
+\item{\code{execute}}{Logical indicating whether to execute the generated code (use with caution)}
+
+\item{\code{env}}{Environment in which to execute the code if execute = TRUE. Default to \code{globalenv}}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A list containing the generated code and validation/execution results
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+
+r_assistant <- Agent$new(
+  name = "R Code Assistant",
+  instruction = paste("You are an expert R programmer",
+  llm_object = openai_4_1_mini
+)
+
+# Generate code for data manipulation
+result <- r_assistant$generate_r_code(
+  code_description = "Calculate the summary of the mtcars dataframe",
+  validate = TRUE,
+  execute = TRUE
+)
+print(result)
 }
 }
 \if{html}{\out{</div>}}
