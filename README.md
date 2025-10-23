@@ -5,6 +5,15 @@
 
 <!-- badges: start -->
 
+[![CRAN
+status](https://www.r-pkg.org/badges/version/mini007)](https://CRAN.R-project.org/package=mini007)
+[![R
+badge](https://img.shields.io/badge/Build%20with-♥%20and%20R-blue)](https://github.com/feddelegrand7/mini007)
+[![metacran
+downloads](https://cranlogs.r-pkg.org/badges/mini007)](https://cran.r-project.org/package=mini007)
+[![metacran
+downloads](https://cranlogs.r-pkg.org/badges/grand-total/mini007)](https://cran.r-project.org/package=mini007)
+
 <!-- badges: end -->
 
 `mini007` provides a lightweight and extensible framework for
@@ -77,7 +86,7 @@ Each created Agent has an `agent_id` (among other meta information):
 
 ``` r
 polar_bear_researcher$agent_id
-#> [1] "92b04520-761d-4d52-9b59-e65faa040c37"
+#> [1] "15e168bb-710f-4787-8635-8ae6a9bd3586"
 ```
 
 At any time, you can tweak the `llm_object`:
@@ -93,7 +102,7 @@ An agent can provide the answer to a prompt using the `invoke` method:
 
 ``` r
 polar_bear_researcher$invoke("Are polar bears dangerous for humans?")
-#> [1] "Yes, polar bears are dangerous to humans as they are powerful predators and can attack if threatened or hungry."
+#> [1] "Yes, polar bears are dangerous to humans as they are powerful predators and can be aggressive if threatened or searching for food."
 ```
 
 You can also retrieve a list that displays the history of the agent:
@@ -121,20 +130,20 @@ polar_bear_researcher$messages
 #> [1] "assistant"
 #> 
 #> [[3]]$content
-#> [1] "Yes, polar bears are dangerous to humans as they are powerful predators and can attack if threatened or hungry."
+#> [1] "Yes, polar bears are dangerous to humans as they are powerful predators and can be aggressive if threatened or searching for food."
 ```
 
 Or the `ellmer` way:
 
 ``` r
 polar_bear_researcher$llm_object
-#> <Chat OpenAI/gpt-4.1-mini turns=3 tokens=43/21 $0.00>
+#> <Chat OpenAI/gpt-4.1-mini turns=3 tokens=43/24 $0.00>
 #> ── system [0] ──────────────────────────────────────────────────────────────────
 #> You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max.
 #> ── user [43] ───────────────────────────────────────────────────────────────────
 #> Are polar bears dangerous for humans?
-#> ── assistant [21] ──────────────────────────────────────────────────────────────
-#> Yes, polar bears are dangerous to humans as they are powerful predators and can attack if threatened or hungry.
+#> ── assistant [24] ──────────────────────────────────────────────────────────────
+#> Yes, polar bears are dangerous to humans as they are powerful predators and can be aggressive if threatened or searching for food.
 ```
 
 ### Managing Agent Conversation History
@@ -150,14 +159,14 @@ memory efficiency while keeping important conversation context.
 # After several interactions, summarise and clear the conversation history
 polar_bear_researcher$clear_and_summarise_messages()
 #> ✔ Conversation history summarised and appended to system prompt.
-#> ℹ Summary: The user asked if polar bears are dangerous to humans, and the assistant responded that they are ind...
+#> ℹ Summary: The user asked if polar bears are dangerous to humans, and the expert responded that polar bears are...
 polar_bear_researcher$messages
 #> [[1]]
 #> [[1]]$role
 #> [1] "system"
 #> 
 #> [[1]]$content
-#> [1] "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max. \n\n--- Conversation Summary ---\n The user asked if polar bears are dangerous to humans, and the assistant responded that they are indeed dangerous because they are powerful predators that may attack if threatened or hungry."
+#> [1] "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max. \n\n--- Conversation Summary ---\n The user asked if polar bears are dangerous to humans, and the expert responded that polar bears are indeed dangerous due to their strength and potential aggression when threatened or hungry."
 ```
 
 This method summarises all previous conversations into a paragraph and
@@ -214,7 +223,7 @@ lead_agent$agents
 #> <Agent>
 #>   Public:
 #>     add_message: function (role, content) 
-#>     agent_id: 6cc0059f-6f3a-4ce0-91ed-9b4a7f5ce690
+#>     agent_id: ed81c0b5-ae9e-442b-96e4-100122e223a7
 #>     broadcast_history: list
 #>     budget: NA
 #>     clear_and_summarise_messages: function () 
@@ -246,7 +255,7 @@ lead_agent$agents
 #> <Agent>
 #>   Public:
 #>     add_message: function (role, content) 
-#>     agent_id: cf260867-666c-467c-b3f7-206aa2cfad50
+#>     agent_id: 3309b5d6-6da6-45a7-b704-f9ecc0dd28c9
 #>     broadcast_history: list
 #>     budget: NA
 #>     clear_and_summarise_messages: function () 
@@ -278,7 +287,7 @@ lead_agent$agents
 #> <Agent>
 #>   Public:
 #>     add_message: function (role, content) 
-#>     agent_id: ed286459-f432-4c8d-bffb-9f54718e357a
+#>     agent_id: 362f9181-35c9-4199-a61b-8591a763e94f
 #>     broadcast_history: list
 #>     budget: NA
 #>     clear_and_summarise_messages: function () 
@@ -319,7 +328,7 @@ plan <- lead_agent$generate_plan(prompt_to_execute)
 plan
 #> [[1]]
 #> [[1]]$agent_id
-#> 6cc0059f-6f3a-4ce0-91ed-9b4a7f5ce690
+#> ed81c0b5-ae9e-442b-96e4-100122e223a7
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
@@ -331,12 +340,12 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[1]]$prompt
-#> [1] "Research the current economic situation in Algeria to gather key information and data."
+#> [1] "Research and gather current information about the economic situation in Algeria, focusing on key aspects such as GDP growth, major industries, and recent economic challenges."
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> cf260867-666c-467c-b3f7-206aa2cfad50
+#> 3309b5d6-6da6-45a7-b704-f9ecc0dd28c9
 #> 
 #> [[2]]$agent_name
 #> [1] "summarizer"
@@ -348,12 +357,12 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[2]]$prompt
-#> [1] "Summarize the gathered information into 3 concise bullet points highlighting the main aspects of Algeria's economy."
+#> [1] "Summarize the gathered information into 3 clear and concise bullet points."
 #> 
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> ed286459-f432-4c8d-bffb-9f54718e357a
+#> 362f9181-35c9-4199-a61b-8591a763e94f
 #> 
 #> [[3]]$agent_name
 #> [1] "translator"
@@ -365,7 +374,7 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[3]]$prompt
-#> [1] "Translate the 3 bullet points summary into German accurately."
+#> [1] "Translate the 3 bullet points summarizing Algeria's economic situation into German."
 ```
 
 Now, in order now to execute the workflow, we just need to call the
@@ -381,7 +390,7 @@ response <- lead_agent$invoke("Tell me about the economic situation in Algeria, 
 
 ``` r
 response
-#> [1] "- Algeriens Wirtschaft ist stark von Kohlenwasserstoffen abhängig, wobei über 90 % der Exporte aus diesem Sektor stammen, was das Land anfällig für niedrige Ölpreise macht.  \n- Die Regierung fördert aktiv die wirtschaftliche Diversifizierung, mit Schwerpunkt auf Landwirtschaft und erneuerbaren Energien.  \n- Trotz dieser Bemühungen bleibt die Arbeitslosigkeit hoch, insbesondere bei Jugendlichen, mit Raten von etwa 30 %."
+#> [1] "- Das BIP-Wachstum Algeriens zu Beginn des Jahres 2024 ist moderat und liegt bei etwa 2-3 %, was eine Erholung von den vergangenen Ölpreisschocks widerspiegelt.  \n- Die Wirtschaft ist stark von Kohlenwasserstoffen abhängig, insbesondere von Öl und Gas, die etwa 90 % der Exporterlöse ausmachen, neben den Sektoren Landwirtschaft und Bauwesen.  \n- Wichtige Herausforderungen sind die wirtschaftliche Diversifizierung, hohe Arbeitslosigkeit, Inflation und sozialer Druck für Reformen angesichts volatiler Ölpreise."
 ```
 
 If you want to inspect the multi-agents orchestration, you have access
@@ -391,7 +400,7 @@ to the `agents_interaction` object:
 lead_agent$agents_interaction
 #> [[1]]
 #> [[1]]$agent_id
-#> 6cc0059f-6f3a-4ce0-91ed-9b4a7f5ce690
+#> ed81c0b5-ae9e-442b-96e4-100122e223a7
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
@@ -403,10 +412,10 @@ lead_agent$agents_interaction
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[1]]$prompt
-#> [1] "Research the current economic situation in Algeria to gather key information and data."
+#> [1] "Research and gather current information about the economic situation in Algeria, focusing on key aspects such as GDP growth, major industries, and recent economic challenges."
 #> 
 #> [[1]]$response
-#> [1] "As of mid-2024, Algeria faces economic challenges including low oil prices affecting hydrocarbon revenues, its main income source (over 90% of exports). The government is promoting economic diversification, with efforts in agriculture and renewable energy, but unemployment, especially among youth, remains high around 30%."
+#> [1] "As of early 2024, Algeria's GDP growth is modest, around 2-3%, recovering from previous oil price shocks. Major industries include hydrocarbons (oil and gas, accounting for ~90% of export revenues), agriculture, and construction. Recent challenges involve diversification efforts amid volatile oil prices, high unemployment, inflation pressures, and social demands for economic reforms."
 #> 
 #> [[1]]$edited_by_hitl
 #> [1] FALSE
@@ -414,7 +423,7 @@ lead_agent$agents_interaction
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> cf260867-666c-467c-b3f7-206aa2cfad50
+#> 3309b5d6-6da6-45a7-b704-f9ecc0dd28c9
 #> 
 #> [[2]]$agent_name
 #> [1] "summarizer"
@@ -426,10 +435,10 @@ lead_agent$agents_interaction
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[2]]$prompt
-#> [1] "Summarize the gathered information into 3 concise bullet points highlighting the main aspects of Algeria's economy."
+#> [1] "Summarize the gathered information into 3 clear and concise bullet points."
 #> 
 #> [[2]]$response
-#> [1] "- Algeria's economy heavily relies on hydrocarbons, with over 90% of exports coming from this sector, making it vulnerable to low oil prices.  \n- The government is actively promoting economic diversification, focusing on agriculture and renewable energy industries.  \n- Despite these efforts, unemployment remains high, particularly among youth, with rates around 30%."
+#> [1] "- Algeria's GDP growth in early 2024 is modest at approximately 2-3%, reflecting recovery from past oil price shocks.  \n- The economy is heavily reliant on hydrocarbons, especially oil and gas, which make up about 90% of export revenues, alongside agriculture and construction sectors.  \n- Key challenges include economic diversification, high unemployment, inflation, and social pressures for reforms amid volatile oil prices."
 #> 
 #> [[2]]$edited_by_hitl
 #> [1] FALSE
@@ -437,7 +446,7 @@ lead_agent$agents_interaction
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> ed286459-f432-4c8d-bffb-9f54718e357a
+#> 362f9181-35c9-4199-a61b-8591a763e94f
 #> 
 #> [[3]]$agent_name
 #> [1] "translator"
@@ -449,10 +458,10 @@ lead_agent$agents_interaction
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[3]]$prompt
-#> [1] "Translate the 3 bullet points summary into German accurately."
+#> [1] "Translate the 3 bullet points summarizing Algeria's economic situation into German."
 #> 
 #> [[3]]$response
-#> [1] "- Algeriens Wirtschaft ist stark von Kohlenwasserstoffen abhängig, wobei über 90 % der Exporte aus diesem Sektor stammen, was das Land anfällig für niedrige Ölpreise macht.  \n- Die Regierung fördert aktiv die wirtschaftliche Diversifizierung, mit Schwerpunkt auf Landwirtschaft und erneuerbaren Energien.  \n- Trotz dieser Bemühungen bleibt die Arbeitslosigkeit hoch, insbesondere bei Jugendlichen, mit Raten von etwa 30 %."
+#> [1] "- Das BIP-Wachstum Algeriens zu Beginn des Jahres 2024 ist moderat und liegt bei etwa 2-3 %, was eine Erholung von den vergangenen Ölpreisschocks widerspiegelt.  \n- Die Wirtschaft ist stark von Kohlenwasserstoffen abhängig, insbesondere von Öl und Gas, die etwa 90 % der Exporterlöse ausmachen, neben den Sektoren Landwirtschaft und Bauwesen.  \n- Wichtige Herausforderungen sind die wirtschaftliche Diversifizierung, hohe Arbeitslosigkeit, Inflation und sozialer Druck für Reformen angesichts volatiler Ölpreise."
 #> 
 #> [[3]]$edited_by_hitl
 #> [1] FALSE
@@ -509,7 +518,7 @@ lead_agent$register_agents(c(openai_4_1_agent, openai_4_1_nano_agent))
 lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to sing when running under the rain? how about a flower?")
 #> [[1]]
 #> [[1]]$agent_id
-#> [1] "3d77caf7-8bf0-4a47-aad5-8cb96e7dd685"
+#> [1] "84a0103a-1776-4620-8f6e-ad6c93825e17"
 #> 
 #> [[1]]$agent_name
 #> [1] "openai_4_1_agent"
@@ -521,12 +530,12 @@ lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to si
 #> [1] "gpt-4.1"
 #> 
 #> [[1]]$response
-#> [1] "As an Algerian, you might sing \"Ya Rayah\" by Dahmane El Harrachi when running under the rain, and if you were a flower, you might \"sing\" by blooming in gentle silence as rain nourishes your petals."
+#> [1] "If you were Algerian, you might enjoy singing \"Ya Rayah\" by Dahmane El Harrachi while running under the rain, and if you were a flower, you might simply bask in the rainfall, expressing joy through gentle movements."
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> [1] "ffc9fe13-47ce-4fb0-a799-8a13ad8189ff"
+#> [1] "13abd06e-e3ce-4adf-8f82-2fa4729e629a"
 #> 
 #> [[2]]$agent_name
 #> [1] "openai_4_1_nano_agent"
@@ -538,7 +547,7 @@ lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to si
 #> [1] "gpt-4.1-nano"
 #> 
 #> [[2]]$response
-#> [1] "You might enjoy singing \"Ya Rayah\" by Rachid Taha when running under the rain and \"Aïcha\" by Khaled when appreciating a flower."
+#> [1] "You might enjoy singing \"Tan Only,\" a popular Algerian song, and for a flower, \"Bougainvillea\" could inspire a joyful feeling."
 ```
 
 You can also access the history of the `broadcasting` using the
@@ -553,7 +562,7 @@ lead_agent$broadcast_history
 #> [[1]]$responses
 #> [[1]]$responses[[1]]
 #> [[1]]$responses[[1]]$agent_id
-#> [1] "3d77caf7-8bf0-4a47-aad5-8cb96e7dd685"
+#> [1] "84a0103a-1776-4620-8f6e-ad6c93825e17"
 #> 
 #> [[1]]$responses[[1]]$agent_name
 #> [1] "openai_4_1_agent"
@@ -565,12 +574,12 @@ lead_agent$broadcast_history
 #> [1] "gpt-4.1"
 #> 
 #> [[1]]$responses[[1]]$response
-#> [1] "As an Algerian, you might sing \"Ya Rayah\" by Dahmane El Harrachi when running under the rain, and if you were a flower, you might \"sing\" by blooming in gentle silence as rain nourishes your petals."
+#> [1] "If you were Algerian, you might enjoy singing \"Ya Rayah\" by Dahmane El Harrachi while running under the rain, and if you were a flower, you might simply bask in the rainfall, expressing joy through gentle movements."
 #> 
 #> 
 #> [[1]]$responses[[2]]
 #> [[1]]$responses[[2]]$agent_id
-#> [1] "ffc9fe13-47ce-4fb0-a799-8a13ad8189ff"
+#> [1] "13abd06e-e3ce-4adf-8f82-2fa4729e629a"
 #> 
 #> [[1]]$responses[[2]]$agent_name
 #> [1] "openai_4_1_nano_agent"
@@ -582,7 +591,7 @@ lead_agent$broadcast_history
 #> [1] "gpt-4.1-nano"
 #> 
 #> [[1]]$responses[[2]]$response
-#> [1] "You might enjoy singing \"Ya Rayah\" by Rachid Taha when running under the rain and \"Aïcha\" by Khaled when appreciating a flower."
+#> [1] "You might enjoy singing \"Tan Only,\" a popular Algerian song, and for a flower, \"Bougainvillea\" could inspire a joyful feeling."
 ```
 
 ## Tool specification
@@ -651,7 +660,7 @@ lead_agent$invoke(
 #> ── Generating new plan ──
 #> 
 #> ✔ Plan successfully generated.
-#> [1] "The weather in Algiers is currently sunny and hot, with a temperature of 35 degrees Celsius and no precipitation."
+#> [1] "The current weather conditions in Algiers are as follows: The temperature is 35 degrees Celsius, it is sunny, and there is no precipitation. If you need information on humidity or forecasts, please let me know!"
 ```
 
 ## Human In The Loop (HITL)
@@ -742,31 +751,31 @@ best_answer
 #> $proposals
 #> $proposals[[1]]
 #> $proposals[[1]]$agent_id
-#> [1] "d017cbde-a04c-4fe2-ba29-213f7b763e23"
+#> [1] "548ccbda-6e42-4cb4-a532-76cacdccda61"
 #> 
 #> $proposals[[1]]$agent_name
 #> [1] "stylist"
 #> 
 #> $proposals[[1]]$response
-#> [1] "Layer the blue Calvin Klein shirt under a neutral or navy blazer or coat, add a scarf in a complementary shade, and complete the look with brown or black shoes for a stylish winter outfit with pink trousers."
+#> [1] "Layer your blue Calvin Klein shirt with a neutral-colored cardigan or blazer, add a coordinating scarf, and finish with stylish boots to complement the pink trousers for a polished winter look."
 #> 
 #> 
 #> $proposals[[2]]
 #> $proposals[[2]]$agent_id
-#> [1] "5f6331fa-b20b-41b6-9e9a-16f71fb45550"
+#> [1] "7e8c5ffe-e504-4444-bb46-88116950edf6"
 #> 
 #> $proposals[[2]]$agent_name
 #> [1] "stylist2"
 #> 
 #> $proposals[[2]]$response
-#> [1] "Pair the blue Calvin Klein shirt with a neutral-colored blazer or cardigan, add some stylish shoes and accessories, and consider layering with a scarf to complete a chic winter look."
+#> [1] "Layer the blue Calvin Klein shirt with a neutral-colored sweater or blazer and wear with warm accessories like a scarf and boots for a stylish winter look."
 #> 
 #> 
 #> 
 #> $chosen_response
-#> Layer the blue Calvin Klein shirt under a neutral or navy blazer or coat, add a
-#> scarf in a complementary shade, and complete the look with brown or black shoes
-#> for a stylish winter outfit with pink trousers.
+#> Layer your blue Calvin Klein shirt with a neutral-colored cardigan or blazer, 
+#> add a coordinating scarf, and finish with stylish boots to complement the pink 
+#> trousers for a polished winter look.
 ```
 
 ## Code of Conduct
