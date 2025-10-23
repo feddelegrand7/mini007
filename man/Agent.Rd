@@ -72,7 +72,8 @@ r_assistant <- Agent$new(
 result <- r_assistant$generate_r_code(
   code_description = "Calculate the summary of the mtcars dataframe",
   validate = TRUE,
-  execute = TRUE
+  execute = TRUE,
+  interactive = TRUE
 )
 print(result)
 }
@@ -415,7 +416,8 @@ Generate R code from natural language descriptions and optionally validate/execu
   code_description,
   validate = FALSE,
   execute = FALSE,
-  env = globalenv()
+  env = globalenv(),
+  interactive = TRUE
 )}\if{html}{\out{</div>}}
 }
 
@@ -429,6 +431,8 @@ Generate R code from natural language descriptions and optionally validate/execu
 \item{\code{execute}}{Logical indicating whether to execute the generated code (use with caution)}
 
 \item{\code{env}}{Environment in which to execute the code if execute = TRUE. Default to \code{globalenv}}
+
+\item{\code{interactive}}{Logical; if TRUE, ask for user confirmation before executing generated code}
 }
 \if{html}{\out{</div>}}
 }
@@ -454,7 +458,8 @@ r_assistant <- Agent$new(
 result <- r_assistant$generate_r_code(
   code_description = "Calculate the summary of the mtcars dataframe",
   validate = TRUE,
-  execute = TRUE
+  execute = TRUE,
+  interactive = TRUE
 )
 print(result)
 }

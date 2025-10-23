@@ -119,6 +119,7 @@ Agent <- R6::R6Class(
     #' @param validate Logical indicating whether to validate the generated code syntax
     #' @param execute Logical indicating whether to execute the generated code (use with caution)
     #' @param env Environment in which to execute the code if execute = TRUE. Default to \code{globalenv}
+    #' @param interactive Logical; if TRUE, ask for user confirmation before executing generated code
     #' @return A list containing the generated code and validation/execution results
     #' @examples
     #' \dontrun{
@@ -138,16 +139,24 @@ Agent <- R6::R6Class(
     #' result <- r_assistant$generate_r_code(
     #'   code_description = "Calculate the summary of the mtcars dataframe",
     #'   validate = TRUE,
-    #'   execute = TRUE
+    #'   execute = TRUE,
+    #'   interactive = TRUE
     #' )
     #' print(result)
     #' }
-    generate_r_code = function(code_description, validate = FALSE, execute = FALSE, env = globalenv()) {
+    generate_r_code = function(
+    code_description,
+    validate = FALSE,
+    execute = FALSE,
+    env = globalenv(),
+    interactive = TRUE
+    ) {
 
       checkmate::assert_string(code_description)
       checkmate::assert_flag(validate)
       checkmate::assert_flag(execute)
       checkmate::assert_environment(env)
+      checkmate::assert_flag(interactive)
 
       code_prompt <- paste0(
         "Generate R code for the following task. Return ONLY the R code without any explanations, ",
@@ -187,6 +196,16 @@ Agent <- R6::R6Class(
         if (!validate || !result$validated) {
           cli::cli_alert_warning("Code execution skipped: code must be validated first")
           return(result)
+        }
+
+        if (interactive) {
+          cli::cli_h1("Generated code preview:")
+          cat(paste0("\n", clean_code, "\n\n"))
+          user_input <- readline(prompt = "Do you want to execute this code? [y/N]: ")
+          if (tolower(user_input) != "y") {
+            cli::cli_alert_info("Execution cancelled by user.")
+            return(result)
+          }
         }
 
         cli::cli_alert_info("Executing generated R code...")
