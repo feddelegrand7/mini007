@@ -118,8 +118,8 @@ Agent <- R6::R6Class(
     #' @param code_description Character string describing the R code to generate
     #' @param validate Logical indicating whether to validate the generated code syntax
     #' @param execute Logical indicating whether to execute the generated code (use with caution)
-    #' @param env Environment in which to execute the code if execute = TRUE. Default to \code{globalenv}
     #' @param interactive Logical; if TRUE, ask for user confirmation before executing generated code
+    #' @param env Environment in which to execute the code if execute = TRUE. Default to \code{globalenv}
     #' @return A list containing the generated code and validation/execution results
     #' @examples
     #' \dontrun{
@@ -148,8 +148,8 @@ Agent <- R6::R6Class(
     code_description,
     validate = FALSE,
     execute = FALSE,
-    env = globalenv(),
-    interactive = TRUE
+    interactive = TRUE,
+    env = globalenv()
     ) {
 
       checkmate::assert_string(code_description)

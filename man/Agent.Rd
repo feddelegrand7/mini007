@@ -416,8 +416,8 @@ Generate R code from natural language descriptions and optionally validate/execu
   code_description,
   validate = FALSE,
   execute = FALSE,
-  env = globalenv(),
-  interactive = TRUE
+  interactive = TRUE,
+  env = globalenv()
 )}\if{html}{\out{</div>}}
 }
 
@@ -430,9 +430,9 @@ Generate R code from natural language descriptions and optionally validate/execu
 
 \item{\code{execute}}{Logical indicating whether to execute the generated code (use with caution)}
 
-\item{\code{env}}{Environment in which to execute the code if execute = TRUE. Default to \code{globalenv}}
-
 \item{\code{interactive}}{Logical; if TRUE, ask for user confirmation before executing generated code}
+
+\item{\code{env}}{Environment in which to execute the code if execute = TRUE. Default to \code{globalenv}}
 }
 \if{html}{\out{</div>}}
 }

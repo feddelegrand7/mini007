@@ -221,69 +221,47 @@ LeadAgent <- R6::R6Class(
     },
 
     #' @description
-    #' Returns a list of subtasks with assigned agent IDs and names.
-    #' @param prompt A complex instruction to be broken into subtasks.
-    #' @return A list of lists, each with `agent_id`, `agent_name`, and `prompt` fields.
-    #' @examples \dontrun{
-    #'   openai_4_1_mini <- ellmer::chat(
-    #'     name = "openai/gpt-4.1-mini",
-    #'     api_key = Sys.getenv("OPENAI_API_KEY"),
-    #'     echo = "none"
-    #'   )
-    #'   researcher <- Agent$new(
-    #'     name = "researcher",
-    #'     instruction = "You are a research assistant.",
-    #'     llm_object = openai_4_1_mini
-    #'   )
-    #'   summarizer <- Agent$new(
-    #'     name = "summarizer",
-    #'     instruction = "Summarise text into 3 bullet points.",
-    #'     llm_object = openai_4_1_mini
-    #'   )
-    #'   translator <- Agent$new(
-    #'     name = "translator",
-    #'     instruction = "Translate English to German.",
-    #'     llm_object = openai_4_1_mini
-    #'   )
-    #'   lead <- LeadAgent$new(name = "Leader", llm_object = openai_4_1_mini)
-    #'   lead$register_agents(c(researcher, summarizer, translator))
-    #'   lead$delegate_prompt("Research Algeria's economy, summarise in 3 bullets, translate to German")
-    #' }
-    delegate_prompt = function(prompt) {
+    #' Visualizes the orchestration plan
+    #' Each agent node is shown in sequence (left → right), with tooltips showing
+    #' the actual prompt delegated to that agent.
+    visualize_plan = function() {
 
-      task_analysis <- private$.analyze_prompt(prompt)
+      plan <- self$plan
 
-      delegated <- lapply(task_analysis, function(task) {
+      if (length(plan) == 0) {
+        cli::cli_abort("No plan found, generate one first")
+      }
 
-        agent_id <- private$.match_agent_to_task(task)
+      nodes <- paste0(
+        "A", seq_along(plan),
+        " [label='", vapply(plan, `[[`, "", "agent_name"),
+        "', tooltip='", gsub("'", "\\\\'", vapply(plan, `[[`, "", "prompt")),
+        "', shape=box, style=filled, fillcolor=lightblue, fontname='Helvetica'];"
+      )
 
-        idx <- which(sapply(self$agents, function(agent) agent$agent_id == agent_id))
+      edges <- paste0(
+        "A", seq_len(length(plan) - 1),
+        " -> A", seq_len(length(plan) - 1) + 1,
+        " [arrowhead=normal];"
+      )
 
-        selected_agent <- self$agents[[idx]]
+      graph_code <- paste0(
+        "digraph workflow {
+      graph [rankdir=LR, splines=true, overlap=false];
+      node [shape=box, style=filled, fillcolor=lightblue, fontname='Helvetica', fontsize=12];
+      edge [color=gray50, arrowsize=0.8];
+      ", paste(c(nodes, edges), collapse = "\n"), "
+    }"
+      )
 
-        agent_name <- selected_agent$name
-
-        model_provider <- selected_agent$model_provider
-
-        model_name <- selected_agent$model_name
-
-        list(
-          agent_id = agent_id,
-          agent_name = agent_name,
-          model_name = model_name,
-          model_provider = model_provider,
-          prompt = task
-        )
-
-      })
-
-      return(delegated)
-
+      DiagrammeR::grViz(graph_code)
     },
 
     #' @description
     #' Executes the full prompt pipeline: decomposition → delegation → invocation.
     #' @param prompt The complex user instruction to process.
+    #' @param force_regenerate_plan If TRUE, regenerate a plan even if one exists,
+    #' defaults to FALSE.
     #' @return The final response (from the last agent in the sequence).
     #' @examples \dontrun{
     #'  # An API KEY is required in order to invoke the agents
@@ -329,7 +307,10 @@ LeadAgent <- R6::R6Class(
     #'  )
     #' }
 
-    invoke = function(prompt) {
+    invoke = function(prompt, force_regenerate_plan = FALSE) {
+
+      checkmate::assert_character(prompt)
+      checkmate::assert_flag(force_regenerate_plan)
 
       if (length(self$agents) == 0) {
 
@@ -341,7 +322,13 @@ LeadAgent <- R6::R6Class(
         cli::cli_abort(err_msg)
       }
 
-      prompts_res <- self$delegate_prompt(prompt)
+      if (length(self$plan) == 0 || force_regenerate_plan) {
+        cli::cli_h2("Generating new plan")
+        prompts_res <- self$generate_plan(prompt)
+      } else {
+        cli::cli_h2("Using existing plan")
+        prompts_res <- self$plan
+      }
 
       for (i in seq_along(prompts_res)) {
         prompts_res[[i]]$response <- NA

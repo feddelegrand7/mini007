@@ -174,36 +174,6 @@ executing them with `invoke()`, and storing the results in the `agents_interacti
  lead_agent$agents
 
 ## ------------------------------------------------
-## Method `LeadAgent$delegate_prompt`
-## ------------------------------------------------
-
-\dontrun{
-  openai_4_1_mini <- ellmer::chat(
-    name = "openai/gpt-4.1-mini",
-    api_key = Sys.getenv("OPENAI_API_KEY"),
-    echo = "none"
-  )
-  researcher <- Agent$new(
-    name = "researcher",
-    instruction = "You are a research assistant.",
-    llm_object = openai_4_1_mini
-  )
-  summarizer <- Agent$new(
-    name = "summarizer",
-    instruction = "Summarise text into 3 bullet points.",
-    llm_object = openai_4_1_mini
-  )
-  translator <- Agent$new(
-    name = "translator",
-    instruction = "Translate English to German.",
-    llm_object = openai_4_1_mini
-  )
-  lead <- LeadAgent$new(name = "Leader", llm_object = openai_4_1_mini)
-  lead$register_agents(c(researcher, summarizer, translator))
-  lead$delegate_prompt("Research Algeria's economy, summarise in 3 bullets, translate to German")
-}
-
-## ------------------------------------------------
 ## Method `LeadAgent$invoke`
 ## ------------------------------------------------
 
@@ -473,7 +443,7 @@ lead_agent$judge_and_choose_best_response("what's the best way to war a kalvin k
 \item \href{#method-LeadAgent-clear_agents}{\code{LeadAgent$clear_agents()}}
 \item \href{#method-LeadAgent-remove_agents}{\code{LeadAgent$remove_agents()}}
 \item \href{#method-LeadAgent-register_agents}{\code{LeadAgent$register_agents()}}
-\item \href{#method-LeadAgent-delegate_prompt}{\code{LeadAgent$delegate_prompt()}}
+\item \href{#method-LeadAgent-visualize_plan}{\code{LeadAgent$visualize_plan()}}
 \item \href{#method-LeadAgent-invoke}{\code{LeadAgent$invoke()}}
 \item \href{#method-LeadAgent-generate_plan}{\code{LeadAgent$generate_plan()}}
 \item \href{#method-LeadAgent-broadcast}{\code{LeadAgent$broadcast()}}
@@ -729,54 +699,14 @@ Register one or more agents for delegation.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-LeadAgent-delegate_prompt"></a>}}
-\if{latex}{\out{\hypertarget{method-LeadAgent-delegate_prompt}{}}}
-\subsection{Method \code{delegate_prompt()}}{
-Returns a list of subtasks with assigned agent IDs and names.
+\if{html}{\out{<a id="method-LeadAgent-visualize_plan"></a>}}
+\if{latex}{\out{\hypertarget{method-LeadAgent-visualize_plan}{}}}
+\subsection{Method \code{visualize_plan()}}{
+Visualizes the orchestration plan
+Each agent node is shown in sequence (left → right), with tooltips showing
+the actual prompt delegated to that agent.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LeadAgent$delegate_prompt(prompt)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{prompt}}{A complex instruction to be broken into subtasks.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-A list of lists, each with `agent_id`, `agent_name`, and `prompt` fields.
-}
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{\dontrun{
-  openai_4_1_mini <- ellmer::chat(
-    name = "openai/gpt-4.1-mini",
-    api_key = Sys.getenv("OPENAI_API_KEY"),
-    echo = "none"
-  )
-  researcher <- Agent$new(
-    name = "researcher",
-    instruction = "You are a research assistant.",
-    llm_object = openai_4_1_mini
-  )
-  summarizer <- Agent$new(
-    name = "summarizer",
-    instruction = "Summarise text into 3 bullet points.",
-    llm_object = openai_4_1_mini
-  )
-  translator <- Agent$new(
-    name = "translator",
-    instruction = "Translate English to German.",
-    llm_object = openai_4_1_mini
-  )
-  lead <- LeadAgent$new(name = "Leader", llm_object = openai_4_1_mini)
-  lead$register_agents(c(researcher, summarizer, translator))
-  lead$delegate_prompt("Research Algeria's economy, summarise in 3 bullets, translate to German")
-}
-}
-\if{html}{\out{</div>}}
-
+\if{html}{\out{<div class="r">}}\preformatted{LeadAgent$visualize_plan()}\if{html}{\out{</div>}}
 }
 
 }
@@ -786,13 +716,16 @@ A list of lists, each with `agent_id`, `agent_name`, and `prompt` fields.
 \subsection{Method \code{invoke()}}{
 Executes the full prompt pipeline: decomposition → delegation → invocation.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LeadAgent$invoke(prompt)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LeadAgent$invoke(prompt, force_regenerate_plan = FALSE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{prompt}}{The complex user instruction to process.}
+
+\item{\code{force_regenerate_plan}}{If TRUE, regenerate a plan even if one exists,
+defaults to FALSE.}
 }
 \if{html}{\out{</div>}}
 }
