@@ -98,6 +98,15 @@ agent$set_budget(amount_in_usd = 10.5) # this is equivalent to 10.5$
 }
 
 ## ------------------------------------------------
+## Method `Agent$set_budget_policy`
+## ------------------------------------------------
+
+\dontrun{
+agent$set_budget(5)
+agent$set_budget_policy(on_exceed = "ask", warn_at = 0.9)
+}
+
+## ------------------------------------------------
 ## Method `Agent$keep_last_n_messages`
 ## ------------------------------------------------
 
@@ -289,6 +298,10 @@ agent$llm_object
 \item{\code{broadcast_history}}{A list of all past broadcast interactions.}
 
 \item{\code{budget}}{A budget in $ that the agent should not exceed.}
+
+\item{\code{budget_policy}}{A list controlling budget behavior: on_exceed and warn_at.}
+
+\item{\code{budget_warned}}{Internal flag indicating whether warn_at notice was emitted.}
 }
 \if{html}{\out{</div>}}
 }
@@ -307,6 +320,7 @@ Assignment is validated automatically.}
 \item \href{#method-Agent-invoke}{\code{Agent$invoke()}}
 \item \href{#method-Agent-generate_r_code}{\code{Agent$generate_r_code()}}
 \item \href{#method-Agent-set_budget}{\code{Agent$set_budget()}}
+\item \href{#method-Agent-set_budget_policy}{\code{Agent$set_budget_policy()}}
 \item \href{#method-Agent-keep_last_n_messages}{\code{Agent$keep_last_n_messages()}}
 \item \href{#method-Agent-clear_and_summarise_messages}{\code{Agent$clear_and_summarise_messages()}}
 \item \href{#method-Agent-update_instruction}{\code{Agent$update_instruction()}}
@@ -500,6 +514,39 @@ agent <- Agent$new(
  llm_object = openai_4_1_mini
 )
 agent$set_budget(amount_in_usd = 10.5) # this is equivalent to 10.5$
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Agent-set_budget_policy"></a>}}
+\if{latex}{\out{\hypertarget{method-Agent-set_budget_policy}{}}}
+\subsection{Method \code{set_budget_policy()}}{
+Configure how the agent behaves as it approaches or exceeds its budget.
+Use `warn_at` (0-1) to emit a one-time warning when spending reaches the
+specified fraction of the budget. When the budget is exceeded, `on_exceed`
+controls behavior: abort, warn and proceed, or ask interactively.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Agent$set_budget_policy(on_exceed = "abort", warn_at = 0.8)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{on_exceed}}{One of "abort", "warn", or "ask".}
+
+\item{\code{warn_at}}{Numeric in (0,1); fraction of budget to warn at. Default 0.8.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+agent$set_budget(5)
+agent$set_budget_policy(on_exceed = "ask", warn_at = 0.9)
 }
 }
 \if{html}{\out{</div>}}

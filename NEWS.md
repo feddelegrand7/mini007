@@ -13,6 +13,7 @@ Adding the following new methods:
 - `add_message()`
 - `generate_r_code()`
 - `visualize_plan()`
+- `set_budget_policy()`
 
 Adding the following new parameters: 
 - Adding the `force_regenerate_plan` boolean parameter to the `invoke` method of the `LeadAgent`, this will allow taking into account if the `LeadAgent` has already generated a plan or not. If a plan is detected, no need to generate the plan from scratch, except if the user set the `force_generate_plan` to `TRUE`.

@@ -67,6 +67,12 @@ Agent <- R6::R6Class(
       checkmate::assert_numeric(budget)
 
       self$budget <- budget
+
+      self$budget_policy <- list(
+        on_exceed = "abort",
+        warn_at = 0.8
+      )
+      
     },
 
     #' @description
@@ -94,14 +100,41 @@ Agent <- R6::R6Class(
 
       if (!is.na(self$budget)) {
 
-        current_cost <- self$llm_object$get_cost()
+        current_cost <- as.numeric(self$llm_object$get_cost())
 
         budget_exceeded <- current_cost > self$budget
 
+        if (!budget_exceeded) {
+          warn_at <- self$budget_policy$warn_at
+          ratio <- current_cost / as.numeric(self$budget)
+          if (ratio >= warn_at) {
+              cli::cli_alert_warning(glue::glue(
+                "{self$name} budget nearing limit: Cost {round(current_cost,4)} / Budget {round(self$budget,4)} ({round(ratio*100,1)}%)."
+              ))
+            }
+        }
+
         if (budget_exceeded) {
-          cli::cli_abort(glue::glue(
-            "{self$name} agent has exceeded its budget. Cost: {current_cost}, Budget: {self$budget}"
-          ))
+          policy <- self$budget_policy$on_exceed
+          if (policy == "warn") {
+            cli::cli_alert_warning(glue::glue(
+              "{self$name} exceeded budget: Cost {round(current_cost,4)} > Budget {round(self$budget,4)}. Proceeding per policy 'warn'."
+            ))
+          } else if (policy == "ask") {
+            user_input <- readline(prompt = glue::glue(
+                "Budget exceeded (Cost {round(current_cost,4)} > Budget {round(self$budget,4)}). Continue? [y/N]: "
+            ))
+            if (tolower(user_input) != "y") {
+              cli::cli_abort(glue::glue(
+                "{self$name} agent cancelled due to budget exceedance. Cost: {round(current_cost,4)}, Budget: {round(self$budget,4)}"
+              ))
+              return(invisible(NULL))
+            }
+          } else {
+            cli::cli_abort(glue::glue(
+              "{self$name} agent has exceeded its budget. Cost: {round(current_cost,4)}, Budget: {round(self$budget,4)}"
+            ))
+          }
         }
       }
 
@@ -259,7 +292,37 @@ Agent <- R6::R6Class(
       self$budget <- amount_in_usd
 
       cli::cli_alert_success(glue::glue("Budget successfully set to {amount_in_usd}$"))
+      cli::cli_alert_info(glue::glue("Budget policy: on_exceed='{self$budget_policy$on_exceed}', warn_at={self$budget_policy$warn_at}"))
+      cli::cli_alert_info("Use the set_budget_policy() method to configure the budget policy.")
+      invisible(self)
+    },
 
+    #' @description
+    #' Configure how the agent behaves as it approaches or exceeds its budget.
+    #' Use `warn_at` (0-1) to emit a one-time warning when spending reaches the
+    #' specified fraction of the budget. When the budget is exceeded, `on_exceed`
+    #' controls behavior: abort, warn and proceed, or ask interactively.
+    #' @param on_exceed One of "abort", "warn", or "ask".
+    #' @param warn_at Numeric in (0,1); fraction of budget to warn at. Default 0.8.
+    #' @examples \dontrun{
+    #' agent$set_budget(5)
+    #' agent$set_budget_policy(on_exceed = "ask", warn_at = 0.9)
+    #' }
+    set_budget_policy = function(on_exceed = "abort", warn_at = 0.8) {
+
+      checkmate::assert_choice(on_exceed, c("abort", "warn", "ask"))
+      checkmate::assert_number(warn_at, lower = 0, upper = 1)
+
+      self$budget_policy <- list(
+        on_exceed = on_exceed,
+        warn_at = warn_at
+      )
+
+      cli::cli_alert_success(glue::glue(
+        "Budget policy set: on_exceed='{on_exceed}', warn_at={warn_at}"
+      ))
+
+      invisible(self)
     },
 
     #' @description
@@ -623,7 +686,11 @@ Agent <- R6::R6Class(
     #'@field broadcast_history A list of all past broadcast interactions.
     broadcast_history = list(),
     #'@field budget A budget in $ that the agent should not exceed.
-    budget = NULL
+    budget = NULL,
+    #'@field budget_policy A list controlling budget behavior: on_exceed and warn_at.
+    budget_policy = NULL,
+    #'@field budget_warned Internal flag indicating whether warn_at notice was emitted.
+    budget_warned = NULL
   ),
 
   active = list(
