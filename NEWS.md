@@ -11,7 +11,7 @@ Adding the following new methods:
 - `export_messages_history()` and `load_messages_history()`
 - `reset_conversation_history()`
 - `add_message()`
-- `generate_r_code()`
+- `generate_execute_r_code()`
 - `visualize_plan()`
 - `set_budget_policy()`
 

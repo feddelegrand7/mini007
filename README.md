@@ -229,7 +229,7 @@ lead_agent$agents
 #>     clear_and_summarise_messages: function () 
 #>     clone: function (deep = FALSE) 
 #>     export_messages_history: function (file_path = paste0(getwd(), "/", paste0(self$name, 
-#>     generate_r_code: function (code_description, validate = FALSE, execute = FALSE, 
+#>     generate_execute_r_code: function (code_description, validate = FALSE, execute = FALSE, 
 #>     get_usage_stats: function () 
 #>     initialize: function (name, instruction, llm_object, budget = NA) 
 #>     instruction: You are a research assistant. Your job is to answer fact ...
@@ -261,7 +261,7 @@ lead_agent$agents
 #>     clear_and_summarise_messages: function () 
 #>     clone: function (deep = FALSE) 
 #>     export_messages_history: function (file_path = paste0(getwd(), "/", paste0(self$name, 
-#>     generate_r_code: function (code_description, validate = FALSE, execute = FALSE, 
+#>     generate_execute_r_code: function (code_description, validate = FALSE, execute = FALSE, 
 #>     get_usage_stats: function () 
 #>     initialize: function (name, instruction, llm_object, budget = NA) 
 #>     instruction: You are agent designed to summarise a give text into 3 d ...
@@ -293,7 +293,7 @@ lead_agent$agents
 #>     clear_and_summarise_messages: function () 
 #>     clone: function (deep = FALSE) 
 #>     export_messages_history: function (file_path = paste0(getwd(), "/", paste0(self$name, 
-#>     generate_r_code: function (code_description, validate = FALSE, execute = FALSE, 
+#>     generate_execute_r_code: function (code_description, validate = FALSE, execute = FALSE, 
 #>     get_usage_stats: function () 
 #>     initialize: function (name, instruction, llm_object, budget = NA) 
 #>     instruction: Your role is to translate a text from English to German

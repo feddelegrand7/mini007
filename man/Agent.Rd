@@ -52,7 +52,7 @@ agent$invoke("Continue this sentence: 1 2 3 viva")
 }
 
 ## ------------------------------------------------
-## Method `Agent$generate_r_code`
+## Method `Agent$generate_execute_r_code`
 ## ------------------------------------------------
 
 \dontrun{
@@ -61,15 +61,13 @@ openai_4_1_mini <- ellmer::chat(
   api_key = Sys.getenv("OPENAI_API_KEY"),
   echo = "none"
 )
-
 r_assistant <- Agent$new(
   name = "R Code Assistant",
   instruction = paste("You are an expert R programmer",
   llm_object = openai_4_1_mini
 )
-
 # Generate code for data manipulation
-result <- r_assistant$generate_r_code(
+result <- r_assistant$generate_execute_r_code(
   code_description = "Calculate the summary of the mtcars dataframe",
   validate = TRUE,
   execute = TRUE,
@@ -318,7 +316,7 @@ Assignment is validated automatically.}
 \itemize{
 \item \href{#method-Agent-new}{\code{Agent$new()}}
 \item \href{#method-Agent-invoke}{\code{Agent$invoke()}}
-\item \href{#method-Agent-generate_r_code}{\code{Agent$generate_r_code()}}
+\item \href{#method-Agent-generate_execute_r_code}{\code{Agent$generate_execute_r_code()}}
 \item \href{#method-Agent-set_budget}{\code{Agent$set_budget()}}
 \item \href{#method-Agent-set_budget_policy}{\code{Agent$set_budget_policy()}}
 \item \href{#method-Agent-keep_last_n_messages}{\code{Agent$keep_last_n_messages()}}
@@ -421,12 +419,12 @@ agent$invoke("Continue this sentence: 1 2 3 viva")
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Agent-generate_r_code"></a>}}
-\if{latex}{\out{\hypertarget{method-Agent-generate_r_code}{}}}
-\subsection{Method \code{generate_r_code()}}{
+\if{html}{\out{<a id="method-Agent-generate_execute_r_code"></a>}}
+\if{latex}{\out{\hypertarget{method-Agent-generate_execute_r_code}{}}}
+\subsection{Method \code{generate_execute_r_code()}}{
 Generate R code from natural language descriptions and optionally validate/execute it
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Agent$generate_r_code(
+\if{html}{\out{<div class="r">}}\preformatted{Agent$generate_execute_r_code(
   code_description,
   validate = FALSE,
   execute = FALSE,
@@ -461,15 +459,13 @@ openai_4_1_mini <- ellmer::chat(
   api_key = Sys.getenv("OPENAI_API_KEY"),
   echo = "none"
 )
-
 r_assistant <- Agent$new(
   name = "R Code Assistant",
   instruction = paste("You are an expert R programmer",
   llm_object = openai_4_1_mini
 )
-
 # Generate code for data manipulation
-result <- r_assistant$generate_r_code(
+result <- r_assistant$generate_execute_r_code(
   code_description = "Calculate the summary of the mtcars dataframe",
   validate = TRUE,
   execute = TRUE,

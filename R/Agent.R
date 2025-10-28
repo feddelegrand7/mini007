@@ -125,15 +125,13 @@ Agent <- R6::R6Class(
     #'   api_key = Sys.getenv("OPENAI_API_KEY"),
     #'   echo = "none"
     #' )
-    #'
     #' r_assistant <- Agent$new(
     #'   name = "R Code Assistant",
     #'   instruction = paste("You are an expert R programmer",
     #'   llm_object = openai_4_1_mini
     #' )
-    #'
     #' # Generate code for data manipulation
-    #' result <- r_assistant$generate_r_code(
+    #' result <- r_assistant$generate_execute_r_code(
     #'   code_description = "Calculate the summary of the mtcars dataframe",
     #'   validate = TRUE,
     #'   execute = TRUE,
@@ -141,7 +139,7 @@ Agent <- R6::R6Class(
     #' )
     #' print(result)
     #' }
-    generate_r_code = function(
+    generate_execute_r_code = function(
     code_description,
     validate = FALSE,
     execute = FALSE,
