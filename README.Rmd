@@ -128,6 +128,44 @@ polar_bear_researcher$messages
 
 This method summarises all previous conversations into a paragraph and appends it to the system prompt, then clears the conversation history. The agent retains the context but with reduced memory usage.
 
+### Budget and cost control
+
+You can limit how much an `Agent` is allowed to spend and decide what should happen as the budget is approached or exceeded. Use `set_budget()` to define the maximum spend (in USD), and `set_budget_policy()` to control warnings and over-budget behavior.
+
+- **set_budget(amount_in_usd)**: sets the absolute budget for the agent.
+- **set_budget_policy(on_exceed, warn_at)**:
+  - **on_exceed**: one of `"abort"`, `"warn"`, or `"ask"`.
+    - **abort**: stop with an error when the budget is exceeded.
+    - **warn**: emit a warning and continue.
+    - **ask**: interactively ask what to do when the budget is exceeded.
+  - **warn_at**: a fraction in (0, 1); triggers a one-time warning when spending reaches that fraction of the budget (default `0.8`).
+
+```{r, eval=FALSE}
+# An API KEY is required to invoke the Agent
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+
+agent <- Agent$new(
+  name = "cost_conscious_assistant",
+  instruction = "Answer succinctly.",
+  llm_object = openai_4_1_mini
+)
+
+# Set a 5 USD budget
+agent$set_budget(5)
+
+# Warn at 90% of the budget and ask what to do if exceeded
+agent$set_budget_policy(on_exceed = "ask", warn_at = 0.9)
+
+# Normal usage
+agent$invoke("Give me a one-sentence fun fact about Algeria.")
+```
+
+The current policy is echoed when setting the budget. You can update the policy at any time before or during an interaction lifecycle to adapt to your workflow's tolerance for cost overruns.
+
 ### Creating a multi-agents orchestraction 
 
 We can create as many Agents as we want, the `LeadAgent` will dispatch the instructions to the agents and provide with the final answer back. Let's create three Agents, a `researcher`, a `summarizer` and a `translator`: 
