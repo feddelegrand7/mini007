@@ -167,6 +167,45 @@ agent$invoke("Give me a one-sentence fun fact about Algeria.")
 
 The current policy is echoed when setting the budget. You can update the policy at any time before or during an interaction lifecycle to adapt to your workflow's tolerance for cost overruns.
 
+### Generate and execute R code from natural language
+###### Only in the development version at the moment
+
+`generate_execute_r_code()` lets an `Agent` translate a natural-language task description into R code, optionally validate its syntax, and (optionally) execute it.
+
+- **code_description**: a plain-English description of the R code to generate.
+- **validate**: `TRUE` to run a syntax validation step on the generated code first.
+- **execute**: `TRUE` to execute the generated code (requires successful validation).
+- **interactive**: if `TRUE`, shows the code and asks for confirmation before executing.
+- **env**: environment where code will run when `execute = TRUE` (default `globalenv()`).
+
+Safety notes:
+- Set `validate = TRUE` and review the printed code before execution.
+- Keep `interactive = TRUE` to require an explicit confirmation before running code.
+
+```{r, eval=FALSE}
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+
+r_assistant <- Agent$new(
+  name = "R Code Assistant",
+  instruction = "You are an expert R programmer.",
+  llm_object = openai_4_1_mini
+)
+
+# Generate code to summarise the built-in mtcars data frame,
+# validate it, then execute after interactive confirmation.
+r_assistant$generate_execute_r_code(
+  code_description = "Calculate the summary of the mtcars dataframe",
+  validate = TRUE,
+  execute = TRUE,
+  interactive = TRUE, 
+  env = globalenv()
+)
+```
+
 ### Creating a multi-agents orchestraction 
 
 We can create as many Agents as we want, the `LeadAgent` will dispatch the instructions to the agents and provide with the final answer back. Let's create three Agents, a `researcher`, a `summarizer` and a `translator`: 
