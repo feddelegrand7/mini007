@@ -129,6 +129,7 @@ polar_bear_researcher$messages
 This method summarises all previous conversations into a paragraph and appends it to the system prompt, then clears the conversation history. The agent retains the context but with reduced memory usage.
 
 ### Budget and cost control
+###### Only in the development version at the moment
 
 You can limit how much an `Agent` is allowed to spend and decide what should happen as the budget is approached or exceeded. Use `set_budget()` to define the maximum spend (in USD), and `set_budget_policy()` to control warnings and over-budget behavior.
 
