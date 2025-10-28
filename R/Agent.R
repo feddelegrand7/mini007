@@ -732,15 +732,15 @@ Agent <- R6::R6Class(
       warn_at <- self$budget_policy$warn_at
       ratio <- current_cost / as.numeric(self$budget)
 
-      if (ratio >= warn_at) {
+      budget_exceeded <- current_cost > self$budget
+
+      if (ratio >= warn_at && !budget_exceeded) {
         cli::cli_alert_warning(
           glue::glue(
             "{self$name} budget nearing limit: Cost {round(current_cost, 4)} / . ",
             "Budget {round(self$budget, 4)} ({round(ratio * 100, 1)}%)"
           ))
       }
-
-      budget_exceeded <- current_cost > self$budget
 
       if (!budget_exceeded) {
         return(invisible(NULL))
