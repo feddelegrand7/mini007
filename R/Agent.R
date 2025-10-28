@@ -72,7 +72,7 @@ Agent <- R6::R6Class(
         on_exceed = "abort",
         warn_at = 0.8
       )
-      
+
     },
 
     #' @description
@@ -99,43 +99,7 @@ Agent <- R6::R6Class(
       checkmate::assert_string(prompt)
 
       if (!is.na(self$budget)) {
-
-        current_cost <- as.numeric(self$llm_object$get_cost())
-
-        budget_exceeded <- current_cost > self$budget
-
-        if (!budget_exceeded) {
-          warn_at <- self$budget_policy$warn_at
-          ratio <- current_cost / as.numeric(self$budget)
-          if (ratio >= warn_at) {
-              cli::cli_alert_warning(glue::glue(
-                "{self$name} budget nearing limit: Cost {round(current_cost,4)} / Budget {round(self$budget,4)} ({round(ratio*100,1)}%)."
-              ))
-            }
-        }
-
-        if (budget_exceeded) {
-          policy <- self$budget_policy$on_exceed
-          if (policy == "warn") {
-            cli::cli_alert_warning(glue::glue(
-              "{self$name} exceeded budget: Cost {round(current_cost,4)} > Budget {round(self$budget,4)}. Proceeding per policy 'warn'."
-            ))
-          } else if (policy == "ask") {
-            user_input <- readline(prompt = glue::glue(
-                "Budget exceeded (Cost {round(current_cost,4)} > Budget {round(self$budget,4)}). Continue? [y/N]: "
-            ))
-            if (tolower(user_input) != "y") {
-              cli::cli_abort(glue::glue(
-                "{self$name} agent cancelled due to budget exceedance. Cost: {round(current_cost,4)}, Budget: {round(self$budget,4)}"
-              ))
-              return(invisible(NULL))
-            }
-          } else {
-            cli::cli_abort(glue::glue(
-              "{self$name} agent has exceeded its budget. Cost: {round(current_cost,4)}, Budget: {round(self$budget,4)}"
-            ))
-          }
-        }
+        private$.check_budget()
       }
 
       private$.add_user_message(prompt)
@@ -213,16 +177,7 @@ Agent <- R6::R6Class(
       )
 
       if (validate) {
-        validation <- tryCatch({
-          parsed <- parse(text = clean_code)
-          result$validated <- TRUE
-          result$validation_message <- "Syntax is valid"
-          list(valid = TRUE, message = "Syntax is valid")
-        }, error = function(e) {
-          result$validated <- FALSE
-          result$validation_message <- paste("Syntax error:", e$message)
-          list(valid = FALSE, message = e$message)
-        })
+        private$.validate_r_code(clean_code)
       }
 
       if (execute) {
@@ -753,6 +708,73 @@ Agent <- R6::R6Class(
 
       self$llm_object$set_turns(turns)
 
+    },
+
+    .validate_r_code = function(r_code) {
+
+      validation <- tryCatch({
+        parsed <- parse(text = r_code)
+        result$validated <- TRUE
+        result$validation_message <- "Syntax is valid"
+        list(valid = TRUE, message = "Syntax is valid")
+      }, error = function(e) {
+        result$validated <- FALSE
+        result$validation_message <- paste("Syntax error:", e$message)
+        list(valid = FALSE, message = e$message)
+      })
+
+    },
+
+    .check_budget = function() {
+
+      current_cost <- as.numeric(self$llm_object$get_cost())
+
+      warn_at <- self$budget_policy$warn_at
+      ratio <- current_cost / as.numeric(self$budget)
+
+      if (ratio >= warn_at) {
+        cli::cli_alert_warning(
+          glue::glue(
+            "{self$name} budget nearing limit: Cost {round(current_cost, 4)} / . ",
+            "Budget {round(self$budget, 4)} ({round(ratio * 100, 1)}%)"
+          ))
+      }
+
+      budget_exceeded <- current_cost > self$budget
+
+      if (!budget_exceeded) {
+        return(invisible(NULL))
+      }
+
+      policy <- self$budget_policy$on_exceed
+
+      if (policy == "warn") {
+        cli::cli_alert_warning(glue::glue(
+          "{self$name} exceeded budget: Cost {round(current_cost,4)} > ",
+          "Budget {round(self$budget,4)}. Proceeding per policy 'warn'."
+        ))
+      }
+
+      if (policy == "ask") {
+        user_input <- readline(prompt = glue::glue(
+          "Budget exceeded (Cost {round(current_cost,4)} > Budget {round(self$budget,4)}). ",
+          "Continue? [y/N]: "
+        ))
+        if (tolower(user_input) != "y") {
+          cli::cli_abort(glue::glue(
+            "{self$name} agent cancelled due to budget exceedance. ",
+            "Cost: {round(current_cost,4)}, Budget: {round(self$budget,4)}"
+          ))
+          return(invisible(NULL))
+        }
+      }
+
+      if (policy == "abort") {
+        cli::cli_abort(glue::glue(
+          "{self$name} agent has exceeded its budget. ",
+          "Cost: {round(current_cost, 4)}, Budget: {round(self$budget, 4)}"
+        ))
+      }
     }
   )
 )
