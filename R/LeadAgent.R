@@ -24,6 +24,8 @@ LeadAgent <- R6::R6Class(
     plan = list(),
     #' @field hitl_steps The steps where the workflow should be stopped in order to allow for a human interaction
     hitl_steps = NULL,
+    #'@field prompt_for_plan The prompt used to generate the plan.
+    prompt_for_plan = NULL,
 
     #' @description
     #' Initializes the LeadAgent with a built-in task-decomposition prompt.
@@ -55,6 +57,7 @@ LeadAgent <- R6::R6Class(
       )
 
       super$initialize(name = name, instruction = system_prompt, llm_object = llm_object)
+
     },
 
     #' @description
@@ -322,7 +325,13 @@ LeadAgent <- R6::R6Class(
         cli::cli_abort(err_msg)
       }
 
-      if (length(self$plan) == 0 || force_regenerate_plan) {
+      prompt_invoke_same_as_plan <- FALSE
+
+      if (!is.null(self$prompt_for_plan) && self$prompt_for_plan == prompt) {
+        prompt_invoke_same_as_plan <- TRUE
+      }
+
+      if (!prompt_invoke_same_as_plan || length(self$plan) == 0 || force_regenerate_plan) {
         cli::cli_h2("Generating new plan")
         prompts_res <- self$generate_plan(prompt)
       } else {
@@ -438,6 +447,8 @@ LeadAgent <- R6::R6Class(
       cli::cli_alert_success("Plan successfully generated.")
 
       self$plan <- plan
+
+      self$prompt_for_plan <- prompt
 
       return(plan)
     },
