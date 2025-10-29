@@ -5,9 +5,15 @@
 
 ### Comments: 
 
-- I have fixed the DESCRIPTION file
-
-- I have added examples, whenever an example cannot be executed (because it needs an API KEY), I wrapped it inside a 'dontrun', the example would be executed otherwise.
-
-- fixing: R6 instead of r6 in the CRAN url.
-- fixing misspelled LLM in DESCRIPTION
+Adding the following new methods: 
+- `keep_last_n_messages()`
+- `update_instruction()`
+- `clear_and_summarise_messages()`
+- `judge_and_choose_best_response()`
+- `set_budget()`
+- `export_messages_history()` and `load_messages_history()`
+- `reset_conversation_history()`
+- `add_message()`
+- `generate_execute_r_code()`
+- `visualize_plan()`
+- `set_budget_policy()`
