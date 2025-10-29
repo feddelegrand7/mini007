@@ -5,3 +5,5 @@
 ^CODE_OF_CONDUCT\.md$
 ^cran-comments\.md$
 ^CRAN-SUBMISSION$
+^\.lintr$
+^\.cursor$
