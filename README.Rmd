@@ -116,7 +116,6 @@ polar_bear_researcher$llm_object
 ```
 
 ### Managing Agent Conversation History
-##### Only in the development version at the moment
 
 The `clear_and_summarise_messages` method allows you to compress an agent's conversation history into a concise summary and clear the message history while preserving context. This is useful for maintaining memory efficiency while keeping important conversation context.
 
@@ -129,7 +128,6 @@ polar_bear_researcher$messages
 This method summarises all previous conversations into a paragraph and appends it to the system prompt, then clears the conversation history. The agent retains the context but with reduced memory usage.
 
 ### Budget and cost control
-###### Only in the development version at the moment
 
 You can limit how much an `Agent` is allowed to spend and decide what should happen as the budget is approached or exceeded. Use `set_budget()` to define the maximum spend (in USD), and `set_budget_policy()` to control warnings and over-budget behavior.
 
@@ -168,7 +166,6 @@ agent$invoke("Give me a one-sentence fun fact about Algeria.")
 The current policy is echoed when setting the budget. You can update the policy at any time before or during an interaction lifecycle to adapt to your workflow's tolerance for cost overruns.
 
 ### Generate and execute R code from natural language
-###### Only in the development version at the moment
 
 `generate_execute_r_code()` lets an `Agent` translate a natural-language task description into R code, optionally validate its syntax, and (optionally) execute it.
 
@@ -414,7 +411,6 @@ Note that you can set a `HITL` at several steps, for example `lead_agent$set_hit
 
 
 ## Judge as a decision process 
-#### Only in the development version at the moment 
 
 Sometimes you want to send a prompt to several agents and pick the best answer. In order to choose the best prompt, you can also rely on the `Lead` Agent which will act a dudge and pick for you the best answer. You can use the `judge_and_choose_best_response` method as follows: 
 
