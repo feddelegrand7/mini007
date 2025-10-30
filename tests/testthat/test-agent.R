@@ -63,7 +63,7 @@ test_that("add_message appends correct message roles", {
   agent$add_message("system", "info")
   expect_equal(length(agent$messages), 4)
   expect_equal(agent$messages[[4]]$role, "system")
-  expect_equal(agent$messages[[1]]$content, "info")
+  expect_equal(agent$messages[[4]]$content, "info")
 })
 
 # --- reset_conversation_history ---
@@ -125,7 +125,7 @@ test_that("keep_last_n_messages keeps only system and N most recent", {
   agent$keep_last_n_messages(2)
   expect_equal(length(agent$messages), 3)
   roles <- vapply(agent$messages, `[[`, "role", FUN.VALUE = character(1))
-  expect_equal(roles, c("system", "assistant", "user"))
+  expect_equal(roles, c("system", "user", "assistant"))
 })
 
 # --- update_instruction ---
