@@ -127,6 +127,36 @@ polar_bear_researcher$messages
 
 This method summarises all previous conversations into a paragraph and appends it to the system prompt, then clears the conversation history. The agent retains the context but with reduced memory usage.
 
+### Manually Adding Messages to an Agent’s History
+
+You can inject any message (system, user, or assistant) directly into an Agent’s history with `add_message(role, content)`. This is helpful to reconstruct, supplement, or simulate conversation steps.
+
+- **add_message(role, content)**:
+  - `role`: "user", "assistant", or "system"
+  - `content`: The text message to add
+
+```{r, eval=TRUE}
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+agent <- Agent$new(
+  name = "Pizza expert",
+  instruction = "You are a Pizza expert",
+  llm_object = openai_4_1_mini
+)
+
+# Add a user message, an assistant reply, and a system instruction:
+agent$add_message("user", "Where can I find the best pizza in the world?")
+agent$add_message("assistant", "You can find the best pizza in the world in Algiers, Algeria. It's tasty and crunchy.")
+
+# View conversation history
+agent$messages
+```
+
+This makes it easy to reconstruct or extend sessions, provide custom context, or insert notes for debugging/testing purposes.
+
 ### Budget and cost control
 
 You can limit how much an `Agent` is allowed to spend and decide what should happen as the budget is approached or exceeded. Use `set_budget()` to define the maximum spend (in USD), and `set_budget_policy()` to control warnings and over-budget behavior.
@@ -276,6 +306,16 @@ lead_agent$agents_interaction
 
 The above example is extremely simple, the usefulness of `mini007` would shine in more complex processes where a multi-agent sequential orchestration has a higher value added. 
 
+### Visualizing agent plans with `visualize_plan()`
+
+Sometimes, before running your workflow, it is helpful to view the orchestration as a visual diagram, showing the sequence of agents and which prompt each will receive. After generating a plan, you can call `visualize_plan()`:
+
+This function displays the agents in workflow order as labeled boxes. Hovering a box reveals the delegated prompt. The visualization uses the `DiagrammeR` package. If no plan exists, it asks you to generate one first.
+
+
+```{r, eval=FALSE}
+lead_agent$visualize_plan()
+```
 
 ## Broadcasting 
 
@@ -458,6 +498,41 @@ best_answer <- stylist_lead_agent$judge_and_choose_best_response(
 
 best_answer
 ```
+
+### Exporting and Loading Agent Conversation History
+
+You can save an agent’s conversation history to a file and reload it later. This allows you to archive, transfer, or resume agent sessions across R sessions or machines.
+
+- **export_messages_history(file_path)**: Saves the current conversation to a JSON file. 
+- **load_messages_history(file_path)**: Loads a saved conversation history from a JSON file, replacing the agent’s current history.
+
+In both methods, if you omit the `file_path` parameter, a default file named `"<getwd()>/<agent_name>_messages.json"` is used.
+
+```{r, eval=FALSE}
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+agent <- Agent$new(
+  name = "session_agent",
+  instruction = "You are a persistent researcher.",
+  llm_object = openai_4_1_mini
+)
+
+# Interact with the agent
+agent$invoke("Tell me something interesting about volcanoes.")
+
+# Save the conversation
+agent$export_messages_history("volcano_session.json")
+
+# ...Later, or in a new session...
+# Restore the conversation
+agent$load_messages_history("volcano_session.json")
+# agent$messages  # Displays current history
+```
+
+This makes it easy to archive progress and resume complex, context-rich agent sessions at any time.
 
 ## Code of Conduct
 
