@@ -86,7 +86,7 @@ Each created Agent has an `agent_id` (among other meta information):
 
 ``` r
 polar_bear_researcher$agent_id
-#> [1] "d090eaf5-035f-4edb-ac60-767314e02f7c"
+#> [1] "555464e8-7c34-4274-b963-cf406e8a7f7b"
 ```
 
 At any time, you can tweak the `llm_object`:
@@ -164,12 +164,115 @@ polar_bear_researcher$messages
 #> [1] "system"
 #> 
 #> [[1]]$content
-#> [1] "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max. \n\n--- Conversation Summary ---\n The user asked if polar bears are dangerous to humans, and the assistant responded that polar bears can indeed be dangerous due to their strength and potential to attack when threatened or hungry."
+#> [1] "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max. \n\n--- Conversation Summary ---\n The user asked if polar bears are dangerous to humans, and the assistant responded that polar bears can be dangerous because they are powerful predators that may attack if threatened or hungry."
 ```
 
 This method summarises all previous conversations into a paragraph and
 appends it to the system prompt, then clears the conversation history.
 The agent retains the context but with reduced memory usage.
+
+#### Keep only the most recent messages with `keep_last_n_messages()`
+
+When a conversation grows long, you can keep just the last N messages
+while preserving the system prompt. This helps control token usage
+without fully resetting context.
+
+``` r
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+
+agent <- Agent$new(
+  name = "history_manager",
+  instruction = "You are a concise assistant.",
+  llm_object = openai_4_1_mini
+)
+
+agent$invoke("What is the capital of Italy?")
+#> [1] "The capital of Italy is Rome."
+agent$invoke("What is the capital of Germany?")
+#> [1] "The capital of Germany is Berlin."
+agent$invoke("What is the capital of Algeria?")
+#> [1] "The capital of Algeria is Algiers."
+agent$messages
+#> [[1]]
+#> [[1]]$role
+#> [1] "system"
+#> 
+#> [[1]]$content
+#> [1] "You are a concise assistant."
+#> 
+#> 
+#> [[2]]
+#> [[2]]$role
+#> [1] "user"
+#> 
+#> [[2]]$content
+#> [1] "What is the capital of Italy?"
+#> 
+#> 
+#> [[3]]
+#> [[3]]$role
+#> [1] "assistant"
+#> 
+#> [[3]]$content
+#> [1] "The capital of Italy is Rome."
+#> 
+#> 
+#> [[4]]
+#> [[4]]$role
+#> [1] "user"
+#> 
+#> [[4]]$content
+#> [1] "What is the capital of Germany?"
+#> 
+#> 
+#> [[5]]
+#> [[5]]$role
+#> [1] "assistant"
+#> 
+#> [[5]]$content
+#> [1] "The capital of Germany is Berlin."
+#> 
+#> 
+#> [[6]]
+#> [[6]]$role
+#> [1] "user"
+#> 
+#> [[6]]$content
+#> [1] "What is the capital of Algeria?"
+#> 
+#> 
+#> [[7]]
+#> [[7]]$role
+#> [1] "assistant"
+#> 
+#> [[7]]$content
+#> [1] "The capital of Algeria is Algiers."
+```
+
+``` r
+# Keep only the last message (system prompt is preserved)
+agent$keep_last_n_messages(n = 1)
+#> ✔ Conversation truncated to last 1 messages.
+agent$messages
+#> [[1]]
+#> [[1]]$role
+#> [1] "system"
+#> 
+#> [[1]]$content
+#> [1] "You are a concise assistant."
+#> 
+#> 
+#> [[2]]
+#> [[2]]$role
+#> [1] "assistant"
+#> 
+#> [[2]]$content
+#> [1] "The capital of Algeria is Algiers."
+```
 
 ### Manually Adding Messages to an Agent’s History
 
@@ -228,6 +331,44 @@ agent$messages
 This makes it easy to reconstruct or extend sessions, provide custom
 context, or insert notes for debugging/testing purposes.
 
+``` r
+agent$invoke("What did you say? I didn't understand. could you repeat please")
+#> [1] "Absolutely! One of the top places renowned for the best pizza in the world is Naples, Italy. Naples is famous for its authentic Neapolitan pizza, characterized by a thin, soft crust with simple, high-quality ingredients like fresh tomatoes, mozzarella cheese, basil, and olive oil. Many pizza experts and enthusiasts consider Naples the birthplace of modern pizza, making it a must-visit for pizza lovers. Would you like recommendations for specific pizzerias there or in other parts of the world?"
+```
+
+### Updating the system instruction during a session
+
+Use `update_instruction(new_instruction)` to change the Agent’s system
+prompt mid-session. The first system message and the underlying `ellmer`
+system prompt are both updated.
+
+``` r
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+
+agent <- Agent$new(
+  name = "reconfigurable",
+  instruction = "You are a helpful assistant.",
+  llm_object = openai_4_1_mini
+)
+
+agent$update_instruction("You are a strictly concise assistant. Answer in one sentence.")
+#> ✔ Instruction successfully updated
+#> ℹ Old: You are a helpful assistant....
+#> ℹ New: You are a strictly concise assistant. Answer in on...
+
+agent$messages
+#> [[1]]
+#> [[1]]$role
+#> [1] "system"
+#> 
+#> [[1]]$content
+#> [1] "You are a strictly concise assistant. Answer in one sentence."
+```
+
 ### Budget and cost control
 
 You can limit how much an `Agent` is allowed to spend and decide what
@@ -271,6 +412,27 @@ agent$invoke("Give me a one-sentence fun fact about Algeria.")
 The current policy is echoed when setting the budget. You can update the
 policy at any time before or during an interaction lifecycle to adapt to
 your workflow’s tolerance for cost overruns.
+
+#### Inspecting usage and estimated cost
+
+Call `get_usage_stats()` to retrieve total tokens, estimated cost, and
+budget information (if set).
+
+``` r
+stats <- agent$get_usage_stats()
+stats
+#> $total_tokens
+#> [1] 0
+#> 
+#> $estimated_cost
+#> [1] 0
+#> 
+#> $budget
+#> [1] NA
+#> 
+#> $budget_remaining
+#> [1] NA
+```
 
 ### Generate and execute R code from natural language
 
@@ -367,7 +529,7 @@ lead_agent$agents
 #> <Agent>
 #>   Public:
 #>     add_message: function (role, content) 
-#>     agent_id: c9c9c16e-bfd5-4e6e-bb7d-32dd55f00cdd
+#>     agent_id: a86da0ba-6943-4fc1-9bac-9021fe4c0950
 #>     broadcast_history: list
 #>     budget: NA
 #>     budget_policy: list
@@ -404,7 +566,7 @@ lead_agent$agents
 #> <Agent>
 #>   Public:
 #>     add_message: function (role, content) 
-#>     agent_id: e11d6f7f-3032-4462-862c-d3fd8e613656
+#>     agent_id: 88d656c3-cf85-4ccb-b978-d660af09c8a2
 #>     broadcast_history: list
 #>     budget: NA
 #>     budget_policy: list
@@ -441,7 +603,7 @@ lead_agent$agents
 #> <Agent>
 #>   Public:
 #>     add_message: function (role, content) 
-#>     agent_id: 6f223c54-f69d-47a8-93ae-bef1bbaf248e
+#>     agent_id: b028841f-31ac-4aea-82c3-81d3bb35b4b3
 #>     broadcast_history: list
 #>     budget: NA
 #>     budget_policy: list
@@ -487,7 +649,7 @@ plan <- lead_agent$generate_plan(prompt_to_execute)
 plan
 #> [[1]]
 #> [[1]]$agent_id
-#> c9c9c16e-bfd5-4e6e-bb7d-32dd55f00cdd
+#> a86da0ba-6943-4fc1-9bac-9021fe4c0950
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
@@ -499,12 +661,12 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[1]]$prompt
-#> [1] "Research the current economic situation in Algeria, focusing on key aspects such as GDP growth, main industries, and economic challenges."
+#> [1] "Research the current economic situation in Algeria, including key indicators such as GDP growth, inflation, unemployment rates, and main economic sectors."
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> e11d6f7f-3032-4462-862c-d3fd8e613656
+#> 88d656c3-cf85-4ccb-b978-d660af09c8a2
 #> 
 #> [[2]]$agent_name
 #> [1] "summarizer"
@@ -516,12 +678,12 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[2]]$prompt
-#> [1] "Summarize the gathered information into 3 concise and clear bullet points."
+#> [1] "Summarize the researched information into 3 concise bullet points highlighting the main aspects of Algeria's economy."
 #> 
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> 6f223c54-f69d-47a8-93ae-bef1bbaf248e
+#> b028841f-31ac-4aea-82c3-81d3bb35b4b3
 #> 
 #> [[3]]$agent_name
 #> [1] "translator"
@@ -533,7 +695,7 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[3]]$prompt
-#> [1] "Translate the 3 bullet points summary into German accurately."
+#> [1] "Translate the 3 bullet points from English into German ensuring accuracy and clarity."
 ```
 
 Now, in order now to execute the workflow, we just need to call the
@@ -549,7 +711,7 @@ response <- lead_agent$invoke("Tell me about the economic situation in Algeria, 
 
 ``` r
 response
-#> [1] "- Die algerische Wirtschaft verzeichnet im Jahr 2024 ein moderates BIP-Wachstum von etwa 3 %, das hauptsächlich von ihrem Hydrokarbonsektor getragen wird.  \n- Zu den wichtigsten Industriezweigen gehören Öl und Gas, Landwirtschaft sowie die verarbeitende Industrie, wobei Hydrokarbone den Export und die Staatseinnahmen dominieren.  \n- Das Land steht weiterhin vor Herausforderungen wie der Abhängigkeit von Energieexporten, hoher Arbeitslosigkeit und dem Bedarf an wirtschaftlicher Diversifizierung."
+#> [1] "- Das BIP-Wachstum Algeriens erholt sich moderat mit 2-3 % jährlich, wobei die Inflation bei etwa 5-7 % stabil bleibt.  \n- Die Arbeitslosigkeit bleibt hoch bei ungefähr 11-12 %, wobei insbesondere die junge Bevölkerungsgruppe betroffen ist.  \n- Die Wirtschaft ist überwiegend von fossilen Brennstoffen abhängig, die rund 95 % der Exporte und 60 % der Staatseinnahmen ausmachen, während Landwirtschaft und verarbeitendes Gewerbe nur geringe Sektoren darstellen."
 ```
 
 If you want to inspect the multi-agents orchestration, you have access
@@ -559,7 +721,7 @@ to the `agents_interaction` object:
 lead_agent$agents_interaction
 #> [[1]]
 #> [[1]]$agent_id
-#> c9c9c16e-bfd5-4e6e-bb7d-32dd55f00cdd
+#> a86da0ba-6943-4fc1-9bac-9021fe4c0950
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
@@ -571,10 +733,10 @@ lead_agent$agents_interaction
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[1]]$prompt
-#> [1] "Research the current economic situation in Algeria, focusing on key aspects such as GDP growth, main industries, and economic challenges."
+#> [1] "Research the current economic situation in Algeria, including key indicators such as GDP growth, inflation, unemployment rates, and main economic sectors."
 #> 
 #> [[1]]$response
-#> [1] "Algeria's economy in 2024 shows moderate GDP growth (~3%) driven by hydrocarbons, which dominate exports and revenue. Key industries include oil and gas, agriculture, and manufacturing, but challenges like dependence on energy, unemployment, and diversification needs persist."
+#> [1] "As of early 2024, Algeria's GDP growth is around 2-3% annually, recovering from past oil price shocks; inflation is moderate at about 5-7%. Unemployment remains high, near 11-12%, especially among youth. The economy heavily relies on hydrocarbons, with oil and gas comprising about 95% of exports and 60% of government revenue, while agriculture and manufacturing are smaller sectors."
 #> 
 #> [[1]]$edited_by_hitl
 #> [1] FALSE
@@ -582,7 +744,7 @@ lead_agent$agents_interaction
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> e11d6f7f-3032-4462-862c-d3fd8e613656
+#> 88d656c3-cf85-4ccb-b978-d660af09c8a2
 #> 
 #> [[2]]$agent_name
 #> [1] "summarizer"
@@ -594,10 +756,10 @@ lead_agent$agents_interaction
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[2]]$prompt
-#> [1] "Summarize the gathered information into 3 concise and clear bullet points."
+#> [1] "Summarize the researched information into 3 concise bullet points highlighting the main aspects of Algeria's economy."
 #> 
 #> [[2]]$response
-#> [1] "- Algeria's economy in 2024 experiences moderate GDP growth of approximately 3%, largely fueled by its hydrocarbon sector.  \n- Major industries encompass oil and gas, agriculture, and manufacturing, with hydrocarbons dominating exports and national revenue.  \n- The country faces ongoing challenges such as reliance on energy exports, high unemployment, and the need for economic diversification."
+#> [1] "- Algeria's GDP growth is moderately recovering at 2-3% annually, with inflation steady around 5-7%.  \n- High unemployment persists at approximately 11-12%, particularly affecting the youth population.  \n- The economy is predominantly dependent on hydrocarbons, which account for about 95% of exports and 60% of government revenue, while agriculture and manufacturing remain minor sectors."
 #> 
 #> [[2]]$edited_by_hitl
 #> [1] FALSE
@@ -605,7 +767,7 @@ lead_agent$agents_interaction
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> 6f223c54-f69d-47a8-93ae-bef1bbaf248e
+#> b028841f-31ac-4aea-82c3-81d3bb35b4b3
 #> 
 #> [[3]]$agent_name
 #> [1] "translator"
@@ -617,10 +779,10 @@ lead_agent$agents_interaction
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[3]]$prompt
-#> [1] "Translate the 3 bullet points summary into German accurately."
+#> [1] "Translate the 3 bullet points from English into German ensuring accuracy and clarity."
 #> 
 #> [[3]]$response
-#> [1] "- Die algerische Wirtschaft verzeichnet im Jahr 2024 ein moderates BIP-Wachstum von etwa 3 %, das hauptsächlich von ihrem Hydrokarbonsektor getragen wird.  \n- Zu den wichtigsten Industriezweigen gehören Öl und Gas, Landwirtschaft sowie die verarbeitende Industrie, wobei Hydrokarbone den Export und die Staatseinnahmen dominieren.  \n- Das Land steht weiterhin vor Herausforderungen wie der Abhängigkeit von Energieexporten, hoher Arbeitslosigkeit und dem Bedarf an wirtschaftlicher Diversifizierung."
+#> [1] "- Das BIP-Wachstum Algeriens erholt sich moderat mit 2-3 % jährlich, wobei die Inflation bei etwa 5-7 % stabil bleibt.  \n- Die Arbeitslosigkeit bleibt hoch bei ungefähr 11-12 %, wobei insbesondere die junge Bevölkerungsgruppe betroffen ist.  \n- Die Wirtschaft ist überwiegend von fossilen Brennstoffen abhängig, die rund 95 % der Exporte und 60 % der Staatseinnahmen ausmachen, während Landwirtschaft und verarbeitendes Gewerbe nur geringe Sektoren darstellen."
 #> 
 #> [[3]]$edited_by_hitl
 #> [1] FALSE
@@ -693,7 +855,7 @@ lead_agent$register_agents(c(openai_4_1_agent, openai_4_1_nano_agent))
 lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to sing when running under the rain? how about a flower?")
 #> [[1]]
 #> [[1]]$agent_id
-#> [1] "dbd2c2aa-84ed-47e3-a77a-2aa29e5b3656"
+#> [1] "79af635d-3513-49af-81da-583d91c4fa11"
 #> 
 #> [[1]]$agent_name
 #> [1] "openai_4_1_agent"
@@ -705,12 +867,12 @@ lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to si
 #> [1] "gpt-4.1"
 #> 
 #> [[1]]$response
-#> [1] "If you were Algerian, you might enjoy singing \"Ya Rayah\" while running under the rain, and for a flower, the \"Narcisse\" (daffodil) is often appreciated in Algerian culture."
+#> [1] "If you were Algerian, you might enjoy singing \"Ya Rayah\" while running under the rain, and if you were a flower, perhaps you'd prefer the gentle folk tune \"Ya Bent Bladi.\""
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> [1] "2f5d32ca-93f6-4fb9-97a4-518296920468"
+#> [1] "51d5b534-717b-4ce2-823a-6861310a1f59"
 #> 
 #> [[2]]$agent_name
 #> [1] "openai_4_1_nano_agent"
@@ -722,7 +884,7 @@ lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to si
 #> [1] "gpt-4.1-nano"
 #> 
 #> [[2]]$response
-#> [1] "You might enjoy singing \"Aicha\" by Khaled when running under the rain or \"Lila\" by Cheb Mami when contemplating a flower."
+#> [1] "As an Algerian, you might enjoy singing \"El Houb\" by Khaled when running under the rain, and \"Ya Rayah\" by Rachid Taha when thinking about a flower."
 ```
 
 You can also access the history of the `broadcasting` using the
@@ -737,7 +899,7 @@ lead_agent$broadcast_history
 #> [[1]]$responses
 #> [[1]]$responses[[1]]
 #> [[1]]$responses[[1]]$agent_id
-#> [1] "dbd2c2aa-84ed-47e3-a77a-2aa29e5b3656"
+#> [1] "79af635d-3513-49af-81da-583d91c4fa11"
 #> 
 #> [[1]]$responses[[1]]$agent_name
 #> [1] "openai_4_1_agent"
@@ -749,12 +911,12 @@ lead_agent$broadcast_history
 #> [1] "gpt-4.1"
 #> 
 #> [[1]]$responses[[1]]$response
-#> [1] "If you were Algerian, you might enjoy singing \"Ya Rayah\" while running under the rain, and for a flower, the \"Narcisse\" (daffodil) is often appreciated in Algerian culture."
+#> [1] "If you were Algerian, you might enjoy singing \"Ya Rayah\" while running under the rain, and if you were a flower, perhaps you'd prefer the gentle folk tune \"Ya Bent Bladi.\""
 #> 
 #> 
 #> [[1]]$responses[[2]]
 #> [[1]]$responses[[2]]$agent_id
-#> [1] "2f5d32ca-93f6-4fb9-97a4-518296920468"
+#> [1] "51d5b534-717b-4ce2-823a-6861310a1f59"
 #> 
 #> [[1]]$responses[[2]]$agent_name
 #> [1] "openai_4_1_nano_agent"
@@ -766,7 +928,7 @@ lead_agent$broadcast_history
 #> [1] "gpt-4.1-nano"
 #> 
 #> [[1]]$responses[[2]]$response
-#> [1] "You might enjoy singing \"Aicha\" by Khaled when running under the rain or \"Lila\" by Cheb Mami when contemplating a flower."
+#> [1] "As an Algerian, you might enjoy singing \"El Houb\" by Khaled when running under the rain, and \"Ya Rayah\" by Rachid Taha when thinking about a flower."
 ```
 
 ## Tool specification
@@ -924,31 +1086,31 @@ best_answer
 #> $proposals
 #> $proposals[[1]]
 #> $proposals[[1]]$agent_id
-#> [1] "2a339f9e-e59a-44ab-be68-e999d23c6688"
+#> [1] "7e6c800b-873f-409c-90eb-d54cd14e3d04"
 #> 
 #> $proposals[[1]]$agent_name
 #> [1] "stylist"
 #> 
 #> $proposals[[1]]$response
-#> [1] "Layer the blue Calvin Klein shirt under a neutral or navy sweater or blazer, add a statement scarf in complementary tones, and finish with brown or black boots to balance the pink trousers for a stylish winter look."
+#> [1] "Pair your blue Calvin Klein shirt and pink trousers with a navy or grey wool coat, neutral scarf, and classic leather boots for a balanced, stylish winter look."
 #> 
 #> 
 #> $proposals[[2]]
 #> $proposals[[2]]$agent_id
-#> [1] "0c3992b7-ac5a-4384-8e29-6df911f5bd1d"
+#> [1] "97397d83-d2f5-4426-abb2-b68a6d3956df"
 #> 
 #> $proposals[[2]]$agent_name
 #> [1] "stylist2"
 #> 
 #> $proposals[[2]]$response
-#> [1] "Pair the blue Calvin Klein shirt with a neutral sweater or blazer and add stylish footwear and accessories to balance the pink trousers for a chic winter look."
+#> [1] "Pair the blue Calvin Klein shirt with a neutral-colored sweater or blazer and a stylish coat, along with complementary accessories, for a polished winter look."
 #> 
 #> 
 #> 
 #> $chosen_response
-#> Layer the blue Calvin Klein shirt under a neutral or navy sweater or blazer, 
-#> add a statement scarf in complementary tones, and finish with brown or black 
-#> boots to balance the pink trousers for a stylish winter look.
+#> Pair your blue Calvin Klein shirt and pink trousers with a navy or grey wool 
+#> coat, neutral scarf, and classic leather boots for a balanced, stylish winter 
+#> look.
 ```
 
 ### Exporting and Loading Agent Conversation History
@@ -991,6 +1153,41 @@ agent$load_messages_history("volcano_session.json")
 
 This makes it easy to archive progress and resume complex, context-rich
 agent sessions at any time.
+
+### Resetting conversation history
+
+If you want to clear the conversation while preserving the current
+system prompt, use `reset_conversation_history()`.
+
+``` r
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+
+agent <- Agent$new(
+  name = "session_reset",
+  instruction = "You are an assistant.",
+  llm_object = openai_4_1_mini
+)
+
+agent$invoke("Tell me a short fun fact about dates (the fruit).")
+#> [1] "Sure! Did you know that date palms can live for over 100 years and some can produce fruit for up to 60 years? That’s a lot of sweet, tasty dates over a lifetime!"
+agent$invoke("And one more.")
+#> [1] "Absolutely! Dates are one of the oldest cultivated fruits—archaeologists have found evidence of date farming dating back over 6,000 years!"
+
+# Clear all messages except the system prompt
+agent$reset_conversation_history()
+#> ✔ Conversation history reset. System prompt preserved.
+agent$messages
+#> [[1]]
+#> [[1]]$role
+#> [1] "system"
+#> 
+#> [[1]]$content
+#> [1] "You are an assistant."
+```
 
 ## Code of Conduct
 

@@ -127,6 +127,34 @@ polar_bear_researcher$messages
 
 This method summarises all previous conversations into a paragraph and appends it to the system prompt, then clears the conversation history. The agent retains the context but with reduced memory usage.
 
+#### Keep only the most recent messages with `keep_last_n_messages()`
+
+When a conversation grows long, you can keep just the last N messages while preserving the system prompt. This helps control token usage without fully resetting context.
+
+```{r}
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+
+agent <- Agent$new(
+  name = "history_manager",
+  instruction = "You are a concise assistant.",
+  llm_object = openai_4_1_mini
+)
+
+agent$invoke("What is the capital of Italy?")
+agent$invoke("What is the capital of Germany?")
+agent$invoke("What is the capital of Algeria?")
+agent$messages
+```
+
+```{r}
+# Keep only the last message (system prompt is preserved)
+agent$keep_last_n_messages(n = 1)
+agent$messages
+```
 ### Manually Adding Messages to an Agent’s History
 
 You can inject any message (system, user, or assistant) directly into an Agent’s history with `add_message(role, content)`. This is helpful to reconstruct, supplement, or simulate conversation steps.
@@ -156,6 +184,32 @@ agent$messages
 ```
 
 This makes it easy to reconstruct or extend sessions, provide custom context, or insert notes for debugging/testing purposes.
+
+```{r, eval=TRUE}
+agent$invoke("What did you say? I didn't understand. could you repeat please")
+```
+
+### Updating the system instruction during a session
+
+Use `update_instruction(new_instruction)` to change the Agent’s system prompt mid-session. The first system message and the underlying `ellmer` system prompt are both updated.
+
+```{r}
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+
+agent <- Agent$new(
+  name = "reconfigurable",
+  instruction = "You are a helpful assistant.",
+  llm_object = openai_4_1_mini
+)
+
+agent$update_instruction("You are a strictly concise assistant. Answer in one sentence.")
+
+agent$messages
+```
 
 ### Budget and cost control
 
@@ -194,6 +248,15 @@ agent$invoke("Give me a one-sentence fun fact about Algeria.")
 ```
 
 The current policy is echoed when setting the budget. You can update the policy at any time before or during an interaction lifecycle to adapt to your workflow's tolerance for cost overruns.
+
+#### Inspecting usage and estimated cost
+
+Call `get_usage_stats()` to retrieve total tokens, estimated cost, and budget information (if set).
+
+```{r}
+stats <- agent$get_usage_stats()
+stats
+```
 
 ### Generate and execute R code from natural language
 
@@ -533,6 +596,31 @@ agent$load_messages_history("volcano_session.json")
 ```
 
 This makes it easy to archive progress and resume complex, context-rich agent sessions at any time.
+
+### Resetting conversation history
+
+If you want to clear the conversation while preserving the current system prompt, use `reset_conversation_history()`.
+
+```{r}
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+
+agent <- Agent$new(
+  name = "session_reset",
+  instruction = "You are an assistant.",
+  llm_object = openai_4_1_mini
+)
+
+agent$invoke("Tell me a short fun fact about dates (the fruit).")
+agent$invoke("And one more.")
+
+# Clear all messages except the system prompt
+agent$reset_conversation_history()
+agent$messages
+```
 
 ## Code of Conduct
 
