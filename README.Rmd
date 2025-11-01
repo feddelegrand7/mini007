@@ -151,8 +151,8 @@ agent$messages
 ```
 
 ```{r}
-# Keep only the last message (system prompt is preserved)
-agent$keep_last_n_messages(n = 1)
+# Keep only the last 2 messages (system prompt is preserved)
+agent$keep_last_n_messages(n = 2)
 agent$messages
 ```
 ### Manually Adding Messages to an Agent’s History
@@ -187,6 +187,65 @@ This makes it easy to reconstruct or extend sessions, provide custom context, or
 
 ```{r, eval=TRUE}
 agent$invoke("What did you say? I didn't understand. could you repeat please")
+```
+
+
+### Resetting conversation history
+
+If you want to clear the conversation while preserving the current system prompt, use `reset_conversation_history()`.
+
+```{r}
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+
+agent <- Agent$new(
+  name = "session_reset",
+  instruction = "You are an assistant.",
+  llm_object = openai_4_1_mini
+)
+
+agent$invoke("Tell me a short fun fact about dates (the fruit).")
+agent$invoke("And one more.")
+
+# Clear all messages except the system prompt
+agent$reset_conversation_history()
+agent$messages
+```
+
+### Exporting and Loading Agent Conversation History
+
+You can save an agent’s conversation history to a file and reload it later. This allows you to archive, transfer, or resume agent sessions across R sessions or machines.
+
+- **export_messages_history(file_path)**: Saves the current conversation to a JSON file. 
+- **load_messages_history(file_path)**: Loads a saved conversation history from a JSON file, replacing the agent’s current history.
+
+In both methods, if you omit the `file_path` parameter, a default file named `"<getwd()>/<agent_name>_messages.json"` is used.
+
+```{r, eval=FALSE}
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+agent <- Agent$new(
+  name = "session_agent",
+  instruction = "You are a persistent researcher.",
+  llm_object = openai_4_1_mini
+)
+
+# Interact with the agent
+agent$invoke("Tell me something interesting about volcanoes.")
+
+# Save the conversation
+agent$export_messages_history("volcano_session.json")
+
+# ...Later, or in a new session...
+# Restore the conversation
+agent$load_messages_history("volcano_session.json")
+# agent$messages  # Displays current history
 ```
 
 ### Updating the system instruction during a session
@@ -562,65 +621,9 @@ best_answer <- stylist_lead_agent$judge_and_choose_best_response(
 best_answer
 ```
 
-### Exporting and Loading Agent Conversation History
-
-You can save an agent’s conversation history to a file and reload it later. This allows you to archive, transfer, or resume agent sessions across R sessions or machines.
-
-- **export_messages_history(file_path)**: Saves the current conversation to a JSON file. 
-- **load_messages_history(file_path)**: Loads a saved conversation history from a JSON file, replacing the agent’s current history.
-
-In both methods, if you omit the `file_path` parameter, a default file named `"<getwd()>/<agent_name>_messages.json"` is used.
-
-```{r, eval=FALSE}
-openai_4_1_mini <- ellmer::chat(
-  name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
-  echo = "none"
-)
-agent <- Agent$new(
-  name = "session_agent",
-  instruction = "You are a persistent researcher.",
-  llm_object = openai_4_1_mini
-)
-
-# Interact with the agent
-agent$invoke("Tell me something interesting about volcanoes.")
-
-# Save the conversation
-agent$export_messages_history("volcano_session.json")
-
-# ...Later, or in a new session...
-# Restore the conversation
-agent$load_messages_history("volcano_session.json")
-# agent$messages  # Displays current history
-```
 
 This makes it easy to archive progress and resume complex, context-rich agent sessions at any time.
 
-### Resetting conversation history
-
-If you want to clear the conversation while preserving the current system prompt, use `reset_conversation_history()`.
-
-```{r}
-openai_4_1_mini <- ellmer::chat(
-  name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
-  echo = "none"
-)
-
-agent <- Agent$new(
-  name = "session_reset",
-  instruction = "You are an assistant.",
-  llm_object = openai_4_1_mini
-)
-
-agent$invoke("Tell me a short fun fact about dates (the fruit).")
-agent$invoke("And one more.")
-
-# Clear all messages except the system prompt
-agent$reset_conversation_history()
-agent$messages
-```
 
 ## Code of Conduct
 
