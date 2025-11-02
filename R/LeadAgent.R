@@ -8,7 +8,7 @@
 #' @details
 #' This class builds intelligent multi-agent workflows by delegating sub-tasks using `delegate_prompt()`,
 #' executing them with `invoke()`, and storing the results in the `agents_interaction` list.
-#'
+#' @importFrom DiagrammeR grViz
 #' @export
 LeadAgent <- R6::R6Class(
   classname = "LeadAgent",

@@ -2,6 +2,7 @@
 
 export(Agent)
 export(LeadAgent)
+importFrom(DiagrammeR,grViz)
 importFrom(R6,R6Class)
 importFrom(checkmate,assert_character)
 importFrom(checkmate,assert_flag)
