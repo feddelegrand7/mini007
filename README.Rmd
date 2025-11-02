@@ -331,7 +331,7 @@ Safety notes:
 - Set `validate = TRUE` and review the printed code before execution.
 - Keep `interactive = TRUE` to require an explicit confirmation before running code.
 
-```{r, eval=FALSE}
+```{r}
 openai_4_1_mini <- ellmer::chat(
   name = "openai/gpt-4.1-mini",
   api_key = Sys.getenv("OPENAI_API_KEY"),
@@ -344,15 +344,12 @@ r_assistant <- Agent$new(
   llm_object = openai_4_1_mini
 )
 
-# Generate code to summarise the built-in mtcars data frame,
-# validate it, then execute after interactive confirmation.
-r_assistant$generate_execute_r_code(
-  code_description = "Calculate the summary of the mtcars dataframe",
-  validate = TRUE,
-  execute = TRUE,
-  interactive = TRUE, 
-  env = globalenv()
-)
+agent$generate_execute_r_code(
+   code_description = "using ggplot2, generate a scatterplot of hwy and cty in red", 
+   validate = TRUE, 
+   execute = TRUE, 
+   interactive = FALSE
+ )
 ```
 
 ### Creating a multi-agents orchestraction 

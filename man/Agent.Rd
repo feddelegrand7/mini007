@@ -153,6 +153,7 @@ agent$keep_last_n_messages(n = 2)
   agent$messages
 }
 
+
 ## ------------------------------------------------
 ## Method `Agent$update_instruction`
 ## ------------------------------------------------
@@ -631,6 +632,7 @@ start fresh but with the summary preserved as context.
   # Now only the system prompt (with summary) remains
   agent$messages
 }
+
 }
 \if{html}{\out{</div>}}
 

@@ -435,6 +435,8 @@ lead_agent$judge_and_choose_best_response("what's the best way to war a kalvin k
 \item{\code{hitl_steps}}{The steps where the workflow should be stopped in order to allow for a human interaction}
 
 \item{\code{prompt_for_plan}}{The prompt used to generate the plan.}
+
+\item{\code{agents_for_plan}}{The agents used for the plan}
 }
 \if{html}{\out{</div>}}
 }

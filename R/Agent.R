@@ -156,11 +156,14 @@ Agent <- R6::R6Class(
       code_prompt <- paste0(
         "Generate R code for the following task. Return ONLY the R code without any explanations, ",
         "markdown formatting, or additional text:\n\n",
+        "if you run several commands, use the ';' character to separate them. \n\n",
+        "Do not add additional spaces that would be interpreted later with '\n'. \n\n",
         code_description
       )
 
       generated_code <- self$invoke(code_prompt)
 
+      clean_code <- gsub("```\\{?r\\}?|```", "", generated_code)
       clean_code <- gsub("```\\{?r\\}?|```", "", generated_code)
       clean_code <- trimws(clean_code)
 
@@ -175,7 +178,7 @@ Agent <- R6::R6Class(
       )
 
       if (validate) {
-        private$.validate_r_code(clean_code)
+        result <- private$.validate_r_code(r_code = clean_code, result = result)
       }
 
       if (execute) {
@@ -709,17 +712,17 @@ Agent <- R6::R6Class(
 
     },
 
-    .validate_r_code = function(r_code) {
+    .validate_r_code = function(r_code, result) {
 
       validation <- tryCatch({
         parsed <- parse(text = r_code)
         result$validated <- TRUE
         result$validation_message <- "Syntax is valid"
-        list(valid = TRUE, message = "Syntax is valid")
+        return(result)
       }, error = function(e) {
         result$validated <- FALSE
         result$validation_message <- paste("Syntax error:", e$message)
-        list(valid = FALSE, message = e$message)
+        return(result)
       })
 
     },

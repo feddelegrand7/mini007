@@ -1,3 +1,7 @@
+# mini007 0.2.1
+
+- Fixing bug in the `generate_execute_r_code()` method. 
+
 # mini007 0.2.0
 
 - Setting `messages` as an `active` `R6` field. It is now possible to modify the `messages` that will be used by the `LLM` object through a `list` object. The `list` object will be automatically converted to the corresponding `ellmer` `Turns`. 
