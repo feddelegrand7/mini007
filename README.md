@@ -86,7 +86,7 @@ Each created Agent has an `agent_id` (among other meta information):
 
 ``` r
 polar_bear_researcher$agent_id
-#> [1] "90151673-5c66-4cf2-93eb-9247633bbbd8"
+#> [1] "59c1662e-74e6-4c12-87e6-cfa9de6c92ea"
 ```
 
 At any time, you can tweak the `llm_object`:
@@ -157,14 +157,14 @@ memory efficiency while keeping important conversation context.
 # After several interactions, summarise and clear the conversation history
 polar_bear_researcher$clear_and_summarise_messages()
 #> ✔ Conversation history summarised and appended to system prompt.
-#> ℹ Summary: The user asked if polar bears are dangerous to humans, and the expert assistant responded that polar...
+#> ℹ Summary: The user asked if polar bears are dangerous to humans, and the assistant responded that they can be,...
 polar_bear_researcher$messages
 #> [[1]]
 #> [[1]]$role
 #> [1] "system"
 #> 
 #> [[1]]$content
-#> [1] "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max. \n\n--- Conversation Summary ---\n The user asked if polar bears are dangerous to humans, and the expert assistant responded that polar bears can indeed be dangerous as they are powerful predators capable of attacking when threatened or hungry."
+#> [1] "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max. \n\n--- Conversation Summary ---\n The user asked if polar bears are dangerous to humans, and the assistant responded that they can be, as polar bears are powerful predators that may attack if threatened or hungry."
 ```
 
 This method summarises all previous conversations into a paragraph and
@@ -341,7 +341,7 @@ context, or insert notes for debugging/testing purposes.
 
 ``` r
 agent$invoke("What did you say? I didn't understand. could you repeat please")
-#> [1] "Certainly! One of the best places to find amazing pizza is in Naples, Italy. Naples is often considered the birthplace of pizza, especially the classic Margherita, known for its fresh ingredients and perfect crust. Many pizza lovers consider Neapolitan pizza to be the gold standard.\n\nOf course, great pizza can be found in many places around the world, each with its own unique style—for example:\n- New York City, USA: Known for its large, foldable slices with a crispy yet chewy crust.\n- Chicago, USA: Famous for deep-dish pizza with a thick, buttery crust and lots of cheese.\n- Rome, Italy: Known for thin, crispy, and rectangular \"pizza al taglio.\"\n\nIf you want, I can recommend some specific pizzerias or styles based on where you are or your preferences!"
+#> [1] "Certainly! One of the places often praised for having some of the best pizza in the world is Naples, Italy. Naples is actually where pizza originated, and many experts consider Neapolitan pizza—characterized by a thin, soft crust, fresh tomato sauce, mozzarella, and basil—to be the finest.\n\nIf you're looking for exceptional pizza experiences, here are some top places to consider:\n\n- **Naples, Italy**: Birthplace of pizza, especially famous for Margherita and Marinara pizzas.\n- **New York City, USA**: Known for its large, foldable slices with a crispy yet chewy crust.\n- **Chicago, USA**: Famous for deep-dish pizza with a thick layer of cheese and toppings.\n- **Rome, Italy**: Known for its thin and crispy pizza al taglio (by the slice).\n\nIf you tell me what style you prefer or where you are located, I can recommend some great spots nearby!"
 ```
 
 ### Resetting conversation history
@@ -363,9 +363,9 @@ agent <- Agent$new(
 )
 
 agent$invoke("Tell me a short fun fact about dates (the fruit).")
-#> [1] "Sure! Did you know that date palms can live for over 100 years and continue to produce fruit throughout their long lifespan? That means a single tree can provide delicious dates for generations!"
+#> [1] "Sure! Did you know that date palms can live for over 100 years and produce fruit for most of their lifespan? Some date trees in the Middle East have been known to be over 150 years old and still bear sweet, delicious dates!"
 agent$invoke("And one more.")
-#> [1] "Absolutely! Here’s another fun fact: Dates are one of the oldest cultivated fruits in the world, with evidence of their cultivation dating back over 6,000 years in the Middle East!"
+#> [1] "Absolutely! Here's another fun fact: Dates are one of the oldest cultivated fruits—archaeologists have discovered date seeds that are over 6,000 years old! They’ve been a staple food in the Middle East and North Africa for thousands of years."
 
 # Clear all messages except the system prompt
 agent$reset_conversation_history()
@@ -605,117 +605,16 @@ Next, we need to assign the Agents to `LeadAgent`, we do it as follows:
 ``` r
 lead_agent$register_agents(c(researcher, summarizer, translator))
 #> ✔ Agent(s) successfully registered.
-lead_agent$agents
+
+lapply(lead_agent$agents, function(x) {x$name})
 #> [[1]]
-#> <Agent>
-#>   Public:
-#>     add_message: function (role, content) 
-#>     agent_id: 4a55b81e-40d0-498b-8c86-6ccbd47a496a
-#>     broadcast_history: list
-#>     budget: NA
-#>     budget_policy: list
-#>     budget_warned: NULL
-#>     clear_and_summarise_messages: function () 
-#>     clone: function (deep = FALSE) 
-#>     export_messages_history: function (file_path = paste0(getwd(), "/", paste0(self$name, 
-#>     generate_execute_r_code: function (code_description, validate = FALSE, execute = FALSE, 
-#>     get_usage_stats: function () 
-#>     initialize: function (name, instruction, llm_object, budget = NA) 
-#>     instruction: You are a research assistant. Your job is to answer fact ...
-#>     invoke: function (prompt) 
-#>     keep_last_n_messages: function (n = 2) 
-#>     llm_object: Chat, R6
-#>     load_messages_history: function (file_path = paste0(getwd(), "/", paste0(self$name, 
-#>     messages: active binding
-#>     model_name: gpt-4.1-mini
-#>     model_provider: OpenAI
-#>     name: researcher
-#>     reset_conversation_history: function () 
-#>     set_budget: function (amount_in_usd) 
-#>     set_budget_policy: function (on_exceed = "abort", warn_at = 0.8) 
-#>     update_instruction: function (new_instruction) 
-#>   Private:
-#>     ._messages: list
-#>     .add_assistant_message: function (message, type = "assistant") 
-#>     .add_message: function (message, type) 
-#>     .add_user_message: function (message, type = "user") 
-#>     .check_budget: function () 
-#>     .set_turns_from_messages: function () 
-#>     .validate_r_code: function (r_code) 
+#> [1] "researcher"
 #> 
 #> [[2]]
-#> <Agent>
-#>   Public:
-#>     add_message: function (role, content) 
-#>     agent_id: 79a50152-d275-43be-9a5c-617fcdc443e1
-#>     broadcast_history: list
-#>     budget: NA
-#>     budget_policy: list
-#>     budget_warned: NULL
-#>     clear_and_summarise_messages: function () 
-#>     clone: function (deep = FALSE) 
-#>     export_messages_history: function (file_path = paste0(getwd(), "/", paste0(self$name, 
-#>     generate_execute_r_code: function (code_description, validate = FALSE, execute = FALSE, 
-#>     get_usage_stats: function () 
-#>     initialize: function (name, instruction, llm_object, budget = NA) 
-#>     instruction: You are agent designed to summarise a give text into 3 d ...
-#>     invoke: function (prompt) 
-#>     keep_last_n_messages: function (n = 2) 
-#>     llm_object: Chat, R6
-#>     load_messages_history: function (file_path = paste0(getwd(), "/", paste0(self$name, 
-#>     messages: active binding
-#>     model_name: gpt-4.1-mini
-#>     model_provider: OpenAI
-#>     name: summarizer
-#>     reset_conversation_history: function () 
-#>     set_budget: function (amount_in_usd) 
-#>     set_budget_policy: function (on_exceed = "abort", warn_at = 0.8) 
-#>     update_instruction: function (new_instruction) 
-#>   Private:
-#>     ._messages: list
-#>     .add_assistant_message: function (message, type = "assistant") 
-#>     .add_message: function (message, type) 
-#>     .add_user_message: function (message, type = "user") 
-#>     .check_budget: function () 
-#>     .set_turns_from_messages: function () 
-#>     .validate_r_code: function (r_code) 
+#> [1] "summarizer"
 #> 
 #> [[3]]
-#> <Agent>
-#>   Public:
-#>     add_message: function (role, content) 
-#>     agent_id: 51412acf-9c8f-4a57-b9f0-d1989bd0cc75
-#>     broadcast_history: list
-#>     budget: NA
-#>     budget_policy: list
-#>     budget_warned: NULL
-#>     clear_and_summarise_messages: function () 
-#>     clone: function (deep = FALSE) 
-#>     export_messages_history: function (file_path = paste0(getwd(), "/", paste0(self$name, 
-#>     generate_execute_r_code: function (code_description, validate = FALSE, execute = FALSE, 
-#>     get_usage_stats: function () 
-#>     initialize: function (name, instruction, llm_object, budget = NA) 
-#>     instruction: Your role is to translate a text from English to German
-#>     invoke: function (prompt) 
-#>     keep_last_n_messages: function (n = 2) 
-#>     llm_object: Chat, R6
-#>     load_messages_history: function (file_path = paste0(getwd(), "/", paste0(self$name, 
-#>     messages: active binding
-#>     model_name: gpt-4.1-mini
-#>     model_provider: OpenAI
-#>     name: translator
-#>     reset_conversation_history: function () 
-#>     set_budget: function (amount_in_usd) 
-#>     set_budget_policy: function (on_exceed = "abort", warn_at = 0.8) 
-#>     update_instruction: function (new_instruction) 
-#>   Private:
-#>     ._messages: list
-#>     .add_assistant_message: function (message, type = "assistant") 
-#>     .add_message: function (message, type) 
-#>     .add_user_message: function (message, type = "user") 
-#>     .check_budget: function () 
-#>     .set_turns_from_messages: function () 
-#>     .validate_r_code: function (r_code)
+#> [1] "translator"
 ```
 
 Before executing your prompt, you can ask the `LeadAgent` to generate a
@@ -730,7 +629,7 @@ plan <- lead_agent$generate_plan(prompt_to_execute)
 plan
 #> [[1]]
 #> [[1]]$agent_id
-#> 4a55b81e-40d0-498b-8c86-6ccbd47a496a
+#> 8474bd1c-c0c7-4b0c-80d7-a701edb30c2d
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
@@ -742,12 +641,12 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[1]]$prompt
-#> [1] "Research the current economic situation in Algeria, including key indicators such as GDP growth, major industries, and challenges faced."
+#> [1] "Research the current economic situation in Algeria, including key indicators such as GDP growth, inflation, unemployment rates, and major economic sectors."
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> 79a50152-d275-43be-9a5c-617fcdc443e1
+#> 37be371b-c48f-4d92-a3f8-5fb8019ed32a
 #> 
 #> [[2]]$agent_name
 #> [1] "summarizer"
@@ -759,12 +658,12 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[2]]$prompt
-#> [1] "Summarize the researched information into 3 clear and concise bullet points in English."
+#> [1] "Summarize the findings into three clear and concise bullet points highlighting the main aspects of Algeria's economy."
 #> 
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> 51412acf-9c8f-4a57-b9f0-d1989bd0cc75
+#> dcaf99e5-a03e-450b-a256-d31ff70759ea
 #> 
 #> [[3]]$agent_name
 #> [1] "translator"
@@ -776,7 +675,7 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[3]]$prompt
-#> [1] "Translate the 3 English bullet points into German accurately."
+#> [1] "Translate the summarized bullet points into German accurately."
 ```
 
 Now, in order now to execute the workflow, we just need to call the
@@ -792,7 +691,7 @@ response <- lead_agent$invoke("Tell me about the economic situation in Algeria, 
 
 ``` r
 response
-#> [1] "- Algeriens Wirtschaft wächst moderat mit 2-3% jährlich, hauptsächlich angetrieben durch den Öl- und Gassektor.  \n- Zu den großen Herausforderungen gehören die wirtschaftliche Diversifizierung zur Verringerung der Abhängigkeit von Kohlenwasserstoffen, hohe Arbeitslosenquoten und Inflationsdruck.  \n- Die Volatilität auf den globalen Energiemärkten hat erhebliche Auswirkungen auf die wirtschaftliche Stabilität Algeriens."
+#> [1] "- Das BIP-Wachstum Algeriens liegt bei moderaten 2-3 %, hauptsächlich getrieben durch den Export von Kohlenwasserstoffen.  \n- Die Inflation ist relativ hoch, etwa 6-7 %, mit einer deutlich erhöhten Arbeitslosigkeit, insbesondere unter Jugendlichen (12-15 %).  \n- Die Wirtschaft ist stark abhängig von Öl und Gas, die über 90 % der Exporteinnahmen ausmachen, während die Landwirtschaft und der verarbeitende Sektor unterentwickelt bleiben."
 ```
 
 If you want to inspect the multi-agents orchestration, you have access
@@ -802,7 +701,7 @@ to the `agents_interaction` object:
 lead_agent$agents_interaction
 #> [[1]]
 #> [[1]]$agent_id
-#> 4a55b81e-40d0-498b-8c86-6ccbd47a496a
+#> 8474bd1c-c0c7-4b0c-80d7-a701edb30c2d
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
@@ -814,10 +713,10 @@ lead_agent$agents_interaction
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[1]]$prompt
-#> [1] "Research the current economic situation in Algeria, including key indicators such as GDP growth, major industries, and challenges faced."
+#> [1] "Research the current economic situation in Algeria, including key indicators such as GDP growth, inflation, unemployment rates, and major economic sectors."
 #> 
 #> [[1]]$response
-#> [1] "As of 2024, Algeria's GDP growth is moderate, around 2-3% annually, driven by hydrocarbons (oil and gas) which dominate the economy. Key challenges include diversification away from oil dependence, high unemployment, and inflation pressures amid global energy market volatility."
+#> [1] "As of early 2024, Algeria's GDP growth is modest, around 2-3%, driven by hydrocarbon exports; inflation is relatively high, near 6-7%; unemployment remains elevated, particularly among youth, at approximately 12-15%. The economy heavily relies on oil and gas sectors, which constitute over 90% of export revenues, while agriculture and manufacturing are underdeveloped."
 #> 
 #> [[1]]$edited_by_hitl
 #> [1] FALSE
@@ -825,7 +724,7 @@ lead_agent$agents_interaction
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> 79a50152-d275-43be-9a5c-617fcdc443e1
+#> 37be371b-c48f-4d92-a3f8-5fb8019ed32a
 #> 
 #> [[2]]$agent_name
 #> [1] "summarizer"
@@ -837,10 +736,10 @@ lead_agent$agents_interaction
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[2]]$prompt
-#> [1] "Summarize the researched information into 3 clear and concise bullet points in English."
+#> [1] "Summarize the findings into three clear and concise bullet points highlighting the main aspects of Algeria's economy."
 #> 
 #> [[2]]$response
-#> [1] "- Algeria's economy grows moderately at 2-3% annually, primarily fueled by the oil and gas sector.  \n- Major challenges include economic diversification to reduce reliance on hydrocarbons, high unemployment rates, and inflation pressures.  \n- Global energy market volatility significantly impacts Algeria's economic stability."
+#> [1] "- Algeria's GDP growth is modest at 2-3%, primarily fueled by hydrocarbon exports.  \n- Inflation is relatively high, around 6-7%, with unemployment notably elevated, especially among youth (12-15%).  \n- The economy is heavily dependent on oil and gas, which make up over 90% of export revenues, while agriculture and manufacturing sectors remain underdeveloped."
 #> 
 #> [[2]]$edited_by_hitl
 #> [1] FALSE
@@ -848,7 +747,7 @@ lead_agent$agents_interaction
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> 51412acf-9c8f-4a57-b9f0-d1989bd0cc75
+#> dcaf99e5-a03e-450b-a256-d31ff70759ea
 #> 
 #> [[3]]$agent_name
 #> [1] "translator"
@@ -860,10 +759,10 @@ lead_agent$agents_interaction
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[3]]$prompt
-#> [1] "Translate the 3 English bullet points into German accurately."
+#> [1] "Translate the summarized bullet points into German accurately."
 #> 
 #> [[3]]$response
-#> [1] "- Algeriens Wirtschaft wächst moderat mit 2-3% jährlich, hauptsächlich angetrieben durch den Öl- und Gassektor.  \n- Zu den großen Herausforderungen gehören die wirtschaftliche Diversifizierung zur Verringerung der Abhängigkeit von Kohlenwasserstoffen, hohe Arbeitslosenquoten und Inflationsdruck.  \n- Die Volatilität auf den globalen Energiemärkten hat erhebliche Auswirkungen auf die wirtschaftliche Stabilität Algeriens."
+#> [1] "- Das BIP-Wachstum Algeriens liegt bei moderaten 2-3 %, hauptsächlich getrieben durch den Export von Kohlenwasserstoffen.  \n- Die Inflation ist relativ hoch, etwa 6-7 %, mit einer deutlich erhöhten Arbeitslosigkeit, insbesondere unter Jugendlichen (12-15 %).  \n- Die Wirtschaft ist stark abhängig von Öl und Gas, die über 90 % der Exporteinnahmen ausmachen, während die Landwirtschaft und der verarbeitende Sektor unterentwickelt bleiben."
 #> 
 #> [[3]]$edited_by_hitl
 #> [1] FALSE
@@ -936,7 +835,7 @@ lead_agent$register_agents(c(openai_4_1_agent, openai_4_1_nano_agent))
 lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to sing when running under the rain? how about a flower?")
 #> [[1]]
 #> [[1]]$agent_id
-#> [1] "fbd28c0d-c9ff-4152-8713-78aade315d97"
+#> [1] "54c8ba8a-bd72-4fb3-9ceb-3413d26ce03a"
 #> 
 #> [[1]]$agent_name
 #> [1] "openai_4_1_agent"
@@ -948,12 +847,12 @@ lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to si
 #> [1] "gpt-4.1"
 #> 
 #> [[1]]$response
-#> [1] "If you were Algerian, you might like to sing \"Ya Zina Diri Latay\" when running under the rain, and if you were a flower, perhaps \"Ya Rayah\" to express longing and beauty."
+#> [1] "If you were Algerian, you might sing \"Ya Rayah\" by Dahmane El Harrachi while running under the rain, and if you were a flower, you’d probably just let the rain sing for you!"
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> [1] "d46f8553-2cfb-476d-8a0e-721fa84b4b44"
+#> [1] "5a1d6416-b0d3-4c87-9fa3-b1c03196affc"
 #> 
 #> [[2]]$agent_name
 #> [1] "openai_4_1_nano_agent"
@@ -965,7 +864,7 @@ lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to si
 #> [1] "gpt-4.1-nano"
 #> 
 #> [[2]]$response
-#> [1] "As an Algerian, you might enjoy singing \"Ya Rayah\" by Rachid Taha when running under the rain and \"Azzaman\" by Cheb Khaled when thinking of a flower."
+#> [1] "You might enjoy singing \"Ya Rayah\" by Rachid Taha under the rain and \"Lily\" by Khaled when admiring a flower."
 ```
 
 You can also access the history of the `broadcasting` using the
@@ -980,7 +879,7 @@ lead_agent$broadcast_history
 #> [[1]]$responses
 #> [[1]]$responses[[1]]
 #> [[1]]$responses[[1]]$agent_id
-#> [1] "fbd28c0d-c9ff-4152-8713-78aade315d97"
+#> [1] "54c8ba8a-bd72-4fb3-9ceb-3413d26ce03a"
 #> 
 #> [[1]]$responses[[1]]$agent_name
 #> [1] "openai_4_1_agent"
@@ -992,12 +891,12 @@ lead_agent$broadcast_history
 #> [1] "gpt-4.1"
 #> 
 #> [[1]]$responses[[1]]$response
-#> [1] "If you were Algerian, you might like to sing \"Ya Zina Diri Latay\" when running under the rain, and if you were a flower, perhaps \"Ya Rayah\" to express longing and beauty."
+#> [1] "If you were Algerian, you might sing \"Ya Rayah\" by Dahmane El Harrachi while running under the rain, and if you were a flower, you’d probably just let the rain sing for you!"
 #> 
 #> 
 #> [[1]]$responses[[2]]
 #> [[1]]$responses[[2]]$agent_id
-#> [1] "d46f8553-2cfb-476d-8a0e-721fa84b4b44"
+#> [1] "5a1d6416-b0d3-4c87-9fa3-b1c03196affc"
 #> 
 #> [[1]]$responses[[2]]$agent_name
 #> [1] "openai_4_1_nano_agent"
@@ -1009,7 +908,7 @@ lead_agent$broadcast_history
 #> [1] "gpt-4.1-nano"
 #> 
 #> [[1]]$responses[[2]]$response
-#> [1] "As an Algerian, you might enjoy singing \"Ya Rayah\" by Rachid Taha when running under the rain and \"Azzaman\" by Cheb Khaled when thinking of a flower."
+#> [1] "You might enjoy singing \"Ya Rayah\" by Rachid Taha under the rain and \"Lily\" by Khaled when admiring a flower."
 ```
 
 ## Tool specification
@@ -1078,7 +977,7 @@ lead_agent$invoke(
 #> ── Generating new plan ──
 #> 
 #> ✔ Plan successfully generated.
-#> [1] "The current weather conditions in Algiers are warm and sunny with a temperature of 35 degrees Celsius. There is no precipitation, making it a clear and dry day."
+#> [1] "The current weather conditions in Algiers are as follows: The temperature is 35 degrees Celsius, it is sunny, and there is no precipitation. The general climate at the moment is clear and warm. If you need more detailed or specific weather information, feel free to ask!"
 ```
 
 ## Human In The Loop (HITL)
@@ -1167,31 +1066,32 @@ best_answer
 #> $proposals
 #> $proposals[[1]]
 #> $proposals[[1]]$agent_id
-#> [1] "92ae47ca-4a43-4cb8-a494-aee768cc37c8"
+#> [1] "3d721b03-5ee8-4d15-ae7a-7a9efdc97649"
 #> 
 #> $proposals[[1]]$agent_name
 #> [1] "stylist"
 #> 
 #> $proposals[[1]]$response
-#> [1] "Layer your blue Calvin Klein shirt under a neutral-toned (gray, navy, or beige) sweater or blazer, and add coordinated accessories like a scarf or shoes to tie the look together with your pink trousers."
+#> [1] "Layer your blue Calvin Klein shirt with a neutral-toned coat (like camel, gray, or navy), add complementary accessories (such as a muted scarf), and finish with classic shoes (like white sneakers or loafers) to balance the bold pink trousers."
 #> 
 #> 
 #> $proposals[[2]]
 #> $proposals[[2]]$agent_id
-#> [1] "849c83b7-0b13-40bf-b1ed-79d695d9d3b9"
+#> [1] "b00a7bfa-bbd6-42b8-b74a-4c08a858917a"
 #> 
 #> $proposals[[2]]$agent_name
 #> [1] "stylist2"
 #> 
 #> $proposals[[2]]$response
-#> [1] "Pair the blue Calvin Klein shirt with a neutral-colored sweater or blazer and add a stylish coat, along with complementary footwear and accessories, to create a balanced winter look with pink trousers."
+#> [1] "Pair the blue Calvin Klein shirt with a neutral-colored blazer or cardigan and a warm scarf for a stylish, layered winter look that complements the pink trousers."
 #> 
 #> 
 #> 
 #> $chosen_response
-#> Pair the blue Calvin Klein shirt with a neutral-colored sweater or blazer and 
-#> add a stylish coat, along with complementary footwear and accessories, to 
-#> create a balanced winter look with pink trousers.
+#> Layer your blue Calvin Klein shirt with a neutral-toned coat (like camel, gray,
+#> or navy), add complementary accessories (such as a muted scarf), and finish 
+#> with classic shoes (like white sneakers or loafers) to balance the bold pink 
+#> trousers.
 ```
 
 This makes it easy to archive progress and resume complex, context-rich

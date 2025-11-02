@@ -397,7 +397,8 @@ Next, we need to assign the Agents to `LeadAgent`, we do it as follows:
 
 ```{r}
 lead_agent$register_agents(c(researcher, summarizer, translator))
-lead_agent$agents
+
+lapply(lead_agent$agents, function(x) {x$name})
 ```
 
 Before executing your prompt, you can ask the `LeadAgent` to generate a plan so that you can see which `Agent` will be used for which prompt, you can do it as follows:

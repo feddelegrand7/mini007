@@ -26,6 +26,8 @@ LeadAgent <- R6::R6Class(
     hitl_steps = NULL,
     #'@field prompt_for_plan The prompt used to generate the plan.
     prompt_for_plan = NULL,
+    #'@field agents_for_plan The agents used for the plan
+    agents_for_plan = NULL,
 
     #' @description
     #' Initializes the LeadAgent with a built-in task-decomposition prompt.
@@ -327,8 +329,18 @@ LeadAgent <- R6::R6Class(
 
       prompt_invoke_same_as_plan <- FALSE
 
+
       if (!is.null(self$prompt_for_plan) && self$prompt_for_plan == prompt) {
         prompt_invoke_same_as_plan <- TRUE
+      }
+
+      current_agents <- lapply(self$agents, function(x) {x$name})
+      current_agents <- unlist(current_agents)
+
+      same_agents_used <- all(sort(self$agents_for_plan) == sort(current_agents))
+
+      if (is.null(self$agents_for_plan) || !same_agents_used) {
+        prompt_invoke_same_as_plan <- FALSE
       }
 
       if (!prompt_invoke_same_as_plan || length(self$plan) == 0 || force_regenerate_plan) {
@@ -449,6 +461,12 @@ LeadAgent <- R6::R6Class(
       self$plan <- plan
 
       self$prompt_for_plan <- prompt
+
+      agents_names <- lapply(self$agents, function(x) {x$name})
+
+      agents_names <- unlist(agents_names)
+
+      self$agents_for_plan <- agents_names
 
       return(plan)
     },

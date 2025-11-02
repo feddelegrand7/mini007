@@ -354,6 +354,7 @@ Agent <- R6::R6Class(
     #'   # Now only the system prompt (with summary) remains
     #'   agent$messages
     #' }
+    #'
 
     clear_and_summarise_messages = function() {
 
