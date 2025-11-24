@@ -282,7 +282,7 @@ You can limit how much an `Agent` is allowed to spend and decide what should hap
     - **ask**: interactively ask what to do when the budget is exceeded.
   - **warn_at**: a fraction in (0, 1); triggers a one-time warning when spending reaches that fraction of the budget (default `0.8`).
 
-```{r, eval=FALSE}
+```{r}
 # An API KEY is required to invoke the Agent
 openai_4_1_mini <- ellmer::chat(
   name = "openai/gpt-4.1-mini",
@@ -426,17 +426,6 @@ lead_agent$agents_interaction
 
 The above example is extremely simple, the usefulness of `mini007` would shine in more complex processes where a multi-agent sequential orchestration has a higher value added. 
 
-### Visualizing agent plans with `visualize_plan()`
-
-Sometimes, before running your workflow, it is helpful to view the orchestration as a visual diagram, showing the sequence of agents and which prompt each will receive. After generating a plan, you can call `visualize_plan()`:
-
-This function displays the agents in workflow order as labeled boxes. Hovering a box reveals the delegated prompt. The visualization uses the `DiagrammeR` package. If no plan exists, it asks you to generate one first.
-
-
-```{r, eval=FALSE}
-lead_agent$visualize_plan()
-```
-
 ## Broadcasting 
 
 If you want to compare several `LLM` models, the `LeadAgent` provides a `broadcast` method that allows you to send a prompt to several different agents and get the result for each agent back in order to make a comparison and potentially choose the best agent/model for the defined prompt: 
@@ -487,11 +476,9 @@ You can also access the history of the `broadcasting` using the `broadcast_histo
 lead_agent$broadcast_history
 ```
 
+## Human In The Loop (HITL)
 
-## Tool specification 
-
-As mentioned previously, an `Agent` is an extension of an `ellmer` object. As such, you can define a tool that will be used, the exact same way as in `ellmer`. Suppose, we want to get the weather in `Algiers` through a function (Tool). Let's first create the `Agents`: 
-
+When executing an LLM workflow that relies on many steps, you can set `Human In The Loop` (`HITL`) trigger that will check the model's response at a specific step. You can define a `HITL` trigger after defining a `LeadAgent` as follows:
 
 ```{r}
 openai_llm_object <- ellmer::chat(
@@ -500,58 +487,6 @@ openai_llm_object <- ellmer::chat(
   echo = "none"
 )
 
-assistant <- Agent$new(
-  name = "assistant",
-  instruction = "You are an AI assistant that answers question. Do not answer with more than 1 sentence.",
-  llm_object = openai_llm_object
-)
-
-weather_assistant <- Agent$new(
-  name = "weather_assistant",
-  instruction = "You role is to provide weather assistance.",
-  llm_object = openai_llm_object
-)
-```
-
-Now, let's define the `tool` that we'll be using, using `ellmer` it's quite straightforward: 
-
-```{r}
-get_weather_in_algiers <- ellmer::tool(
-  function() {
-    "35 degrees Celcius, it's sunny and there's no precipitation."
-  },
-  name = "get_weather_in_algiers",
-  description = "Provide the current weather in Algiers, Algeria."
-)
-```
-
-Our `tool` defined, the next step is to register it within the suitable `Agent`, in our case, the `weather_assistant` `Agent`: 
-
-```{r}
-weather_assistant$llm_object$register_tool(get_weather_in_algiers)
-```
-
-That's it, now the last step is to create the `LeadAgent`, register the `Agents` that we need and call the `invoke` method:  
-
-```{r}
-lead_agent <- LeadAgent$new(
-  name = "Leader", 
-  llm_object = openai_llm_object
-)
-
-lead_agent$register_agents(c(assistant, weather_assistant))
-
-lead_agent$invoke(
-  "Tell me about the economic situation in Algeria, then tell me how's the weather in Algiers?"
-)
-```
-
-
-## Human In The Loop (HITL)
-
-When executing an LLM workflow that relies on many steps, you can set `Human In The Loop` (`HITL`) trigger that will check the model's response at a specific step. You can define a `HITL` trigger after defining a `LeadAgent` as follows:
-
-```{r}
 lead_agent <- LeadAgent$new(
   name = "Leader", 
   llm_object = openai_llm_object

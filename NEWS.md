@@ -1,3 +1,7 @@
+# mini007 0.2.2
+
+- Deleting `visualize_plan()` method as it requires many dependencies.
+
 # mini007 0.2.1
 
 - Fixing bug in the `generate_execute_r_code()` method. 

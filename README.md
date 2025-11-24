@@ -69,6 +69,13 @@ openai_4_1_mini <- ellmer::chat(
   api_key = Sys.getenv("OPENAI_API_KEY"), 
   echo = "none"
 )
+#> Warning: The `api_key` argument of `chat_openai()` is deprecated as of ellmer 0.4.0.
+#> ℹ Please use the `credentials` argument instead.
+#> ℹ The deprecated feature was likely used in the ellmer package.
+#>   Please report the issue at <https://github.com/tidyverse/ellmer/issues>.
+#> This warning is displayed once every 8 hours.
+#> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+#> generated.
 ```
 
 After initializing the `ellmer` LLM object, creating the Agent is
@@ -86,15 +93,15 @@ Each created Agent has an `agent_id` (among other meta information):
 
 ``` r
 polar_bear_researcher$agent_id
-#> [1] "b04ba429-e3fd-441f-91f8-2f9a13081875"
+#> [1] "5874458a-7d7d-4642-8d7f-a7f73f415e80"
 ```
 
 At any time, you can tweak the `llm_object`:
 
 ``` r
 polar_bear_researcher$llm_object
-#> <Chat OpenAI/gpt-4.1-mini turns=1 tokens=0/0 $0.00>
-#> ── system [0] ──────────────────────────────────────────────────────────────────
+#> <Chat OpenAI/gpt-4.1-mini turns=1 input=0 output=0 cost=$0.00>
+#> ── system ──────────────────────────────────────────────────────────────────────
 #> You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max.
 ```
 
@@ -102,7 +109,7 @@ An agent can provide the answer to a prompt using the `invoke` method:
 
 ``` r
 polar_bear_researcher$invoke("Are polar bears dangerous for humans?")
-#> [1] "Yes, polar bears are dangerous to humans as they are powerful predators and can be aggressive when threatened or hungry."
+#> [1] "Yes, polar bears can be dangerous to humans as they are powerful predators and may attack if threatened or hungry."
 ```
 
 You can also retrieve a list that displays the history of the agent:
@@ -130,20 +137,20 @@ polar_bear_researcher$messages
 #> [1] "assistant"
 #> 
 #> [[3]]$content
-#> [1] "Yes, polar bears are dangerous to humans as they are powerful predators and can be aggressive when threatened or hungry."
+#> [1] "Yes, polar bears can be dangerous to humans as they are powerful predators and may attack if threatened or hungry."
 ```
 
 Or the `ellmer` way:
 
 ``` r
 polar_bear_researcher$llm_object
-#> <Chat OpenAI/gpt-4.1-mini turns=3 tokens=43/22 $0.00>
-#> ── system [0] ──────────────────────────────────────────────────────────────────
+#> <Chat OpenAI/gpt-4.1-mini turns=3 input=43 output=23 cost=$0.00>
+#> ── system ──────────────────────────────────────────────────────────────────────
 #> You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max.
-#> ── user [43] ───────────────────────────────────────────────────────────────────
+#> ── user ────────────────────────────────────────────────────────────────────────
 #> Are polar bears dangerous for humans?
-#> ── assistant [22] ──────────────────────────────────────────────────────────────
-#> Yes, polar bears are dangerous to humans as they are powerful predators and can be aggressive when threatened or hungry.
+#> ── assistant [input=43 output=23 cost=$0.00] ───────────────────────────────────
+#> Yes, polar bears can be dangerous to humans as they are powerful predators and may attack if threatened or hungry.
 ```
 
 ### Managing Agent Conversation History
@@ -157,14 +164,14 @@ memory efficiency while keeping important conversation context.
 # After several interactions, summarise and clear the conversation history
 polar_bear_researcher$clear_and_summarise_messages()
 #> ✔ Conversation history summarised and appended to system prompt.
-#> ℹ Summary: The user asked if polar bears are dangerous to humans, and the expert assistant responded that polar...
+#> ℹ Summary: The user asked if polar bears are dangerous to humans, and the assistant responded that polar bears ...
 polar_bear_researcher$messages
 #> [[1]]
 #> [[1]]$role
 #> [1] "system"
 #> 
 #> [[1]]$content
-#> [1] "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max. \n\n--- Conversation Summary ---\n The user asked if polar bears are dangerous to humans, and the expert assistant responded that polar bears are indeed dangerous predators capable of aggression when threatened or hungry."
+#> [1] "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max. \n\n--- Conversation Summary ---\n The user asked if polar bears are dangerous to humans, and the assistant responded that polar bears can indeed be dangerous as they are powerful predators who may attack when threatened or hungry."
 ```
 
 This method summarises all previous conversations into a paragraph and
@@ -341,7 +348,7 @@ context, or insert notes for debugging/testing purposes.
 
 ``` r
 agent$invoke("What did you say? I didn't understand. could you repeat please")
-#> [1] "Certainly! Many pizza experts and food lovers consider **Naples, Italy** to be the home of the best pizza in the world. Traditional Neapolitan pizza, especially the **Margherita**, is famed for its simple yet high-quality ingredients—fresh mozzarella, San Marzano tomatoes, fresh basil, and a perfect thin, soft crust. \n\nIf you’re looking for the authentic and original pizza experience, visiting Naples is highly recommended. However, great pizza can also be found in many other cities around the world, each with their own unique styles! \n\nWould you like recommendations for the best pizzerias in a specific city?"
+#> [1] "Sure! One of the best places to find outstanding pizza in the world is **Naples, Italy** — it's the birthplace of traditional Neapolitan pizza, known for its thin, soft crust, fresh tomato sauce, buffalo mozzarella, and a perfect balance of flavors.\n\nIf you're looking for something unique, **Algiers, Algeria** also has delicious, tasty, and crunchy pizza that many people enjoy.\n\nWould you like recommendations for specific pizza styles or restaurants in any city?"
 ```
 
 ### Resetting conversation history
@@ -363,9 +370,9 @@ agent <- Agent$new(
 )
 
 agent$invoke("Tell me a short fun fact about dates (the fruit).")
-#> [1] "Sure! Dates are so sweet that they can have up to 80% natural sugar content when dried, making them a natural candy enjoyed for thousands of years!"
+#> [1] "Sure! Did you know that date palms can produce up to 200 pounds of dates per year, and some date seeds have been found to be over 2,000 years old and still able to germinate? That's some ancient fruit power!"
 agent$invoke("And one more.")
-#> [1] "Here’s another fun fact: Date palms can live and produce fruit for over 100 years, making them some of the longest-living fruit trees in the world!"
+#> [1] "Absolutely! Dates are so naturally sweet that they have been used as a natural sweetener in Middle Eastern cuisines for thousands of years—kind of like nature's candy!"
 
 # Clear all messages except the system prompt
 agent$reset_conversation_history()
@@ -482,12 +489,17 @@ agent <- Agent$new(
 
 # Set a 5 USD budget
 agent$set_budget(5)
+#> ✔ Budget successfully set to 5$
+#> ℹ Budget policy: on_exceed='abort', warn_at=0.8
+#> ℹ Use the set_budget_policy() method to configure the budget policy.
 
 # Warn at 90% of the budget and ask what to do if exceeded
 agent$set_budget_policy(on_exceed = "ask", warn_at = 0.9)
+#> ✔ Budget policy set: on_exceed='ask', warn_at=0.9
 
 # Normal usage
 agent$invoke("Give me a one-sentence fun fact about Algeria.")
+#> [1] "Algeria is home to one of the largest sand deserts in the world, the Sahara, which covers more than 80% of its territory."
 ```
 
 The current policy is echoed when setting the budget. You can update the
@@ -501,18 +513,19 @@ budget information (if set).
 
 ``` r
 stats <- agent$get_usage_stats()
+#> Warning: Unknown or uninitialised column: `tokens_total`.
 stats
 #> $total_tokens
 #> [1] 0
 #> 
 #> $estimated_cost
-#> [1] 0
+#> [1] 1e-04
 #> 
 #> $budget
-#> [1] NA
+#> [1] 5
 #> 
 #> $budget_remaining
-#> [1] NA
+#> [1] 4.9999
 ```
 
 ### Generate and execute R code from natural language
@@ -561,7 +574,7 @@ agent$generate_execute_r_code(
 #> [1] "using ggplot2, generate a scatterplot of hwy and cty in red"
 #> 
 #> $code
-#> [1] "library(ggplot2);ggplot(mpg,aes(x=cty,y=hwy))+geom_point(color=\"red\")"
+#> [1] "library(ggplot2);ggplot(mpg,aes(x=hwy,y=cty))+geom_point(color=\"red\")"
 #> 
 #> $validated
 #> [1] TRUE
@@ -651,7 +664,7 @@ plan <- lead_agent$generate_plan(prompt_to_execute)
 plan
 #> [[1]]
 #> [[1]]$agent_id
-#> 68f98f3b-0052-479c-b219-c728116b60f5
+#> 5621e842-9b92-47b3-97bb-647591360043
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
@@ -663,12 +676,12 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[1]]$prompt
-#> [1] "Research the current economic situation in Algeria, including key indicators such as GDP growth, inflation, and main economic sectors."
+#> [1] "Research the current economic situation in Algeria, including key data such as GDP, main industries, and recent economic trends"
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> 0400c744-c798-481e-ad86-372148a9580d
+#> fa0b960d-7857-452a-991d-45952ea6977d
 #> 
 #> [[2]]$agent_name
 #> [1] "summarizer"
@@ -680,12 +693,12 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[2]]$prompt
-#> [1] "Summarize the findings into three concise bullet points highlighting the most important aspects of Algeria's economy."
+#> [1] "Summarize the economic situation of Algeria into 3 clear and concise bullet points in English"
 #> 
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> 91024460-5355-4f59-91be-d8918a815355
+#> 979df7c2-b413-4e40-a1ff-bd91f2ae0bc2
 #> 
 #> [[3]]$agent_name
 #> [1] "translator"
@@ -697,7 +710,7 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[3]]$prompt
-#> [1] "Translate the summarized bullet points from English into German accurately."
+#> [1] "Translate the 3 English bullet points about Algeria's economy into German accurately"
 ```
 
 Now, in order now to execute the workflow, we just need to call the
@@ -713,7 +726,7 @@ response <- lead_agent$invoke("Tell me about the economic situation in Algeria, 
 
 ``` r
 response
-#> [1] "- Das BIP-Wachstum Algeriens ist mit 2-3 % moderat und wird hauptsächlich vom Hydrokarbonsektor angetrieben.\n- Hydrokarbone machen etwa 30 % des BIP und 95 % der Exporte aus, was die starke wirtschaftliche Abhängigkeit unterstreicht.\n- Regierungsinitiativen zielen darauf ab, die Wirtschaft durch Landwirtschaft, verarbeitendes Gewerbe und Dienstleistungen zu diversifizieren, um die Abhängigkeit vom Öl zu verringern."
+#> [1] "- Die Wirtschaft Algeriens ist stark von Kohlenwasserstoffen abhängig, die 95 % der Exporterlöse und 30 % des BIP ausmachen, mit einem nominalen BIP von etwa 146 Milliarden US-Dollar Anfang 2024.  \n- Die Regierung verfolgt aktiv eine wirtschaftliche Diversifizierung und konzentriert sich auf die Landwirtschaft, die verarbeitende Industrie und den Bereich der erneuerbaren Energien, um die Abhängigkeit von Öl und Gas zu verringern.  \n- Zu den großen Herausforderungen gehören die hohe Jugendarbeitslosigkeit und die Inflation, die die wirtschaftliche Stabilität und die Wachstumsaussichten beeinträchtigen."
 ```
 
 If you want to inspect the multi-agents orchestration, you have access
@@ -723,7 +736,7 @@ to the `agents_interaction` object:
 lead_agent$agents_interaction
 #> [[1]]
 #> [[1]]$agent_id
-#> 68f98f3b-0052-479c-b219-c728116b60f5
+#> 5621e842-9b92-47b3-97bb-647591360043
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
@@ -735,10 +748,10 @@ lead_agent$agents_interaction
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[1]]$prompt
-#> [1] "Research the current economic situation in Algeria, including key indicators such as GDP growth, inflation, and main economic sectors."
+#> [1] "Research the current economic situation in Algeria, including key data such as GDP, main industries, and recent economic trends"
 #> 
 #> [[1]]$response
-#> [1] "As of early 2024, Algeria's GDP growth is modest, around 2-3%, driven mainly by hydrocarbons, which constitute about 30% of GDP and 95% of exports. Inflation remains moderate, approximately 5-6%, while the government is pushing diversification efforts in agriculture, manufacturing, and services to reduce oil dependency."
+#> [1] "As of early 2024, Algeria's GDP is approximately $146 billion (nominal), with hydrocarbons (oil and natural gas) constituting about 95% of export revenues and 30% of GDP. Recent trends show government efforts to diversify the economy away from hydrocarbon dependency, focusing on sectors like agriculture, manufacturing, and renewable energy while facing challenges from youth unemployment and inflation."
 #> 
 #> [[1]]$edited_by_hitl
 #> [1] FALSE
@@ -746,7 +759,7 @@ lead_agent$agents_interaction
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> 0400c744-c798-481e-ad86-372148a9580d
+#> fa0b960d-7857-452a-991d-45952ea6977d
 #> 
 #> [[2]]$agent_name
 #> [1] "summarizer"
@@ -758,10 +771,10 @@ lead_agent$agents_interaction
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[2]]$prompt
-#> [1] "Summarize the findings into three concise bullet points highlighting the most important aspects of Algeria's economy."
+#> [1] "Summarize the economic situation of Algeria into 3 clear and concise bullet points in English"
 #> 
 #> [[2]]$response
-#> [1] "- Algeria's GDP growth is modest at 2-3%, primarily fueled by the hydrocarbon sector.\n- Hydrocarbons make up about 30% of GDP and 95% of exports, underscoring heavy economic reliance.\n- Government initiatives focus on diversifying the economy through agriculture, manufacturing, and services to reduce oil dependency."
+#> [1] "- Algeria's economy is heavily reliant on hydrocarbons, which account for 95% of export revenues and 30% of GDP, with a nominal GDP of around $146 billion as of early 2024.  \n- The government is actively pursuing economic diversification, targeting agriculture, manufacturing, and renewable energy sectors to reduce dependence on oil and gas.  \n- Major challenges include high youth unemployment and inflation, which impact economic stability and growth prospects."
 #> 
 #> [[2]]$edited_by_hitl
 #> [1] FALSE
@@ -769,7 +782,7 @@ lead_agent$agents_interaction
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> 91024460-5355-4f59-91be-d8918a815355
+#> 979df7c2-b413-4e40-a1ff-bd91f2ae0bc2
 #> 
 #> [[3]]$agent_name
 #> [1] "translator"
@@ -781,10 +794,10 @@ lead_agent$agents_interaction
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[3]]$prompt
-#> [1] "Translate the summarized bullet points from English into German accurately."
+#> [1] "Translate the 3 English bullet points about Algeria's economy into German accurately"
 #> 
 #> [[3]]$response
-#> [1] "- Das BIP-Wachstum Algeriens ist mit 2-3 % moderat und wird hauptsächlich vom Hydrokarbonsektor angetrieben.\n- Hydrokarbone machen etwa 30 % des BIP und 95 % der Exporte aus, was die starke wirtschaftliche Abhängigkeit unterstreicht.\n- Regierungsinitiativen zielen darauf ab, die Wirtschaft durch Landwirtschaft, verarbeitendes Gewerbe und Dienstleistungen zu diversifizieren, um die Abhängigkeit vom Öl zu verringern."
+#> [1] "- Die Wirtschaft Algeriens ist stark von Kohlenwasserstoffen abhängig, die 95 % der Exporterlöse und 30 % des BIP ausmachen, mit einem nominalen BIP von etwa 146 Milliarden US-Dollar Anfang 2024.  \n- Die Regierung verfolgt aktiv eine wirtschaftliche Diversifizierung und konzentriert sich auf die Landwirtschaft, die verarbeitende Industrie und den Bereich der erneuerbaren Energien, um die Abhängigkeit von Öl und Gas zu verringern.  \n- Zu den großen Herausforderungen gehören die hohe Jugendarbeitslosigkeit und die Inflation, die die wirtschaftliche Stabilität und die Wachstumsaussichten beeinträchtigen."
 #> 
 #> [[3]]$edited_by_hitl
 #> [1] FALSE
@@ -793,22 +806,6 @@ lead_agent$agents_interaction
 The above example is extremely simple, the usefulness of `mini007` would
 shine in more complex processes where a multi-agent sequential
 orchestration has a higher value added.
-
-### Visualizing agent plans with `visualize_plan()`
-
-Sometimes, before running your workflow, it is helpful to view the
-orchestration as a visual diagram, showing the sequence of agents and
-which prompt each will receive. After generating a plan, you can call
-`visualize_plan()`:
-
-This function displays the agents in workflow order as labeled boxes.
-Hovering a box reveals the delegated prompt. The visualization uses the
-`DiagrammeR` package. If no plan exists, it asks you to generate one
-first.
-
-``` r
-lead_agent$visualize_plan()
-```
 
 ## Broadcasting
 
@@ -857,7 +854,7 @@ lead_agent$register_agents(c(openai_4_1_agent, openai_4_1_nano_agent))
 lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to sing when running under the rain? how about a flower?")
 #> [[1]]
 #> [[1]]$agent_id
-#> [1] "76a4da59-3e7b-459b-a8be-b7ab0bbeb5d8"
+#> [1] "66e4282d-61f4-4769-a972-9584df9a9bd8"
 #> 
 #> [[1]]$agent_name
 #> [1] "openai_4_1_agent"
@@ -869,12 +866,12 @@ lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to si
 #> [1] "gpt-4.1"
 #> 
 #> [[1]]$response
-#> [1] "As an Algerian, you might enjoy singing \"Ya Rayah\" when running under the rain, while a flower, if it could sing, might serenade the rain with \"Mazal Mazal\" to celebrate its blossoming."
+#> [1] "If you were Algerian, you might love singing \"Ya Rayah\" when running under the rain, and if you were a flower, you’d bask in silence, soaking up every drop."
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> [1] "4a1802e2-261f-4f70-ba0b-0c2023fb35ff"
+#> [1] "f6c11205-c019-403b-8a0e-1904118c26c9"
 #> 
 #> [[2]]$agent_name
 #> [1] "openai_4_1_nano_agent"
@@ -886,7 +883,7 @@ lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to si
 #> [1] "gpt-4.1-nano"
 #> 
 #> [[2]]$response
-#> [1] "As an Algerian, you might enjoy singing \"Ya Rayah\" by Rachid Taha when running under the rain, and \"Aṭṭār\" (the flower) by Warda when focusing on a flower."
+#> [1] "If you were Algerian, you might enjoy singing \"Ya Rayah\" by Rachid Taha in the rain, and \"Landal\" by Cheb Khaled, \"Aïcha,\" or a song about a flower depending on your taste."
 ```
 
 You can also access the history of the `broadcasting` using the
@@ -901,7 +898,7 @@ lead_agent$broadcast_history
 #> [[1]]$responses
 #> [[1]]$responses[[1]]
 #> [[1]]$responses[[1]]$agent_id
-#> [1] "76a4da59-3e7b-459b-a8be-b7ab0bbeb5d8"
+#> [1] "66e4282d-61f4-4769-a972-9584df9a9bd8"
 #> 
 #> [[1]]$responses[[1]]$agent_name
 #> [1] "openai_4_1_agent"
@@ -913,12 +910,12 @@ lead_agent$broadcast_history
 #> [1] "gpt-4.1"
 #> 
 #> [[1]]$responses[[1]]$response
-#> [1] "As an Algerian, you might enjoy singing \"Ya Rayah\" when running under the rain, while a flower, if it could sing, might serenade the rain with \"Mazal Mazal\" to celebrate its blossoming."
+#> [1] "If you were Algerian, you might love singing \"Ya Rayah\" when running under the rain, and if you were a flower, you’d bask in silence, soaking up every drop."
 #> 
 #> 
 #> [[1]]$responses[[2]]
 #> [[1]]$responses[[2]]$agent_id
-#> [1] "4a1802e2-261f-4f70-ba0b-0c2023fb35ff"
+#> [1] "f6c11205-c019-403b-8a0e-1904118c26c9"
 #> 
 #> [[1]]$responses[[2]]$agent_name
 #> [1] "openai_4_1_nano_agent"
@@ -930,76 +927,7 @@ lead_agent$broadcast_history
 #> [1] "gpt-4.1-nano"
 #> 
 #> [[1]]$responses[[2]]$response
-#> [1] "As an Algerian, you might enjoy singing \"Ya Rayah\" by Rachid Taha when running under the rain, and \"Aṭṭār\" (the flower) by Warda when focusing on a flower."
-```
-
-## Tool specification
-
-As mentioned previously, an `Agent` is an extension of an `ellmer`
-object. As such, you can define a tool that will be used, the exact same
-way as in `ellmer`. Suppose, we want to get the weather in `Algiers`
-through a function (Tool). Let’s first create the `Agents`:
-
-``` r
-openai_llm_object <- ellmer::chat(
-  name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"), 
-  echo = "none"
-)
-
-assistant <- Agent$new(
-  name = "assistant",
-  instruction = "You are an AI assistant that answers question. Do not answer with more than 1 sentence.",
-  llm_object = openai_llm_object
-)
-
-weather_assistant <- Agent$new(
-  name = "weather_assistant",
-  instruction = "You role is to provide weather assistance.",
-  llm_object = openai_llm_object
-)
-```
-
-Now, let’s define the `tool` that we’ll be using, using `ellmer` it’s
-quite straightforward:
-
-``` r
-get_weather_in_algiers <- ellmer::tool(
-  function() {
-    "35 degrees Celcius, it's sunny and there's no precipitation."
-  },
-  name = "get_weather_in_algiers",
-  description = "Provide the current weather in Algiers, Algeria."
-)
-```
-
-Our `tool` defined, the next step is to register it within the suitable
-`Agent`, in our case, the `weather_assistant` `Agent`:
-
-``` r
-weather_assistant$llm_object$register_tool(get_weather_in_algiers)
-```
-
-That’s it, now the last step is to create the `LeadAgent`, register the
-`Agents` that we need and call the `invoke` method:
-
-``` r
-lead_agent <- LeadAgent$new(
-  name = "Leader", 
-  llm_object = openai_llm_object
-)
-
-lead_agent$register_agents(c(assistant, weather_assistant))
-#> ✔ Agent(s) successfully registered.
-
-lead_agent$invoke(
-  "Tell me about the economic situation in Algeria, then tell me how's the weather in Algiers?"
-)
-#> 
-#> ── Generating new plan ──
-#> 
-#> ✔ Plan successfully generated.
-#> [1] "The current weather conditions in Algiers are as follows: the temperature is 35 degrees Celsius, it is sunny, and there is no precipitation. The humidity information is not specified."
+#> [1] "If you were Algerian, you might enjoy singing \"Ya Rayah\" by Rachid Taha in the rain, and \"Landal\" by Cheb Khaled, \"Aïcha,\" or a song about a flower depending on your taste."
 ```
 
 ## Human In The Loop (HITL)
@@ -1010,6 +938,12 @@ response at a specific step. You can define a `HITL` trigger after
 defining a `LeadAgent` as follows:
 
 ``` r
+openai_llm_object <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"), 
+  echo = "none"
+)
+
 lead_agent <- LeadAgent$new(
   name = "Leader", 
   llm_object = openai_llm_object
@@ -1088,31 +1022,31 @@ best_answer
 #> $proposals
 #> $proposals[[1]]
 #> $proposals[[1]]$agent_id
-#> [1] "da5a54b7-2948-4800-8345-6780fd91e833"
+#> [1] "5c03b1f2-6c6f-4674-965c-708bc7bb597b"
 #> 
 #> $proposals[[1]]$agent_name
 #> [1] "stylist"
 #> 
 #> $proposals[[1]]$response
-#> [1] "Layer the blue Calvin Klein shirt with a neutral-colored (such as gray, navy, or beige) sweater or blazer, and add a coordinating scarf to tie together the blue and pink for a balanced winter look."
+#> [1] "Layer the blue Calvin Klein shirt under a neutral blazer or coat, add a cozy scarf, and pair with the pink trousers and complementary shoes (like white or nude) for a stylish winter look."
 #> 
 #> 
 #> $proposals[[2]]
 #> $proposals[[2]]$agent_id
-#> [1] "97006157-33f1-45d0-a574-8de3a7cfda92"
+#> [1] "adb403cb-be41-42b3-9695-5a19c1579e57"
 #> 
 #> $proposals[[2]]$agent_name
 #> [1] "stylist2"
 #> 
 #> $proposals[[2]]$response
-#> [1] "Pair the blue Calvin Klein shirt with a neutral-colored blazer or cardigan and add a stylish scarf to balance the look and stay warm."
+#> [1] "Pair the blue Calvin Klein shirt with a cozy neutral-toned sweater or blazer and layer with a stylish coat, plus accessories like a scarf and boots, to create a warm yet chic winter look."
 #> 
 #> 
 #> 
 #> $chosen_response
-#> Layer the blue Calvin Klein shirt with a neutral-colored (such as gray, navy, 
-#> or beige) sweater or blazer, and add a coordinating scarf to tie together the 
-#> blue and pink for a balanced winter look.
+#> Pair the blue Calvin Klein shirt with a cozy neutral-toned sweater or blazer 
+#> and layer with a stylish coat, plus accessories like a scarf and boots, to 
+#> create a warm yet chic winter look.
 ```
 
 This makes it easy to archive progress and resume complex, context-rich

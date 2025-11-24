@@ -226,43 +226,6 @@ LeadAgent <- R6::R6Class(
     },
 
     #' @description
-    #' Visualizes the orchestration plan
-    #' Each agent node is shown in sequence (left → right), with tooltips showing
-    #' the actual prompt delegated to that agent.
-    visualize_plan = function() {
-
-      plan <- self$plan
-
-      if (length(plan) == 0) {
-        cli::cli_abort("No plan found, generate one first")
-      }
-
-      nodes <- paste0(
-        "A", seq_along(plan),
-        " [label='", vapply(plan, `[[`, "", "agent_name"),
-        "', tooltip='", gsub("'", "\\\\'", vapply(plan, `[[`, "", "prompt")),
-        "', shape=box, style=filled, fillcolor=lightblue, fontname='Helvetica'];"
-      )
-
-      edges <- paste0(
-        "A", seq_len(length(plan) - 1),
-        " -> A", seq_len(length(plan) - 1) + 1,
-        " [arrowhead=normal];"
-      )
-
-      graph_code <- paste0(
-        "digraph workflow {
-      graph [rankdir=LR, splines=true, overlap=false];
-      node [shape=box, style=filled, fillcolor=lightblue, fontname='Helvetica', fontsize=12];
-      edge [color=gray50, arrowsize=0.8];
-      ", paste(c(nodes, edges), collapse = "\n"), "
-    }"
-      )
-
-      DiagrammeR::grViz(graph_code)
-    },
-
-    #' @description
     #' Executes the full prompt pipeline: decomposition → delegation → invocation.
     #' @param prompt The complex user instruction to process.
     #' @param force_regenerate_plan If TRUE, regenerate a plan even if one exists,
