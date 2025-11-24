@@ -69,13 +69,6 @@ openai_4_1_mini <- ellmer::chat(
   api_key = Sys.getenv("OPENAI_API_KEY"), 
   echo = "none"
 )
-#> Warning: The `api_key` argument of `chat_openai()` is deprecated as of ellmer 0.4.0.
-#> ℹ Please use the `credentials` argument instead.
-#> ℹ The deprecated feature was likely used in the ellmer package.
-#>   Please report the issue at <https://github.com/tidyverse/ellmer/issues>.
-#> This warning is displayed once every 8 hours.
-#> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-#> generated.
 ```
 
 After initializing the `ellmer` LLM object, creating the Agent is
@@ -93,15 +86,15 @@ Each created Agent has an `agent_id` (among other meta information):
 
 ``` r
 polar_bear_researcher$agent_id
-#> [1] "5874458a-7d7d-4642-8d7f-a7f73f415e80"
+#> [1] "3de19a6a-bffe-4073-a2af-85f17261b609"
 ```
 
 At any time, you can tweak the `llm_object`:
 
 ``` r
 polar_bear_researcher$llm_object
-#> <Chat OpenAI/gpt-4.1-mini turns=1 input=0 output=0 cost=$0.00>
-#> ── system ──────────────────────────────────────────────────────────────────────
+#> <Chat OpenAI/gpt-4.1-mini turns=1 tokens=0/0 $0.00>
+#> ── system [0] ──────────────────────────────────────────────────────────────────
 #> You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max.
 ```
 
@@ -109,7 +102,7 @@ An agent can provide the answer to a prompt using the `invoke` method:
 
 ``` r
 polar_bear_researcher$invoke("Are polar bears dangerous for humans?")
-#> [1] "Yes, polar bears can be dangerous to humans as they are powerful predators and may attack if threatened or hungry."
+#> [1] "Yes, polar bears are dangerous to humans as they are large, powerful predators and may attack if threatened or desperate for food."
 ```
 
 You can also retrieve a list that displays the history of the agent:
@@ -137,20 +130,20 @@ polar_bear_researcher$messages
 #> [1] "assistant"
 #> 
 #> [[3]]$content
-#> [1] "Yes, polar bears can be dangerous to humans as they are powerful predators and may attack if threatened or hungry."
+#> [1] "Yes, polar bears are dangerous to humans as they are large, powerful predators and may attack if threatened or desperate for food."
 ```
 
 Or the `ellmer` way:
 
 ``` r
 polar_bear_researcher$llm_object
-#> <Chat OpenAI/gpt-4.1-mini turns=3 input=43 output=23 cost=$0.00>
-#> ── system ──────────────────────────────────────────────────────────────────────
+#> <Chat OpenAI/gpt-4.1-mini turns=3 tokens=43/25 $0.00>
+#> ── system [0] ──────────────────────────────────────────────────────────────────
 #> You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max.
-#> ── user ────────────────────────────────────────────────────────────────────────
+#> ── user [43] ───────────────────────────────────────────────────────────────────
 #> Are polar bears dangerous for humans?
-#> ── assistant [input=43 output=23 cost=$0.00] ───────────────────────────────────
-#> Yes, polar bears can be dangerous to humans as they are powerful predators and may attack if threatened or hungry.
+#> ── assistant [25] ──────────────────────────────────────────────────────────────
+#> Yes, polar bears are dangerous to humans as they are large, powerful predators and may attack if threatened or desperate for food.
 ```
 
 ### Managing Agent Conversation History
@@ -164,14 +157,14 @@ memory efficiency while keeping important conversation context.
 # After several interactions, summarise and clear the conversation history
 polar_bear_researcher$clear_and_summarise_messages()
 #> ✔ Conversation history summarised and appended to system prompt.
-#> ℹ Summary: The user asked if polar bears are dangerous to humans, and the assistant responded that polar bears ...
+#> ℹ Summary: The user asked if polar bears are dangerous to humans, and the expert assistant responded that polar...
 polar_bear_researcher$messages
 #> [[1]]
 #> [[1]]$role
 #> [1] "system"
 #> 
 #> [[1]]$content
-#> [1] "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max. \n\n--- Conversation Summary ---\n The user asked if polar bears are dangerous to humans, and the assistant responded that polar bears can indeed be dangerous as they are powerful predators who may attack when threatened or hungry."
+#> [1] "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max. \n\n--- Conversation Summary ---\n The user asked if polar bears are dangerous to humans, and the expert assistant responded that polar bears are indeed dangerous due to their size, strength, and potential to attack when threatened or hungry."
 ```
 
 This method summarises all previous conversations into a paragraph and
@@ -348,7 +341,7 @@ context, or insert notes for debugging/testing purposes.
 
 ``` r
 agent$invoke("What did you say? I didn't understand. could you repeat please")
-#> [1] "Sure! One of the best places to find outstanding pizza in the world is **Naples, Italy** — it's the birthplace of traditional Neapolitan pizza, known for its thin, soft crust, fresh tomato sauce, buffalo mozzarella, and a perfect balance of flavors.\n\nIf you're looking for something unique, **Algiers, Algeria** also has delicious, tasty, and crunchy pizza that many people enjoy.\n\nWould you like recommendations for specific pizza styles or restaurants in any city?"
+#> [1] "Certainly! One of the best places to find amazing pizza is Algiers, Algeria. The pizza there is known for being both tasty and crunchy. However, great pizza can be found all over the world, with iconic spots in places like Naples, Italy (the birthplace of pizza), New York City, USA, and Chicago, USA, each offering unique styles and flavors. If you want, I can recommend specific pizzerias or styles based on what you like!"
 ```
 
 ### Resetting conversation history
@@ -370,9 +363,9 @@ agent <- Agent$new(
 )
 
 agent$invoke("Tell me a short fun fact about dates (the fruit).")
-#> [1] "Sure! Did you know that date palms can produce up to 200 pounds of dates per year, and some date seeds have been found to be over 2,000 years old and still able to germinate? That's some ancient fruit power!"
+#> [1] "Sure! Did you know that date palms can live for over 100 years and continue to produce fruit throughout their lifetime? Some ancient date palm trees are believed to be over 2,000 years old!"
 agent$invoke("And one more.")
-#> [1] "Absolutely! Dates are so naturally sweet that they have been used as a natural sweetener in Middle Eastern cuisines for thousands of years—kind of like nature's candy!"
+#> [1] "Absolutely! Dates are one of the sweetest fruits in the world—just one date contains about 16 grams of natural sugars, making them a tasty and energy-packed snack!"
 
 # Clear all messages except the system prompt
 agent$reset_conversation_history()
@@ -499,7 +492,7 @@ agent$set_budget_policy(on_exceed = "ask", warn_at = 0.9)
 
 # Normal usage
 agent$invoke("Give me a one-sentence fun fact about Algeria.")
-#> [1] "Algeria is home to one of the largest sand deserts in the world, the Sahara, which covers more than 80% of its territory."
+#> [1] "Algeria is home to the Sahara Desert, which is the largest hot desert in the world!"
 ```
 
 The current policy is echoed when setting the budget. You can update the
@@ -513,19 +506,18 @@ budget information (if set).
 
 ``` r
 stats <- agent$get_usage_stats()
-#> Warning: Unknown or uninitialised column: `tokens_total`.
 stats
 #> $total_tokens
-#> [1] 0
+#> [1] 46
 #> 
 #> $estimated_cost
-#> [1] 1e-04
+#> [1] 0
 #> 
 #> $budget
 #> [1] 5
 #> 
 #> $budget_remaining
-#> [1] 4.9999
+#> [1] 5
 ```
 
 ### Generate and execute R code from natural language
@@ -664,7 +656,7 @@ plan <- lead_agent$generate_plan(prompt_to_execute)
 plan
 #> [[1]]
 #> [[1]]$agent_id
-#> 5621e842-9b92-47b3-97bb-647591360043
+#> a470a229-4a98-4025-a584-811aa88da3ce
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
@@ -676,12 +668,12 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[1]]$prompt
-#> [1] "Research the current economic situation in Algeria, including key data such as GDP, main industries, and recent economic trends"
+#> [1] "Research the current economic situation in Algeria, including key indicators like GDP, inflation, unemployment, and main economic sectors."
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> fa0b960d-7857-452a-991d-45952ea6977d
+#> e74e3745-0069-4a90-bc6e-92e7640fcc18
 #> 
 #> [[2]]$agent_name
 #> [1] "summarizer"
@@ -693,12 +685,12 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[2]]$prompt
-#> [1] "Summarize the economic situation of Algeria into 3 clear and concise bullet points in English"
+#> [1] "Summarize the researched information into 3 clear and concise bullet points."
 #> 
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> 979df7c2-b413-4e40-a1ff-bd91f2ae0bc2
+#> d8ef4ebd-d3f9-4c35-8f96-3a0aa5687612
 #> 
 #> [[3]]$agent_name
 #> [1] "translator"
@@ -710,7 +702,7 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[3]]$prompt
-#> [1] "Translate the 3 English bullet points about Algeria's economy into German accurately"
+#> [1] "Translate the 3 bullet points summary from English into German."
 ```
 
 Now, in order now to execute the workflow, we just need to call the
@@ -726,7 +718,7 @@ response <- lead_agent$invoke("Tell me about the economic situation in Algeria, 
 
 ``` r
 response
-#> [1] "- Die Wirtschaft Algeriens ist stark von Kohlenwasserstoffen abhängig, die 95 % der Exporterlöse und 30 % des BIP ausmachen, mit einem nominalen BIP von etwa 146 Milliarden US-Dollar Anfang 2024.  \n- Die Regierung verfolgt aktiv eine wirtschaftliche Diversifizierung und konzentriert sich auf die Landwirtschaft, die verarbeitende Industrie und den Bereich der erneuerbaren Energien, um die Abhängigkeit von Öl und Gas zu verringern.  \n- Zu den großen Herausforderungen gehören die hohe Jugendarbeitslosigkeit und die Inflation, die die wirtschaftliche Stabilität und die Wachstumsaussichten beeinträchtigen."
+#> [1] "- Die algerische Wirtschaft wächst moderat um 2-3 % bei einer Inflation von etwa 6-7 %.\n- Die Arbeitslosigkeit ist hoch und liegt zwischen 12 und 15 %.\n- Die Wirtschaft ist stark von Kohlenwasserstoffen abhängig, die über 90 % der Exporte ausmachen, wobei eine Diversifizierung in andere Sektoren kaum stattfindet."
 ```
 
 If you want to inspect the multi-agents orchestration, you have access
@@ -736,7 +728,7 @@ to the `agents_interaction` object:
 lead_agent$agents_interaction
 #> [[1]]
 #> [[1]]$agent_id
-#> 5621e842-9b92-47b3-97bb-647591360043
+#> a470a229-4a98-4025-a584-811aa88da3ce
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
@@ -748,10 +740,10 @@ lead_agent$agents_interaction
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[1]]$prompt
-#> [1] "Research the current economic situation in Algeria, including key data such as GDP, main industries, and recent economic trends"
+#> [1] "Research the current economic situation in Algeria, including key indicators like GDP, inflation, unemployment, and main economic sectors."
 #> 
 #> [[1]]$response
-#> [1] "As of early 2024, Algeria's GDP is approximately $146 billion (nominal), with hydrocarbons (oil and natural gas) constituting about 95% of export revenues and 30% of GDP. Recent trends show government efforts to diversify the economy away from hydrocarbon dependency, focusing on sectors like agriculture, manufacturing, and renewable energy while facing challenges from youth unemployment and inflation."
+#> [1] "As of 2024, Algeria's GDP growth is modest, around 2-3%, with inflation near 6-7%. Unemployment remains high at about 12-15%. The economy heavily relies on hydrocarbons (oil and gas), which constitute over 90% of export revenues, with limited diversification into agriculture and manufacturing."
 #> 
 #> [[1]]$edited_by_hitl
 #> [1] FALSE
@@ -759,7 +751,7 @@ lead_agent$agents_interaction
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> fa0b960d-7857-452a-991d-45952ea6977d
+#> e74e3745-0069-4a90-bc6e-92e7640fcc18
 #> 
 #> [[2]]$agent_name
 #> [1] "summarizer"
@@ -771,10 +763,10 @@ lead_agent$agents_interaction
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[2]]$prompt
-#> [1] "Summarize the economic situation of Algeria into 3 clear and concise bullet points in English"
+#> [1] "Summarize the researched information into 3 clear and concise bullet points."
 #> 
 #> [[2]]$response
-#> [1] "- Algeria's economy is heavily reliant on hydrocarbons, which account for 95% of export revenues and 30% of GDP, with a nominal GDP of around $146 billion as of early 2024.  \n- The government is actively pursuing economic diversification, targeting agriculture, manufacturing, and renewable energy sectors to reduce dependence on oil and gas.  \n- Major challenges include high youth unemployment and inflation, which impact economic stability and growth prospects."
+#> [1] "- Algeria's economy grows modestly at 2-3% with inflation around 6-7%.\n- Unemployment is high, ranging between 12-15%.\n- The economy is highly dependent on hydrocarbons, which make up over 90% of exports, with minimal diversification into other sectors."
 #> 
 #> [[2]]$edited_by_hitl
 #> [1] FALSE
@@ -782,7 +774,7 @@ lead_agent$agents_interaction
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> 979df7c2-b413-4e40-a1ff-bd91f2ae0bc2
+#> d8ef4ebd-d3f9-4c35-8f96-3a0aa5687612
 #> 
 #> [[3]]$agent_name
 #> [1] "translator"
@@ -794,10 +786,10 @@ lead_agent$agents_interaction
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[3]]$prompt
-#> [1] "Translate the 3 English bullet points about Algeria's economy into German accurately"
+#> [1] "Translate the 3 bullet points summary from English into German."
 #> 
 #> [[3]]$response
-#> [1] "- Die Wirtschaft Algeriens ist stark von Kohlenwasserstoffen abhängig, die 95 % der Exporterlöse und 30 % des BIP ausmachen, mit einem nominalen BIP von etwa 146 Milliarden US-Dollar Anfang 2024.  \n- Die Regierung verfolgt aktiv eine wirtschaftliche Diversifizierung und konzentriert sich auf die Landwirtschaft, die verarbeitende Industrie und den Bereich der erneuerbaren Energien, um die Abhängigkeit von Öl und Gas zu verringern.  \n- Zu den großen Herausforderungen gehören die hohe Jugendarbeitslosigkeit und die Inflation, die die wirtschaftliche Stabilität und die Wachstumsaussichten beeinträchtigen."
+#> [1] "- Die algerische Wirtschaft wächst moderat um 2-3 % bei einer Inflation von etwa 6-7 %.\n- Die Arbeitslosigkeit ist hoch und liegt zwischen 12 und 15 %.\n- Die Wirtschaft ist stark von Kohlenwasserstoffen abhängig, die über 90 % der Exporte ausmachen, wobei eine Diversifizierung in andere Sektoren kaum stattfindet."
 #> 
 #> [[3]]$edited_by_hitl
 #> [1] FALSE
@@ -854,7 +846,7 @@ lead_agent$register_agents(c(openai_4_1_agent, openai_4_1_nano_agent))
 lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to sing when running under the rain? how about a flower?")
 #> [[1]]
 #> [[1]]$agent_id
-#> [1] "66e4282d-61f4-4769-a972-9584df9a9bd8"
+#> [1] "1e9de2cd-ce7d-475d-84db-33bcd2422467"
 #> 
 #> [[1]]$agent_name
 #> [1] "openai_4_1_agent"
@@ -866,12 +858,12 @@ lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to si
 #> [1] "gpt-4.1"
 #> 
 #> [[1]]$response
-#> [1] "If you were Algerian, you might love singing \"Ya Rayah\" when running under the rain, and if you were a flower, you’d bask in silence, soaking up every drop."
+#> [1] "As an Algerian, you might enjoy singing \"Ya Rayah\" by Dahmane El Harrachi while running under the rain, and if you were a flower, you'd likely \"sing\" by blooming brightly and dancing with the raindrops."
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> [1] "f6c11205-c019-403b-8a0e-1904118c26c9"
+#> [1] "d3816470-ad9b-4e93-a282-042b48348b1d"
 #> 
 #> [[2]]$agent_name
 #> [1] "openai_4_1_nano_agent"
@@ -883,7 +875,7 @@ lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to si
 #> [1] "gpt-4.1-nano"
 #> 
 #> [[2]]$response
-#> [1] "If you were Algerian, you might enjoy singing \"Ya Rayah\" by Rachid Taha in the rain, and \"Landal\" by Cheb Khaled, \"Aïcha,\" or a song about a flower depending on your taste."
+#> [1] "If you were Algerian, you might enjoy singing \"Ya Rayah\" by Rachid Taha when running under the rain and \"Akli N'ak\" (My Flower) by Cheb Khaled when considering a flower."
 ```
 
 You can also access the history of the `broadcasting` using the
@@ -898,7 +890,7 @@ lead_agent$broadcast_history
 #> [[1]]$responses
 #> [[1]]$responses[[1]]
 #> [[1]]$responses[[1]]$agent_id
-#> [1] "66e4282d-61f4-4769-a972-9584df9a9bd8"
+#> [1] "1e9de2cd-ce7d-475d-84db-33bcd2422467"
 #> 
 #> [[1]]$responses[[1]]$agent_name
 #> [1] "openai_4_1_agent"
@@ -910,12 +902,12 @@ lead_agent$broadcast_history
 #> [1] "gpt-4.1"
 #> 
 #> [[1]]$responses[[1]]$response
-#> [1] "If you were Algerian, you might love singing \"Ya Rayah\" when running under the rain, and if you were a flower, you’d bask in silence, soaking up every drop."
+#> [1] "As an Algerian, you might enjoy singing \"Ya Rayah\" by Dahmane El Harrachi while running under the rain, and if you were a flower, you'd likely \"sing\" by blooming brightly and dancing with the raindrops."
 #> 
 #> 
 #> [[1]]$responses[[2]]
 #> [[1]]$responses[[2]]$agent_id
-#> [1] "f6c11205-c019-403b-8a0e-1904118c26c9"
+#> [1] "d3816470-ad9b-4e93-a282-042b48348b1d"
 #> 
 #> [[1]]$responses[[2]]$agent_name
 #> [1] "openai_4_1_nano_agent"
@@ -927,7 +919,7 @@ lead_agent$broadcast_history
 #> [1] "gpt-4.1-nano"
 #> 
 #> [[1]]$responses[[2]]$response
-#> [1] "If you were Algerian, you might enjoy singing \"Ya Rayah\" by Rachid Taha in the rain, and \"Landal\" by Cheb Khaled, \"Aïcha,\" or a song about a flower depending on your taste."
+#> [1] "If you were Algerian, you might enjoy singing \"Ya Rayah\" by Rachid Taha when running under the rain and \"Akli N'ak\" (My Flower) by Cheb Khaled when considering a flower."
 ```
 
 ## Human In The Loop (HITL)
@@ -1022,31 +1014,31 @@ best_answer
 #> $proposals
 #> $proposals[[1]]
 #> $proposals[[1]]$agent_id
-#> [1] "5c03b1f2-6c6f-4674-965c-708bc7bb597b"
+#> [1] "6e90f179-a29a-4444-9b1b-e2d73a9b5679"
 #> 
 #> $proposals[[1]]$agent_name
 #> [1] "stylist"
 #> 
 #> $proposals[[1]]$response
-#> [1] "Layer the blue Calvin Klein shirt under a neutral blazer or coat, add a cozy scarf, and pair with the pink trousers and complementary shoes (like white or nude) for a stylish winter look."
+#> [1] "Layer the blue Calvin Klein shirt under a neutral sweater or blazer, add the pink trousers, and finish with complementary accessories like a navy coat and simple shoes for a balanced, stylish winter look."
 #> 
 #> 
 #> $proposals[[2]]
 #> $proposals[[2]]$agent_id
-#> [1] "adb403cb-be41-42b3-9695-5a19c1579e57"
+#> [1] "9e8b4bd4-3c7e-45a7-b6a7-925dc4de080e"
 #> 
 #> $proposals[[2]]$agent_name
 #> [1] "stylist2"
 #> 
 #> $proposals[[2]]$response
-#> [1] "Pair the blue Calvin Klein shirt with a cozy neutral-toned sweater or blazer and layer with a stylish coat, plus accessories like a scarf and boots, to create a warm yet chic winter look."
+#> [1] "Pair the blue Calvin Klein shirt with a neutral-colored sweater or blazer and a stylish coat for warmth, and complete the look with neutral or complementary accessories to balance the pink trousers."
 #> 
 #> 
 #> 
 #> $chosen_response
-#> Pair the blue Calvin Klein shirt with a cozy neutral-toned sweater or blazer 
-#> and layer with a stylish coat, plus accessories like a scarf and boots, to 
-#> create a warm yet chic winter look.
+#> Layer the blue Calvin Klein shirt under a neutral sweater or blazer, add the 
+#> pink trousers, and finish with complementary accessories like a navy coat and 
+#> simple shoes for a balanced, stylish winter look.
 ```
 
 This makes it easy to archive progress and resume complex, context-rich
