@@ -1,8 +1,21 @@
 # mini007 0.2.2
 
-- Adding the `validate_response()` method.
-- Adding the `clone_agent` method.
-- Deleting `visualize_plan()` method as it requires many dependencies.
+### New methods
+
+Adding the following new methods: 
+- `validate_response()`
+- `clone_agent()`
+
+### New parameters:
+- Adding the ability to execute the `broadcasting()` and the `judge_and_choose_best_response()` methods in parallel using the `parallel` parameter and `mirai`.  
+
+### Deletion
+
+- Deleting the `visualize_plan()` method as the `DiagrammeR` package has many dependencies. 
+- Deleting the `add_message` method for compatibility with `ellmer` `Turns`
+
+### Dependency
+- Adding `ellmer` as an `import` dependency.
 
 # mini007 0.2.1
 
