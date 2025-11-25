@@ -268,6 +268,7 @@ agent <- Agent$new(
   instruction = "You are an assistant.",
   llm_object = openai_4_1_mini
 )
+# use the export_messages_history to save the interaction first
 agent$load_messages_history("path/to/messages.json")
 agent$messages
 agent$llm_object
@@ -882,7 +883,7 @@ agent$export_messages_history()
 \if{html}{\out{<a id="method-Agent-load_messages_history"></a>}}
 \if{latex}{\out{\hypertarget{method-Agent-load_messages_history}{}}}
 \subsection{Method \code{load_messages_history()}}{
-Saves the agent's current conversation history as a JSON file on disk.
+Load an agent's conversation history as a JSON file from disk.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Agent$load_messages_history(
   file_path = paste0(getwd(), "/", paste0(self$name, "_messages.json"))
@@ -911,6 +912,7 @@ agent <- Agent$new(
   instruction = "You are an assistant.",
   llm_object = openai_4_1_mini
 )
+# use the export_messages_history to save the interaction first
 agent$load_messages_history("path/to/messages.json")
 agent$messages
 agent$llm_object

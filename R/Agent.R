@@ -591,7 +591,7 @@ Agent <- R6::R6Class(
     },
 
     #' @description
-    #' Saves the agent's current conversation history as a JSON file on disk.
+    #' Load an agent's conversation history as a JSON file from disk.
     #' @param file_path Character string specifying the file path where the JSON
     #' file is stored. Defaults to a file named
     #' `"<agent_name>_messages.json"` in the current working directory.
@@ -608,6 +608,7 @@ Agent <- R6::R6Class(
     #'   instruction = "You are an assistant.",
     #'   llm_object = openai_4_1_mini
     #')
+    #' # use the export_messages_history to save the interaction first
     #' agent$load_messages_history("path/to/messages.json")
     #' agent$messages
     #' agent$llm_object
