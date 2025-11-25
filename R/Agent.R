@@ -511,6 +511,132 @@ Agent <- R6::R6Class(
       invisible(self)
     },
 
+
+    #' @description
+    #' Validates an agent's response against custom criteria using LLM-based validation.
+    #' This method uses the agent's LLM to evaluate whether a response meets specified
+    #' validation criteria (e.g., accuracy, completeness, tone, format).
+    #' @param prompt The prompt used to generate the response.
+    #' @param response The response text to validate.
+    #' @param validation_criteria The criteria for validation.
+    #' (e.g., "The response should be accurate and complete", "The response must be under 100 words").
+    #' @param validation_score A numeric from 0 to 1 denoting the score to consider for
+    #' the evaluation. During the evaluation, the agent will provide a score from 0 to 1,
+    #' a provided score greater or equal to the `validation_score` will result in a `valid` response.
+    #' Defaults to 0.8.
+    #' @return list object
+    #' @examples
+    #' \dontrun{
+    #' openai_4_1_mini <- ellmer::chat(
+    #'   name = "openai/gpt-4.1-mini",
+    #'   api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'   echo = "none"
+    #' )
+    #' agent <- Agent$new(
+    #'   name = "fact_checker",
+    #'   instruction = "You are a factual assistant.",
+    #'   llm_object = openai_4_1_mini
+    #' )
+    #' prompt <- "What is the capital of Algeria?"
+    #' response <- agent$invoke(prompt)
+    #' validation <- agent$validate_response(
+    #'   response = response,
+    #'   prompt = prompt,
+    #'   validation_criteria = "The response must be accurate and mention Algiers",
+    #'   validation_score = 0.8
+    #' )
+    #' print(validation)
+    #' }
+    validate_response = function(
+    prompt,
+    response,
+    validation_criteria,
+    validation_score = 0.8
+    ) {
+
+      checkmate::assert_string(validation_criteria)
+      checkmate::assert_string(response)
+      checkmate::assert_string(prompt)
+      checkmate::assert_numeric(validation_score, lower = 0, upper = 1)
+
+      validation_prompt <- paste0(
+        "You are a response validation assistant. Evaluate the following response ",
+        "against the specified criteria.\n\n",
+        "Validation Criteria: ", validation_criteria, "\n\n",
+        "Original Prompt: ", prompt, "\n\n",
+        "Response to Validate:\n", response, "\n\n",
+        "Provide your evaluation in the following format:\n",
+        "SCORE: [0-1] If the response is extremely valid it gets a score of 1.\n",
+        "FEEDBACK: [detailed feedback explaining your evaluation]\n\n",
+        "Return ONLY the three lines above, nothing else."
+      )
+
+      original_system_prompt <- self$llm_object$get_system_prompt()
+
+      validation_system_prompt <- paste0(
+        "You are a response validation assistant. ",
+        "Your task is to evaluate responses against given criteria. ",
+        "Be objective and thorough in your evaluation.",
+        "Provide a score and a feedback. The score should evaluate the validitiy of the ",
+        "response, it goes from 0 to 1 (1 is the best score and 0 the worst score)"
+      )
+
+      self$llm_object$set_system_prompt(value = validation_system_prompt)
+
+      on.exit(
+        self$llm_object$set_system_prompt(value = original_system_prompt),
+        add = TRUE,
+        after = FALSE
+      )
+
+      validation_result <- self$llm_object$chat_structured(
+        validation_prompt,
+        type = ellmer::type_object(
+          score = ellmer::type_number(
+            description = "The validity score. If a response is extremely valid, it gets a score of 1",
+            required = TRUE
+          ),
+          feedback = ellmer::type_string(
+            description = "Feedback concerning the evaluation of the response according to the prompt",
+            required = TRUE
+          )
+        )
+      )
+
+      score <- validation_result$score
+
+      if (score >= validation_score) {
+        valid <- TRUE
+      } else {
+        valid <- FALSE
+      }
+
+      validation_result <- append(
+        list(
+          prompt = prompt,
+          response = response,
+          validation_criteria = validation_criteria,
+          validation_score = validation_score,
+          valid = valid
+        ),
+        validation_result
+      )
+
+      if (valid) {
+        cli::cli_alert_success(glue::glue(
+          "The response is considered valid with a score of {score}"
+        ))
+      } else {
+        cli::cli_alert_warning(
+          glue::glue(
+            "The response is considered invalid with a score of {score}"
+          )
+        )
+      }
+
+      return(validation_result)
+    },
+
     #' @description
     #' Reset the agent's conversation history while keeping the system instruction
     #'

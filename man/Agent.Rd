@@ -213,6 +213,32 @@ agent$add_message("assistant", "I'm doing well, thank you!")
 }
 
 ## ------------------------------------------------
+## Method `Agent$validate_response`
+## ------------------------------------------------
+
+\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+agent <- Agent$new(
+  name = "fact_checker",
+  instruction = "You are a factual assistant.",
+  llm_object = openai_4_1_mini
+)
+prompt <- "What is the capital of Algeria?"
+response <- agent$invoke(prompt)
+validation <- agent$validate_response(
+  response = response,
+  prompt = prompt,
+  validation_criteria = "The response must be accurate and mention Algiers",
+  validation_score = 0.8
+)
+print(validation)
+}
+
+## ------------------------------------------------
 ## Method `Agent$reset_conversation_history`
 ## ------------------------------------------------
 
@@ -325,6 +351,7 @@ Assignment is validated automatically.}
 \item \href{#method-Agent-update_instruction}{\code{Agent$update_instruction()}}
 \item \href{#method-Agent-get_usage_stats}{\code{Agent$get_usage_stats()}}
 \item \href{#method-Agent-add_message}{\code{Agent$add_message()}}
+\item \href{#method-Agent-validate_response}{\code{Agent$validate_response()}}
 \item \href{#method-Agent-reset_conversation_history}{\code{Agent$reset_conversation_history()}}
 \item \href{#method-Agent-export_messages_history}{\code{Agent$export_messages_history()}}
 \item \href{#method-Agent-load_messages_history}{\code{Agent$load_messages_history()}}
@@ -746,6 +773,71 @@ agent <- Agent$new(
 )
 agent$add_message("user", "Hello, how are you?")
 agent$add_message("assistant", "I'm doing well, thank you!")
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Agent-validate_response"></a>}}
+\if{latex}{\out{\hypertarget{method-Agent-validate_response}{}}}
+\subsection{Method \code{validate_response()}}{
+Validates an agent's response against custom criteria using LLM-based validation.
+This method uses the agent's LLM to evaluate whether a response meets specified
+validation criteria (e.g., accuracy, completeness, tone, format).
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Agent$validate_response(
+  prompt,
+  response,
+  validation_criteria,
+  validation_score = 0.8
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{prompt}}{The prompt used to generate the response.}
+
+\item{\code{response}}{The response text to validate.}
+
+\item{\code{validation_criteria}}{The criteria for validation.
+(e.g., "The response should be accurate and complete", "The response must be under 100 words").}
+
+\item{\code{validation_score}}{A numeric from 0 to 1 denoting the score to consider for
+the evaluation. During the evaluation, the agent will provide a score from 0 to 1,
+a provided score greater or equal to the `validation_score` will result in a `valid` response.
+Defaults to 0.8.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+list object
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+agent <- Agent$new(
+  name = "fact_checker",
+  instruction = "You are a factual assistant.",
+  llm_object = openai_4_1_mini
+)
+prompt <- "What is the capital of Algeria?"
+response <- agent$invoke(prompt)
+validation <- agent$validate_response(
+  response = response,
+  prompt = prompt,
+  validation_criteria = "The response must be accurate and mention Algiers",
+  validation_score = 0.8
+)
+print(validation)
 }
 }
 \if{html}{\out{</div>}}

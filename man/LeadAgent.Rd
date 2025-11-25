@@ -447,7 +447,6 @@ lead_agent$judge_and_choose_best_response("what's the best way to war a kalvin k
 \item \href{#method-LeadAgent-clear_agents}{\code{LeadAgent$clear_agents()}}
 \item \href{#method-LeadAgent-remove_agents}{\code{LeadAgent$remove_agents()}}
 \item \href{#method-LeadAgent-register_agents}{\code{LeadAgent$register_agents()}}
-\item \href{#method-LeadAgent-visualize_plan}{\code{LeadAgent$visualize_plan()}}
 \item \href{#method-LeadAgent-invoke}{\code{LeadAgent$invoke()}}
 \item \href{#method-LeadAgent-generate_plan}{\code{LeadAgent$generate_plan()}}
 \item \href{#method-LeadAgent-broadcast}{\code{LeadAgent$broadcast()}}
@@ -470,6 +469,7 @@ lead_agent$judge_and_choose_best_response("what's the best way to war a kalvin k
 <li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="set_budget"><a href='../../mini007/html/Agent.html#method-Agent-set_budget'><code>mini007::Agent$set_budget()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="set_budget_policy"><a href='../../mini007/html/Agent.html#method-Agent-set_budget_policy'><code>mini007::Agent$set_budget_policy()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="update_instruction"><a href='../../mini007/html/Agent.html#method-Agent-update_instruction'><code>mini007::Agent$update_instruction()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="validate_response"><a href='../../mini007/html/Agent.html#method-Agent-validate_response'><code>mini007::Agent$validate_response()</code></a></span></li>
 </ul>
 </details>
 }}
@@ -700,18 +700,6 @@ Register one or more agents for delegation.
 }
 \if{html}{\out{</div>}}
 
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-LeadAgent-visualize_plan"></a>}}
-\if{latex}{\out{\hypertarget{method-LeadAgent-visualize_plan}{}}}
-\subsection{Method \code{visualize_plan()}}{
-Visualizes the orchestration plan
-Each agent node is shown in sequence (left → right), with tooltips showing
-the actual prompt delegated to that agent.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LeadAgent$visualize_plan()}\if{html}{\out{</div>}}
 }
 
 }
