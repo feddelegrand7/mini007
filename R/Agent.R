@@ -847,14 +847,21 @@ Agent <- R6::R6Class(
         }
       }
 
+      # SYNC DIRECTION 1: Messages → Turns (triggered by user assignment)
+      # When user assigns: agent$messages <- new_list
+      # This active binding stores the new messages and syncs them to ellmer turns.
+      # The sync flag is TRUE here, so .set_turns_from_messages() will execute.
       private$._messages <- value
-      private$.set_turns_from_messages()
+      private$.set_turns_from_messages()  # Sync the new messages to ellmer object
 
     }
   ),
 
   private = list(
     ._messages = NULL,
+    # Synchronization control flag to prevent infinite recursion between
+    # messages and turns. When TRUE, allows normal sync operations.
+    # When FALSE, prevents .set_turns_from_messages() from executing.
     .sync_flag = TRUE,
     .add_message = function(message, type) {
       private$._messages[[length(private$._messages) + 1]] <- list(
@@ -963,14 +970,20 @@ Agent <- R6::R6Class(
         )
       }
 
-      # Temporarily disable sync to prevent recursion
+      # SYNC DIRECTION 2: Turns → Messages (prevents recursion)
+      # Temporarily disable sync flag to prevent the messages active binding
+      # from triggering .set_turns_from_messages() again when we update messages.
+      # This breaks the potential infinite loop:
+      # .set_messages_from_turns() -> messages assignment -> active binding -> .set_turns_from_messages()
       private$.sync_flag <- FALSE
-      private$._messages <- messages
-      private$.sync_flag <- TRUE
+      private$._messages <- messages  # Direct assignment bypasses active binding
+      private$.sync_flag <- TRUE      # Re-enable sync for future operations
     },
 
     .set_turns_from_messages = function() {
-
+      # SYNC DIRECTION 1: Messages → Turns (respects sync flag)
+      # Check sync flag to prevent execution during recursive calls.
+      # When .set_messages_from_turns() is running, this prevents infinite loops.
       if (!private$.sync_flag) {
         return(invisible(NULL))
       }
