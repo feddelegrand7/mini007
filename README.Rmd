@@ -68,9 +68,13 @@ An Agent is built upon an LLM object created by the `ellmer` package, in the fol
 # no need to provide the system prompt, it will be set when creating the
 # agent (see the 'instruction' parameter)
 
+retrieve_open_ai_credential <- function() {
+  Sys.getenv("OPENAI_API_KEY")
+}
+
 openai_4_1_mini <- ellmer::chat(
   name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"), 
+  credentials = retrieve_open_ai_credential, 
   echo = "none"
 )
 
@@ -134,7 +138,7 @@ When a conversation grows long, you can keep just the last N messages while pres
 ```{r}
 openai_4_1_mini <- ellmer::chat(
   name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
+  credentials = retrieve_open_ai_credential, 
   echo = "none"
 )
 
@@ -166,7 +170,7 @@ You can inject any message (system, user, or assistant) directly into an Agentâ€
 ```{r, eval=TRUE}
 openai_4_1_mini <- ellmer::chat(
   name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
+  credentials = retrieve_open_ai_credential, 
   echo = "none"
 )
 agent <- Agent$new(
@@ -197,7 +201,7 @@ If you want to clear the conversation while preserving the current system prompt
 ```{r}
 openai_4_1_mini <- ellmer::chat(
   name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
+  credentials = retrieve_open_ai_credential, 
   echo = "none"
 )
 
@@ -227,7 +231,7 @@ In both methods, if you omit the `file_path` parameter, a default file named `"<
 ```{r, eval=FALSE}
 openai_4_1_mini <- ellmer::chat(
   name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
+  credentials = retrieve_open_ai_credential, 
   echo = "none"
 )
 agent <- Agent$new(
@@ -255,7 +259,7 @@ Use `update_instruction(new_instruction)` to change the Agentâ€™s system prompt 
 ```{r}
 openai_4_1_mini <- ellmer::chat(
   name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
+  credentials = retrieve_open_ai_credential, 
   echo = "none"
 )
 
@@ -286,7 +290,7 @@ You can limit how much an `Agent` is allowed to spend and decide what should hap
 # An API KEY is required to invoke the Agent
 openai_4_1_mini <- ellmer::chat(
   name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
+  credentials = retrieve_open_ai_credential, 
   echo = "none"
 )
 
@@ -334,7 +338,7 @@ Safety notes:
 ```{r}
 openai_4_1_mini <- ellmer::chat(
   name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
+  credentials = retrieve_open_ai_credential, 
   echo = "none"
 )
 
@@ -435,7 +439,7 @@ Let's go through an example:
 ```{r}
 openai_4_1 <- ellmer::chat(
   name = "openai/gpt-4.1",
-  api_key = Sys.getenv("OPENAI_API_KEY"), 
+  credentials = retrieve_open_ai_credential, 
   echo = "none"
 )
 
@@ -447,7 +451,7 @@ openai_4_1_agent <- Agent$new(
 
 openai_4_1_nano <- ellmer::chat(
   name = "openai/gpt-4.1-nano",
-  api_key = Sys.getenv("OPENAI_API_KEY"), 
+  credentials = retrieve_open_ai_credential, 
   echo = "none"
 )
 
@@ -483,7 +487,7 @@ When executing an LLM workflow that relies on many steps, you can set `Human In 
 ```{r}
 openai_llm_object <- ellmer::chat(
   name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"), 
+  credentials = retrieve_open_ai_credential, 
   echo = "none"
 )
 
@@ -512,7 +516,7 @@ Sometimes you want to send a prompt to several agents and pick the best answer. 
 ```{r}
 openai_4_1 <- ellmer::chat(
   name = "openai/gpt-4.1",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
+  credentials = retrieve_open_ai_credential, 
   echo = "none"
 )
 
@@ -524,7 +528,7 @@ stylist_1 <- Agent$new(
 
 openai_4_1_nano <- ellmer::chat(
   name = "openai/gpt-4.1-nano",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
+  credentials = retrieve_open_ai_credential, 
   echo = "none"
 )
 
@@ -536,7 +540,7 @@ stylist_2 <- Agent$new(
 
 openai_4_1_mini <- ellmer::chat(
   name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
+  credentials = retrieve_open_ai_credential, 
   echo = "none"
 )
 

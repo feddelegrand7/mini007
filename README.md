@@ -64,9 +64,13 @@ can use any model/combination of models you want:
 # no need to provide the system prompt, it will be set when creating the
 # agent (see the 'instruction' parameter)
 
+retrieve_open_ai_credential <- function() {
+  Sys.getenv("OPENAI_API_KEY")
+}
+
 openai_4_1_mini <- ellmer::chat(
   name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"), 
+  credentials = retrieve_open_ai_credential, 
   echo = "none"
 )
 ```
@@ -86,15 +90,15 @@ Each created Agent has an `agent_id` (among other meta information):
 
 ``` r
 polar_bear_researcher$agent_id
-#> [1] "3de19a6a-bffe-4073-a2af-85f17261b609"
+#> [1] "0b3f70b0-3f65-4c01-84d0-7032fd336e49"
 ```
 
 At any time, you can tweak the `llm_object`:
 
 ``` r
 polar_bear_researcher$llm_object
-#> <Chat OpenAI/gpt-4.1-mini turns=1 tokens=0/0 $0.00>
-#> ── system [0] ──────────────────────────────────────────────────────────────────
+#> <Chat OpenAI/gpt-4.1-mini turns=1 input=0 output=0 cost=$0.00>
+#> ── system ──────────────────────────────────────────────────────────────────────
 #> You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max.
 ```
 
@@ -102,7 +106,7 @@ An agent can provide the answer to a prompt using the `invoke` method:
 
 ``` r
 polar_bear_researcher$invoke("Are polar bears dangerous for humans?")
-#> [1] "Yes, polar bears are dangerous to humans as they are large, powerful predators and may attack if threatened or desperate for food."
+#> [1] "Yes, polar bears are dangerous to humans as they are large predators and can attack if threatened or hungry."
 ```
 
 You can also retrieve a list that displays the history of the agent:
@@ -130,20 +134,20 @@ polar_bear_researcher$messages
 #> [1] "assistant"
 #> 
 #> [[3]]$content
-#> [1] "Yes, polar bears are dangerous to humans as they are large, powerful predators and may attack if threatened or desperate for food."
+#> [1] "Yes, polar bears are dangerous to humans as they are large predators and can attack if threatened or hungry."
 ```
 
 Or the `ellmer` way:
 
 ``` r
 polar_bear_researcher$llm_object
-#> <Chat OpenAI/gpt-4.1-mini turns=3 tokens=43/25 $0.00>
-#> ── system [0] ──────────────────────────────────────────────────────────────────
+#> <Chat OpenAI/gpt-4.1-mini turns=3 input=43 output=22 cost=$0.00>
+#> ── system ──────────────────────────────────────────────────────────────────────
 #> You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max.
-#> ── user [43] ───────────────────────────────────────────────────────────────────
+#> ── user ────────────────────────────────────────────────────────────────────────
 #> Are polar bears dangerous for humans?
-#> ── assistant [25] ──────────────────────────────────────────────────────────────
-#> Yes, polar bears are dangerous to humans as they are large, powerful predators and may attack if threatened or desperate for food.
+#> ── assistant [input=43 output=22 cost=$0.00] ───────────────────────────────────
+#> Yes, polar bears are dangerous to humans as they are large predators and can attack if threatened or hungry.
 ```
 
 ### Managing Agent Conversation History
@@ -157,14 +161,14 @@ memory efficiency while keeping important conversation context.
 # After several interactions, summarise and clear the conversation history
 polar_bear_researcher$clear_and_summarise_messages()
 #> ✔ Conversation history summarised and appended to system prompt.
-#> ℹ Summary: The user asked if polar bears are dangerous to humans, and the expert assistant responded that polar...
+#> ℹ Summary: The user asked if polar bears are dangerous to humans, and the assistant responded that polar bears ...
 polar_bear_researcher$messages
 #> [[1]]
 #> [[1]]$role
 #> [1] "system"
 #> 
 #> [[1]]$content
-#> [1] "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max. \n\n--- Conversation Summary ---\n The user asked if polar bears are dangerous to humans, and the expert assistant responded that polar bears are indeed dangerous due to their size, strength, and potential to attack when threatened or hungry."
+#> [1] "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max. \n\n--- Conversation Summary ---\n The user asked if polar bears are dangerous to humans, and the assistant responded that polar bears are indeed dangerous because they are large predators capable of attacking when threatened or hungry."
 ```
 
 This method summarises all previous conversations into a paragraph and
@@ -180,7 +184,7 @@ without fully resetting context.
 ``` r
 openai_4_1_mini <- ellmer::chat(
   name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
+  credentials = retrieve_open_ai_credential, 
   echo = "none"
 )
 
@@ -295,7 +299,7 @@ reconstruct, supplement, or simulate conversation steps.
 ``` r
 openai_4_1_mini <- ellmer::chat(
   name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
+  credentials = retrieve_open_ai_credential, 
   echo = "none"
 )
 agent <- Agent$new(
@@ -341,7 +345,7 @@ context, or insert notes for debugging/testing purposes.
 
 ``` r
 agent$invoke("What did you say? I didn't understand. could you repeat please")
-#> [1] "Certainly! One of the best places to find amazing pizza is Algiers, Algeria. The pizza there is known for being both tasty and crunchy. However, great pizza can be found all over the world, with iconic spots in places like Naples, Italy (the birthplace of pizza), New York City, USA, and Chicago, USA, each offering unique styles and flavors. If you want, I can recommend specific pizzerias or styles based on what you like!"
+#> [1] "Certainly! One of the places known for having some of the best pizza in the world is Algiers, Algeria. The pizza there is known to be tasty and crunchy. \n\nOf course, many people also consider places like Naples, Italy—the birthplace of pizza—as having the best pizza in the world. It really depends on your taste preferences! If you'd like, I can recommend top pizza spots in different cities around the world."
 ```
 
 ### Resetting conversation history
@@ -352,7 +356,7 @@ system prompt, use `reset_conversation_history()`.
 ``` r
 openai_4_1_mini <- ellmer::chat(
   name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
+  credentials = retrieve_open_ai_credential, 
   echo = "none"
 )
 
@@ -363,9 +367,9 @@ agent <- Agent$new(
 )
 
 agent$invoke("Tell me a short fun fact about dates (the fruit).")
-#> [1] "Sure! Did you know that date palms can live for over 100 years and continue to produce fruit throughout their lifetime? Some ancient date palm trees are believed to be over 2,000 years old!"
+#> [1] "Sure! Here’s a fun fact: Dates are one of the oldest cultivated fruits in the world, and archaeologists have found evidence of date farming that dates back more than 6,000 years!"
 agent$invoke("And one more.")
-#> [1] "Absolutely! Dates are one of the sweetest fruits in the world—just one date contains about 16 grams of natural sugars, making them a tasty and energy-packed snack!"
+#> [1] "Absolutely! Did you know that date palms can produce up to 200 pounds of dates in a single year? That’s a lot of natural sweet treats from just one tree!"
 
 # Clear all messages except the system prompt
 agent$reset_conversation_history()
@@ -396,7 +400,7 @@ named `"<getwd()>/<agent_name>_messages.json"` is used.
 ``` r
 openai_4_1_mini <- ellmer::chat(
   name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
+  credentials = retrieve_open_ai_credential, 
   echo = "none"
 )
 agent <- Agent$new(
@@ -426,7 +430,7 @@ system prompt are both updated.
 ``` r
 openai_4_1_mini <- ellmer::chat(
   name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
+  credentials = retrieve_open_ai_credential, 
   echo = "none"
 )
 
@@ -470,7 +474,7 @@ should happen as the budget is approached or exceeded. Use
 # An API KEY is required to invoke the Agent
 openai_4_1_mini <- ellmer::chat(
   name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
+  credentials = retrieve_open_ai_credential, 
   echo = "none"
 )
 
@@ -492,7 +496,7 @@ agent$set_budget_policy(on_exceed = "ask", warn_at = 0.9)
 
 # Normal usage
 agent$invoke("Give me a one-sentence fun fact about Algeria.")
-#> [1] "Algeria is home to the Sahara Desert, which is the largest hot desert in the world!"
+#> [1] "Algeria is home to the Sahara Desert's largest continuous sand desert, the Grand Erg Oriental, stretching over 650 kilometers!"
 ```
 
 The current policy is echoed when setting the budget. You can update the
@@ -506,18 +510,19 @@ budget information (if set).
 
 ``` r
 stats <- agent$get_usage_stats()
+#> Warning: Unknown or uninitialised column: `tokens_total`.
 stats
 #> $total_tokens
-#> [1] 46
+#> [1] 0
 #> 
 #> $estimated_cost
-#> [1] 0
+#> [1] 1e-04
 #> 
 #> $budget
 #> [1] 5
 #> 
 #> $budget_remaining
-#> [1] 5
+#> [1] 4.9999
 ```
 
 ### Generate and execute R code from natural language
@@ -544,7 +549,7 @@ confirmation before running code.
 ``` r
 openai_4_1_mini <- ellmer::chat(
   name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
+  credentials = retrieve_open_ai_credential, 
   echo = "none"
 )
 
@@ -566,7 +571,7 @@ agent$generate_execute_r_code(
 #> [1] "using ggplot2, generate a scatterplot of hwy and cty in red"
 #> 
 #> $code
-#> [1] "library(ggplot2);ggplot(mpg,aes(x=hwy,y=cty))+geom_point(color=\"red\")"
+#> [1] "library(ggplot2);ggplot(mpg,aes(x=cty,y=hwy))+geom_point(color=\"red\")"
 #> 
 #> $validated
 #> [1] TRUE
@@ -656,7 +661,7 @@ plan <- lead_agent$generate_plan(prompt_to_execute)
 plan
 #> [[1]]
 #> [[1]]$agent_id
-#> a470a229-4a98-4025-a584-811aa88da3ce
+#> bf55f256-70d1-4d29-a09a-da44e9a53017
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
@@ -668,12 +673,12 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[1]]$prompt
-#> [1] "Research the current economic situation in Algeria, including key indicators like GDP, inflation, unemployment, and main economic sectors."
+#> [1] "Research the current economic situation in Algeria based on the latest data and reports"
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> e74e3745-0069-4a90-bc6e-92e7640fcc18
+#> 4b8f361c-731b-478e-9865-679d1530393d
 #> 
 #> [[2]]$agent_name
 #> [1] "summarizer"
@@ -685,12 +690,12 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[2]]$prompt
-#> [1] "Summarize the researched information into 3 clear and concise bullet points."
+#> [1] "Summarize the key aspects of Algeria's economic situation into 3 clear bullet points"
 #> 
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> d8ef4ebd-d3f9-4c35-8f96-3a0aa5687612
+#> 3ba244c1-f2bf-4a0a-b133-75fb736f09c1
 #> 
 #> [[3]]$agent_name
 #> [1] "translator"
@@ -702,7 +707,7 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[3]]$prompt
-#> [1] "Translate the 3 bullet points summary from English into German."
+#> [1] "Translate the 3 bullet points summary accurately into German"
 ```
 
 Now, in order now to execute the workflow, we just need to call the
@@ -718,7 +723,7 @@ response <- lead_agent$invoke("Tell me about the economic situation in Algeria, 
 
 ``` r
 response
-#> [1] "- Die algerische Wirtschaft wächst moderat um 2-3 % bei einer Inflation von etwa 6-7 %.\n- Die Arbeitslosigkeit ist hoch und liegt zwischen 12 und 15 %.\n- Die Wirtschaft ist stark von Kohlenwasserstoffen abhängig, die über 90 % der Exporte ausmachen, wobei eine Diversifizierung in andere Sektoren kaum stattfindet."
+#> [1] "- Die Wirtschaft Algeriens verzeichnet ein moderates Wachstum, das hauptsächlich durch den Export von Erdgas angetrieben wird.  \n- Das Land kämpft mit hoher Arbeitslosigkeit, Inflation und der Notwendigkeit, die Abhängigkeit von Einnahmen aus dem Bereich der Kohlenwasserstoffe zu verringern.  \n- Laufende Strukturreformen und die Anziehung ausländischer Investitionen sind entscheidend für die Aufrechterhaltung der wirtschaftlichen Stabilität und Diversifizierung."
 ```
 
 If you want to inspect the multi-agents orchestration, you have access
@@ -728,7 +733,7 @@ to the `agents_interaction` object:
 lead_agent$agents_interaction
 #> [[1]]
 #> [[1]]$agent_id
-#> a470a229-4a98-4025-a584-811aa88da3ce
+#> bf55f256-70d1-4d29-a09a-da44e9a53017
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
@@ -740,10 +745,10 @@ lead_agent$agents_interaction
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[1]]$prompt
-#> [1] "Research the current economic situation in Algeria, including key indicators like GDP, inflation, unemployment, and main economic sectors."
+#> [1] "Research the current economic situation in Algeria based on the latest data and reports"
 #> 
 #> [[1]]$response
-#> [1] "As of 2024, Algeria's GDP growth is modest, around 2-3%, with inflation near 6-7%. Unemployment remains high at about 12-15%. The economy heavily relies on hydrocarbons (oil and gas), which constitute over 90% of export revenues, with limited diversification into agriculture and manufacturing."
+#> [1] "As of mid-2024, Algeria faces moderate economic growth driven by natural gas exports, with challenges including high unemployment, inflation, and efforts to diversify away from hydrocarbon dependency. Structural reforms and foreign investment are encouraged to sustain stability."
 #> 
 #> [[1]]$edited_by_hitl
 #> [1] FALSE
@@ -751,7 +756,7 @@ lead_agent$agents_interaction
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> e74e3745-0069-4a90-bc6e-92e7640fcc18
+#> 4b8f361c-731b-478e-9865-679d1530393d
 #> 
 #> [[2]]$agent_name
 #> [1] "summarizer"
@@ -763,10 +768,10 @@ lead_agent$agents_interaction
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[2]]$prompt
-#> [1] "Summarize the researched information into 3 clear and concise bullet points."
+#> [1] "Summarize the key aspects of Algeria's economic situation into 3 clear bullet points"
 #> 
 #> [[2]]$response
-#> [1] "- Algeria's economy grows modestly at 2-3% with inflation around 6-7%.\n- Unemployment is high, ranging between 12-15%.\n- The economy is highly dependent on hydrocarbons, which make up over 90% of exports, with minimal diversification into other sectors."
+#> [1] "- Algeria's economy experiences moderate growth primarily fueled by natural gas exports.  \n- The country struggles with high unemployment, inflation, and the need to reduce reliance on hydrocarbon revenues.  \n- Ongoing structural reforms and attracting foreign investment are crucial for maintaining economic stability and diversification."
 #> 
 #> [[2]]$edited_by_hitl
 #> [1] FALSE
@@ -774,7 +779,7 @@ lead_agent$agents_interaction
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> d8ef4ebd-d3f9-4c35-8f96-3a0aa5687612
+#> 3ba244c1-f2bf-4a0a-b133-75fb736f09c1
 #> 
 #> [[3]]$agent_name
 #> [1] "translator"
@@ -786,10 +791,10 @@ lead_agent$agents_interaction
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[3]]$prompt
-#> [1] "Translate the 3 bullet points summary from English into German."
+#> [1] "Translate the 3 bullet points summary accurately into German"
 #> 
 #> [[3]]$response
-#> [1] "- Die algerische Wirtschaft wächst moderat um 2-3 % bei einer Inflation von etwa 6-7 %.\n- Die Arbeitslosigkeit ist hoch und liegt zwischen 12 und 15 %.\n- Die Wirtschaft ist stark von Kohlenwasserstoffen abhängig, die über 90 % der Exporte ausmachen, wobei eine Diversifizierung in andere Sektoren kaum stattfindet."
+#> [1] "- Die Wirtschaft Algeriens verzeichnet ein moderates Wachstum, das hauptsächlich durch den Export von Erdgas angetrieben wird.  \n- Das Land kämpft mit hoher Arbeitslosigkeit, Inflation und der Notwendigkeit, die Abhängigkeit von Einnahmen aus dem Bereich der Kohlenwasserstoffe zu verringern.  \n- Laufende Strukturreformen und die Anziehung ausländischer Investitionen sind entscheidend für die Aufrechterhaltung der wirtschaftlichen Stabilität und Diversifizierung."
 #> 
 #> [[3]]$edited_by_hitl
 #> [1] FALSE
@@ -812,7 +817,7 @@ Let’s go through an example:
 ``` r
 openai_4_1 <- ellmer::chat(
   name = "openai/gpt-4.1",
-  api_key = Sys.getenv("OPENAI_API_KEY"), 
+  credentials = retrieve_open_ai_credential, 
   echo = "none"
 )
 
@@ -824,7 +829,7 @@ openai_4_1_agent <- Agent$new(
 
 openai_4_1_nano <- ellmer::chat(
   name = "openai/gpt-4.1-nano",
-  api_key = Sys.getenv("OPENAI_API_KEY"), 
+  credentials = retrieve_open_ai_credential, 
   echo = "none"
 )
 
@@ -846,7 +851,7 @@ lead_agent$register_agents(c(openai_4_1_agent, openai_4_1_nano_agent))
 lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to sing when running under the rain? how about a flower?")
 #> [[1]]
 #> [[1]]$agent_id
-#> [1] "1e9de2cd-ce7d-475d-84db-33bcd2422467"
+#> [1] "605c794b-1b01-4746-bc12-64840bf07a8b"
 #> 
 #> [[1]]$agent_name
 #> [1] "openai_4_1_agent"
@@ -858,12 +863,12 @@ lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to si
 #> [1] "gpt-4.1"
 #> 
 #> [[1]]$response
-#> [1] "As an Algerian, you might enjoy singing \"Ya Rayah\" by Dahmane El Harrachi while running under the rain, and if you were a flower, you'd likely \"sing\" by blooming brightly and dancing with the raindrops."
+#> [1] "If you were Algerian, you might enjoy singing \"Ya Rayah\" when running under the rain, and if you were a flower, you'd likely prefer to \"hum\" with the gentle beat of the raindrops."
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> [1] "d3816470-ad9b-4e93-a282-042b48348b1d"
+#> [1] "bacc14bc-3b1d-4597-a041-0c82f26c1d53"
 #> 
 #> [[2]]$agent_name
 #> [1] "openai_4_1_nano_agent"
@@ -875,7 +880,7 @@ lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to si
 #> [1] "gpt-4.1-nano"
 #> 
 #> [[2]]$response
-#> [1] "If you were Algerian, you might enjoy singing \"Ya Rayah\" by Rachid Taha when running under the rain and \"Akli N'ak\" (My Flower) by Cheb Khaled when considering a flower."
+#> [1] "You might enjoy singing \"Aïcha\" by Khaled when running under the rain, and \"Belle de Jour\" by Dahmane El Harrachi when thinking of a flower."
 ```
 
 You can also access the history of the `broadcasting` using the
@@ -890,7 +895,7 @@ lead_agent$broadcast_history
 #> [[1]]$responses
 #> [[1]]$responses[[1]]
 #> [[1]]$responses[[1]]$agent_id
-#> [1] "1e9de2cd-ce7d-475d-84db-33bcd2422467"
+#> [1] "605c794b-1b01-4746-bc12-64840bf07a8b"
 #> 
 #> [[1]]$responses[[1]]$agent_name
 #> [1] "openai_4_1_agent"
@@ -902,12 +907,12 @@ lead_agent$broadcast_history
 #> [1] "gpt-4.1"
 #> 
 #> [[1]]$responses[[1]]$response
-#> [1] "As an Algerian, you might enjoy singing \"Ya Rayah\" by Dahmane El Harrachi while running under the rain, and if you were a flower, you'd likely \"sing\" by blooming brightly and dancing with the raindrops."
+#> [1] "If you were Algerian, you might enjoy singing \"Ya Rayah\" when running under the rain, and if you were a flower, you'd likely prefer to \"hum\" with the gentle beat of the raindrops."
 #> 
 #> 
 #> [[1]]$responses[[2]]
 #> [[1]]$responses[[2]]$agent_id
-#> [1] "d3816470-ad9b-4e93-a282-042b48348b1d"
+#> [1] "bacc14bc-3b1d-4597-a041-0c82f26c1d53"
 #> 
 #> [[1]]$responses[[2]]$agent_name
 #> [1] "openai_4_1_nano_agent"
@@ -919,7 +924,7 @@ lead_agent$broadcast_history
 #> [1] "gpt-4.1-nano"
 #> 
 #> [[1]]$responses[[2]]$response
-#> [1] "If you were Algerian, you might enjoy singing \"Ya Rayah\" by Rachid Taha when running under the rain and \"Akli N'ak\" (My Flower) by Cheb Khaled when considering a flower."
+#> [1] "You might enjoy singing \"Aïcha\" by Khaled when running under the rain, and \"Belle de Jour\" by Dahmane El Harrachi when thinking of a flower."
 ```
 
 ## Human In The Loop (HITL)
@@ -932,7 +937,7 @@ defining a `LeadAgent` as follows:
 ``` r
 openai_llm_object <- ellmer::chat(
   name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"), 
+  credentials = retrieve_open_ai_credential, 
   echo = "none"
 )
 
@@ -970,7 +975,7 @@ You can use the `judge_and_choose_best_response` method as follows:
 ``` r
 openai_4_1 <- ellmer::chat(
   name = "openai/gpt-4.1",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
+  credentials = retrieve_open_ai_credential, 
   echo = "none"
 )
 
@@ -982,7 +987,7 @@ stylist_1 <- Agent$new(
 
 openai_4_1_nano <- ellmer::chat(
   name = "openai/gpt-4.1-nano",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
+  credentials = retrieve_open_ai_credential, 
   echo = "none"
 )
 
@@ -994,7 +999,7 @@ stylist_2 <- Agent$new(
 
 openai_4_1_mini <- ellmer::chat(
   name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
+  credentials = retrieve_open_ai_credential, 
   echo = "none"
 )
 
@@ -1014,31 +1019,31 @@ best_answer
 #> $proposals
 #> $proposals[[1]]
 #> $proposals[[1]]$agent_id
-#> [1] "6e90f179-a29a-4444-9b1b-e2d73a9b5679"
+#> [1] "55340ddf-e5e9-4c91-9080-b8ad66f6a569"
 #> 
 #> $proposals[[1]]$agent_name
 #> [1] "stylist"
 #> 
 #> $proposals[[1]]$response
-#> [1] "Layer the blue Calvin Klein shirt under a neutral sweater or blazer, add the pink trousers, and finish with complementary accessories like a navy coat and simple shoes for a balanced, stylish winter look."
+#> [1] "Layer the blue Calvin Klein shirt with a neutral-colored sweater or coat, add the pink trousers, and finish with classic shoes and complementary accessories like a scarf or hat in muted tones."
 #> 
 #> 
 #> $proposals[[2]]
 #> $proposals[[2]]$agent_id
-#> [1] "9e8b4bd4-3c7e-45a7-b6a7-925dc4de080e"
+#> [1] "f19b6294-0145-4cdf-a24f-60dfb79cf986"
 #> 
 #> $proposals[[2]]$agent_name
 #> [1] "stylist2"
 #> 
 #> $proposals[[2]]$response
-#> [1] "Pair the blue Calvin Klein shirt with a neutral-colored sweater or blazer and a stylish coat for warmth, and complete the look with neutral or complementary accessories to balance the pink trousers."
+#> [1] "Pair the blue Calvin Klein shirt with a tailored blazer or a cozy knit sweater, along with a stylish coat and neutral footwear, to create a polished winter look with pink trousers."
 #> 
 #> 
 #> 
 #> $chosen_response
-#> Layer the blue Calvin Klein shirt under a neutral sweater or blazer, add the 
-#> pink trousers, and finish with complementary accessories like a navy coat and 
-#> simple shoes for a balanced, stylish winter look.
+#> Pair the blue Calvin Klein shirt with a tailored blazer or a cozy knit sweater,
+#> along with a stylish coat and neutral footwear, to create a polished winter 
+#> look with pink trousers.
 ```
 
 This makes it easy to archive progress and resume complex, context-rich
