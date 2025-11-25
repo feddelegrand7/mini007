@@ -848,9 +848,7 @@ Agent <- R6::R6Class(
       }
 
       private$._messages <- value
-      private$.sync_flag <- FALSE
       private$.set_turns_from_messages()
-      private$.sync_flag <- TRUE
 
     }
   ),
@@ -965,13 +963,10 @@ Agent <- R6::R6Class(
         )
       }
 
-      if (private$.sync_flag) {
-        private$.sync_flag <- FALSE
-        self$messages <- messages
-        private$.sync_flag <- TRUE
-      } else {
-        private$._messages <- messages
-      }
+      # Temporarily disable sync to prevent recursion
+      private$.sync_flag <- FALSE
+      private$._messages <- messages
+      private$.sync_flag <- TRUE
     },
 
     .set_turns_from_messages = function() {
