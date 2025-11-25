@@ -193,6 +193,21 @@ This makes it easy to reconstruct or extend sessions, provide custom context, or
 agent$invoke("summarise the previous conversation")
 ```
 
+### Sync between `messages` and `turns`
+##### Only in the development version
+
+You can modify the `messages` object as you please, this will be automatically translated to the suitable `turns` required by `ellmer`: 
+
+```{r}
+agent$messages[[5]]$content <- "Obivously you asked me about the best pizza in the world which is of course in Algiery!"
+
+agent$messages
+```
+The underlying ellmer object: 
+
+```{r}
+agent$llm_object
+```
 
 ### Resetting conversation history
 
