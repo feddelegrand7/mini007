@@ -190,7 +190,7 @@ agent$messages
 This makes it easy to reconstruct or extend sessions, provide custom context, or insert notes for debugging/testing purposes.
 
 ```{r, eval=TRUE}
-agent$invoke("What did you say? I didn't understand. could you repeat please")
+agent$invoke("summarise the previous conversation")
 ```
 
 

@@ -90,7 +90,7 @@ Each created Agent has an `agent_id` (among other meta information):
 
 ``` r
 polar_bear_researcher$agent_id
-#> [1] "0b3f70b0-3f65-4c01-84d0-7032fd336e49"
+#> [1] "f237d356-367e-4318-903a-80187c80ed36"
 ```
 
 At any time, you can tweak the `llm_object`:
@@ -106,7 +106,8 @@ An agent can provide the answer to a prompt using the `invoke` method:
 
 ``` r
 polar_bear_researcher$invoke("Are polar bears dangerous for humans?")
-#> [1] "Yes, polar bears are dangerous to humans as they are large predators and can attack if threatened or hungry."
+#> Yes, polar bears can be dangerous to humans as they are powerful predators and 
+#> may attack if threatened or hungry.
 ```
 
 You can also retrieve a list that displays the history of the agent:
@@ -134,20 +135,20 @@ polar_bear_researcher$messages
 #> [1] "assistant"
 #> 
 #> [[3]]$content
-#> [1] "Yes, polar bears are dangerous to humans as they are large predators and can attack if threatened or hungry."
+#> [1] "Yes, polar bears can be dangerous to humans as they are powerful predators and may attack if threatened or hungry."
 ```
 
 Or the `ellmer` way:
 
 ``` r
 polar_bear_researcher$llm_object
-#> <Chat OpenAI/gpt-4.1-mini turns=3 input=43 output=22 cost=$0.00>
+#> <Chat OpenAI/gpt-4.1-mini turns=3 input=43 output=23 cost=$0.00>
 #> ── system ──────────────────────────────────────────────────────────────────────
 #> You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max.
 #> ── user ────────────────────────────────────────────────────────────────────────
 #> Are polar bears dangerous for humans?
-#> ── assistant [input=43 output=22 cost=$0.00] ───────────────────────────────────
-#> Yes, polar bears are dangerous to humans as they are large predators and can attack if threatened or hungry.
+#> ── assistant [input=43 output=23 cost=$0.00] ───────────────────────────────────
+#> Yes, polar bears can be dangerous to humans as they are powerful predators and may attack if threatened or hungry.
 ```
 
 ### Managing Agent Conversation History
@@ -161,14 +162,14 @@ memory efficiency while keeping important conversation context.
 # After several interactions, summarise and clear the conversation history
 polar_bear_researcher$clear_and_summarise_messages()
 #> ✔ Conversation history summarised and appended to system prompt.
-#> ℹ Summary: The user asked if polar bears are dangerous to humans, and the assistant responded that polar bears ...
+#> ℹ Summary: The user asked if polar bears are dangerous to humans, and the expert assistant responded that polar...
 polar_bear_researcher$messages
 #> [[1]]
 #> [[1]]$role
 #> [1] "system"
 #> 
 #> [[1]]$content
-#> [1] "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max. \n\n--- Conversation Summary ---\n The user asked if polar bears are dangerous to humans, and the assistant responded that polar bears are indeed dangerous because they are large predators capable of attacking when threatened or hungry."
+#> [1] "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max. \n\n--- Conversation Summary ---\n The user asked if polar bears are dangerous to humans, and the expert assistant responded that polar bears can indeed be dangerous as they are powerful predators and may attack if threatened or hungry."
 ```
 
 This method summarises all previous conversations into a paragraph and
@@ -195,11 +196,11 @@ agent <- Agent$new(
 )
 
 agent$invoke("What is the capital of Italy?")
-#> [1] "The capital of Italy is Rome."
+#> The capital of Italy is Rome.
 agent$invoke("What is the capital of Germany?")
-#> [1] "The capital of Germany is Berlin."
+#> The capital of Germany is Berlin.
 agent$invoke("What is the capital of Algeria?")
-#> [1] "The capital of Algeria is Algiers."
+#> The capital of Algeria is Algiers.
 agent$messages
 #> [[1]]
 #> [[1]]$role
@@ -344,8 +345,10 @@ This makes it easy to reconstruct or extend sessions, provide custom
 context, or insert notes for debugging/testing purposes.
 
 ``` r
-agent$invoke("What did you say? I didn't understand. could you repeat please")
-#> [1] "Certainly! One of the places known for having some of the best pizza in the world is Algiers, Algeria. The pizza there is known to be tasty and crunchy. \n\nOf course, many people also consider places like Naples, Italy—the birthplace of pizza—as having the best pizza in the world. It really depends on your taste preferences! If you'd like, I can recommend top pizza spots in different cities around the world."
+agent$invoke("summarise the previous conversation")
+#> You asked where to find the best pizza in the world, and I told you that some 
+#> of the best pizza can be found in Algiers, Algeria, known for being tasty and 
+#> crunchy.
 ```
 
 ### Resetting conversation history
@@ -367,9 +370,12 @@ agent <- Agent$new(
 )
 
 agent$invoke("Tell me a short fun fact about dates (the fruit).")
-#> [1] "Sure! Here’s a fun fact: Dates are one of the oldest cultivated fruits in the world, and archaeologists have found evidence of date farming that dates back more than 6,000 years!"
+#> Sure! Dates have been cultivated for over 6,000 years and were considered so 
+#> valuable in ancient times that people used them as a form of currency!
 agent$invoke("And one more.")
-#> [1] "Absolutely! Did you know that date palms can produce up to 200 pounds of dates in a single year? That’s a lot of natural sweet treats from just one tree!"
+#> Absolutely! Dates contain natural sugars like glucose, fructose, and sucrose, 
+#> making them an instant energy booster — perfect for a quick snack during long 
+#> days or workouts!
 
 # Clear all messages except the system prompt
 agent$reset_conversation_history()
@@ -496,7 +502,8 @@ agent$set_budget_policy(on_exceed = "ask", warn_at = 0.9)
 
 # Normal usage
 agent$invoke("Give me a one-sentence fun fact about Algeria.")
-#> [1] "Algeria is home to the Sahara Desert's largest continuous sand desert, the Grand Erg Oriental, stretching over 650 kilometers!"
+#> Algeria is home to the Sahara Desert, the largest hot desert in the world, 
+#> covering more than 80% of its territory!
 ```
 
 The current policy is echoed when setting the budget. You can update the
@@ -510,11 +517,7 @@ budget information (if set).
 
 ``` r
 stats <- agent$get_usage_stats()
-#> Warning: Unknown or uninitialised column: `tokens_total`.
 stats
-#> $total_tokens
-#> [1] 0
-#> 
 #> $estimated_cost
 #> [1] 1e-04
 #> 
@@ -571,7 +574,7 @@ agent$generate_execute_r_code(
 #> [1] "using ggplot2, generate a scatterplot of hwy and cty in red"
 #> 
 #> $code
-#> [1] "library(ggplot2);ggplot(mpg,aes(x=cty,y=hwy))+geom_point(color=\"red\")"
+#> library(ggplot2);ggplot(mpg,aes(x=cty,y=hwy))+geom_point(color="red")
 #> 
 #> $validated
 #> [1] TRUE
@@ -661,7 +664,7 @@ plan <- lead_agent$generate_plan(prompt_to_execute)
 plan
 #> [[1]]
 #> [[1]]$agent_id
-#> bf55f256-70d1-4d29-a09a-da44e9a53017
+#> 34842942-ebd5-4147-8437-e55b333d80ec
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
@@ -673,12 +676,12 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[1]]$prompt
-#> [1] "Research the current economic situation in Algeria based on the latest data and reports"
+#> [1] "Research the current economic situation in Algeria, including key indicators such as GDP growth, inflation rates, main industries, and challenges faced."
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> 4b8f361c-731b-478e-9865-679d1530393d
+#> b77ed93a-0abf-42ee-a407-418e27bc3782
 #> 
 #> [[2]]$agent_name
 #> [1] "summarizer"
@@ -690,12 +693,12 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[2]]$prompt
-#> [1] "Summarize the key aspects of Algeria's economic situation into 3 clear bullet points"
+#> [1] "Summarize the researched information into 3 clear and concise bullet points."
 #> 
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> 3ba244c1-f2bf-4a0a-b133-75fb736f09c1
+#> fd1bd7f5-b3df-4974-9571-14641f116ff4
 #> 
 #> [[3]]$agent_name
 #> [1] "translator"
@@ -707,7 +710,7 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[3]]$prompt
-#> [1] "Translate the 3 bullet points summary accurately into German"
+#> [1] "Translate the 3 bullet points from English into German accurately."
 ```
 
 Now, in order now to execute the workflow, we just need to call the
@@ -723,7 +726,13 @@ response <- lead_agent$invoke("Tell me about the economic situation in Algeria, 
 
 ``` r
 response
-#> [1] "- Die Wirtschaft Algeriens verzeichnet ein moderates Wachstum, das hauptsächlich durch den Export von Erdgas angetrieben wird.  \n- Das Land kämpft mit hoher Arbeitslosigkeit, Inflation und der Notwendigkeit, die Abhängigkeit von Einnahmen aus dem Bereich der Kohlenwasserstoffe zu verringern.  \n- Laufende Strukturreformen und die Anziehung ausländischer Investitionen sind entscheidend für die Aufrechterhaltung der wirtschaftlichen Stabilität und Diversifizierung."
+#> - Das BIP-Wachstum Algeriens ist mit 2-3 % moderat, bei einer Inflation von 
+#> etwa 5-7 % im Jahr 2024.  
+#> - Die Wirtschaft ist stark von Kohlenwasserstoffen abhängig, die 95 % der 
+#> Exporte und 60 % der Staatseinnahmen ausmachen.  
+#> - Zu den großen Herausforderungen zählen die wirtschaftliche Diversifizierung, 
+#> hohe Arbeitslosigkeit und die Anfälligkeit gegenüber globalen Schwankungen der 
+#> Energiepreise.
 ```
 
 If you want to inspect the multi-agents orchestration, you have access
@@ -733,7 +742,7 @@ to the `agents_interaction` object:
 lead_agent$agents_interaction
 #> [[1]]
 #> [[1]]$agent_id
-#> bf55f256-70d1-4d29-a09a-da44e9a53017
+#> 34842942-ebd5-4147-8437-e55b333d80ec
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
@@ -745,10 +754,14 @@ lead_agent$agents_interaction
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[1]]$prompt
-#> [1] "Research the current economic situation in Algeria based on the latest data and reports"
+#> [1] "Research the current economic situation in Algeria, including key indicators such as GDP growth, inflation rates, main industries, and challenges faced."
 #> 
 #> [[1]]$response
-#> [1] "As of mid-2024, Algeria faces moderate economic growth driven by natural gas exports, with challenges including high unemployment, inflation, and efforts to diversify away from hydrocarbon dependency. Structural reforms and foreign investment are encouraged to sustain stability."
+#> As of 2024, Algeria's GDP growth is modest, around 2-3%, with inflation rates 
+#> near 5-7%. The economy relies heavily on hydrocarbons (oil and gas), accounting
+#> for about 95% of exports and 60% of government revenue. Key challenges include 
+#> economic diversification, high unemployment, and dependence on volatile global 
+#> energy prices.
 #> 
 #> [[1]]$edited_by_hitl
 #> [1] FALSE
@@ -756,7 +769,7 @@ lead_agent$agents_interaction
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> 4b8f361c-731b-478e-9865-679d1530393d
+#> b77ed93a-0abf-42ee-a407-418e27bc3782
 #> 
 #> [[2]]$agent_name
 #> [1] "summarizer"
@@ -768,10 +781,14 @@ lead_agent$agents_interaction
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[2]]$prompt
-#> [1] "Summarize the key aspects of Algeria's economic situation into 3 clear bullet points"
+#> [1] "Summarize the researched information into 3 clear and concise bullet points."
 #> 
 #> [[2]]$response
-#> [1] "- Algeria's economy experiences moderate growth primarily fueled by natural gas exports.  \n- The country struggles with high unemployment, inflation, and the need to reduce reliance on hydrocarbon revenues.  \n- Ongoing structural reforms and attracting foreign investment are crucial for maintaining economic stability and diversification."
+#> - Algeria's GDP growth is modest at 2-3% with inflation around 5-7% in 2024.  
+#> - The economy is heavily dependent on hydrocarbons, comprising 95% of exports 
+#> and 60% of government revenue.  
+#> - Major challenges include economic diversification, high unemployment, and 
+#> vulnerability to global energy price fluctuations.
 #> 
 #> [[2]]$edited_by_hitl
 #> [1] FALSE
@@ -779,7 +796,7 @@ lead_agent$agents_interaction
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> 3ba244c1-f2bf-4a0a-b133-75fb736f09c1
+#> fd1bd7f5-b3df-4974-9571-14641f116ff4
 #> 
 #> [[3]]$agent_name
 #> [1] "translator"
@@ -791,10 +808,16 @@ lead_agent$agents_interaction
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[3]]$prompt
-#> [1] "Translate the 3 bullet points summary accurately into German"
+#> [1] "Translate the 3 bullet points from English into German accurately."
 #> 
 #> [[3]]$response
-#> [1] "- Die Wirtschaft Algeriens verzeichnet ein moderates Wachstum, das hauptsächlich durch den Export von Erdgas angetrieben wird.  \n- Das Land kämpft mit hoher Arbeitslosigkeit, Inflation und der Notwendigkeit, die Abhängigkeit von Einnahmen aus dem Bereich der Kohlenwasserstoffe zu verringern.  \n- Laufende Strukturreformen und die Anziehung ausländischer Investitionen sind entscheidend für die Aufrechterhaltung der wirtschaftlichen Stabilität und Diversifizierung."
+#> - Das BIP-Wachstum Algeriens ist mit 2-3 % moderat, bei einer Inflation von 
+#> etwa 5-7 % im Jahr 2024.  
+#> - Die Wirtschaft ist stark von Kohlenwasserstoffen abhängig, die 95 % der 
+#> Exporte und 60 % der Staatseinnahmen ausmachen.  
+#> - Zu den großen Herausforderungen zählen die wirtschaftliche Diversifizierung, 
+#> hohe Arbeitslosigkeit und die Anfälligkeit gegenüber globalen Schwankungen der 
+#> Energiepreise.
 #> 
 #> [[3]]$edited_by_hitl
 #> [1] FALSE
@@ -851,7 +874,7 @@ lead_agent$register_agents(c(openai_4_1_agent, openai_4_1_nano_agent))
 lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to sing when running under the rain? how about a flower?")
 #> [[1]]
 #> [[1]]$agent_id
-#> [1] "605c794b-1b01-4746-bc12-64840bf07a8b"
+#> [1] "bd4c1e80-9fbe-4fb2-b288-3e775f69927c"
 #> 
 #> [[1]]$agent_name
 #> [1] "openai_4_1_agent"
@@ -863,12 +886,14 @@ lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to si
 #> [1] "gpt-4.1"
 #> 
 #> [[1]]$response
-#> [1] "If you were Algerian, you might enjoy singing \"Ya Rayah\" when running under the rain, and if you were a flower, you'd likely prefer to \"hum\" with the gentle beat of the raindrops."
+#> As an Algerian, you might enjoy singing "Ya Rayah" while running under the 
+#> rain, and if you were a flower, perhaps you’d prefer the gentle melody of 
+#> "Fleur d'amour."
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> [1] "bacc14bc-3b1d-4597-a041-0c82f26c1d53"
+#> [1] "c422053f-48b2-444e-b469-d95a06f4a808"
 #> 
 #> [[2]]$agent_name
 #> [1] "openai_4_1_nano_agent"
@@ -880,7 +905,9 @@ lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to si
 #> [1] "gpt-4.1-nano"
 #> 
 #> [[2]]$response
-#> [1] "You might enjoy singing \"Aïcha\" by Khaled when running under the rain, and \"Belle de Jour\" by Dahmane El Harrachi when thinking of a flower."
+#> If you were Algerian, you might enjoy singing "Ya Rayah" by Dahmane El Harrachi
+#> when running under the rain, and "Azzaba" by Cheb Khaled when thinking of a 
+#> flower.
 ```
 
 You can also access the history of the `broadcasting` using the
@@ -895,7 +922,7 @@ lead_agent$broadcast_history
 #> [[1]]$responses
 #> [[1]]$responses[[1]]
 #> [[1]]$responses[[1]]$agent_id
-#> [1] "605c794b-1b01-4746-bc12-64840bf07a8b"
+#> [1] "bd4c1e80-9fbe-4fb2-b288-3e775f69927c"
 #> 
 #> [[1]]$responses[[1]]$agent_name
 #> [1] "openai_4_1_agent"
@@ -907,12 +934,14 @@ lead_agent$broadcast_history
 #> [1] "gpt-4.1"
 #> 
 #> [[1]]$responses[[1]]$response
-#> [1] "If you were Algerian, you might enjoy singing \"Ya Rayah\" when running under the rain, and if you were a flower, you'd likely prefer to \"hum\" with the gentle beat of the raindrops."
+#> As an Algerian, you might enjoy singing "Ya Rayah" while running under the 
+#> rain, and if you were a flower, perhaps you’d prefer the gentle melody of 
+#> "Fleur d'amour."
 #> 
 #> 
 #> [[1]]$responses[[2]]
 #> [[1]]$responses[[2]]$agent_id
-#> [1] "bacc14bc-3b1d-4597-a041-0c82f26c1d53"
+#> [1] "c422053f-48b2-444e-b469-d95a06f4a808"
 #> 
 #> [[1]]$responses[[2]]$agent_name
 #> [1] "openai_4_1_nano_agent"
@@ -924,7 +953,9 @@ lead_agent$broadcast_history
 #> [1] "gpt-4.1-nano"
 #> 
 #> [[1]]$responses[[2]]$response
-#> [1] "You might enjoy singing \"Aïcha\" by Khaled when running under the rain, and \"Belle de Jour\" by Dahmane El Harrachi when thinking of a flower."
+#> If you were Algerian, you might enjoy singing "Ya Rayah" by Dahmane El Harrachi
+#> when running under the rain, and "Azzaba" by Cheb Khaled when thinking of a 
+#> flower.
 ```
 
 ## Human In The Loop (HITL)
@@ -1019,31 +1050,35 @@ best_answer
 #> $proposals
 #> $proposals[[1]]
 #> $proposals[[1]]$agent_id
-#> [1] "55340ddf-e5e9-4c91-9080-b8ad66f6a569"
+#> [1] "0881a97f-31ae-4f85-9013-114165340f2e"
 #> 
 #> $proposals[[1]]$agent_name
 #> [1] "stylist"
 #> 
 #> $proposals[[1]]$response
-#> [1] "Layer the blue Calvin Klein shirt with a neutral-colored sweater or coat, add the pink trousers, and finish with classic shoes and complementary accessories like a scarf or hat in muted tones."
+#> Layer the blue Calvin Klein shirt under a neutral-colored sweater or blazer, 
+#> add a scarf that complements both blue and pink, and finish with 
+#> winter-appropriate shoes and a tailored coat for a polished look.
 #> 
 #> 
 #> $proposals[[2]]
 #> $proposals[[2]]$agent_id
-#> [1] "f19b6294-0145-4cdf-a24f-60dfb79cf986"
+#> [1] "d92f6ddd-9709-481f-8e7f-f63efeb2a305"
 #> 
 #> $proposals[[2]]$agent_name
 #> [1] "stylist2"
 #> 
 #> $proposals[[2]]$response
-#> [1] "Pair the blue Calvin Klein shirt with a tailored blazer or a cozy knit sweater, along with a stylish coat and neutral footwear, to create a polished winter look with pink trousers."
+#> Pair the blue Calvin Klein shirt with a neutral-colored sweater or blazer and 
+#> choose warm accessories like a scarf and boots to complement the pink trousers 
+#> in winter.
 #> 
 #> 
 #> 
 #> $chosen_response
-#> Pair the blue Calvin Klein shirt with a tailored blazer or a cozy knit sweater,
-#> along with a stylish coat and neutral footwear, to create a polished winter 
-#> look with pink trousers.
+#> Layer the blue Calvin Klein shirt under a neutral-colored sweater or blazer, 
+#> add a scarf that complements both blue and pink, and finish with 
+#> winter-appropriate shoes and a tailored coat for a polished look.
 ```
 
 This makes it easy to archive progress and resume complex, context-rich
