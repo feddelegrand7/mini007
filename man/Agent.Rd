@@ -126,6 +126,25 @@ agent$keep_last_n_messages(n = 2)
 }
 
 ## ------------------------------------------------
+## Method `Agent$add_message`
+## ------------------------------------------------
+
+\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+agent <- Agent$new(
+  name = "AI assistant",
+  instruction = "You are an assistant.",
+  llm_object = openai_4_1_mini
+)
+agent$add_message("user", "Hello, how are you?")
+agent$add_message("assistant", "I'm doing well, thank you!")
+}
+
+## ------------------------------------------------
 ## Method `Agent$clear_and_summarise_messages`
 ## ------------------------------------------------
 
@@ -194,70 +213,6 @@ stats
 }
 
 ## ------------------------------------------------
-## Method `Agent$add_message`
-## ------------------------------------------------
-
-\dontrun{
-openai_4_1_mini <- ellmer::chat(
-  name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
-  echo = "none"
-)
-agent <- Agent$new(
-  name = "AI assistant",
-  instruction = "You are an assistant.",
-  llm_object = openai_4_1_mini
-)
-agent$add_message("user", "Hello, how are you?")
-agent$add_message("assistant", "I'm doing well, thank you!")
-}
-
-## ------------------------------------------------
-## Method `Agent$clone_agent`
-## ------------------------------------------------
-
-\dontrun{
-openai_4_1_mini <- ellmer::chat(
-  name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
-  echo = "none"
-)
-agent <- Agent$new(
-  name = "translator",
-  instruction = "You are a translator.",
-  llm_object = openai_4_1_mini
-)
-# Clone with same name
-agent_copy <- agent$clone_agent()
-}
-
-## ------------------------------------------------
-## Method `Agent$validate_response`
-## ------------------------------------------------
-
-\dontrun{
-openai_4_1_mini <- ellmer::chat(
-  name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
-  echo = "none"
-)
-agent <- Agent$new(
-  name = "fact_checker",
-  instruction = "You are a factual assistant.",
-  llm_object = openai_4_1_mini
-)
-prompt <- "What is the capital of Algeria?"
-response <- agent$invoke(prompt)
-validation <- agent$validate_response(
-  response = response,
-  prompt = prompt,
-  validation_criteria = "The response must be accurate and mention Algiers",
-  validation_score = 0.8
-)
-print(validation)
-}
-
-## ------------------------------------------------
 ## Method `Agent$reset_conversation_history`
 ## ------------------------------------------------
 
@@ -318,6 +273,51 @@ agent$messages
 agent$llm_object
 }
 
+
+## ------------------------------------------------
+## Method `Agent$validate_response`
+## ------------------------------------------------
+
+\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+agent <- Agent$new(
+  name = "fact_checker",
+  instruction = "You are a factual assistant.",
+  llm_object = openai_4_1_mini
+)
+prompt <- "What is the capital of Algeria?"
+response <- agent$invoke(prompt)
+validation <- agent$validate_response(
+  response = response,
+  prompt = prompt,
+  validation_criteria = "The response must be accurate and mention Algiers",
+  validation_score = 0.8
+)
+print(validation)
+}
+
+## ------------------------------------------------
+## Method `Agent$clone_agent`
+## ------------------------------------------------
+
+\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+agent <- Agent$new(
+  name = "translator",
+  instruction = "You are a translator.",
+  llm_object = openai_4_1_mini
+)
+# Clone with same name
+agent_copy <- agent$clone_agent()
+}
 }
 \seealso{
 [load_messages_history()] for reloading a saved message history.
@@ -346,6 +346,8 @@ agent$llm_object
 \item{\code{budget_policy}}{A list controlling budget behavior: on_exceed and warn_at.}
 
 \item{\code{budget_warned}}{Internal flag indicating whether warn_at notice was emitted.}
+
+\item{\code{cost}}{The current cost of the agent}
 }
 \if{html}{\out{</div>}}
 }
@@ -366,15 +368,15 @@ Assignment is validated automatically.}
 \item \href{#method-Agent-set_budget}{\code{Agent$set_budget()}}
 \item \href{#method-Agent-set_budget_policy}{\code{Agent$set_budget_policy()}}
 \item \href{#method-Agent-keep_last_n_messages}{\code{Agent$keep_last_n_messages()}}
+\item \href{#method-Agent-add_message}{\code{Agent$add_message()}}
 \item \href{#method-Agent-clear_and_summarise_messages}{\code{Agent$clear_and_summarise_messages()}}
 \item \href{#method-Agent-update_instruction}{\code{Agent$update_instruction()}}
 \item \href{#method-Agent-get_usage_stats}{\code{Agent$get_usage_stats()}}
-\item \href{#method-Agent-add_message}{\code{Agent$add_message()}}
-\item \href{#method-Agent-clone_agent}{\code{Agent$clone_agent()}}
-\item \href{#method-Agent-validate_response}{\code{Agent$validate_response()}}
 \item \href{#method-Agent-reset_conversation_history}{\code{Agent$reset_conversation_history()}}
 \item \href{#method-Agent-export_messages_history}{\code{Agent$export_messages_history()}}
 \item \href{#method-Agent-load_messages_history}{\code{Agent$load_messages_history()}}
+\item \href{#method-Agent-validate_response}{\code{Agent$validate_response()}}
+\item \href{#method-Agent-clone_agent}{\code{Agent$clone_agent()}}
 \item \href{#method-Agent-clone}{\code{Agent$clone()}}
 }
 }
@@ -640,6 +642,46 @@ agent$keep_last_n_messages(n = 2)
 
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Agent-add_message"></a>}}
+\if{latex}{\out{\hypertarget{method-Agent-add_message}{}}}
+\subsection{Method \code{add_message()}}{
+Add a pre-formatted message to the conversation history
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Agent$add_message(role, content)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{role}}{The role of the message ("user", "assistant", or "system")}
+
+\item{\code{content}}{The content of the message}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+agent <- Agent$new(
+  name = "AI assistant",
+  instruction = "You are an assistant.",
+  llm_object = openai_4_1_mini
+)
+agent$add_message("user", "Hello, how are you?")
+agent$add_message("assistant", "I'm doing well, thank you!")
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Agent-clear_and_summarise_messages"></a>}}
 \if{latex}{\out{\hypertarget{method-Agent-clear_and_summarise_messages}{}}}
 \subsection{Method \code{clear_and_summarise_messages()}}{
@@ -761,154 +803,6 @@ stats
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Agent-add_message"></a>}}
-\if{latex}{\out{\hypertarget{method-Agent-add_message}{}}}
-\subsection{Method \code{add_message()}}{
-Add a pre-formatted message to the conversation history
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Agent$add_message(role, content)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{role}}{The role of the message ("user", "assistant", or "system")}
-
-\item{\code{content}}{The content of the message}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{\dontrun{
-openai_4_1_mini <- ellmer::chat(
-  name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
-  echo = "none"
-)
-agent <- Agent$new(
-  name = "AI assistant",
-  instruction = "You are an assistant.",
-  llm_object = openai_4_1_mini
-)
-agent$add_message("user", "Hello, how are you?")
-agent$add_message("assistant", "I'm doing well, thank you!")
-}
-}
-\if{html}{\out{</div>}}
-
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Agent-clone_agent"></a>}}
-\if{latex}{\out{\hypertarget{method-Agent-clone_agent}{}}}
-\subsection{Method \code{clone_agent()}}{
-Create a copy of the agent with the same instruction and configuration but a new unique ID.
-Useful for creating multiple instances of the same agent type.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Agent$clone_agent(new_name = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{new_name}}{Optional character string to assign a new name to the cloned agent.
-If NULL, the cloned agent retains the original name.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-A new Agent instance with the same configuration but a unique ID.
-}
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{\dontrun{
-openai_4_1_mini <- ellmer::chat(
-  name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
-  echo = "none"
-)
-agent <- Agent$new(
-  name = "translator",
-  instruction = "You are a translator.",
-  llm_object = openai_4_1_mini
-)
-# Clone with same name
-agent_copy <- agent$clone_agent()
-}
-}
-\if{html}{\out{</div>}}
-
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Agent-validate_response"></a>}}
-\if{latex}{\out{\hypertarget{method-Agent-validate_response}{}}}
-\subsection{Method \code{validate_response()}}{
-Validates an agent's response against custom criteria using LLM-based validation.
-This method uses the agent's LLM to evaluate whether a response meets specified
-validation criteria (e.g., accuracy, completeness, tone, format).
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Agent$validate_response(
-  prompt,
-  response,
-  validation_criteria,
-  validation_score = 0.8
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{prompt}}{The prompt used to generate the response.}
-
-\item{\code{response}}{The response text to validate.}
-
-\item{\code{validation_criteria}}{The criteria for validation.
-(e.g., "The response should be accurate and complete", "The response must be under 100 words").}
-
-\item{\code{validation_score}}{A numeric from 0 to 1 denoting the score to consider for
-the evaluation. During the evaluation, the agent will provide a score from 0 to 1,
-a provided score greater or equal to the `validation_score` will result in a `valid` response.
-Defaults to 0.8.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-list object
-}
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{\dontrun{
-openai_4_1_mini <- ellmer::chat(
-  name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
-  echo = "none"
-)
-agent <- Agent$new(
-  name = "fact_checker",
-  instruction = "You are a factual assistant.",
-  llm_object = openai_4_1_mini
-)
-prompt <- "What is the capital of Algeria?"
-response <- agent$invoke(prompt)
-validation <- agent$validate_response(
-  response = response,
-  prompt = prompt,
-  validation_criteria = "The response must be accurate and mention Algiers",
-  validation_score = 0.8
-)
-print(validation)
-}
-}
-\if{html}{\out{</div>}}
-
-}
-
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Agent-reset_conversation_history"></a>}}
 \if{latex}{\out{\hypertarget{method-Agent-reset_conversation_history}{}}}
 \subsection{Method \code{reset_conversation_history()}}{
@@ -1022,6 +916,114 @@ agent$messages
 agent$llm_object
 }
 
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Agent-validate_response"></a>}}
+\if{latex}{\out{\hypertarget{method-Agent-validate_response}{}}}
+\subsection{Method \code{validate_response()}}{
+Validates an agent's response against custom criteria using LLM-based validation.
+This method uses the agent's LLM to evaluate whether a response meets specified
+validation criteria (e.g., accuracy, completeness, tone, format).
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Agent$validate_response(
+  prompt,
+  response,
+  validation_criteria,
+  validation_score = 0.8
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{prompt}}{The prompt used to generate the response.}
+
+\item{\code{response}}{The response text to validate.}
+
+\item{\code{validation_criteria}}{The criteria for validation.
+(e.g., "The response should be accurate and complete", "The response must be under 100 words").}
+
+\item{\code{validation_score}}{A numeric from 0 to 1 denoting the score to consider for
+the evaluation. During the evaluation, the agent will provide a score from 0 to 1,
+a provided score greater or equal to the `validation_score` will result in a `valid` response.
+Defaults to 0.8.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+list object
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+agent <- Agent$new(
+  name = "fact_checker",
+  instruction = "You are a factual assistant.",
+  llm_object = openai_4_1_mini
+)
+prompt <- "What is the capital of Algeria?"
+response <- agent$invoke(prompt)
+validation <- agent$validate_response(
+  response = response,
+  prompt = prompt,
+  validation_criteria = "The response must be accurate and mention Algiers",
+  validation_score = 0.8
+)
+print(validation)
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Agent-clone_agent"></a>}}
+\if{latex}{\out{\hypertarget{method-Agent-clone_agent}{}}}
+\subsection{Method \code{clone_agent()}}{
+Create a copy of the agent with the same instruction and configuration but a new unique ID.
+Useful for creating multiple instances of the same agent type.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Agent$clone_agent(new_name = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{new_name}}{Optional character string to assign a new name to the cloned agent.
+If NULL, the cloned agent retains the original name.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A new Agent instance with the same configuration but a unique ID.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+agent <- Agent$new(
+  name = "translator",
+  instruction = "You are a translator.",
+  llm_object = openai_4_1_mini
+)
+# Clone with same name
+agent_copy <- agent$clone_agent()
+}
 }
 \if{html}{\out{</div>}}
 

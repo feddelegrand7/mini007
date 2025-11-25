@@ -8,8 +8,11 @@
 #'
 #' @importFrom R6 R6Class
 #' @importFrom uuid UUIDgenerate
-#' @importFrom checkmate assert_string assert_flag assert_character assert_integerish
+#' @importFrom checkmate assert_string assert_flag assert_character assert_integerish assert_environment
 #' @importFrom cli cli_abort cli_alert_success cli_alert_warning cli_alert_info cli_rule cli_text cli_ul
+#' @importFrom glue glue
+#' @importFrom ellmer type_object type_string type_number
+
 #' @export
 Agent <- R6::R6Class(
   classname = "Agent",
@@ -73,6 +76,8 @@ Agent <- R6::R6Class(
         warn_at = 0.8
       )
 
+      self$cost <- NA
+
     },
 
     #' @description
@@ -102,10 +107,16 @@ Agent <- R6::R6Class(
         private$.check_budget()
       }
 
-      private$.add_user_message(prompt)
       response <- self$llm_object$chat(prompt)
-      response <- as.character(response)
-      private$.add_assistant_message(response)
+
+      cost <- self$llm_object$get_cost()
+
+      if (!is.na(cost)) {
+        self$cost <- as.numeric(round(cost, 4))
+      }
+
+      private$.set_messages_from_turns()
+
       return(response)
     },
 
@@ -154,10 +165,11 @@ Agent <- R6::R6Class(
       checkmate::assert_flag(interactive)
 
       code_prompt <- paste0(
-        "Generate R code for the following task. Return ONLY the R code without any explanations, ",
+        "Generate R code for the following task. Return ONLY the R code that will be executed without any explanations, ",
         "markdown formatting, or additional text:\n\n",
         "if you run several commands, use the ';' character to separate them. \n\n",
-        "Do not add additional spaces that would be interpreted later with '\n'. \n\n",
+        "DO NOT add additional spaces that would be interpreted later as '\\n'. \n\n",
+        "DO NOT enclose the code using Markdown syntax like R`\n\n",
         code_description
       )
 
@@ -316,13 +328,44 @@ Agent <- R6::R6Class(
       )
 
       private$._messages <- append(tmp_sp, messages_to_keep)
-
       private$.set_turns_from_messages()
 
       cli::cli_alert_success("Conversation truncated to last {n} messages.")
 
       invisible(self)
 
+    },
+
+    #' @description
+    #' Add a pre-formatted message to the conversation history
+    #'
+    #' @param role The role of the message ("user", "assistant", or "system")
+    #' @param content The content of the message
+    #' @examples
+    #' \dontrun{
+    #' openai_4_1_mini <- ellmer::chat(
+    #'   name = "openai/gpt-4.1-mini",
+    #'   api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'   echo = "none"
+    #' )
+    #' agent <- Agent$new(
+    #'   name = "AI assistant",
+    #'   instruction = "You are an assistant.",
+    #'   llm_object = openai_4_1_mini
+    #')
+    #' agent$add_message("user", "Hello, how are you?")
+    #' agent$add_message("assistant", "I'm doing well, thank you!")
+    #' }
+    add_message = function(role, content) {
+      checkmate::assert_string(role)
+      checkmate::assert_string(content)
+      checkmate::assert_choice(role, c("user", "assistant", "system"))
+
+      private$.add_message(content, role)
+      private$.set_turns_from_messages()
+
+      cli::cli_alert_success("Added {role} message: {substr(content, 1, 50)}...")
+      invisible(self)
     },
 
     #' @description
@@ -390,7 +433,6 @@ Agent <- R6::R6Class(
       private$._messages <- list(
         list(role = "system", content = new_system_prompt)
       )
-
       private$.set_turns_from_messages()
 
       cli::cli_alert_success("Conversation history summarised and appended to system prompt.")
@@ -425,6 +467,7 @@ Agent <- R6::R6Class(
       self$llm_object$set_system_prompt(value = new_instruction)
 
       private$._messages[[1]]$content <- new_instruction
+      private$.set_turns_from_messages()
 
       cli::cli_alert_success("Instruction successfully updated")
       cli::cli_alert_info("Old: {substr(old_instruction, 1, 50)}...")
@@ -456,7 +499,7 @@ Agent <- R6::R6Class(
     #' }
     get_usage_stats = function() {
 
-      current_cost <- self$llm_object$get_cost()
+      current_cost <- self$cost
 
       budget_remaining <- NA
 
@@ -464,13 +507,8 @@ Agent <- R6::R6Class(
         budget_remaining <- self$budget - as.numeric(current_cost)
       }
 
-      total_tokens_df <- self$llm_object$get_tokens()
-
-      total_tokens <- sum(total_tokens_df$tokens_total)
-
       llm_costs <- list(
-        total_tokens = total_tokens,
-        estimated_cost = round(as.numeric(current_cost), 4),
+        estimated_cost = current_cost,
         budget = round(self$budget, 4),
         budget_remaining = round(budget_remaining, 4)
       )
@@ -480,10 +518,8 @@ Agent <- R6::R6Class(
     },
 
     #' @description
-    #' Add a pre-formatted message to the conversation history
+    #' Reset the agent's conversation history while keeping the system instruction
     #'
-    #' @param role The role of the message ("user", "assistant", or "system")
-    #' @param content The content of the message
     #' @examples
     #' \dontrun{
     #' openai_4_1_mini <- ellmer::chat(
@@ -496,28 +532,28 @@ Agent <- R6::R6Class(
     #'   instruction = "You are an assistant.",
     #'   llm_object = openai_4_1_mini
     #')
-    #' agent$add_message("user", "Hello, how are you?")
-    #' agent$add_message("assistant", "I'm doing well, thank you!")
+    #' agent$invoke("Hello, how are you?")
+    #' agent$invoke("Tell me about machine learning")
+    #' agent$reset_conversation_history()  # Clears all messages except system prompt
     #' }
-    add_message = function(role, content) {
-      checkmate::assert_string(role)
-      checkmate::assert_string(content)
-      checkmate::assert_choice(role, c("user", "assistant", "system"))
+    reset_conversation_history = function() {
+      system_prompt <- self$llm_object$get_system_prompt()
 
-      private$.add_message(content, role)
+      private$._messages <- list(
+        list(role = "system", content = system_prompt)
+      )
       private$.set_turns_from_messages()
 
-      cli::cli_alert_success("Added {role} message: {substr(content, 1, 50)}...")
+      cli::cli_alert_success("Conversation history reset. System prompt preserved.")
       invisible(self)
     },
 
     #' @description
-    #' Create a copy of the agent with the same instruction and configuration but a new unique ID.
-    #' Useful for creating multiple instances of the same agent type.
+    #' Saves the agent's current conversation history as a JSON file on disk.
+    #' @param file_path Character string specifying the file path where the JSON
+    #' file should be saved. Defaults to a file named
+    #' `"<agent_name>_messages.json"` in the current working directory.
     #'
-    #' @param new_name Optional character string to assign a new name to the cloned agent.
-    #' If NULL, the cloned agent retains the original name.
-    #' @return A new Agent instance with the same configuration but a unique ID.
     #' @examples
     #' \dontrun{
     #' openai_4_1_mini <- ellmer::chat(
@@ -526,33 +562,77 @@ Agent <- R6::R6Class(
     #'   echo = "none"
     #' )
     #' agent <- Agent$new(
-    #'   name = "translator",
-    #'   instruction = "You are a translator.",
+    #'   name = "capital_finder",
+    #'   instruction = "You are an assistant.",
     #'   llm_object = openai_4_1_mini
-    #' )
-    #' # Clone with same name
-    #' agent_copy <- agent$clone_agent()
+    #')
+    #' agent$invoke("What is the capital of Algeria")
+    #' agent$invoke("What is the capital of Italy")
+    #' agent$export_messages_history()
     #' }
-    clone_agent = function(new_name = NULL) {
+    #'
+    #' @seealso [load_messages_history()] for reloading a saved message history.
+    #'
+    export_messages_history = function(
+    file_path = paste0(getwd(), "/", paste0(self$name, "_messages.json"))
+    ) {
 
-      if (!is.null(new_name)) {
-        checkmate::assert_string(new_name)
-      }
+      checkmate::assert_string(file_path)
 
-      cloned_agent <- self$clone(deep = TRUE)
+      jsonlite::write_json(
+        self$messages,
+        path = file_path,
+        auto_unbox = TRUE,
+        pretty = TRUE
+      )
 
-      cloned_agent$agent_id <- uuid::UUIDgenerate()
+      cli::cli_alert_success(glue::glue("Conversation saved to {file_path}"))
 
-      if (!is.null(new_name)) {
-        cloned_agent$name <- new_name
-      }
-
-      cli::cli_alert_success(glue::glue(
-        "Agent cloned successfully. New ID: {cloned_agent$agent_id}"
-      ))
-
-      return(cloned_agent)
     },
+
+    #' @description
+    #' Saves the agent's current conversation history as a JSON file on disk.
+    #' @param file_path Character string specifying the file path where the JSON
+    #' file is stored. Defaults to a file named
+    #' `"<agent_name>_messages.json"` in the current working directory.
+    #'
+    #' @examples
+    #' \dontrun{
+    #' openai_4_1_mini <- ellmer::chat(
+    #'   name = "openai/gpt-4.1-mini",
+    #'   api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'   echo = "none"
+    #' )
+    #' agent <- Agent$new(
+    #'   name = "capital_finder",
+    #'   instruction = "You are an assistant.",
+    #'   llm_object = openai_4_1_mini
+    #')
+    #' agent$load_messages_history("path/to/messages.json")
+    #' agent$messages
+    #' agent$llm_object
+    #' }
+    #'
+    #' @seealso [export_messages_history()] for exporting the messages object to json.
+    #'
+    load_messages_history = function(
+    file_path = paste0(getwd(), "/", paste0(self$name, "_messages.json"))
+    ) {
+
+      checkmate::assert_string(file_path)
+
+      if (!file.exists(file_path)) {
+        cli::cli_abort("File does not exist.")
+      }
+
+      messages <- jsonlite::read_json(file_path, simplifyVector = FALSE)
+
+      self$messages <- messages
+
+      cli::cli_alert_success(glue::glue("Conversation history loaded from {file_path}"))
+
+    },
+
     #' @description
     #' Validates an agent's response against custom criteria using LLM-based validation.
     #' This method uses the agent's LLM to evaluate whether a response meets specified
@@ -679,8 +759,12 @@ Agent <- R6::R6Class(
     },
 
     #' @description
-    #' Reset the agent's conversation history while keeping the system instruction
+    #' Create a copy of the agent with the same instruction and configuration but a new unique ID.
+    #' Useful for creating multiple instances of the same agent type.
     #'
+    #' @param new_name Optional character string to assign a new name to the cloned agent.
+    #' If NULL, the cloned agent retains the original name.
+    #' @return A new Agent instance with the same configuration but a unique ID.
     #' @examples
     #' \dontrun{
     #' openai_4_1_mini <- ellmer::chat(
@@ -689,110 +773,32 @@ Agent <- R6::R6Class(
     #'   echo = "none"
     #' )
     #' agent <- Agent$new(
-    #'   name = "AI assistant",
-    #'   instruction = "You are an assistant.",
+    #'   name = "translator",
+    #'   instruction = "You are a translator.",
     #'   llm_object = openai_4_1_mini
-    #')
-    #' agent$invoke("Hello, how are you?")
-    #' agent$invoke("Tell me about machine learning")
-    #' agent$reset_conversation_history()  # Clears all messages except system prompt
-    #' }
-    reset_conversation_history = function() {
-      system_prompt <- self$llm_object$get_system_prompt()
-
-      private$._messages <- list(
-        list(role = "system", content = system_prompt)
-      )
-
-      private$.set_turns_from_messages()
-
-      cli::cli_alert_success("Conversation history reset. System prompt preserved.")
-      invisible(self)
-    },
-
-    #' @description
-    #' Saves the agent's current conversation history as a JSON file on disk.
-    #' @param file_path Character string specifying the file path where the JSON
-    #' file should be saved. Defaults to a file named
-    #' `"<agent_name>_messages.json"` in the current working directory.
-    #'
-    #' @examples
-    #' \dontrun{
-    #' openai_4_1_mini <- ellmer::chat(
-    #'   name = "openai/gpt-4.1-mini",
-    #'   api_key = Sys.getenv("OPENAI_API_KEY"),
-    #'   echo = "none"
     #' )
-    #' agent <- Agent$new(
-    #'   name = "capital_finder",
-    #'   instruction = "You are an assistant.",
-    #'   llm_object = openai_4_1_mini
-    #')
-    #' agent$invoke("What is the capital of Algeria")
-    #' agent$invoke("What is the capital of Italy")
-    #' agent$export_messages_history()
+    #' # Clone with same name
+    #' agent_copy <- agent$clone_agent()
     #' }
-    #'
-    #' @seealso [load_messages_history()] for reloading a saved message history.
-    #'
-    export_messages_history = function(
-    file_path = paste0(getwd(), "/", paste0(self$name, "_messages.json"))
-    ) {
+    clone_agent = function(new_name = NULL) {
 
-      checkmate::assert_string(file_path)
-
-      jsonlite::write_json(
-        self$messages,
-        path = file_path,
-        auto_unbox = TRUE,
-        pretty = TRUE
-      )
-
-      cli::cli_alert_success(glue::glue("Conversation saved to {file_path}"))
-
-    },
-
-    #' @description
-    #' Saves the agent's current conversation history as a JSON file on disk.
-    #' @param file_path Character string specifying the file path where the JSON
-    #' file is stored. Defaults to a file named
-    #' `"<agent_name>_messages.json"` in the current working directory.
-    #'
-    #' @examples
-    #' \dontrun{
-    #' openai_4_1_mini <- ellmer::chat(
-    #'   name = "openai/gpt-4.1-mini",
-    #'   api_key = Sys.getenv("OPENAI_API_KEY"),
-    #'   echo = "none"
-    #' )
-    #' agent <- Agent$new(
-    #'   name = "capital_finder",
-    #'   instruction = "You are an assistant.",
-    #'   llm_object = openai_4_1_mini
-    #')
-    #' agent$load_messages_history("path/to/messages.json")
-    #' agent$messages
-    #' agent$llm_object
-    #' }
-    #'
-    #' @seealso [export_messages_history()] for exporting the messages object to json.
-    #'
-    load_messages_history = function(
-    file_path = paste0(getwd(), "/", paste0(self$name, "_messages.json"))
-    ) {
-
-      checkmate::assert_string(file_path)
-
-      if (!file.exists(file_path)) {
-        cli::cli_abort("File does not exist.")
+      if (!is.null(new_name)) {
+        checkmate::assert_string(new_name)
       }
 
-      messages <- jsonlite::read_json(file_path, simplifyVector = FALSE)
+      cloned_agent <- self$clone(deep = TRUE)
 
-      self$messages <- messages
+      cloned_agent$agent_id <- uuid::UUIDgenerate()
 
-      cli::cli_alert_success(glue::glue("Conversation history loaded from {file_path}"))
+      if (!is.null(new_name)) {
+        cloned_agent$name <- new_name
+      }
 
+      cli::cli_alert_success(glue::glue(
+        "Agent cloned successfully. New ID: {cloned_agent$agent_id}"
+      ))
+
+      return(cloned_agent)
     },
 
     #' @field name The agent's name.
@@ -814,7 +820,10 @@ Agent <- R6::R6Class(
     #'@field budget_policy A list controlling budget behavior: on_exceed and warn_at.
     budget_policy = NULL,
     #'@field budget_warned Internal flag indicating whether warn_at notice was emitted.
-    budget_warned = NULL
+    budget_warned = NULL,
+    #'@field cost The current cost of the agent
+    cost = NULL
+
   ),
 
   active = list(
@@ -839,14 +848,16 @@ Agent <- R6::R6Class(
       }
 
       private$._messages <- value
-
+      private$.sync_flag <- FALSE
       private$.set_turns_from_messages()
+      private$.sync_flag <- TRUE
 
     }
   ),
 
   private = list(
     ._messages = NULL,
+    .sync_flag = TRUE,
     .add_message = function(message, type) {
       private$._messages[[length(private$._messages) + 1]] <- list(
         role = type,
@@ -861,17 +872,192 @@ Agent <- R6::R6Class(
     .add_user_message = function(message, type = "user") {
       private$.add_message(message, type)
     },
+    .format_arguments = function(args) {
+      parts <- mapply(
+        function(name, value) {
+          # Quote character values
+          if (is.character(value)) {
+            sprintf('%s = "%s"', name, value)
+          } else {
+            sprintf('%s = %s', name, value)
+          }
+        },
+        names(args), args,
+        USE.NAMES = FALSE
+      )
+
+      paste(parts, collapse = ", ")
+    },
+
+    .set_messages_from_turns = function() {
+
+      turns <- self$llm_object$get_turns(include_system_prompt = TRUE)
+
+      messages <- lapply(turns, function(turn) {
+
+        role <- turn@role
+
+        contents <- turn@contents
+
+        content_strings <- vapply(contents, function(ct) {
+
+          cls <- class(ct)[[1]]
+
+          if (grepl("ContentText", cls, ignore.case = TRUE)) {
+
+            msg <- ct@text
+
+            return(msg)
+
+          } else if (grepl("ContentToolRequest", cls, ignore.case = TRUE)) {
+
+            call_id <- ct@id
+            tool_name <- ct@name
+            args <- private$.format_arguments(ct@arguments)
+
+            msg <- sprintf(
+              "[tool request id=%s]: %s(%s)",
+              call_id,
+              tool_name,
+              args
+            )
+
+            return(msg)
+
+          } else if (grepl("ContentToolResult", cls, ignore.case = TRUE)) {
+
+            call_id <- ct@request@id
+            result <- ct@value
+
+            msg <- sprintf(
+              "[tool result id=%s]: %s",
+              call_id,
+              result
+            )
+
+            return(msg)
+          } else {
+            return(as.character(ct@text))
+          }
+
+        }, FUN.VALUE = character(1))
+
+        content <- paste(content_strings, collapse = "\n")
+
+        list(
+          role = role,
+          content = content
+        )
+      })
+
+      first_message <- messages[[1]]
+
+      if (!first_message$role == "system") {
+
+        messages <- append(
+          list(
+            list(
+              role = "system",
+              content = self$instruction
+            )
+          ),
+          messages
+        )
+      }
+
+      if (private$.sync_flag) {
+        private$.sync_flag <- FALSE
+        self$messages <- messages
+        private$.sync_flag <- TRUE
+      } else {
+        private$._messages <- messages
+      }
+    },
 
     .set_turns_from_messages = function() {
 
+      if (!private$.sync_flag) {
+        return(invisible(NULL))
+      }
+
       messages <- self$messages
       turns <- list()
+      content_tool_requests <- list()
+      existing_turns <- self$llm_object$get_turns(
+        include_system_prompt = TRUE
+      )
 
-      for (msg in messages) {
+      for (i in seq_along(messages)) {
+
+        msg <- messages[[i]]
+
+        if (grepl("[tool request id=", msg$content, fixed = TRUE)) {
+
+          id <- sub(".*id=([^]]+)].*", "\\1", msg$content)
+          func_name <- sub(".*]: ([a-zA-Z0-9_]+)\\(.*", "\\1", msg$content)
+          params_str <- sub(".*\\((.*)\\).*", "\\1", msg$content)
+          tool <- eval(parse(text = func_name))
+
+          params_list <- eval(parse(text = paste0("list(", params_str, ")")))
+
+          content_to_consider <- ellmer::ContentToolRequest(
+            id = id,
+            name = func_name,
+            arguments = params_list,
+            tool = tool
+          )
+
+          tmp_list <- list(
+            content_to_consider
+          )
+
+          tmp_list <- setNames(tmp_list, id)
+
+          content_tool_requests <- append(
+            content_tool_requests,
+            tmp_list
+          )
+
+        } else if (grepl("[tool result id=", msg$content, fixed = TRUE)) {
+
+          id <- sub(".*id=([^]]+)].*", "\\1", msg$content)
+
+          result <- sub(".*]:\\s*", "", msg$content)
+
+          if (length(content_tool_requests) > 0 & !id %in% names(content_tool_requests)) {
+            cli::cli_abort(
+              glue::glue(
+                "{id} tool result detected but no corresponding tool request found, please fix."
+              )
+            )
+          }
+
+          request <- content_tool_requests[[id]]
+
+          content_to_consider <- ellmer::ContentToolResult(
+            value = result,
+            request = request
+          )
+
+        } else {
+          content_to_consider <- ellmer::ContentText(msg$content)
+        }
+
+        tokens <- c(0, 0, 0)
+
+        if (i <= length(existing_turns)) {
+          turn_to_consider <- existing_turns[[i]]
+          if (S7::prop_exists(turn_to_consider, "tokens")) {
+            tokens <- as.vector(turn_to_consider@tokens)
+          }
+        }
+
         turn <- ellmer::Turn(
           role = msg$role,
-          contents = list(ellmer::ContentText(msg$content))
+          contents = list(content_to_consider),
+          tokens = tokens
         )
+
         turns <- append(turns, list(turn))
       }
 
