@@ -1,5 +1,7 @@
 # mini007 0.2.2
 
+- Adding the `validate_response()` method.
+- Adding the `clone_agent` method.
 - Deleting `visualize_plan()` method as it requires many dependencies.
 
 # mini007 0.2.1

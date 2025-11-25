@@ -511,7 +511,48 @@ Agent <- R6::R6Class(
       invisible(self)
     },
 
+    #' @description
+    #' Create a copy of the agent with the same instruction and configuration but a new unique ID.
+    #' Useful for creating multiple instances of the same agent type.
+    #'
+    #' @param new_name Optional character string to assign a new name to the cloned agent.
+    #' If NULL, the cloned agent retains the original name.
+    #' @return A new Agent instance with the same configuration but a unique ID.
+    #' @examples
+    #' \dontrun{
+    #' openai_4_1_mini <- ellmer::chat(
+    #'   name = "openai/gpt-4.1-mini",
+    #'   api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'   echo = "none"
+    #' )
+    #' agent <- Agent$new(
+    #'   name = "translator",
+    #'   instruction = "You are a translator.",
+    #'   llm_object = openai_4_1_mini
+    #' )
+    #' # Clone with same name
+    #' agent_copy <- agent$clone_agent()
+    #' }
+    clone_agent = function(new_name = NULL) {
 
+      if (!is.null(new_name)) {
+        checkmate::assert_string(new_name)
+      }
+
+      cloned_agent <- self$clone(deep = TRUE)
+
+      cloned_agent$agent_id <- uuid::UUIDgenerate()
+
+      if (!is.null(new_name)) {
+        cloned_agent$name <- new_name
+      }
+
+      cli::cli_alert_success(glue::glue(
+        "Agent cloned successfully. New ID: {cloned_agent$agent_id}"
+      ))
+
+      return(cloned_agent)
+    },
     #' @description
     #' Validates an agent's response against custom criteria using LLM-based validation.
     #' This method uses the agent's LLM to evaluate whether a response meets specified

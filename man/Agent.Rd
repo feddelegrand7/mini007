@@ -213,6 +213,25 @@ agent$add_message("assistant", "I'm doing well, thank you!")
 }
 
 ## ------------------------------------------------
+## Method `Agent$clone_agent`
+## ------------------------------------------------
+
+\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+agent <- Agent$new(
+  name = "translator",
+  instruction = "You are a translator.",
+  llm_object = openai_4_1_mini
+)
+# Clone with same name
+agent_copy <- agent$clone_agent()
+}
+
+## ------------------------------------------------
 ## Method `Agent$validate_response`
 ## ------------------------------------------------
 
@@ -351,6 +370,7 @@ Assignment is validated automatically.}
 \item \href{#method-Agent-update_instruction}{\code{Agent$update_instruction()}}
 \item \href{#method-Agent-get_usage_stats}{\code{Agent$get_usage_stats()}}
 \item \href{#method-Agent-add_message}{\code{Agent$add_message()}}
+\item \href{#method-Agent-clone_agent}{\code{Agent$clone_agent()}}
 \item \href{#method-Agent-validate_response}{\code{Agent$validate_response()}}
 \item \href{#method-Agent-reset_conversation_history}{\code{Agent$reset_conversation_history()}}
 \item \href{#method-Agent-export_messages_history}{\code{Agent$export_messages_history()}}
@@ -773,6 +793,49 @@ agent <- Agent$new(
 )
 agent$add_message("user", "Hello, how are you?")
 agent$add_message("assistant", "I'm doing well, thank you!")
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Agent-clone_agent"></a>}}
+\if{latex}{\out{\hypertarget{method-Agent-clone_agent}{}}}
+\subsection{Method \code{clone_agent()}}{
+Create a copy of the agent with the same instruction and configuration but a new unique ID.
+Useful for creating multiple instances of the same agent type.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Agent$clone_agent(new_name = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{new_name}}{Optional character string to assign a new name to the cloned agent.
+If NULL, the cloned agent retains the original name.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A new Agent instance with the same configuration but a unique ID.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+agent <- Agent$new(
+  name = "translator",
+  instruction = "You are a translator.",
+  llm_object = openai_4_1_mini
+)
+# Clone with same name
+agent_copy <- agent$clone_agent()
 }
 }
 \if{html}{\out{</div>}}
