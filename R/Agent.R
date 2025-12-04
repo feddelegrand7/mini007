@@ -756,7 +756,7 @@ Agent <- R6::R6Class(
         )
       }
 
-      return(validation_result)
+      validation_result
     },
 
     #' @description

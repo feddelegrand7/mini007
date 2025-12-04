@@ -1,13 +1,12 @@
 # mini007 0.2.2
 
-### New methods
+- Fixing syncing issues between `mini007` and `ellmer`
 
 Adding the following new methods: 
 - `validate_response()`
 - `clone_agent()`
 
-### New parameters:
-- Adding the ability to execute the `broadcasting()` and the `judge_and_choose_best_response()` methods in parallel using the `parallel` parameter and `mirai`.  
+
 
 ### Deletion
 

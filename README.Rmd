@@ -194,7 +194,6 @@ agent$invoke("summarise the previous conversation")
 ```
 
 ### Sync between `messages` and `turns`
-##### Only in the development version
 
 You can modify the `messages` object as you please, this will be automatically translated to the suitable `turns` required by `ellmer`: 
 
@@ -445,6 +444,18 @@ lead_agent$agents_interaction
 
 The above example is extremely simple, the usefulness of `mini007` would shine in more complex processes where a multi-agent sequential orchestration has a higher value added. 
 
+
+### Visualizing agent plans with `visualize_plan()`
+
+Sometimes, before running your workflow, it is helpful to view the orchestration as a visual diagram, showing the sequence of agents and which prompt each will receive. After generating a plan, you can call `visualize_plan()`:
+
+This function displays the agents in workflow order as labeled boxes. Hovering a box reveals the delegated prompt. The visualization uses the `DiagrammeR` package. If no plan exists, it asks you to generate one first.
+
+```{r, eval=FALSE}
+lead_agent$visualize_plan()
+```
+
+
 ## Broadcasting 
 
 If you want to compare several `LLM` models, the `LeadAgent` provides a `broadcast` method that allows you to send a prompt to several different agents and get the result for each agent back in order to make a comparison and potentially choose the best agent/model for the defined prompt: 
@@ -572,9 +583,6 @@ best_answer <- stylist_lead_agent$judge_and_choose_best_response(
 
 best_answer
 ```
-
-
-This makes it easy to archive progress and resume complex, context-rich agent sessions at any time.
 
 
 ## Code of Conduct

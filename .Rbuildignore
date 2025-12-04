@@ -7,3 +7,4 @@
 ^CRAN-SUBMISSION$
 ^\.lintr$
 ^\.cursor$
+^\.claude$

@@ -1,7 +1,7 @@
 Package: mini007
 Type: Package
 Title: Lightweight Framework for Orchestrating Multi-Agent Large Language Models
-Version: 0.2.1
+Version: 0.2.2
 Authors@R: 
     person(given = c("Mohamed", "El", "Fodil"),
            family = "Ihaddaden",
@@ -18,6 +18,7 @@ LazyData: true
 Imports: 
     checkmate (>= 2.3.1),
     cli (>= 3.6.5),
+    DiagrammeR (>= 1.0.11),
     ellmer (>= 0.4.0),
     glue (>= 1.8.0),
     R6 (>= 2.6.1),
