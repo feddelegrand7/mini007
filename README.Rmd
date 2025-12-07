@@ -404,6 +404,83 @@ new_rai_agent$instruction
 new_rai_agent$messages
 ```
 
+ 
+## Response Validation
+         
+The `validate_response()` method provides intelligent LLM-based validation of 
+agent responses against custom criteria. This powerful feature uses the agent's own
+LLM to evaluate whether a response meets specified validation standards, returning
+both a score and detailed feedback.
+         
+### How it works
+         
+The method evaluates the response against your criteria. It returns a validation score (0-1) and determines if the response is valid based on your threshold.
+         
+### Parameters
+         
+- **prompt**: The original prompt that generated the response
+- **response**: The response text to validate
+- **validation_criteria**: Your validation requirements (e.g., "Must be factual and under 50 words")
+- **validation_score**: Score threshold for validity (0-1, default 0.8)
+         
+#### Example 1: Factual Content Validation
+
+```{r}
+fact_checker <- Agent$new(
+  name = "fact_checker",
+  instruction = "You are a factual assistant.",
+  llm_object = openai_4_1_mini
+)
+
+prompt <- "What is the capital of Algeria?"
+response <- fact_checker$invoke(prompt)
+
+validation <- fact_checker$validate_response(
+  prompt = prompt,
+  response = response,
+  validation_criteria = "The response must be factually accurate and mention Algiers as the capital",
+  validation_score = 0.8
+)
+
+validation
+```
+
+#### Example 2: Content Length and Style Validation
+
+```{r}
+content_agent <- Agent$new(
+  name = "content_creator",
+  instruction = "You are a creative writing assistant.",
+  llm_object = openai_4_1_mini
+)
+
+prompt <- "Write a 1 sentence advertisment about an Algerian dates (the fruid)"
+
+response <- content_agent$invoke(prompt)
+
+validation <- content_agent$validate_response(
+  prompt = prompt,
+  response = response,
+  validation_criteria = "Response must be under 100 words, professional tone, and highlight Algerian dates",
+  validation_score = 0.75
+)
+
+validation
+```
+
+### Use Cases
+
+- **Quality Control**: Validate responses meet content standards before 
+publication
+- **Factual Accuracy**: Ensure responses contain correct information
+- **Style Compliance**: Check responses follow tone, length, or format 
+requirements
+- **Safety Filtering**: Validate content meets safety and appropriateness criteria
+- **A/B Testing**: Compare response quality across different models or prompts
+
+The validation results include the original prompt, response, criteria, score, 
+feedback, and validity status, making it easy to audit and improve your agent's 
+performance.
 
 # LeadAgent
 ## Creating a multi-agents orchestraction 
