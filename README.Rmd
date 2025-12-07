@@ -60,6 +60,7 @@ library(mini007)
 ```
 
 
+# Agent 
 ### Creating an Agent
 
 An Agent is built upon an LLM object created by the `ellmer` package, in the following examples, we'll work with the `OpenAI` models, however you can use any model/combination of models you want: 
@@ -119,7 +120,9 @@ Or the `ellmer` way:
 polar_bear_researcher$llm_object
 ```
 
-### Managing Agent Conversation History
+## Agents and Messages
+
+#### Managing Agent Conversation History
 
 The `clear_and_summarise_messages` method allows you to compress an agent's conversation history into a concise summary and clear the message history while preserving context. This is useful for maintaining memory efficiency while keeping important conversation context.
 
@@ -159,7 +162,7 @@ agent$messages
 agent$keep_last_n_messages(n = 2)
 agent$messages
 ```
-### Manually Adding Messages to an Agent’s History
+#### Manually Adding Messages to an Agent’s History
 
 You can inject any message (system, user, or assistant) directly into an Agent’s history with `add_message(role, content)`. This is helpful to reconstruct, supplement, or simulate conversation steps.
 
@@ -193,7 +196,7 @@ This makes it easy to reconstruct or extend sessions, provide custom context, or
 agent$invoke("summarise the previous conversation")
 ```
 
-### Sync between `messages` and `turns`
+#### Sync between `messages` and `turns`
 
 You can modify the `messages` object as you please, this will be automatically translated to the suitable `turns` required by `ellmer`: 
 
@@ -208,7 +211,7 @@ The underlying ellmer object:
 agent$llm_object
 ```
 
-### Resetting conversation history
+#### Resetting conversation history
 
 If you want to clear the conversation while preserving the current system prompt, use `reset_conversation_history()`.
 
@@ -233,7 +236,7 @@ agent$reset_conversation_history()
 agent$messages
 ```
 
-### Exporting and Loading Agent Conversation History
+#### Exporting and Loading Agent Conversation History
 
 You can save an agent’s conversation history to a file and reload it later. This allows you to archive, transfer, or resume agent sessions across R sessions or machines.
 
@@ -266,7 +269,7 @@ agent$load_messages_history("volcano_session.json")
 # agent$messages  # Displays current history
 ```
 
-### Updating the system instruction during a session
+#### Updating the system instruction during a session
 
 Use `update_instruction(new_instruction)` to change the Agent’s system prompt mid-session. The first system message and the underlying `ellmer` system prompt are both updated.
 
@@ -288,7 +291,7 @@ agent$update_instruction("You are a strictly concise assistant. Answer in one se
 agent$messages
 ```
 
-### Budget and cost control
+## Budget and cost control
 
 You can limit how much an `Agent` is allowed to spend and decide what should happen as the budget is approached or exceeded. Use `set_budget()` to define the maximum spend (in USD), and `set_budget_policy()` to control warnings and over-budget behavior.
 
@@ -335,7 +338,7 @@ stats <- agent$get_usage_stats()
 stats
 ```
 
-### Generate and execute R code from natural language
+## Generate and execute R code from natural language
 
 `generate_execute_r_code()` lets an `Agent` translate a natural-language task description into R code, optionally validate its syntax, and (optionally) execute it.
 
@@ -370,7 +373,40 @@ agent$generate_execute_r_code(
  )
 ```
 
-### Creating a multi-agents orchestraction 
+
+## Cloning an Agent
+
+If you want to create a new agent with the exact same characteristics, you can use the `clone_agent` method. Note that the new Agent can have the same name but it'll have a different `ID`: 
+
+
+```{r}
+rai_agent <- Agent$new(
+  name = "Rai musician",
+  instruction = "You are an expert in Algerian Rai music",
+  llm_object = openai_4_1_mini
+)
+
+result <- rai_agent$invoke("Give me a rai song in 1 sentence. Don't explain")
+
+rai_agent$agent_id
+rai_agent$name
+rai_agent$instruction
+rai_agent$messages
+```
+
+
+```{r}
+new_rai_agent <- rai_agent$clone_agent(new_name = "Just Rai")
+
+new_rai_agent$agent_id
+new_rai_agent$name
+new_rai_agent$instruction
+new_rai_agent$messages
+```
+
+
+# LeadAgent
+## Creating a multi-agents orchestraction 
 
 We can create as many Agents as we want, the `LeadAgent` will dispatch the instructions to the agents and provide with the final answer back. Let's create three Agents, a `researcher`, a `summarizer` and a `translator`: 
 
@@ -445,7 +481,7 @@ lead_agent$agents_interaction
 The above example is extremely simple, the usefulness of `mini007` would shine in more complex processes where a multi-agent sequential orchestration has a higher value added. 
 
 
-### Visualizing agent plans with `visualize_plan()`
+## Visualizing agent plans with `visualize_plan()`
 
 Sometimes, before running your workflow, it is helpful to view the orchestration as a visual diagram, showing the sequence of agents and which prompt each will receive. After generating a plan, you can call `visualize_plan()`:
 
