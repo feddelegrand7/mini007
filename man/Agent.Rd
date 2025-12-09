@@ -305,7 +305,7 @@ print(validation)
 ## Method `Agent$register_tools`
 ## ------------------------------------------------
 
-\\dontrun{
+\dontrun{
 openai_4_1_mini <- ellmer::chat(
   name = "openai/gpt-4.1-mini",
   api_key = Sys.getenv("OPENAI_API_KEY"),
@@ -321,10 +321,18 @@ agent$register_tools(list(change_directory_tool(), list_files_tool()))
 }
 
 ## ------------------------------------------------
+## Method `Agent$list_tools`
+## ------------------------------------------------
+
+\dontrun{
+agent$list_tools()
+}
+
+## ------------------------------------------------
 ## Method `Agent$remove_tools`
 ## ------------------------------------------------
 
-\\dontrun{
+\dontrun{
 agent$remove_tools(c("change_directory", "list_files"))
 }
 
@@ -415,6 +423,7 @@ Assignment is validated automatically.}
 \item \href{#method-Agent-load_messages_history}{\code{Agent$load_messages_history()}}
 \item \href{#method-Agent-validate_response}{\code{Agent$validate_response()}}
 \item \href{#method-Agent-register_tools}{\code{Agent$register_tools()}}
+\item \href{#method-Agent-list_tools}{\code{Agent$list_tools()}}
 \item \href{#method-Agent-remove_tools}{\code{Agent$remove_tools()}}
 \item \href{#method-Agent-clear_tools}{\code{Agent$clear_tools()}}
 \item \href{#method-Agent-clone_agent}{\code{Agent$clone_agent()}}
@@ -1047,7 +1056,7 @@ Register one or more tools with the agent
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{\\dontrun{
+\preformatted{\dontrun{
 openai_4_1_mini <- ellmer::chat(
   name = "openai/gpt-4.1-mini",
   api_key = Sys.getenv("OPENAI_API_KEY"),
@@ -1060,6 +1069,29 @@ agent <- Agent$new(
 )
 # Register predefined tools
 agent$register_tools(list(change_directory_tool(), list_files_tool()))
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Agent-list_tools"></a>}}
+\if{latex}{\out{\hypertarget{method-Agent-list_tools}{}}}
+\subsection{Method \code{list_tools()}}{
+List all registered tools
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Agent$list_tools()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+Character vector of tool names
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+agent$list_tools()
 }
 }
 \if{html}{\out{</div>}}
@@ -1085,7 +1117,7 @@ Remove tools from the agent
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{\\dontrun{
+\preformatted{\dontrun{
 agent$remove_tools(c("change_directory", "list_files"))
 }
 }

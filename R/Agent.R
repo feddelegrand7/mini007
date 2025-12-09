@@ -763,7 +763,7 @@ Agent <- R6::R6Class(
     #' Register one or more tools with the agent
     #' @param tools A list of ellmer tool objects or a single tool object
     #' @examples
-    #' \\dontrun{
+    #' \dontrun{
     #' openai_4_1_mini <- ellmer::chat(
     #'   name = "openai/gpt-4.1-mini",
     #'   api_key = Sys.getenv("OPENAI_API_KEY"),
@@ -798,10 +798,28 @@ Agent <- R6::R6Class(
     },
 
     #' @description
+    #' List all registered tools
+    #' @return Character vector of tool names
+    #' @examples
+    #' \dontrun{
+    #' agent$list_tools()
+    #' }
+    list_tools = function() {
+      tool_names <- names(self$tools)
+
+      if (length(tool_names) == 0) {
+        cli::cli_alert_info("No tools registered")
+        return(character(0))
+      }
+
+      tool_names
+    },
+
+    #' @description
     #' Remove tools from the agent
     #' @param tool_names Character vector of tool names to remove
     #' @examples
-    #' \\dontrun{
+    #' \dontrun{
     #' agent$remove_tools(c("change_directory", "list_files"))
     #' }
     remove_tools = function(tool_names) {
