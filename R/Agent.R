@@ -760,6 +760,84 @@ Agent <- R6::R6Class(
     },
 
     #' @description
+    #' Register one or more tools with the agent
+    #' @param tools A list of ellmer tool objects or a single tool object
+    #' @examples
+    #' \\dontrun{
+    #' openai_4_1_mini <- ellmer::chat(
+    #'   name = "openai/gpt-4.1-mini",
+    #'   api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'   echo = "none"
+    #' )
+    #' agent <- Agent$new(
+    #'   name = "file_assistant",
+    #'   instruction = "You are a file management assistant.",
+    #'   llm_object = openai_4_1_mini
+    #' )
+    #' # Register predefined tools
+    #' agent$register_tools(list(change_directory_tool(), list_files_tool()))
+    #' }
+    register_tools = function(tools) {
+      if (!is.list(tools)) {
+        tools <- list(tools)
+      }
+
+      for (tool in tools) {
+        if (!inherits(tool, "ellmer::ToolDef")) {
+          cli::cli_abort("All tools must be valid ellmer Tool objects")
+        }
+
+        tool_name <- tool@name
+        self$tools[[tool_name]] <- tool
+        cli::cli_alert_success("Registered tool: {tool_name}")
+      }
+
+      private$.update_llm_tools()
+
+      invisible(self)
+    },
+
+    #' @description
+    #' Remove tools from the agent
+    #' @param tool_names Character vector of tool names to remove
+    #' @examples
+    #' \\dontrun{
+    #' agent$remove_tools(c("change_directory", "list_files"))
+    #' }
+    remove_tools = function(tool_names) {
+      checkmate::assert_character(tool_names)
+
+      for (tool_name in tool_names) {
+        if (tool_name %in% names(self$tools)) {
+          self$tools[[tool_name]] <- NULL
+          cli::cli_alert_success("Removed tool: {tool_name}")
+        } else {
+          cli::cli_alert_warning("Tool not found: {tool_name}")
+        }
+      }
+
+      private$.update_llm_tools()
+
+      invisible(self)
+    },
+
+    #' @description
+    #' Clear all registered tools
+    #' @examples
+    #' \dontrun{
+    #' agent$clear_tools()
+    #' }
+    clear_tools = function() {
+      tool_count <- length(self$tools)
+      self$tools <- list()
+
+      private$.update_llm_tools()
+
+      cli::cli_alert_success("Cleared {tool_count} tool{?s}")
+      invisible(self)
+    },
+
+    #' @description
     #' Create a copy of the agent with the same instruction and configuration but a new unique ID.
     #' Useful for creating multiple instances of the same agent type.
     #'
@@ -823,7 +901,9 @@ Agent <- R6::R6Class(
     #'@field budget_warned Internal flag indicating whether warn_at notice was emitted.
     budget_warned = NULL,
     #'@field cost The current cost of the agent
-    cost = NULL
+    cost = NULL,
+    #'@field tools A list of registered tools available to the agent
+    tools = list()
 
   ),
 
@@ -1138,6 +1218,19 @@ Agent <- R6::R6Class(
           "{self$name} agent has exceeded its budget. ",
           "Cost: {round(current_cost, 4)}, Budget: {round(self$budget, 4)}"
         ))
+      }
+    },
+
+    .update_llm_tools = function() {
+      if (length(self$tools) > 0) {
+        tool_list <- unname(self$tools)
+        suppressMessages({
+          self$llm_object$register_tools(tool_list)
+        })
+      } else {
+        suppressMessages({
+          self$llm_object$register_tools(list())
+        })
       }
     }
   )

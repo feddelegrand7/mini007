@@ -302,6 +302,41 @@ print(validation)
 }
 
 ## ------------------------------------------------
+## Method `Agent$register_tools`
+## ------------------------------------------------
+
+\\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+agent <- Agent$new(
+  name = "file_assistant",
+  instruction = "You are a file management assistant.",
+  llm_object = openai_4_1_mini
+)
+# Register predefined tools
+agent$register_tools(list(change_directory_tool(), list_files_tool()))
+}
+
+## ------------------------------------------------
+## Method `Agent$remove_tools`
+## ------------------------------------------------
+
+\\dontrun{
+agent$remove_tools(c("change_directory", "list_files"))
+}
+
+## ------------------------------------------------
+## Method `Agent$clear_tools`
+## ------------------------------------------------
+
+\dontrun{
+agent$clear_tools()
+}
+
+## ------------------------------------------------
 ## Method `Agent$clone_agent`
 ## ------------------------------------------------
 
@@ -349,6 +384,8 @@ agent_copy <- agent$clone_agent()
 \item{\code{budget_warned}}{Internal flag indicating whether warn_at notice was emitted.}
 
 \item{\code{cost}}{The current cost of the agent}
+
+\item{\code{tools}}{A list of registered tools available to the agent}
 }
 \if{html}{\out{</div>}}
 }
@@ -377,6 +414,9 @@ Assignment is validated automatically.}
 \item \href{#method-Agent-export_messages_history}{\code{Agent$export_messages_history()}}
 \item \href{#method-Agent-load_messages_history}{\code{Agent$load_messages_history()}}
 \item \href{#method-Agent-validate_response}{\code{Agent$validate_response()}}
+\item \href{#method-Agent-register_tools}{\code{Agent$register_tools()}}
+\item \href{#method-Agent-remove_tools}{\code{Agent$remove_tools()}}
+\item \href{#method-Agent-clear_tools}{\code{Agent$clear_tools()}}
 \item \href{#method-Agent-clone_agent}{\code{Agent$clone_agent()}}
 \item \href{#method-Agent-clone}{\code{Agent$clone()}}
 }
@@ -982,6 +1022,91 @@ validation <- agent$validate_response(
   validation_score = 0.8
 )
 print(validation)
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Agent-register_tools"></a>}}
+\if{latex}{\out{\hypertarget{method-Agent-register_tools}{}}}
+\subsection{Method \code{register_tools()}}{
+Register one or more tools with the agent
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Agent$register_tools(tools)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{tools}}{A list of ellmer tool objects or a single tool object}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+agent <- Agent$new(
+  name = "file_assistant",
+  instruction = "You are a file management assistant.",
+  llm_object = openai_4_1_mini
+)
+# Register predefined tools
+agent$register_tools(list(change_directory_tool(), list_files_tool()))
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Agent-remove_tools"></a>}}
+\if{latex}{\out{\hypertarget{method-Agent-remove_tools}{}}}
+\subsection{Method \code{remove_tools()}}{
+Remove tools from the agent
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Agent$remove_tools(tool_names)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{tool_names}}{Character vector of tool names to remove}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\\dontrun{
+agent$remove_tools(c("change_directory", "list_files"))
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Agent-clear_tools"></a>}}
+\if{latex}{\out{\hypertarget{method-Agent-clear_tools}{}}}
+\subsection{Method \code{clear_tools()}}{
+Clear all registered tools
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Agent$clear_tools()}\if{html}{\out{</div>}}
+}
+
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+agent$clear_tools()
 }
 }
 \if{html}{\out{</div>}}
