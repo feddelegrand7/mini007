@@ -1247,7 +1247,7 @@ Agent <- R6::R6Class(
         })
       } else {
         suppressMessages({
-          self$llm_object$register_tools(list())
+          self$llm_object$set_tools(list())
         })
       }
     }

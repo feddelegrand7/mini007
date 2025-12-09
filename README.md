@@ -92,7 +92,7 @@ Each created Agent has an `agent_id` (among other meta information):
 
 ``` r
 polar_bear_researcher$agent_id
-#> [1] "483de3c9-d46b-4ca4-911e-adafb8cc76ed"
+#> [1] "46195f03-8b45-4147-80b6-4495503e374b"
 ```
 
 At any time, you can tweak the `llm_object`:
@@ -166,14 +166,14 @@ memory efficiency while keeping important conversation context.
 # After several interactions, summarise and clear the conversation history
 polar_bear_researcher$clear_and_summarise_messages()
 #> ✔ Conversation history summarised and appended to system prompt.
-#> ℹ Summary: The user asked if polar bears are dangerous to humans, and the assistant, an expert in polar bears, ...
+#> ℹ Summary: The user asked if polar bears are dangerous to humans, and the expert assistant confirmed in one sen...
 polar_bear_researcher$messages
 #> [[1]]
 #> [[1]]$role
 #> [1] "system"
 #> 
 #> [[1]]$content
-#> [1] "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max. \n\n--- Conversation Summary ---\n The user asked if polar bears are dangerous to humans, and the assistant, an expert in polar bears, responded that they can be dangerous due to their strength and potential to attack when threatened or hungry."
+#> [1] "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max. \n\n--- Conversation Summary ---\n The user asked if polar bears are dangerous to humans, and the expert assistant confirmed in one sentence that polar bears can be dangerous since they are powerful predators that may attack if threatened or hungry."
 ```
 
 This method summarises all previous conversations into a paragraph and
@@ -350,8 +350,9 @@ context, or insert notes for debugging/testing purposes.
 
 ``` r
 agent$invoke("summarise the previous conversation")
-#> You asked where to find the best pizza in the world, and I told you it can be 
-#> found in Algiers, Algeria, known for its tasty and crunchy pizza.
+#> You asked where to find the best pizza in the world, and I told you that some 
+#> of the best pizza can be found in Algiers, Algeria, known for being tasty and 
+#> crunchy.
 ```
 
 #### Sync between `messages` and `turns`
@@ -407,7 +408,7 @@ The underlying ellmer object:
 
 ``` r
 agent$llm_object
-#> <Chat OpenAI/gpt-4.1-mini turns=5 input=62 output=36>
+#> <Chat OpenAI/gpt-4.1-mini turns=5 input=62 output=40>
 #> ── system ──────────────────────────────────────────────────────────────────────
 #> You are a Pizza expert
 #> ── user ────────────────────────────────────────────────────────────────────────
@@ -416,7 +417,7 @@ agent$llm_object
 #> You can find the best pizza in the world in Algiers, Algeria. It's tasty and crunchy.
 #> ── user ────────────────────────────────────────────────────────────────────────
 #> summarise the previous conversation
-#> ── assistant [input=62 output=36] ──────────────────────────────────────────────
+#> ── assistant [input=62 output=40] ──────────────────────────────────────────────
 #> Obivously you asked me about the best pizza in the world which is of course in Algiery!
 ```
 
@@ -439,11 +440,12 @@ agent <- Agent$new(
 )
 
 agent$invoke("Tell me a short fun fact about dates (the fruit).")
-#> Sure! Here’s a fun fact: Dates have been enjoyed by humans for over 6,000 
-#> years, making them one of the oldest cultivated fruits in the world!
+#> Sure! Did you know that date palms can live for over 100 years and produce 
+#> fruit for up to 80 of those years? That’s a lot of sweet, delicious dates!
 agent$invoke("And one more.")
-#> Absolutely! Dates are so sweet that they can contain up to 80% natural sugar, 
-#> making them a great natural energy booster!
+#> Absolutely! Here’s another fun fact: Dates have been cultivated for so long 
+#> that they were one of the first cultivated fruits—people have been enjoying 
+#> them for over 6,000 years!
 
 # Clear all messages except the system prompt
 agent$reset_conversation_history()
@@ -570,8 +572,9 @@ agent$set_budget_policy(on_exceed = "ask", warn_at = 0.9)
 
 # Normal usage
 agent$invoke("Give me a one-sentence fun fact about Algeria.")
-#> Algeria is home to the Sahara Desert, the largest hot desert in the world, 
-#> covering more than 80% of its territory!
+#> Algeria is home to the Sahara Desert's largest continuous erg, the Grand Erg 
+#> Oriental, featuring vast seas of towering sand dunes that stretch for hundreds 
+#> of kilometers.
 ```
 
 The current policy is echoed when setting the budget. You can update the
@@ -580,8 +583,8 @@ your workflow’s tolerance for cost overruns.
 
 #### Inspecting usage and estimated cost
 
-Call `get_usage_stats()` to retrieve total tokens, estimated cost, and
-budget information (if set).
+Call `get_usage_stats()` to retrieve the estimated cost, and budget
+information (if set).
 
 ``` r
 stats <- agent$get_usage_stats()
@@ -642,7 +645,7 @@ agent$generate_execute_r_code(
 #> [1] "using ggplot2, generate a scatterplot of hwy and cty in red"
 #> 
 #> $code
-#> library(ggplot2);ggplot(data=mpg,aes(x=hwy,y=cty))+geom_point(color="red")
+#> library(ggplot2);ggplot(mpg,aes(x=cty,y=hwy))+geom_point(color="red")
 #> 
 #> $validated
 #> [1] TRUE
@@ -679,7 +682,7 @@ rai_agent <- Agent$new(
 result <- rai_agent$invoke("Give me a rai song in 1 sentence. Don't explain")
 
 rai_agent$agent_id
-#> [1] "f91c2274-44ac-4ae5-8ea7-a9db40e5d9a8"
+#> [1] "cdec5089-6683-4068-a8d6-ef7074a1bfde"
 rai_agent$name
 #> [1] "Rai musician"
 rai_agent$instruction
@@ -706,15 +709,15 @@ rai_agent$messages
 #> [1] "assistant"
 #> 
 #> [[3]]$content
-#> [1] "\"Abdelkader – Ya Rayah.\""
+#> [1] "\"Ya Rayah\" by Rachid Taha is a classic Rai song about the pain of leaving and the longing to return home."
 ```
 
 ``` r
 new_rai_agent <- rai_agent$clone_agent(new_name = "Just Rai")
-#> ✔ Agent cloned successfully. New ID: 266d2655-7d3a-4e0b-85a4-f8da41543783
+#> ✔ Agent cloned successfully. New ID: 6db9d72c-a05c-4651-a6f5-de4c97eb6450
 
 new_rai_agent$agent_id
-#> [1] "266d2655-7d3a-4e0b-85a4-f8da41543783"
+#> [1] "6db9d72c-a05c-4651-a6f5-de4c97eb6450"
 new_rai_agent$name
 #> [1] "Just Rai"
 new_rai_agent$instruction
@@ -741,7 +744,7 @@ new_rai_agent$messages
 #> [1] "assistant"
 #> 
 #> [[3]]$content
-#> [1] "\"Abdelkader – Ya Rayah.\""
+#> [1] "\"Ya Rayah\" by Rachid Taha is a classic Rai song about the pain of leaving and the longing to return home."
 ```
 
 ## Response Validation
@@ -806,7 +809,7 @@ validation
 #> [1] 1
 #> 
 #> $feedback
-#> [1] "The response is factually accurate and directly states that the capital of Algeria is Algiers, perfectly meeting the validation criteria."
+#> [1] "The response is factually accurate and correctly identifies Algiers as the capital of Algeria, fully meeting the validation criteria."
 ```
 
 #### Example 2: Content Length and Style Validation
@@ -835,8 +838,8 @@ validation
 #> [1] "Write a 1 sentence advertisment about an Algerian dates (the fruid)"
 #> 
 #> $response
-#> Savor the rich, natural sweetness of premium Algerian dates—nature’s perfect, 
-#> healthy treat from the heart of the Sahara!
+#> Savor the rich, sweet tradition of Algeria with every bite of our premium, 
+#> sun-kissed dates—nature’s perfect energy boost!
 #> 
 #> $validation_criteria
 #> [1] "Response must be under 100 words, professional tone, and highlight Algerian dates"
@@ -851,7 +854,7 @@ validation
 #> [1] 1
 #> 
 #> $feedback
-#> [1] "The response is a single sentence advertisement that highlights Algerian dates, emphasizing their rich, natural sweetness and positioning them as a premium, healthy treat. The tone is professional and engaging, and the length is well under 100 words. Therefore, it fully meets the validation criteria."
+#> [1] "The response is a single sentence, well under 100 words, maintaining a professional tone that highlights Algerian dates effectively by emphasizing their rich tradition, premium quality, and natural energy benefits. It fully meets all specified criteria."
 ```
 
 ### Use Cases
@@ -869,6 +872,94 @@ validation
 The validation results include the original prompt, response, criteria,
 score, feedback, and validity status, making it easy to audit and
 improve your agent’s performance.
+
+## Tools
+
+###### At the moment, only in the development version
+
+You can easily register one or several tools using the `register_tools`
+method. The tools are created using `ellmer`, consider the following
+example:
+
+``` r
+openai_4_1_nano <- ellmer::chat(
+  name = "openai/gpt-4.1-nano",
+  credentials = function() {Sys.getenv("OPENAI_API_KEY")},
+  echo = "none"
+)
+
+weather_agent <- Agent$new(
+  name = "weather_assistant",
+  instruction = "You are a weather assistant.",
+  llm_object = openai_4_1_nano
+)
+
+weather_function_algiers <- function() {
+  msg <- glue::glue(
+    "35 degrees Celcius, it's sunny and there's no precipitation."
+  )
+  msg
+}
+
+get_weather_in_algiers <- ellmer::tool(
+  fun = weather_function_algiers,
+  name = "get_weather_in_algiers",
+  description = "Provide the current weather in Algiers, Algeria."
+)
+
+weather_function_berlin <- function() {
+  msg <- glue::glue(
+    "10 degrees Celcius, it's cold"
+  )
+  msg
+}
+
+get_weather_in_berlin <- ellmer::tool(
+  fun = weather_function_berlin,
+  name = "get_weather_in_berlin",
+  description = "Provide the current weather in Berlin, Germany"
+)
+
+weather_agent$register_tools(
+  tools = list(
+    get_weather_in_algiers, 
+    get_weather_in_berlin
+  )
+)
+#> ✔ Registered tool: get_weather_in_algiers
+#> ✔ Registered tool: get_weather_in_berlin
+```
+
+One can list the available tools:
+
+``` r
+weather_agent$list_tools()
+#> [1] "get_weather_in_algiers" "get_weather_in_berlin"
+```
+
+After registering the tools, the Agent will use them when needed:
+
+``` r
+weather_agent$invoke("How's the weather in Algiers?")
+#> The weather in Algiers is currently 35 degrees Celsius, sunny, with no 
+#> precipitation.
+```
+
+``` r
+weather_agent$invoke("How's the weather in Berlin?")
+#> The weather in Berlin is currently 10 degrees Celsius and it is cold.
+```
+
+One can remove one or several tool using the `remove_tools` method or
+remove all agents at one using the `clear_tools` method:
+
+``` r
+weather_agent$clear_tools()
+#> ✔ Cleared 2 tools
+weather_agent$list_tools()
+#> ℹ No tools registered
+#> character(0)
+```
 
 # LeadAgent
 
@@ -941,7 +1032,7 @@ plan <- lead_agent$generate_plan(prompt_to_execute)
 plan
 #> [[1]]
 #> [[1]]$agent_id
-#> 0f3507ee-1c55-4525-bd42-a968848df737
+#> 7cf2659d-d070-41a5-b63d-66437df57ced
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
@@ -953,15 +1044,15 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[1]]$prompt
-#> [1] "Gather current and reliable information on Algeria's economic situation, including key indicators such as GDP growth, inflation, unemployment, and major economic sectors."
+#> [1] "Gather current data on Algeria's economic indicators such as GDP growth, inflation, and unemployment rates."
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> 58fc04b3-cc3e-45c8-afbd-27abec589085
+#> 7cf2659d-d070-41a5-b63d-66437df57ced
 #> 
 #> [[2]]$agent_name
-#> [1] "summarizer"
+#> [1] "researcher"
 #> 
 #> [[2]]$model_provider
 #> [1] "OpenAI"
@@ -970,15 +1061,15 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[2]]$prompt
-#> [1] "Summarize the gathered economic information into 3 clear and concise bullet points."
+#> [1] "Identify key sectors driving the Algerian economy and any recent developments affecting these sectors."
 #> 
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> fb2ebc86-b9c4-437b-95a5-388466c0f9fc
+#> efafc528-b946-462a-82f5-a1997dbe150e
 #> 
 #> [[3]]$agent_name
-#> [1] "translator"
+#> [1] "summarizer"
 #> 
 #> [[3]]$model_provider
 #> [1] "OpenAI"
@@ -987,7 +1078,24 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[3]]$prompt
-#> [1] "Translate the 3 summarized bullet points about Algeria's economic situation into German."
+#> [1] "Summarize the overall economic situation in Algeria into 3 concise bullet points."
+#> 
+#> 
+#> [[4]]
+#> [[4]]$agent_id
+#> b9225f6b-3770-4ba6-b470-808718fc19a6
+#> 
+#> [[4]]$agent_name
+#> [1] "translator"
+#> 
+#> [[4]]$model_provider
+#> [1] "OpenAI"
+#> 
+#> [[4]]$model_name
+#> [1] "gpt-4.1-mini"
+#> 
+#> [[4]]$prompt
+#> [1] "Translate the 3 bullet points summarizing Algeria's economic situation into German."
 ```
 
 Now, in order now to execute the workflow, we just need to call the
@@ -1003,13 +1111,13 @@ response <- lead_agent$invoke("Tell me about the economic situation in Algeria, 
 
 ``` r
 response
-#> - Das BIP-Wachstum Algeriens ist mit 1-2 % mäßig und zeigt eine langsame 
-#> Erholung nach der Pandemie.  
-#> - Die Inflation bleibt mit rund 7-8 % hoch, hauptsächlich bedingt durch 
-#> steigende Preise für Lebensmittel und Energie.  
-#> - Die Arbeitslosigkeit ist mit 12-15 % erhöht, insbesondere unter Jugendlichen,
-#> während die Wirtschaft stark von den Kohlenwasserstoffen abhängt und 
-#> Diversifizierungsbemühungen andauern.
+#> - Die algerische Wirtschaft ist stark von Kohlenwasserstoffen (Öl und Gas) 
+#> abhängig, die weiterhin die wichtigste Einnahmequelle darstellen.  
+#> - Wichtige Sektoren sind auch die Landwirtschaft und die verarbeitende 
+#> Industrie, die zur wirtschaftlichen Aktivität und Beschäftigung beitragen.  
+#> - Die Regierung verfolgt Diversifizierungsstrategien, indem sie in erneuerbare 
+#> Energien investiert und die Landwirtschaft modernisiert, um die Abhängigkeit 
+#> von Kohlenwasserstoffen zu verringern.
 ```
 
 If you want to inspect the multi-agents orchestration, you have access
@@ -1019,7 +1127,7 @@ to the `agents_interaction` object:
 lead_agent$agents_interaction
 #> [[1]]
 #> [[1]]$agent_id
-#> 0f3507ee-1c55-4525-bd42-a968848df737
+#> 7cf2659d-d070-41a5-b63d-66437df57ced
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
@@ -1031,15 +1139,12 @@ lead_agent$agents_interaction
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[1]]$prompt
-#> [1] "Gather current and reliable information on Algeria's economic situation, including key indicators such as GDP growth, inflation, unemployment, and major economic sectors."
+#> [1] "Gather current data on Algeria's economic indicators such as GDP growth, inflation, and unemployment rates."
 #> 
 #> [[1]]$response
-#> As of early 2024, Algeria's GDP growth is modest, around 1-2%, recovering 
-#> slowly post-pandemic. Inflation remains elevated, approximately 7-8%, driven by
-#> food and energy prices. Unemployment stays high, near 12-15%, particularly 
-#> among youth. Major sectors include hydrocarbons (oil and gas, contributing over
-#> 90% of export revenues), agriculture, and services, with ongoing efforts to 
-#> diversify the economy.
+#> As of early 2024, Algeria's GDP growth is approximately 2.5%, inflation is 
+#> around 6%, and the unemployment rate stands close to 11%. These figures reflect
+#> gradual economic recovery amid global uncertainties.
 #> 
 #> [[1]]$edited_by_hitl
 #> [1] FALSE
@@ -1047,10 +1152,10 @@ lead_agent$agents_interaction
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> 58fc04b3-cc3e-45c8-afbd-27abec589085
+#> 7cf2659d-d070-41a5-b63d-66437df57ced
 #> 
 #> [[2]]$agent_name
-#> [1] "summarizer"
+#> [1] "researcher"
 #> 
 #> [[2]]$model_provider
 #> [1] "OpenAI"
@@ -1059,15 +1164,13 @@ lead_agent$agents_interaction
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[2]]$prompt
-#> [1] "Summarize the gathered economic information into 3 clear and concise bullet points."
+#> [1] "Identify key sectors driving the Algerian economy and any recent developments affecting these sectors."
 #> 
 #> [[2]]$response
-#> - Algeria's GDP growth is modest at 1-2%, showing slow recovery after the 
-#> pandemic.  
-#> - Inflation remains high around 7-8%, mainly due to rising food and energy 
-#> prices.  
-#> - Unemployment is elevated at 12-15%, especially among youth, with the economy 
-#> heavily reliant on hydrocarbons while diversification efforts continue.
+#> Key sectors driving Algeria's economy include hydrocarbons (oil and gas), 
+#> agriculture, and manufacturing. Recent developments include efforts to 
+#> diversify away from hydrocarbons through renewable energy investments and 
+#> agricultural modernization.
 #> 
 #> [[2]]$edited_by_hitl
 #> [1] FALSE
@@ -1075,10 +1178,10 @@ lead_agent$agents_interaction
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> fb2ebc86-b9c4-437b-95a5-388466c0f9fc
+#> efafc528-b946-462a-82f5-a1997dbe150e
 #> 
 #> [[3]]$agent_name
-#> [1] "translator"
+#> [1] "summarizer"
 #> 
 #> [[3]]$model_provider
 #> [1] "OpenAI"
@@ -1087,18 +1190,47 @@ lead_agent$agents_interaction
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[3]]$prompt
-#> [1] "Translate the 3 summarized bullet points about Algeria's economic situation into German."
+#> [1] "Summarize the overall economic situation in Algeria into 3 concise bullet points."
 #> 
 #> [[3]]$response
-#> - Das BIP-Wachstum Algeriens ist mit 1-2 % mäßig und zeigt eine langsame 
-#> Erholung nach der Pandemie.  
-#> - Die Inflation bleibt mit rund 7-8 % hoch, hauptsächlich bedingt durch 
-#> steigende Preise für Lebensmittel und Energie.  
-#> - Die Arbeitslosigkeit ist mit 12-15 % erhöht, insbesondere unter Jugendlichen,
-#> während die Wirtschaft stark von den Kohlenwasserstoffen abhängt und 
-#> Diversifizierungsbemühungen andauern.
+#> - Algeria's economy is heavily reliant on hydrocarbons (oil and gas), which 
+#> remain the primary revenue source.  
+#> - Key sectors also include agriculture and manufacturing, contributing to 
+#> economic activity and employment.  
+#> - The government is pursuing diversification strategies by investing in 
+#> renewable energy and modernizing agriculture to reduce dependence on 
+#> hydrocarbons.
 #> 
 #> [[3]]$edited_by_hitl
+#> [1] FALSE
+#> 
+#> 
+#> [[4]]
+#> [[4]]$agent_id
+#> b9225f6b-3770-4ba6-b470-808718fc19a6
+#> 
+#> [[4]]$agent_name
+#> [1] "translator"
+#> 
+#> [[4]]$model_provider
+#> [1] "OpenAI"
+#> 
+#> [[4]]$model_name
+#> [1] "gpt-4.1-mini"
+#> 
+#> [[4]]$prompt
+#> [1] "Translate the 3 bullet points summarizing Algeria's economic situation into German."
+#> 
+#> [[4]]$response
+#> - Die algerische Wirtschaft ist stark von Kohlenwasserstoffen (Öl und Gas) 
+#> abhängig, die weiterhin die wichtigste Einnahmequelle darstellen.  
+#> - Wichtige Sektoren sind auch die Landwirtschaft und die verarbeitende 
+#> Industrie, die zur wirtschaftlichen Aktivität und Beschäftigung beitragen.  
+#> - Die Regierung verfolgt Diversifizierungsstrategien, indem sie in erneuerbare 
+#> Energien investiert und die Landwirtschaft modernisiert, um die Abhängigkeit 
+#> von Kohlenwasserstoffen zu verringern.
+#> 
+#> [[4]]$edited_by_hitl
 #> [1] FALSE
 ```
 
@@ -1169,7 +1301,7 @@ lead_agent$register_agents(c(openai_4_1_agent, openai_4_1_nano_agent))
 lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to sing when running under the rain? how about a flower?")
 #> [[1]]
 #> [[1]]$agent_id
-#> [1] "c3e99ecc-8587-4617-b473-d9434b0d4d91"
+#> [1] "82fbbb0c-d5dd-4871-8e0d-5a85e8a7d8c0"
 #> 
 #> [[1]]$agent_name
 #> [1] "openai_4_1_agent"
@@ -1181,14 +1313,13 @@ lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to si
 #> [1] "gpt-4.1"
 #> 
 #> [[1]]$response
-#> If you were Algerian, you might enjoy singing "Ya Rayah" when running under the
-#> rain, while as a flower, you might "sing" with the joy of receiving life-giving
-#> water, perhaps humming the gentle melody of "A Vava Inouva."
+#> If you were Algerian, you might like to sing "Ya Rayah" when running under the 
+#> rain, and for a flower, "Fleur d’Algérie" could be a charming choice.
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> [1] "41f63ac3-84de-4c6c-a8f5-9493d5e5e88f"
+#> [1] "1e849a3e-1022-41ee-adcb-c625bc494ca1"
 #> 
 #> [[2]]$agent_name
 #> [1] "openai_4_1_nano_agent"
@@ -1200,8 +1331,8 @@ lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to si
 #> [1] "gpt-4.1-nano"
 #> 
 #> [[2]]$response
-#> You might enjoy singing "Ya Rayah" by Rachid Taha under the rain, and "A 
-#> flower" by Cheb Khaled.
+#> As an Algerian, you might enjoy singing "Ya Rayah" by Dahmane El Harrachi when 
+#> running under the rain, and "Aicha" by Khaled when thinking about a flower.
 ```
 
 You can also access the history of the `broadcasting` using the
@@ -1216,7 +1347,7 @@ lead_agent$broadcast_history
 #> [[1]]$responses
 #> [[1]]$responses[[1]]
 #> [[1]]$responses[[1]]$agent_id
-#> [1] "c3e99ecc-8587-4617-b473-d9434b0d4d91"
+#> [1] "82fbbb0c-d5dd-4871-8e0d-5a85e8a7d8c0"
 #> 
 #> [[1]]$responses[[1]]$agent_name
 #> [1] "openai_4_1_agent"
@@ -1228,14 +1359,13 @@ lead_agent$broadcast_history
 #> [1] "gpt-4.1"
 #> 
 #> [[1]]$responses[[1]]$response
-#> If you were Algerian, you might enjoy singing "Ya Rayah" when running under the
-#> rain, while as a flower, you might "sing" with the joy of receiving life-giving
-#> water, perhaps humming the gentle melody of "A Vava Inouva."
+#> If you were Algerian, you might like to sing "Ya Rayah" when running under the 
+#> rain, and for a flower, "Fleur d’Algérie" could be a charming choice.
 #> 
 #> 
 #> [[1]]$responses[[2]]
 #> [[1]]$responses[[2]]$agent_id
-#> [1] "41f63ac3-84de-4c6c-a8f5-9493d5e5e88f"
+#> [1] "1e849a3e-1022-41ee-adcb-c625bc494ca1"
 #> 
 #> [[1]]$responses[[2]]$agent_name
 #> [1] "openai_4_1_nano_agent"
@@ -1247,8 +1377,8 @@ lead_agent$broadcast_history
 #> [1] "gpt-4.1-nano"
 #> 
 #> [[1]]$responses[[2]]$response
-#> You might enjoy singing "Ya Rayah" by Rachid Taha under the rain, and "A 
-#> flower" by Cheb Khaled.
+#> As an Algerian, you might enjoy singing "Ya Rayah" by Dahmane El Harrachi when 
+#> running under the rain, and "Aicha" by Khaled when thinking about a flower.
 ```
 
 ## Human In The Loop (HITL)
@@ -1343,34 +1473,35 @@ best_answer
 #> $proposals
 #> $proposals[[1]]
 #> $proposals[[1]]$agent_id
-#> [1] "e508acb3-e19f-4af4-ac55-276dfec42ee1"
+#> [1] "3a386fd7-3b89-4fd3-8417-9ccfe6f2fede"
 #> 
 #> $proposals[[1]]$agent_name
 #> [1] "stylist"
 #> 
 #> $proposals[[1]]$response
-#> Layer your blue Calvin Klein shirt with a neutral or navy wool blazer and add a
-#> chunky knit scarf; pair with the pink trousers and finish with brown or navy 
-#> shoes for a stylish winter look.
+#> Layer the blue Calvin Klein shirt under a navy or grey wool coat and add 
+#> neutral accessories (like a cream or charcoal scarf and brown or black shoes) 
+#> to balance the bold pink trousers for a stylish winter look.
 #> 
 #> 
 #> $proposals[[2]]
 #> $proposals[[2]]$agent_id
-#> [1] "cf060b80-afe4-4a50-9054-c7cf56860f5b"
+#> [1] "efc20e3f-f450-4ae5-9300-b116df01f339"
 #> 
 #> $proposals[[2]]$agent_name
 #> [1] "stylist2"
 #> 
 #> $proposals[[2]]$response
 #> Layer the blue Calvin Klein shirt with a neutral-colored sweater or blazer and 
-#> add a warm coat, pairing it with pink trousers for a stylish winter look.
+#> add a stylish coat, pairing with accessories like a scarf to enhance the look 
+#> for winter.
 #> 
 #> 
 #> 
 #> $chosen_response
-#> Layer your blue Calvin Klein shirt with a neutral or navy wool blazer and add a
-#> chunky knit scarf; pair with the pink trousers and finish with brown or navy 
-#> shoes for a stylish winter look.
+#> Layer the blue Calvin Klein shirt under a navy or grey wool coat and add 
+#> neutral accessories (like a cream or charcoal scarf and brown or black shoes) 
+#> to balance the bold pink trousers for a stylish winter look.
 ```
 
 ## Code of Conduct

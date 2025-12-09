@@ -331,7 +331,7 @@ The current policy is echoed when setting the budget. You can update the policy 
 
 #### Inspecting usage and estimated cost
 
-Call `get_usage_stats()` to retrieve total tokens, estimated cost, and budget information (if set).
+Call `get_usage_stats()` to retrieve the estimated cost, and budget information (if set).
 
 ```{r}
 stats <- agent$get_usage_stats()
@@ -481,6 +481,80 @@ requirements
 The validation results include the original prompt, response, criteria, score, 
 feedback, and validity status, making it easy to audit and improve your agent's 
 performance.
+
+## Tools 
+###### At the moment, only in the development version
+
+You can easily register one or several tools using the `register_tools` method. The tools are created using `ellmer`, consider the following example: 
+
+```{r}
+openai_4_1_nano <- ellmer::chat(
+  name = "openai/gpt-4.1-nano",
+  credentials = function() {Sys.getenv("OPENAI_API_KEY")},
+  echo = "none"
+)
+
+weather_agent <- Agent$new(
+  name = "weather_assistant",
+  instruction = "You are a weather assistant.",
+  llm_object = openai_4_1_nano
+)
+
+weather_function_algiers <- function() {
+  msg <- glue::glue(
+    "35 degrees Celcius, it's sunny and there's no precipitation."
+  )
+  msg
+}
+
+get_weather_in_algiers <- ellmer::tool(
+  fun = weather_function_algiers,
+  name = "get_weather_in_algiers",
+  description = "Provide the current weather in Algiers, Algeria."
+)
+
+weather_function_berlin <- function() {
+  msg <- glue::glue(
+    "10 degrees Celcius, it's cold"
+  )
+  msg
+}
+
+get_weather_in_berlin <- ellmer::tool(
+  fun = weather_function_berlin,
+  name = "get_weather_in_berlin",
+  description = "Provide the current weather in Berlin, Germany"
+)
+
+weather_agent$register_tools(
+  tools = list(
+    get_weather_in_algiers, 
+    get_weather_in_berlin
+  )
+)
+```
+One can list the available tools: 
+
+```{r}
+weather_agent$list_tools()
+```
+
+After registering the tools, the Agent will use them when needed: 
+
+```{r}
+weather_agent$invoke("How's the weather in Algiers?")
+```
+
+```{r}
+weather_agent$invoke("How's the weather in Berlin?")
+```
+
+One can remove one or several tool using the `remove_tools` method or remove all agents at one using the `clear_tools` method: 
+
+```{r}
+weather_agent$clear_tools()
+weather_agent$list_tools()
+```
 
 # LeadAgent
 ## Creating a multi-agents orchestraction 
