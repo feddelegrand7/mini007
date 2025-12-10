@@ -771,6 +771,113 @@ best_answer <- stylist_lead_agent$judge_and_choose_best_response(
 best_answer
 ```
 
+## Agents Dialog
+###### At the moment, only in the development version
+
+The agent_dialog method facilitates an intelligent two-agent collaboration process designed to refine and optimize responses through iterative dialogue. 
+
+It enables two registered agents to take alternating turns improving each other’s outputs until a high-quality final response is reached. The method supports a configurable maximum number of iterations (default: 5) and includes a self-stopping mechanism where agents can indicate agreement by beginning their message with “CONSENSUS:”, followed by the final answer. 
+
+If no consensus is achieved within the iteration limit, the lead agent automatically synthesizes a concluding response based on the conversation. Throughout the exchange, every interaction is stored within the `self$dialog_history` object. Consider the following examples: 
+
+```{r}
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+
+ceo1 <- Agent$new(
+  name = "ceo1",
+  instruction = paste0(
+    "You are a CEO in  a dates company based in Ouergla, Algeria, ", 
+    "You want to boost their exports to Germany. "
+  ),
+  llm_object = openai_4_1_mini
+)
+
+ceo2 <- Agent$new(
+  name = "ceo2",
+  instruction = paste0(
+    "You are the CEO of a dates company based in Ouergla, Algeria. ", 
+    "You are considering starting a marketing compaign to boost the exports to Germany. "
+  ),
+  llm_object = openai_4_1_mini
+)
+
+lead_agent <- LeadAgent$new(
+  name = "Leader",
+  llm_object = openai_4_1_mini
+)
+
+lead_agent$register_agents(c(ceo1, ceo2))
+
+result <- lead_agent$agents_dialog(
+  prompt = "Propose a plan in 1 sentence max about a marketing strategy that will boost the export of dates to Germany for the next 2 years",
+  agent_1_id = ceo1$agent_id,
+  agent_2_id = ceo2$agent_id,
+  max_iterations = 3
+)
+
+# Access the final response
+result$final_response
+
+# View the dialog history
+result$dialog_history
+```
+
+
+If the instructions of the Agents differ fundamentally, they won't be able to find a consensus and the `LeadAgent` will take over and provide a final response: 
+
+
+```{r}
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+
+ceo1 <- Agent$new(
+  name = "ceo1",
+  instruction = paste0(
+    "You are a CEO in  a dates company based in Ouergla, Algeria, ", 
+    "You want to boost their exports to Germany. ", 
+    "You don't care about the budget. You want to spend as much as possible. "
+  ),
+  llm_object = openai_4_1_mini
+)
+
+ceo2 <- Agent$new(
+  name = "ceo2",
+  instruction = paste0(
+    "You are the CEO of a dates company based in Ouergla, Algeria. ", 
+    "You are considering starting a marketing compaign to boost the exports to Germany. ",
+    "For you the marketing budget is super important and you don't want to spend too much. "
+  ),
+  llm_object = openai_4_1_mini
+)
+
+lead_agent <- LeadAgent$new(
+  name = "Leader",
+  llm_object = openai_4_1_mini
+)
+
+lead_agent$register_agents(c(ceo1, ceo2))
+
+result <- lead_agent$agents_dialog(
+  prompt = "Propose a plan in 1 sentence max about a marketing strategy that will boost the export of dates to Germany for the next 2 years",
+  agent_1_id = ceo1$agent_id,
+  agent_2_id = ceo2$agent_id,
+  max_iterations = 3
+)
+
+# Access the final response
+result$final_response
+
+# View the dialog history
+result$dialog_history
+```
+
 
 ## Code of Conduct
 

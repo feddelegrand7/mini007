@@ -419,6 +419,56 @@ lead_agent$register_agents(c(stylist, stylist2))
 lead_agent$judge_and_choose_best_response("what's the best way to war a kalvin klein shirt?")
 
 }
+
+## ------------------------------------------------
+## Method `LeadAgent$agents_dialog`
+## ------------------------------------------------
+
+\dontrun{
+# An API KEY is required in order to invoke the agents
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+openai_4_1_nano <- ellmer::chat(
+  name = "openai/gpt-4.1-nano",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+
+creative_writer <- Agent$new(
+  name = "creative_writer",
+  instruction = "You are a creative writer. Focus on engaging storytelling.",
+  llm_object = openai_4_1_nano
+)
+
+editor <- Agent$new(
+  name = "editor",
+  instruction = "You are an editor. Focus on clarity and conciseness.",
+  llm_object = openai_4_1_mini
+)
+
+lead_agent <- LeadAgent$new(
+  name = "Leader",
+  llm_object = openai_4_1_mini
+)
+
+lead_agent$register_agents(c(creative_writer, editor))
+
+result <- lead_agent$agents_dialog(
+  prompt = "Write a compelling opening sentence for a sci-fi novel.",
+  agent_1_id = creative_writer$agent_id,
+  agent_2_id = editor$agent_id,
+  max_iterations = 3
+)
+
+# Access the final response
+result$final_response
+
+# View the dialog history
+result$dialog_history
+}
 }
 \section{Super class}{
 \code{\link[mini007:Agent]{mini007::Agent}} -> \code{LeadAgent}
@@ -437,6 +487,10 @@ lead_agent$judge_and_choose_best_response("what's the best way to war a kalvin k
 \item{\code{prompt_for_plan}}{The prompt used to generate the plan.}
 
 \item{\code{agents_for_plan}}{The agents used for the plan}
+
+\item{\code{dialog_history}}{A list storing the history of agent dialogs}
+
+\item{\code{broadcast_history}}{A list storing the history of broadcast interactions}
 }
 \if{html}{\out{</div>}}
 }
@@ -453,6 +507,7 @@ lead_agent$judge_and_choose_best_response("what's the best way to war a kalvin k
 \item \href{#method-LeadAgent-broadcast}{\code{LeadAgent$broadcast()}}
 \item \href{#method-LeadAgent-set_hitl}{\code{LeadAgent$set_hitl()}}
 \item \href{#method-LeadAgent-judge_and_choose_best_response}{\code{LeadAgent$judge_and_choose_best_response()}}
+\item \href{#method-LeadAgent-agents_dialog}{\code{LeadAgent$agents_dialog()}}
 \item \href{#method-LeadAgent-clone}{\code{LeadAgent$clone()}}
 }
 }
@@ -1077,6 +1132,88 @@ lead_agent$register_agents(c(stylist, stylist2))
 
 lead_agent$judge_and_choose_best_response("what's the best way to war a kalvin klein shirt?")
 
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-LeadAgent-agents_dialog"></a>}}
+\if{latex}{\out{\hypertarget{method-LeadAgent-agents_dialog}{}}}
+\subsection{Method \code{agents_dialog()}}{
+Facilitates a collaborative dialog between two agents to refine a response.
+The agents take turns building on each other's responses until they reach
+consensus or the maximum iterations are reached. Agents can signal consensus
+by starting their response with "CONSENSUS:". If max iterations is reached
+without consensus, the lead agent synthesizes a final response.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{LeadAgent$agents_dialog(prompt, agent_1_id, agent_2_id, max_iterations = 5)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{prompt}}{The initial task or question for the agents to discuss.}
+
+\item{\code{agent_1_id}}{The ID of the first agent to participate in the dialog.}
+
+\item{\code{agent_2_id}}{The ID of the second agent to participate in the dialog.}
+
+\item{\code{max_iterations}}{Maximum number of back-and-forth exchanges (default: 5).}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A list containing the final response, consensus status, and complete dialog history.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+# An API KEY is required in order to invoke the agents
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+openai_4_1_nano <- ellmer::chat(
+  name = "openai/gpt-4.1-nano",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+
+creative_writer <- Agent$new(
+  name = "creative_writer",
+  instruction = "You are a creative writer. Focus on engaging storytelling.",
+  llm_object = openai_4_1_nano
+)
+
+editor <- Agent$new(
+  name = "editor",
+  instruction = "You are an editor. Focus on clarity and conciseness.",
+  llm_object = openai_4_1_mini
+)
+
+lead_agent <- LeadAgent$new(
+  name = "Leader",
+  llm_object = openai_4_1_mini
+)
+
+lead_agent$register_agents(c(creative_writer, editor))
+
+result <- lead_agent$agents_dialog(
+  prompt = "Write a compelling opening sentence for a sci-fi novel.",
+  agent_1_id = creative_writer$agent_id,
+  agent_2_id = editor$agent_id,
+  max_iterations = 3
+)
+
+# Access the final response
+result$final_response
+
+# View the dialog history
+result$dialog_history
 }
 }
 \if{html}{\out{</div>}}

@@ -28,6 +28,10 @@ LeadAgent <- R6::R6Class(
     prompt_for_plan = NULL,
     #'@field agents_for_plan The agents used for the plan
     agents_for_plan = NULL,
+    #' @field dialog_history A list storing the history of agent dialogs
+    dialog_history = list(),
+    #' @field broadcast_history A list storing the history of broadcast interactions
+    broadcast_history = list(),
 
     #' @description
     #' Initializes the LeadAgent with a built-in task-decomposition prompt.
@@ -702,6 +706,223 @@ LeadAgent <- R6::R6Class(
       )
 
       return(final_result)
+
+    },
+
+    #' @description
+    #' Facilitates a collaborative dialog between two agents to refine a response.
+    #' The agents take turns building on each other's responses until they reach
+    #' consensus or the maximum iterations are reached. Agents can signal consensus
+    #' by starting their response with "CONSENSUS:". If max iterations is reached
+    #' without consensus, the lead agent synthesizes a final response.
+    #' @param prompt The initial task or question for the agents to discuss.
+    #' @param agent_1_id The ID of the first agent to participate in the dialog.
+    #' @param agent_2_id The ID of the second agent to participate in the dialog.
+    #' @param max_iterations Maximum number of back-and-forth exchanges (default: 5).
+    #' @return A list containing the final response, consensus status, and complete dialog history.
+    #' @examples \dontrun{
+    #' # An API KEY is required in order to invoke the agents
+    #' openai_4_1_mini <- ellmer::chat(
+    #'   name = "openai/gpt-4.1-mini",
+    #'   api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'   echo = "none"
+    #' )
+    #' openai_4_1_nano <- ellmer::chat(
+    #'   name = "openai/gpt-4.1-nano",
+    #'   api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'   echo = "none"
+    #' )
+    #'
+    #' creative_writer <- Agent$new(
+    #'   name = "creative_writer",
+    #'   instruction = "You are a creative writer. Focus on engaging storytelling.",
+    #'   llm_object = openai_4_1_nano
+    #' )
+    #'
+    #' editor <- Agent$new(
+    #'   name = "editor",
+    #'   instruction = "You are an editor. Focus on clarity and conciseness.",
+    #'   llm_object = openai_4_1_mini
+    #' )
+    #'
+    #' lead_agent <- LeadAgent$new(
+    #'   name = "Leader",
+    #'   llm_object = openai_4_1_mini
+    #' )
+    #'
+    #' lead_agent$register_agents(c(creative_writer, editor))
+    #'
+    #' result <- lead_agent$agents_dialog(
+    #'   prompt = "Write a compelling opening sentence for a sci-fi novel.",
+    #'   agent_1_id = creative_writer$agent_id,
+    #'   agent_2_id = editor$agent_id,
+    #'   max_iterations = 3
+    #' )
+    #'
+    #' # Access the final response
+    #' result$final_response
+    #'
+    #' # View the dialog history
+    #' result$dialog_history
+    #' }
+    agents_dialog = function(prompt, agent_1_id, agent_2_id, max_iterations = 5) {
+
+      checkmate::assert_string(prompt)
+      checkmate::assert_string(agent_1_id)
+      checkmate::assert_string(agent_2_id)
+      checkmate::assert_int(max_iterations, lower = 1)
+
+      if (length(self$agents) == 0) {
+        cli::cli_abort("No agents registered. Use `register_agents()` first.")
+      }
+
+      if (agent_1_id == agent_2_id) {
+        cli::cli_abort("Agent 1 and Agent 2 must be different agents.")
+      }
+
+      agent_ids <- vapply(self$agents, function(a) a$agent_id, character(1))
+
+      if (!agent_1_id %in% agent_ids) {
+        cli::cli_abort("Agent 1 with ID '{agent_1_id}' not found in registered agents.")
+      }
+
+      if (!agent_2_id %in% agent_ids) {
+        cli::cli_abort("Agent 2 with ID '{agent_2_id}' not found in registered agents.")
+      }
+
+      idx_1 <- which(agent_ids == agent_1_id)
+      idx_2 <- which(agent_ids == agent_2_id)
+
+      agent_1 <- self$agents[[idx_1]]
+      agent_2 <- self$agents[[idx_2]]
+
+      cli::cli_h2("Starting agent dialog")
+      cli::cli_text("Agent 1: {.strong {agent_1$name}}")
+      cli::cli_text("Agent 2: {.strong {agent_2$name}}")
+      cli::cli_text("Max iterations: {max_iterations}")
+
+      dialog_history <- list()
+      current_response <- NULL
+      consensus_reached <- FALSE
+      final_response <- NULL
+
+      for (i in seq_len(max_iterations)) {
+
+        cli::cli_alert_info("Iteration {i} - {agent_1$name} responding...")
+
+        if (is.null(current_response)) {
+          prompt_1 <- prompt
+        } else {
+          prompt_1 <- paste0(
+            "REMEMBER YOUR ROLE: ", agent_1$instruction, "\n\n",
+            "You are in a collaborative negotiation to solve this task: ", prompt, "\n\n",
+            "The other agent just proposed:\n",
+            current_response, "\n\n",
+            "CRITICAL: Evaluate their proposal against YOUR specific role, requirements, and constraints described above. ",
+            "Does it fully align with YOUR requirements? Does it respect YOUR constraints? ",
+            "If there are ANY conflicts with your role, concerns about their approach, or areas where your perspective differs, ",
+            "you MUST propose your counterproposal that better addresses YOUR requirements. ",
+            "Do NOT simply accept their proposal if it conflicts with your role or constraints. ",
+            "Only respond with 'CONSENSUS: ' followed by the final solution if their proposal genuinely ",
+            "satisfies BOTH your requirements AND theirs, with no compromises to your constraints. ",
+            "Otherwise, continue negotiating."
+          )
+        }
+
+        response_1 <- agent_1$invoke(prompt_1)
+
+        dialog_history[[length(dialog_history) + 1]] <- list(
+          iteration = i,
+          agent_id = agent_1$agent_id,
+          agent_name = agent_1$name,
+          response = response_1
+        )
+
+        if (grepl("^CONSENSUS:", response_1, ignore.case = TRUE)) {
+          cli::cli_alert_success("Consensus reached by {agent_1$name} at iteration {i}!")
+          consensus_reached <- TRUE
+          final_response <- sub("^CONSENSUS:\\s*", "", response_1, ignore.case = TRUE)
+          break
+        }
+
+        current_response <- response_1
+
+        cli::cli_alert_info("Iteration {i} - {agent_2$name} responding...")
+
+        prompt_2 <- paste0(
+          "REMEMBER YOUR ROLE: ", agent_2$instruction, "\n\n",
+          "You are in a collaborative negotiation to solve this task: ", prompt, "\n\n",
+          "The other agent just proposed:\n",
+          current_response, "\n\n",
+          "CRITICAL: Evaluate their proposal against YOUR specific role, requirements, and constraints described above. ",
+          "Does it fully align with YOUR requirements? Does it respect YOUR constraints? ",
+          "If there are ANY conflicts with your role, concerns about their approach, or areas where your perspective differs, ",
+          "you MUST propose your counterproposal that better addresses YOUR requirements. ",
+          "Do NOT simply accept their proposal if it conflicts with your role or constraints. ",
+          "Only respond with 'CONSENSUS: ' followed by the final solution if their proposal genuinely ",
+          "satisfies BOTH your requirements AND theirs, with no compromises to your constraints. ",
+          "Otherwise, continue negotiating."
+        )
+
+        response_2 <- agent_2$invoke(prompt_2)
+
+        dialog_history[[length(dialog_history) + 1]] <- list(
+          iteration = i,
+          agent_id = agent_2$agent_id,
+          agent_name = agent_2$name,
+          response = response_2
+        )
+
+        if (grepl("^CONSENSUS:", response_2, ignore.case = TRUE)) {
+          cli::cli_alert_success("Consensus reached by {agent_2$name} at iteration {i}!")
+          consensus_reached <- TRUE
+          final_response <- sub("^CONSENSUS:\\s*", "", response_2, ignore.case = TRUE)
+          break
+        }
+
+        current_response <- response_2
+      }
+
+      if (!consensus_reached) {
+        cli::cli_alert_warning("Max iterations reached without explicit consensus.")
+        cli::cli_alert_info("Using lead agent to synthesize final response...")
+
+        history_text <- paste(
+          vapply(dialog_history, function(h) {
+            paste0("[", h$agent_name, "]: ", h$response)
+          }, character(1)),
+          collapse = "\n\n"
+        )
+
+        synthesis_prompt <- paste0(
+          "Original task: ", prompt, "\n\n",
+          "Two agents have discussed this task. Here is their conversation:\n\n",
+          history_text, "\n\n",
+          "Based on their discussion, synthesize and provide the best final answer to the original task. ",
+          "CRITICAL: Return ONLY the final answer itself, as if you were directly answering the original task. ",
+          "DO NOT write instructions, DO NOT mention the agents or their discussion, ",
+          "DO NOT use phrases like 'Write...', 'The final answer is...', or 'Based on...'. ",
+          "Just provide the direct answer to the task."
+        )
+
+        final_response <- self$llm_object$chat(synthesis_prompt)
+      }
+
+      result <- list(
+        prompt = prompt,
+        agent_1_name = agent_1$name,
+        agent_2_name = agent_2$name,
+        consensus_reached = consensus_reached,
+        iterations_used = length(dialog_history),
+        dialog_history = dialog_history,
+        final_response = final_response
+      )
+
+      self$dialog_history[[length(self$dialog_history) + 1]] <- result
+
+      cli::cli_alert_success("Dialog completed.")
+
+      return(result)
 
     }
   ),
