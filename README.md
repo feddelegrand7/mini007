@@ -1469,7 +1469,7 @@ best_answer
 
 ###### At the moment, only in the development version
 
-The agent_dialog method facilitates an intelligent two-agent
+The agents_dialog method facilitates an intelligent two-agent
 collaboration process designed to refine and optimize responses through
 iterative dialogue.
 
