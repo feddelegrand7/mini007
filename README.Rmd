@@ -774,19 +774,13 @@ best_answer
 ## Agents Dialog
 ###### At the moment, only in the development version
 
-The agent_dialog method facilitates an intelligent two-agent collaboration process designed to refine and optimize responses through iterative dialogue. 
+The `agents_dialog` method facilitates an intelligent two-agent collaboration process designed to refine and optimize responses through iterative dialogue. 
 
 It enables two registered agents to take alternating turns improving each other’s outputs until a high-quality final response is reached. The method supports a configurable maximum number of iterations (default: 5) and includes a self-stopping mechanism where agents can indicate agreement by beginning their message with “CONSENSUS:”, followed by the final answer. 
 
 If no consensus is achieved within the iteration limit, the lead agent automatically synthesizes a concluding response based on the conversation. Throughout the exchange, every interaction is stored within the `self$dialog_history` object. Consider the following examples: 
 
 ```{r}
-openai_4_1_mini <- ellmer::chat(
-  name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
-  echo = "none"
-)
-
 ceo1 <- Agent$new(
   name = "ceo1",
   instruction = paste0(
