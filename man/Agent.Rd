@@ -370,45 +370,6 @@ Gets the current time in the given time zone.
 
 
 ## ------------------------------------------------
-## Method `Agent$export_tools`
-## ------------------------------------------------
-
-\dontrun{
-openai_4_1_mini <- ellmer::chat(
-  name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
-  echo = "none"
-)
-agent <- Agent$new(
-  name = "file_assistant",
-  instruction = "You are a helpful assistant.",
-  llm_object = openai_4_1_mini
-)
-agent$register_tools(list(change_directory_tool(), list_files_tool()))
-agent$export_tools("my_tools.json")
-}
-
-## ------------------------------------------------
-## Method `Agent$load_tools`
-## ------------------------------------------------
-
-\dontrun{
-openai_4_1_mini <- ellmer::chat(
-  name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
-  echo = "none"
-)
-agent <- Agent$new(
-  name = "file_assistant",
-  instruction = "You are a helpful assistant.",
-  llm_object = openai_4_1_mini
-)
-# Import previously exported tools
-agent$load_tools("my_tools.json")
-agent$list_tools()
-}
-
-## ------------------------------------------------
 ## Method `Agent$clone_agent`
 ## ------------------------------------------------
 
@@ -491,8 +452,6 @@ Assignment is validated automatically.}
 \item \href{#method-Agent-remove_tools}{\code{Agent$remove_tools()}}
 \item \href{#method-Agent-clear_tools}{\code{Agent$clear_tools()}}
 \item \href{#method-Agent-generate_and_register_tool}{\code{Agent$generate_and_register_tool()}}
-\item \href{#method-Agent-export_tools}{\code{Agent$export_tools()}}
-\item \href{#method-Agent-load_tools}{\code{Agent$load_tools()}}
 \item \href{#method-Agent-clone_agent}{\code{Agent$clone_agent()}}
 \item \href{#method-Agent-clone}{\code{Agent$clone()}}
 }
@@ -1231,9 +1190,6 @@ ellmer tool definition based on your description, then automatically registers i
 }
 \if{html}{\out{</div>}}
 }
-\subsection{Returns}{
-Called for the side effect of generating and registering it an ellmer tool
-}
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{\dontrun{
@@ -1263,100 +1219,6 @@ Gets the current time in the given time zone.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Agent-export_tools"></a>}}
-\if{latex}{\out{\hypertarget{method-Agent-export_tools}{}}}
-\subsection{Method \code{export_tools()}}{
-Export all registered tools to a JSON file for later reuse.
-Serializes tool functions, metadata, and parameter specifications.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Agent$export_tools(
-  file_path = paste0(getwd(), "/", paste0(self$name, "_tools.json"))
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{file_path}}{Character string specifying the file path for the JSON export.
-Defaults to `"<agent_name>_tools.json"` in the current directory.}
-
-\item{\code{tz}}{The time zone to get the current time in.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-The current time in the given time zone.
-}
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{\dontrun{
-openai_4_1_mini <- ellmer::chat(
-  name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
-  echo = "none"
-)
-agent <- Agent$new(
-  name = "file_assistant",
-  instruction = "You are a helpful assistant.",
-  llm_object = openai_4_1_mini
-)
-agent$register_tools(list(change_directory_tool(), list_files_tool()))
-agent$export_tools("my_tools.json")
-}
-}
-\if{html}{\out{</div>}}
-
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Agent-load_tools"></a>}}
-\if{latex}{\out{\hypertarget{method-Agent-load_tools}{}}}
-\subsection{Method \code{load_tools()}}{
-Import and register tools from a JSON file previously exported with export_tools().
-Reconstructs tool functions and ellmer tool definitions from serialized data.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Agent$load_tools(
-  file_path = paste0(getwd(), "/", paste0(self$name, "_tools.json")),
-  overwrite = FALSE
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{file_path}}{Character string specifying the path to the JSON file containing tools.
-Defaults to `"<agent_name>_tools.json"` in the current directory.}
-
-\item{\code{overwrite}}{Logical; if TRUE, existing tools with the same name will be replaced.
-If FALSE, existing tools are preserved. Default: FALSE.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{\dontrun{
-openai_4_1_mini <- ellmer::chat(
-  name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
-  echo = "none"
-)
-agent <- Agent$new(
-  name = "file_assistant",
-  instruction = "You are a helpful assistant.",
-  llm_object = openai_4_1_mini
-)
-# Import previously exported tools
-agent$load_tools("my_tools.json")
-agent$list_tools()
-}
-}
-\if{html}{\out{</div>}}
-
-}
-
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Agent-clone_agent"></a>}}
 \if{latex}{\out{\hypertarget{method-Agent-clone_agent}{}}}
 \subsection{Method \code{clone_agent()}}{
@@ -1371,11 +1233,13 @@ Useful for creating multiple instances of the same agent type.
 \describe{
 \item{\code{new_name}}{Optional character string to assign a new name to the cloned agent.
 If NULL, the cloned agent retains the original name.}
+
+\item{\code{tz}}{The time zone to get the current time in.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A new Agent instance with the same configuration but a unique ID.
+The current time in the given time zone.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
