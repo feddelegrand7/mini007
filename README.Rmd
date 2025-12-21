@@ -555,6 +555,24 @@ One can remove one or several tool using the `remove_tools` method or remove all
 weather_agent$clear_tools()
 weather_agent$list_tools()
 ```
+### Tool Generation
+###### At the moment, only in the development version
+
+
+The `generate_and_register` method allows you to create tools from simple natural language descriptions (for example, “create a tool that saves files to disk”) and automatically generates the complete R code needed to implement them. It produces a fully functional R function that encapsulates the tool’s logic, along with a complete `ellmer` tool definition that includes proper type specifications and clear parameter descriptions. 
+
+
+```{r}
+weather_agent$generate_and_register_tool(
+  description = "create a tool that uses httr to call the open-meteo api https://open-meteo.com/en/docs to get the current weather about a specific city"
+)
+```
+
+```{r}
+weather_agent$invoke(
+  prompt = "what is the current weather in Tokyo?"
+)
+```
 
 # LeadAgent
 ## Creating a multi-agents orchestraction 

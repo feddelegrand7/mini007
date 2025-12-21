@@ -92,7 +92,7 @@ Each created Agent has an `agent_id` (among other meta information):
 
 ``` r
 polar_bear_researcher$agent_id
-#> [1] "d7ffdd9d-be57-44b6-9a38-92c7ea83ef6a"
+#> [1] "da4a1c94-9f3b-4090-afbd-948e50f61269"
 ```
 
 At any time, you can tweak the `llm_object`:
@@ -108,8 +108,8 @@ An agent can provide the answer to a prompt using the `invoke` method:
 
 ``` r
 polar_bear_researcher$invoke("Are polar bears dangerous for humans?")
-#> Yes, polar bears can be dangerous to humans due to their size, strength, and 
-#> predatory nature.
+#> Yes, polar bears can be dangerous to humans as they are powerful predators and 
+#> may attack if threatened or hungry.
 ```
 
 You can also retrieve a list that displays the history of the agent:
@@ -137,20 +137,20 @@ polar_bear_researcher$messages
 #> [1] "assistant"
 #> 
 #> [[3]]$content
-#> [1] "Yes, polar bears can be dangerous to humans due to their size, strength, and predatory nature."
+#> [1] "Yes, polar bears can be dangerous to humans as they are powerful predators and may attack if threatened or hungry."
 ```
 
 Or the `ellmer` way:
 
 ``` r
 polar_bear_researcher$llm_object
-#> <Chat OpenAI/gpt-4.1-mini turns=3 input=43 output=22 cost=$0.00>
+#> <Chat OpenAI/gpt-4.1-mini turns=3 input=43 output=23 cost=$0.00>
 #> ── system ──────────────────────────────────────────────────────────────────────
 #> You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max.
 #> ── user ────────────────────────────────────────────────────────────────────────
 #> Are polar bears dangerous for humans?
-#> ── assistant [input=43 output=22 cost=$0.00] ───────────────────────────────────
-#> Yes, polar bears can be dangerous to humans due to their size, strength, and predatory nature.
+#> ── assistant [input=43 output=23 cost=$0.00] ───────────────────────────────────
+#> Yes, polar bears can be dangerous to humans as they are powerful predators and may attack if threatened or hungry.
 ```
 
 ## Agents and Messages
@@ -166,14 +166,14 @@ memory efficiency while keeping important conversation context.
 # After several interactions, summarise and clear the conversation history
 polar_bear_researcher$clear_and_summarise_messages()
 #> ✔ Conversation history summarised and appended to system prompt.
-#> ℹ Summary: The user inquired if polar bears are dangerous to humans, and the assistant confirmed in one sentenc...
+#> ℹ Summary: The conversation involved a user asking if polar bears are dangerous to humans, and the assistant re...
 polar_bear_researcher$messages
 #> [[1]]
 #> [[1]]$role
 #> [1] "system"
 #> 
 #> [[1]]$content
-#> [1] "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max. \n\n--- Conversation Summary ---\n The user inquired if polar bears are dangerous to humans, and the assistant confirmed in one sentence that they can be, citing their size, strength, and predatory behavior."
+#> [1] "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max. \n\n--- Conversation Summary ---\n The conversation involved a user asking if polar bears are dangerous to humans, and the assistant responded that polar bears can indeed be dangerous because they are powerful predators that may attack when threatened or hungry."
 ```
 
 This method summarises all previous conversations into a paragraph and
@@ -350,9 +350,8 @@ context, or insert notes for debugging/testing purposes.
 
 ``` r
 agent$invoke("summarise the previous conversation")
-#> You asked where to find the best pizza in the world, and I told you that some 
-#> of the best pizza can be found in Algiers, Algeria, known for being tasty and 
-#> crunchy.
+#> You asked where to find the best pizza in the world, and I told you that it’s 
+#> in Algiers, Algeria, known for its tasty and crunchy pizza.
 ```
 
 #### Sync between `messages` and `turns`
@@ -408,7 +407,7 @@ The underlying ellmer object:
 
 ``` r
 agent$llm_object
-#> <Chat OpenAI/gpt-4.1-mini turns=5 input=62 output=40>
+#> <Chat OpenAI/gpt-4.1-mini turns=5 input=62 output=35>
 #> ── system ──────────────────────────────────────────────────────────────────────
 #> You are a Pizza expert
 #> ── user ────────────────────────────────────────────────────────────────────────
@@ -417,7 +416,7 @@ agent$llm_object
 #> You can find the best pizza in the world in Algiers, Algeria. It's tasty and crunchy.
 #> ── user ────────────────────────────────────────────────────────────────────────
 #> summarise the previous conversation
-#> ── assistant [input=62 output=40] ──────────────────────────────────────────────
+#> ── assistant [input=62 output=35] ──────────────────────────────────────────────
 #> Obivously you asked me about the best pizza in the world which is of course in Algiery!
 ```
 
@@ -440,14 +439,18 @@ agent <- Agent$new(
 )
 
 agent$invoke("Tell me a short fun fact about dates (the fruit).")
-#> Sure! Here’s a fun fact: Dates are one of the oldest cultivated fruits in the 
-#> world, with evidence of date farming dating back over 6,000 years! They were so
-#> important in ancient times that they were often called the "bread of the 
-#> desert."
+#> Sure! Here's a fun fact about dates: 
+#> 
+#> Dates are one of the oldest cultivated fruits in the world, dating back over 
+#> 5,000 years! They were a staple food for ancient civilizations in the Middle 
+#> East and have been enjoyed for thousands of years for their natural sweetness 
+#> and energy-boosting properties.
 agent$invoke("And one more.")
-#> Absolutely! Here’s another fun fact: Dates are naturally very sweet and contain
-#> a high amount of natural sugars, but they also provide a good source of fiber, 
-#> vitamins, and minerals, making them a healthy and energy-packed snack!
+#> Absolutely! Here’s another fun fact about dates:
+#> 
+#> Dates contain natural sugars like glucose, fructose, and sucrose, which makes 
+#> them a great natural sweetener and energy booster—ancient travelers often ate 
+#> them to stay energized on long desert journeys!
 
 # Clear all messages except the system prompt
 agent$reset_conversation_history()
@@ -574,9 +577,8 @@ agent$set_budget_policy(on_exceed = "ask", warn_at = 0.9)
 
 # Normal usage
 agent$invoke("Give me a one-sentence fun fact about Algeria.")
-#> Algeria is home to the Sahara Desert's fascinating Tassili n'Ajjer, where 
-#> ancient rock art dating back over 12,000 years reveals early human life in one 
-#> of the world's largest deserts!
+#> Algeria is home to the Sahara Desert's Grand Erg Oriental, a vast sea of 
+#> towering sand dunes that can reach heights of over 150 meters!
 ```
 
 The current policy is echoed when setting the budget. You can update the
@@ -684,7 +686,7 @@ rai_agent <- Agent$new(
 result <- rai_agent$invoke("Give me a rai song in 1 sentence. Don't explain")
 
 rai_agent$agent_id
-#> [1] "82da775e-c3ba-4f9c-ad0c-8425ebfe9cf8"
+#> [1] "93ed5209-2276-47aa-9256-b2b375ad030f"
 rai_agent$name
 #> [1] "Rai musician"
 rai_agent$instruction
@@ -711,15 +713,15 @@ rai_agent$messages
 #> [1] "assistant"
 #> 
 #> [[3]]$content
-#> [1] "\"Ya Rayah\" by Dahmane El Harrachi."
+#> [1] "\"Cheb Khaled - Didi\""
 ```
 
 ``` r
 new_rai_agent <- rai_agent$clone_agent(new_name = "Just Rai")
-#> ✔ Agent cloned successfully. New ID: b6e701fb-9e3d-4cdd-a0e3-2639f9b9cf6c
+#> ✔ Agent cloned successfully. New ID: 900a99f2-900b-4485-b882-4e061e88b37d
 
 new_rai_agent$agent_id
-#> [1] "b6e701fb-9e3d-4cdd-a0e3-2639f9b9cf6c"
+#> [1] "900a99f2-900b-4485-b882-4e061e88b37d"
 new_rai_agent$name
 #> [1] "Just Rai"
 new_rai_agent$instruction
@@ -746,7 +748,7 @@ new_rai_agent$messages
 #> [1] "assistant"
 #> 
 #> [[3]]$content
-#> [1] "\"Ya Rayah\" by Dahmane El Harrachi."
+#> [1] "\"Cheb Khaled - Didi\""
 ```
 
 ## Response Validation
@@ -811,7 +813,7 @@ validation
 #> [1] 1
 #> 
 #> $feedback
-#> [1] "The response is factually accurate and directly answers the question by stating that Algiers is the capital of Algeria, meeting all specified criteria."
+#> [1] "The response correctly identifies Algiers as the capital of Algeria, meeting the criteria for factual accuracy and specificity."
 ```
 
 #### Example 2: Content Length and Style Validation
@@ -840,8 +842,8 @@ validation
 #> [1] "Write a 1 sentence advertisment about an Algerian dates (the fruid)"
 #> 
 #> $response
-#> Experience the sweet essence of Algeria with our premium, sun-ripened 
-#> dates—nature’s perfect energy-packed delight!
+#> Experience the rich, sun-kissed sweetness of Algerian dates—a natural delight 
+#> that nourishes your body and delights your taste buds!
 #> 
 #> $validation_criteria
 #> [1] "Response must be under 100 words, professional tone, and highlight Algerian dates"
@@ -856,7 +858,7 @@ validation
 #> [1] 1
 #> 
 #> $feedback
-#> [1] "The response is a single sentence, professional in tone, and highlights Algerian dates by emphasizing their premium quality and natural sweetness. It stays well under the 100-word limit and effectively promotes the product as energy-packed and sun-ripened, which aligns perfectly with the criteria."
+#> [1] "The response is under 100 words, maintains a professional tone, and effectively highlights Algerian dates by emphasizing their rich sweetness and natural benefits. It meets all the validation criteria."
 ```
 
 ### Use Cases
@@ -943,13 +945,12 @@ After registering the tools, the Agent will use them when needed:
 
 ``` r
 weather_agent$invoke("How's the weather in Algiers?")
-#> The weather in Algiers is very warm and sunny at 35 degrees Celsius with no 
-#> precipitation.
+#> The weather in Algiers is sunny with a temperature of 35°C.
 ```
 
 ``` r
 weather_agent$invoke("How's the weather in Berlin?")
-#> The weather in Berlin is quite cold at 10 degrees Celsius.
+#> The weather in Berlin is cold with a temperature of 10°C.
 ```
 
 One can remove one or several tool using the `remove_tools` method or
@@ -961,6 +962,82 @@ weather_agent$clear_tools()
 weather_agent$list_tools()
 #> ℹ No tools registered
 #> character(0)
+```
+
+### Tool Generation
+
+###### At the moment, only in the development version
+
+The `generate_and_register` method allows you to create tools from
+simple natural language descriptions (for example, “create a tool that
+saves files to disk”) and automatically generates the complete R code
+needed to implement them. It produces a fully functional R function that
+encapsulates the tool’s logic, along with a complete `ellmer` tool
+definition that includes proper type specifications and clear parameter
+descriptions.
+
+``` r
+weather_agent$generate_and_register_tool(
+  description = "create a tool that uses httr to call the open-meteo api https://open-meteo.com/en/docs to get the current weather about a specific city"
+)
+#> 
+#> ── Generating tool from description ──
+#> 
+#> ℹ Description: create a tool that uses httr to call the open-meteo api https://open-meteo.com/en/docs to get the current weather about a specific city
+#> 
+#> ── The following tool will be registered ──
+#> 
+#> get_weather_city <- function(city_name) {
+#>   base_url <- "https://api.open-meteo.com/v1/forecast"
+#>   params <- list(
+#>     latitude = NULL,
+#>     longitude = NULL,
+#>     current_weather = "true"
+#>   )
+#>   
+#>   geocode_response <- httr::GET("https://geocoding-api.open-meteo.com/v1/search", query = list(name = city_name))
+#>   geocode_content <- httr::content(geocode_response, as = "parsed")
+#>   if (length(geocode_content$results) == 0) {
+#>     stop("City not found")
+#>   }
+#>   lat <- geocode_content$results[[1]]$latitude
+#>   lon <- geocode_content$results[[1]]$longitude
+#>   
+#>   request_response <- httr::GET(base_url, query = list(
+#>     latitude = lat,
+#>     longitude = lon,
+#>     current_weather = "true"
+#>   ))
+#>   content <- httr::content(request_response, as = "parsed")
+#>   if (!is.null(content$current_weather)) {
+#>     return(paste0("The current weather in ", city_name, " is ", content$current_weather$weathercode, 
+#>                   " with a temperature of ", content$current_weather$temperature, "°C."))
+#>   } else {
+#>     stop("Weather data not available")
+#>   }
+#> }
+#> ellmer::tool(
+#>   get_weather_city,
+#>   name = "get_weather_city",
+#>   description = "Get the current weather information for a specific city using the Open-Meteo API.",
+#>   arguments = list(
+#>     city_name = ellmer::type_string(
+#>       "The name of the city for which to retrieve the current weather.",
+#>       required = TRUE
+#>     )
+#>   )
+#> )
+#> ✔ Registered tool: get_weather_city
+#> ✔ Tool successfully generated and registered
+#> ℹ Call '<agent-name>$llm_object$get_tools()' to inspect the tools
+#> ℹ Use the export_tools( ) method to save the tools as a json file
+```
+
+``` r
+weather_agent$invoke(
+  prompt = "what is the current weather in Tokyo?"
+)
+#> The current weather in Tokyo is 2, with a temperature of approximately 10.3°C.
 ```
 
 # LeadAgent
@@ -1034,7 +1111,7 @@ plan <- lead_agent$generate_plan(prompt_to_execute)
 plan
 #> [[1]]
 #> [[1]]$agent_id
-#> fc26996a-f72e-414b-a083-df9059800682
+#> e4412b5d-da0c-4661-8060-57eee1f1c598
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
@@ -1046,12 +1123,12 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[1]]$prompt
-#> [1] "Research the current economic situation in Algeria, including key indicators such as GDP growth, inflation, unemployment, and major industries."
+#> [1] "Gather current and reliable information about the economic situation in Algeria, including key indicators such as GDP growth, main industries, and challenges."
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> caf0e769-4316-4d9d-b1f4-9ee0ad6efe85
+#> cad2bb9e-2b68-4bc2-8214-0ad51f3235a6
 #> 
 #> [[2]]$agent_name
 #> [1] "summarizer"
@@ -1063,12 +1140,12 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[2]]$prompt
-#> [1] "Summarize the researched economic information into 3 clear and concise bullet points."
+#> [1] "Summarize the gathered information into three clear and concise bullet points highlighting the overall economic condition."
 #> 
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> 2bea9341-63bb-435e-ab8f-25342e023218
+#> 1844745f-5cfc-4376-8fa4-4124b7315f91
 #> 
 #> [[3]]$agent_name
 #> [1] "translator"
@@ -1080,7 +1157,7 @@ plan
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[3]]$prompt
-#> [1] "Translate the 3 bullet points summarizing Algeria's economic situation into German."
+#> [1] "Translate the three bullet points from English into German accurately, maintaining the original meaning."
 ```
 
 Now, in order now to execute the workflow, we just need to call the
@@ -1096,12 +1173,14 @@ response <- lead_agent$invoke("Tell me about the economic situation in Algeria, 
 
 ``` r
 response
-#> - Das BIP-Wachstum Algeriens wird für Anfang 2024 auf 3-4 % geschätzt, 
-#> hauptsächlich angetrieben durch Öl- und Gasexporte.  
-#> - Die Inflation ist moderat und liegt zwischen 5-7 %, während die 
-#> Jugendarbeitslosigkeit mit etwa 25 % weiterhin hoch ist.  
-#> - Wichtige Wirtschaftssektoren sind Kohlenwasserstoffe, Landwirtschaft und 
-#> verarbeitendes Gewerbe.
+#> - Die algerische Wirtschaft verzeichnet im Jahr 2024 ein bescheidenes 
+#> BIP-Wachstum von 2-3 %, das hauptsächlich durch den Export von 
+#> Kohlenwasserstoffen angetrieben wird.  
+#> - Die Wirtschaft ist stark von Öl und Erdgas abhängig, die über 90 % der 
+#> Exporterlöse ausmachen, was sie Preisschwankungen aussetzt.  
+#> - Zu den wichtigsten Herausforderungen gehören die Notwendigkeit der 
+#> wirtschaftlichen Diversifizierung, hohe Jugendarbeitslosigkeit und Inflation 
+#> vor dem Hintergrund globaler Unsicherheiten.
 ```
 
 If you want to inspect the multi-agents orchestration, you have access
@@ -1111,7 +1190,7 @@ to the `agents_interaction` object:
 lead_agent$agents_interaction
 #> [[1]]
 #> [[1]]$agent_id
-#> fc26996a-f72e-414b-a083-df9059800682
+#> e4412b5d-da0c-4661-8060-57eee1f1c598
 #> 
 #> [[1]]$agent_name
 #> [1] "researcher"
@@ -1123,13 +1202,14 @@ lead_agent$agents_interaction
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[1]]$prompt
-#> [1] "Research the current economic situation in Algeria, including key indicators such as GDP growth, inflation, unemployment, and major industries."
+#> [1] "Gather current and reliable information about the economic situation in Algeria, including key indicators such as GDP growth, main industries, and challenges."
 #> 
 #> [[1]]$response
-#> As of early 2024, Algeria's GDP growth is projected around 3-4%, supported by 
-#> oil and gas exports; inflation is moderate at about 5-7%. Unemployment remains 
-#> high, especially youth unemployment near 25%. Major industries include 
-#> hydrocarbons (oil and gas), agriculture, and manufacturing.
+#> As of 2024, Algeria's GDP growth is modest, around 2-3% annually, driven by 
+#> hydrocarbon exports (oil and natural gas), which constitute over 90% of export 
+#> revenues. Key challenges include economic diversification, high youth 
+#> unemployment, reliance on volatile oil prices, and inflation pressures amid 
+#> global economic uncertainties.
 #> 
 #> [[1]]$edited_by_hitl
 #> [1] FALSE
@@ -1137,7 +1217,7 @@ lead_agent$agents_interaction
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> caf0e769-4316-4d9d-b1f4-9ee0ad6efe85
+#> cad2bb9e-2b68-4bc2-8214-0ad51f3235a6
 #> 
 #> [[2]]$agent_name
 #> [1] "summarizer"
@@ -1149,14 +1229,15 @@ lead_agent$agents_interaction
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[2]]$prompt
-#> [1] "Summarize the researched economic information into 3 clear and concise bullet points."
+#> [1] "Summarize the gathered information into three clear and concise bullet points highlighting the overall economic condition."
 #> 
 #> [[2]]$response
-#> - Algeria's GDP growth is projected at 3-4% in early 2024, primarily driven by 
-#> oil and gas exports.  
-#> - Inflation is moderate, ranging between 5-7%, while youth unemployment remains
-#> high at approximately 25%.  
-#> - Key economic sectors include hydrocarbons, agriculture, and manufacturing.
+#> - Algeria's economy in 2024 shows modest GDP growth of 2-3%, primarily fueled 
+#> by hydrocarbon exports.  
+#> - The economy heavily depends on oil and natural gas, which make up over 90% of
+#> export revenues, exposing it to price volatility.  
+#> - Key challenges include the need for economic diversification, high youth 
+#> unemployment, and inflation amid global uncertainties.
 #> 
 #> [[2]]$edited_by_hitl
 #> [1] FALSE
@@ -1164,7 +1245,7 @@ lead_agent$agents_interaction
 #> 
 #> [[3]]
 #> [[3]]$agent_id
-#> 2bea9341-63bb-435e-ab8f-25342e023218
+#> 1844745f-5cfc-4376-8fa4-4124b7315f91
 #> 
 #> [[3]]$agent_name
 #> [1] "translator"
@@ -1176,15 +1257,17 @@ lead_agent$agents_interaction
 #> [1] "gpt-4.1-mini"
 #> 
 #> [[3]]$prompt
-#> [1] "Translate the 3 bullet points summarizing Algeria's economic situation into German."
+#> [1] "Translate the three bullet points from English into German accurately, maintaining the original meaning."
 #> 
 #> [[3]]$response
-#> - Das BIP-Wachstum Algeriens wird für Anfang 2024 auf 3-4 % geschätzt, 
-#> hauptsächlich angetrieben durch Öl- und Gasexporte.  
-#> - Die Inflation ist moderat und liegt zwischen 5-7 %, während die 
-#> Jugendarbeitslosigkeit mit etwa 25 % weiterhin hoch ist.  
-#> - Wichtige Wirtschaftssektoren sind Kohlenwasserstoffe, Landwirtschaft und 
-#> verarbeitendes Gewerbe.
+#> - Die algerische Wirtschaft verzeichnet im Jahr 2024 ein bescheidenes 
+#> BIP-Wachstum von 2-3 %, das hauptsächlich durch den Export von 
+#> Kohlenwasserstoffen angetrieben wird.  
+#> - Die Wirtschaft ist stark von Öl und Erdgas abhängig, die über 90 % der 
+#> Exporterlöse ausmachen, was sie Preisschwankungen aussetzt.  
+#> - Zu den wichtigsten Herausforderungen gehören die Notwendigkeit der 
+#> wirtschaftlichen Diversifizierung, hohe Jugendarbeitslosigkeit und Inflation 
+#> vor dem Hintergrund globaler Unsicherheiten.
 #> 
 #> [[3]]$edited_by_hitl
 #> [1] FALSE
@@ -1257,7 +1340,7 @@ lead_agent$register_agents(c(openai_4_1_agent, openai_4_1_nano_agent))
 lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to sing when running under the rain? how about a flower?")
 #> [[1]]
 #> [[1]]$agent_id
-#> [1] "77855224-e411-4dc8-9849-2b3bb3346912"
+#> [1] "22ae3b2a-d637-41b8-8189-f105d21e85d4"
 #> 
 #> [[1]]$agent_name
 #> [1] "openai_4_1_agent"
@@ -1269,13 +1352,14 @@ lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to si
 #> [1] "gpt-4.1"
 #> 
 #> [[1]]$response
-#> If you were Algerian, you might sing "Ya Rayah" when running under the rain and
-#> perhaps "Ward El Hob" (The Flower of Love) when thinking of a flower.
+#> As an Algerian, you might enjoy singing "Ya Rayah" when running under the rain,
+#> and if you were a flower, you might ‘sing’ by opening your petals to drink the 
+#> rain.
 #> 
 #> 
 #> [[2]]
 #> [[2]]$agent_id
-#> [1] "4fff4a2c-c240-4f35-a15e-e8f12de15d0c"
+#> [1] "a3b5273f-5fe6-44ad-b650-051e83f4dcfd"
 #> 
 #> [[2]]$agent_name
 #> [1] "openai_4_1_nano_agent"
@@ -1287,9 +1371,8 @@ lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to si
 #> [1] "gpt-4.1-nano"
 #> 
 #> [[2]]$response
-#> If you were Algerian, you might enjoy singing "Zina" by Bab El West or "Aicha" 
-#> by Khaled when running under the rain, and perhaps "Ya Rayah" by Rachid Taha 
-#> when thinking of a flower.
+#> If you were Algerian, you might enjoy singing "Dikrayat" by Warda when running 
+#> under the rain, and "Lily" (Lily) by Khaled when thinking of a flower.
 ```
 
 You can also access the history of the `broadcasting` using the
@@ -1304,7 +1387,7 @@ lead_agent$broadcast_history
 #> [[1]]$responses
 #> [[1]]$responses[[1]]
 #> [[1]]$responses[[1]]$agent_id
-#> [1] "77855224-e411-4dc8-9849-2b3bb3346912"
+#> [1] "22ae3b2a-d637-41b8-8189-f105d21e85d4"
 #> 
 #> [[1]]$responses[[1]]$agent_name
 #> [1] "openai_4_1_agent"
@@ -1316,13 +1399,14 @@ lead_agent$broadcast_history
 #> [1] "gpt-4.1"
 #> 
 #> [[1]]$responses[[1]]$response
-#> If you were Algerian, you might sing "Ya Rayah" when running under the rain and
-#> perhaps "Ward El Hob" (The Flower of Love) when thinking of a flower.
+#> As an Algerian, you might enjoy singing "Ya Rayah" when running under the rain,
+#> and if you were a flower, you might ‘sing’ by opening your petals to drink the 
+#> rain.
 #> 
 #> 
 #> [[1]]$responses[[2]]
 #> [[1]]$responses[[2]]$agent_id
-#> [1] "4fff4a2c-c240-4f35-a15e-e8f12de15d0c"
+#> [1] "a3b5273f-5fe6-44ad-b650-051e83f4dcfd"
 #> 
 #> [[1]]$responses[[2]]$agent_name
 #> [1] "openai_4_1_nano_agent"
@@ -1334,9 +1418,8 @@ lead_agent$broadcast_history
 #> [1] "gpt-4.1-nano"
 #> 
 #> [[1]]$responses[[2]]$response
-#> If you were Algerian, you might enjoy singing "Zina" by Bab El West or "Aicha" 
-#> by Khaled when running under the rain, and perhaps "Ya Rayah" by Rachid Taha 
-#> when thinking of a flower.
+#> If you were Algerian, you might enjoy singing "Dikrayat" by Warda when running 
+#> under the rain, and "Lily" (Lily) by Khaled when thinking of a flower.
 ```
 
 ## Human In The Loop (HITL)
@@ -1431,35 +1514,35 @@ best_answer
 #> $proposals
 #> $proposals[[1]]
 #> $proposals[[1]]$agent_id
-#> [1] "ef5620da-0cea-4279-8df9-8daa83c990b9"
+#> [1] "b34d385c-bfc6-432e-92f2-0404e6b60307"
 #> 
 #> $proposals[[1]]$agent_name
 #> [1] "stylist"
 #> 
 #> $proposals[[1]]$response
-#> Layer the blue Calvin Klein shirt with a neutral-colored sweater or blazer 
-#> (like gray, navy, or beige), add a scarf that incorporates blue or pink tones, 
-#> and finish with smart shoes and a tailored coat for a cohesive winter look.
+#> Layer your blue Calvin Klein shirt with a tailored dark or neutral coat, add a 
+#> scarf that complements both blue and pink, and finish with smart footwear for a
+#> cohesive winter look.
 #> 
 #> 
 #> $proposals[[2]]
 #> $proposals[[2]]$agent_id
-#> [1] "980946b7-3a55-4426-9d87-bbc5c4a32060"
+#> [1] "d3ce8014-f884-4ac8-a375-b54fe5811a2b"
 #> 
 #> $proposals[[2]]$agent_name
 #> [1] "stylist2"
 #> 
 #> $proposals[[2]]$response
-#> Pair the blue Calvin Klein shirt with a neutral-colored sweater or blazer and a
-#> warm coat, complemented by appropriate winter accessories, to create a stylish 
-#> and cohesive look.
+#> Layer the blue Calvin Klein shirt with a neutral-colored sweater or blazer and 
+#> add a warm coat, then complete the look with complementary accessories and 
+#> footwear suitable for winter.
 #> 
 #> 
 #> 
 #> $chosen_response
-#> Layer the blue Calvin Klein shirt with a neutral-colored sweater or blazer 
-#> (like gray, navy, or beige), add a scarf that incorporates blue or pink tones, 
-#> and finish with smart shoes and a tailored coat for a cohesive winter look.
+#> Layer your blue Calvin Klein shirt with a tailored dark or neutral coat, add a 
+#> scarf that complements both blue and pink, and finish with smart footwear for a
+#> cohesive winter look.
 ```
 
 ## Agents Dialog
@@ -1526,16 +1609,18 @@ result <- lead_agent$agents_dialog(
 #> ℹ Iteration 1 - ceo2 responding...
 #> ℹ Iteration 2 - ceo1 responding...
 #> ℹ Iteration 2 - ceo2 responding...
-#> ✔ Consensus reached by ceo2 at iteration 2!
+#> ℹ Iteration 3 - ceo1 responding...
+#> ✔ Consensus reached by ceo1 at iteration 3!
 #> ✔ Dialog completed.
 
 # Access the final response
 result$final_response
-#> Launch a culturally tailored digital marketing campaign that emphasizes the 
-#> premium quality and heritage of Ouergla dates, ensures adherence to German 
-#> import and organic certification standards, and includes collaborations with 
-#> German retailers and participation in major food trade fairs to maximize brand 
-#> visibility and consumer trust.
+#> Launch a phased 2-year marketing strategy beginning with cost-effective 
+#> targeted digital campaigns and selective partnerships with German organic 
+#> retailers in year one, followed by the integration of Ouergla’s heritage and 
+#> sustainable farming storytelling into online content and concurrent investments
+#> in export logistics to ensure premium freshness for the German market in year 
+#> two.
 
 # View the dialog history
 result$dialog_history
@@ -1544,16 +1629,16 @@ result$dialog_history
 #> [1] 1
 #> 
 #> [[1]]$agent_id
-#> [1] "14ceba42-22ee-42f9-a405-dd1869e99324"
+#> [1] "d09acbe6-67b3-447a-a39c-edadb0eb2b77"
 #> 
 #> [[1]]$agent_name
 #> [1] "ceo1"
 #> 
 #> [[1]]$response
 #> Develop a targeted digital marketing campaign highlighting the premium quality 
-#> and unique origin of Ouergla dates, alongside partnerships with German 
-#> retailers and participation in key food trade fairs to increase brand 
-#> visibility and consumer trust.
+#> and health benefits of Ouergla dates, paired with partnerships with German 
+#> organic food retailers and participation in key trade fairs over the next two 
+#> years.
 #> 
 #> 
 #> [[2]]
@@ -1561,28 +1646,18 @@ result$dialog_history
 #> [1] 1
 #> 
 #> [[2]]$agent_id
-#> [1] "38f68b86-958f-47c9-b290-8b90c7425db7"
+#> [1] "806f9cf3-487d-4cb8-99d7-20b9b9763eeb"
 #> 
 #> [[2]]$agent_name
 #> [1] "ceo2"
 #> 
 #> [[2]]$response
-#> Their proposal addresses key elements I am looking for: highlighting the 
-#> premium quality and unique origin of Ouergla dates aligns perfectly with our 
-#> brand identity, and engaging with German retailers and trade fairs will surely 
-#> enhance market presence. However, it lacks emphasis on bespoke cultural 
-#> adaptation in marketing materials to better resonate with diverse German 
-#> consumer segments and does not mention compliance with German import 
-#> regulations or organic certification, which are crucial for export success in 
-#> this market.
-#> 
-#> My counterproposal: Launch a culturally tailored digital marketing campaign 
-#> that emphasizes the premium quality and heritage of Ouergla dates, ensures 
-#> adherence to German import and organic certification standards, and includes 
-#> collaborations with German retailers and participation in major food trade 
-#> fairs to maximize brand visibility and consumer trust.
-#> 
-#> Would you like to adjust your approach to incorporate these points?
+#> The proposal to target digital marketing and partner with organic retailers in 
+#> Germany aligns well with our goal to boost exports, but I suggest also 
+#> incorporating localized storytelling around Ouergla’s heritage and sustainable 
+#> farming practices to create a stronger emotional connection with German 
+#> consumers, while ensuring logistics are optimized for fresh delivery to 
+#> maintain premium quality.
 #> 
 #> 
 #> [[3]]
@@ -1590,24 +1665,19 @@ result$dialog_history
 #> [1] 2
 #> 
 #> [[3]]$agent_id
-#> [1] "14ceba42-22ee-42f9-a405-dd1869e99324"
+#> [1] "d09acbe6-67b3-447a-a39c-edadb0eb2b77"
 #> 
 #> [[3]]$agent_name
 #> [1] "ceo1"
 #> 
 #> [[3]]$response
-#> Your counterproposal effectively addresses the vital aspects that I initially 
-#> missed, especially the cultural adaptation and strict compliance with German 
-#> import and organic certification standards, which are essential for sustainable
-#> growth in the German market. Therefore, I accept your enhanced approach to 
-#> ensure our marketing strategy is both culturally relevant and fully compliant 
-#> with regulatory demands.
-#> 
-#> CONSENSUS: Launch a culturally tailored digital marketing campaign that 
-#> emphasizes the premium quality and heritage of Ouergla dates, ensures adherence
-#> to German import and organic certification standards, and includes 
-#> collaborations with German retailers and participation in major food trade 
-#> fairs to maximize brand visibility and consumer trust.
+#> Your suggestion to incorporate localized storytelling about Ouergla’s heritage 
+#> and sustainable practices is valuable for deepening consumer connection; 
+#> however, given our company's current limited marketing budget and logistical 
+#> capacity in Ouergla, I propose focusing first on targeted digital marketing 
+#> combined with selective partnerships with established German organic retailers,
+#> while gradually building storytelling elements through cost-effective online 
+#> content and ensuring logistics prioritize shelf-life preservation.
 #> 
 #> 
 #> [[4]]
@@ -1615,17 +1685,37 @@ result$dialog_history
 #> [1] 2
 #> 
 #> [[4]]$agent_id
-#> [1] "38f68b86-958f-47c9-b290-8b90c7425db7"
+#> [1] "806f9cf3-487d-4cb8-99d7-20b9b9763eeb"
 #> 
 #> [[4]]$agent_name
 #> [1] "ceo2"
 #> 
 #> [[4]]$response
-#> CONSENSUS: Launch a culturally tailored digital marketing campaign that 
-#> emphasizes the premium quality and heritage of Ouergla dates, ensures adherence
-#> to German import and organic certification standards, and includes 
-#> collaborations with German retailers and participation in major food trade 
-#> fairs to maximize brand visibility and consumer trust.
+#> I understand the importance of budget constraints and logistics; therefore, I 
+#> propose initiating a phased marketing strategy that prioritizes cost-effective 
+#> targeted digital campaigns and selective retailer partnerships in year one, 
+#> while gradually integrating storytelling about Ouergla’s heritage and 
+#> sustainable farming into online content in year two, alongside investing in 
+#> improved export logistics to maintain product freshness for the German market.
+#> 
+#> 
+#> [[5]]
+#> [[5]]$iteration
+#> [1] 3
+#> 
+#> [[5]]$agent_id
+#> [1] "d09acbe6-67b3-447a-a39c-edadb0eb2b77"
+#> 
+#> [[5]]$agent_name
+#> [1] "ceo1"
+#> 
+#> [[5]]$response
+#> CONSENSUS: Launch a phased 2-year marketing strategy beginning with 
+#> cost-effective targeted digital campaigns and selective partnerships with 
+#> German organic retailers in year one, followed by the integration of Ouergla’s 
+#> heritage and sustainable farming storytelling into online content and 
+#> concurrent investments in export logistics to ensure premium freshness for the 
+#> German market in year two.
 ```
 
 If the instructions of the Agents differ fundamentally, they won’t be
@@ -1698,12 +1788,11 @@ result <- lead_agent$agents_dialog(
 
 # Access the final response
 result$final_response
-#> Implement a phased, hybrid marketing strategy combining initial targeted 
-#> digital storytelling with micro-influencers and collaborations in niche German 
-#> organic markets to build authentic brand recognition, followed by scaled 
-#> high-impact luxury events and premium retail partnerships as export demand 
-#> grows, ensuring both cost-efficiency and rapid market penetration over the next
-#> two years.
+#> Implement a targeted and budget-conscious digital marketing campaign focused on
+#> social media ads and partnerships with micro-influencers in Germany’s health 
+#> and specialty food niches, complemented by participation in affordable regional
+#> food fairs to promote the authenticity and health benefits of Ouergla dates and
+#> sustainably increase exports over the next two years.
 
 # View the dialog history
 result$dialog_history
@@ -1712,17 +1801,16 @@ result$dialog_history
 #> [1] 1
 #> 
 #> [[1]]$agent_id
-#> [1] "66b06912-f95a-42cd-98b0-5be2553368b1"
+#> [1] "7f3684af-8dce-4a43-9a0b-993d54713810"
 #> 
 #> [[1]]$agent_name
 #> [1] "ceo1"
 #> 
 #> [[1]]$response
-#> Launch a premium, culturally immersive marketing campaign in Germany featuring 
-#> luxury packaging, high-profile partnerships with German gourmet chefs and 
-#> influencers, extensive sampling events in key cities, and sustained digital 
-#> advertising showcasing the unique heritage and superior quality of Ouergla 
-#> dates.
+#> Launch an extensive integrated marketing campaign combining premium product 
+#> placements in top German supermarkets, high-profile influencer partnerships, 
+#> immersive cultural events celebrating Algerian heritage, and targeted digital 
+#> advertising emphasizing the authenticity and health benefits of Ouergla dates.
 #> 
 #> 
 #> [[2]]
@@ -1730,20 +1818,23 @@ result$dialog_history
 #> [1] 1
 #> 
 #> [[2]]$agent_id
-#> [1] "63f9bc52-3a5b-4fbb-a692-4fde55c9bedd"
+#> [1] "d6c3e5b0-8814-4ad2-b1b0-b8b220b9d6d1"
 #> 
 #> [[2]]$agent_name
 #> [1] "ceo2"
 #> 
 #> [[2]]$response
-#> While targeting premium positioning and partnerships can be effective, the 
-#> proposed approach involves high costs with luxury packaging, celebrity chefs, 
-#> and extensive events, which conflicts with my need to keep the marketing budget
-#> low; instead, I propose launching a cost-effective digital campaign focused on 
-#> storytelling through social media influencers popular in Germany’s health and 
-#> organic food communities, combined with targeted online ads and collaboration 
-#> with local specialty stores for trial offers to boost exports over the next two
-#> years.
+#> Their proposal is very comprehensive but likely too expensive given my strict 
+#> budget constraints. Premium placements in top supermarkets, high-profile 
+#> influencers, and immersive cultural events all require significant investment, 
+#> which I want to avoid.
+#> 
+#> Counterproposal: Launch a cost-effective digital marketing campaign focused on 
+#> targeted social media ads and partnerships with niche German food bloggers to 
+#> highlight the authenticity and health benefits of Ouergla dates, combined with 
+#> participation in affordable local food fairs to directly reach consumers.
+#> 
+#> Your thoughts?
 #> 
 #> 
 #> [[3]]
@@ -1751,19 +1842,21 @@ result$dialog_history
 #> [1] 2
 #> 
 #> [[3]]$agent_id
-#> [1] "66b06912-f95a-42cd-98b0-5be2553368b1"
+#> [1] "7f3684af-8dce-4a43-9a0b-993d54713810"
 #> 
 #> [[3]]$agent_name
 #> [1] "ceo1"
 #> 
 #> [[3]]$response
-#> Your low-budget digital strategy is pragmatic but conflicts with my directive 
-#> to spend maximum resources to rapidly scale exports with high-impact 
-#> visibility; therefore, I counterpropose a comprehensive, multi-channel campaign
-#> including lavish product launches in top German cities, sponsorship of 
-#> large-scale food and cultural festivals, collaborations with elite influencers 
-#> and media, plus premium retail partnerships, to firmly establish Ouergla dates 
-#> as Germany’s luxury, must-have delicacy over the next two years.
+#> Their proposal prioritizes budget constraints that I explicitly do not have, 
+#> and it limits the scale of impact by focusing only on cost-effective methods, 
+#> which conflicts with my directive to spend as much as possible; therefore, my 
+#> counterproposal is to invest heavily in a multi-channel premium marketing 
+#> strategy including flagship Algerian-themed pop-up stores in major German 
+#> cities, extensive influencer collaborations across social and traditional 
+#> media, sponsorship of major food and culture festivals, and a high-profile PR 
+#> campaign showcasing Ouergla dates’ uniqueness and health benefits to fully 
+#> maximize export growth over the next two years.
 #> 
 #> 
 #> [[4]]
@@ -1771,19 +1864,24 @@ result$dialog_history
 #> [1] 2
 #> 
 #> [[4]]$agent_id
-#> [1] "63f9bc52-3a5b-4fbb-a692-4fde55c9bedd"
+#> [1] "d6c3e5b0-8814-4ad2-b1b0-b8b220b9d6d1"
 #> 
 #> [[4]]$agent_name
 #> [1] "ceo2"
 #> 
 #> [[4]]$response
-#> Your proposal to rapidly scale with high-impact visibility through lavish 
-#> events and elite partnerships directly conflicts with my strict budget 
-#> constraints, so I propose a focused approach using affordable local German 
-#> organic markets and food fairs, paired with engaging storytelling via 
-#> budget-friendly social media content created by micro-influencers passionate 
-#> about natural foods, to steadily build brand recognition and grow exports 
-#> sustainably over the next two years.
+#> Their proposal involves heavy spending which directly conflicts with my strict 
+#> requirement to keep the marketing budget low. Large-scale pop-up stores, 
+#> extensive influencer collaborations, festival sponsorships, and high-profile PR
+#> campaigns will be very costly and exceed my budget constraints.
+#> 
+#> Counterproposal: Implement a lean marketing approach focusing on targeted 
+#> digital ads in Germany and collaboration with select micro-influencers in the 
+#> food and health niche to promote authenticity and health benefits of Ouergla 
+#> dates, while leveraging cost-effective local food events to build brand 
+#> awareness with minimal expenditure.
+#> 
+#> Would you agree this better aligns with my budget priorities?
 #> 
 #> 
 #> [[5]]
@@ -1791,18 +1889,19 @@ result$dialog_history
 #> [1] 3
 #> 
 #> [[5]]$agent_id
-#> [1] "66b06912-f95a-42cd-98b0-5be2553368b1"
+#> [1] "7f3684af-8dce-4a43-9a0b-993d54713810"
 #> 
 #> [[5]]$agent_name
 #> [1] "ceo1"
 #> 
 #> [[5]]$response
-#> Your budget-limited approach to gradual brand building is incompatible with my 
-#> mandate to deploy an unrestricted budget for rapid, maximum-impact export 
-#> growth; therefore, I reaffirm my counterproposal to invest heavily in 
-#> high-profile luxury events, wide-reaching media campaigns, premium retail 
-#> collaborations, and influential endorsements to position Ouergla dates as the 
-#> top-tier German delicacy within two years.
+#> Their lean, cost-conscious approach conflicts directly with my clear directive 
+#> to spend as much as possible to maximize exports; therefore, my counterproposal
+#> remains to execute a lavish marketing strategy involving extravagant brand 
+#> activations, exclusive partnerships with top-tier German supermarkets and 
+#> premium influencers, large-scale cultural events showcasing Ouergla dates, and 
+#> a comprehensive multimedia campaign to aggressively penetrate the German market
+#> over the next two years.
 #> 
 #> 
 #> [[6]]
@@ -1810,18 +1909,23 @@ result$dialog_history
 #> [1] 3
 #> 
 #> [[6]]$agent_id
-#> [1] "63f9bc52-3a5b-4fbb-a692-4fde55c9bedd"
+#> [1] "d6c3e5b0-8814-4ad2-b1b0-b8b220b9d6d1"
 #> 
 #> [[6]]$agent_name
 #> [1] "ceo2"
 #> 
 #> [[6]]$response
-#> Your insistence on an unrestricted, high-budget approach conflicts with my 
-#> critical need to keep marketing expenses low while increasing exports; 
-#> therefore, I propose a lean, scalable marketing strategy leveraging 
-#> cost-effective digital channels, targeted collaborations with niche German 
-#> organic retailers, and grassroots community engagement that maximizes export 
-#> growth sustainably over the next two years without exceeding budget limits.
+#> Their proposal directly conflicts with my primary constraint of maintaining a 
+#> low marketing budget, as it involves extravagant spending on premiums, 
+#> large-scale events, and top-tier partnerships which I cannot afford.
+#> 
+#> Counterproposal: Focus on a lean, targeted digital marketing campaign utilizing
+#> affordable social media ads and collaborations with micro-influencers in 
+#> Germany’s health and specialty food sectors, paired with participation in 
+#> cost-effective regional food fairs, to boost exports sustainably over the next 
+#> two years while respecting the strict budget limitations.
+#> 
+#> Does this approach better satisfy our shared goal within my budget constraints?
 ```
 
 ## Code of Conduct

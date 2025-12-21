@@ -22,5 +22,6 @@ Imports:
     ellmer (>= 0.4.0),
     glue (>= 1.8.0),
     R6 (>= 2.6.1),
+    rlang (>= 1.1.6),
     uuid (>= 1.2.0)
 RoxygenNote: 7.3.2
