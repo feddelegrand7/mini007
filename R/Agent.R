@@ -973,7 +973,7 @@ Agent <- R6::R6Class(
 
       cli::cli_alert_success("Tool successfully generated and registered")
       cli::cli_alert_info("Call '<agent-name>$llm_object$get_tools()' to inspect the tools")
-      cli::cli_alert_info("Use the export_tools( ) method to save the tools as a json file")
+      cli::cli_alert_info("If satisfied, you can copy the tool and put in your corresponding R file")
     },
 
     #' @description
