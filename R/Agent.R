@@ -12,6 +12,7 @@
 #' @importFrom cli cli_abort cli_alert_success cli_alert_warning cli_alert_info cli_rule cli_text cli_ul
 #' @importFrom glue glue
 #' @importFrom ellmer type_object type_string type_number
+#' @importFrom rlang parse_expr eval_bare caller_env
 
 #' @export
 Agent <- R6::R6Class(
@@ -913,10 +914,6 @@ Agent <- R6::R6Class(
 
         Example format 2:
 
-        #' Gets the current time in the given time zone.
-        #'
-        #' @param tz The time zone to get the current time in.
-        #' @return The current time in the given time zone.
         get_current_time <- function(tz = 'UTC') {
           format(Sys.time(), tz = tz, usetz = TRUE)
         }

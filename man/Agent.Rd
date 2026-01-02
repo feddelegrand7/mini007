@@ -366,8 +366,6 @@ agent$generate_and_register_tool(
 # Now the tool is available to use
 agent$list_tools()
 }
-Gets the current time in the given time zone.
-
 
 ## ------------------------------------------------
 ## Method `Agent$clone_agent`
@@ -1210,8 +1208,6 @@ agent$generate_and_register_tool(
 # Now the tool is available to use
 agent$list_tools()
 }
-Gets the current time in the given time zone.
-
 }
 \if{html}{\out{</div>}}
 
@@ -1233,13 +1229,8 @@ Useful for creating multiple instances of the same agent type.
 \describe{
 \item{\code{new_name}}{Optional character string to assign a new name to the cloned agent.
 If NULL, the cloned agent retains the original name.}
-
-\item{\code{tz}}{The time zone to get the current time in.}
 }
 \if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-The current time in the given time zone.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}

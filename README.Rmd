@@ -488,8 +488,8 @@ performance.
 You can easily register one or several tools using the `register_tools` method. The tools are created using `ellmer`, consider the following example: 
 
 ```{r}
-openai_4_1_nano <- ellmer::chat(
-  name = "openai/gpt-4.1-nano",
+openai_4_1 <- ellmer::chat(
+  name = "openai/gpt-4.1",
   credentials = function() {Sys.getenv("OPENAI_API_KEY")},
   echo = "none"
 )
@@ -497,7 +497,7 @@ openai_4_1_nano <- ellmer::chat(
 weather_agent <- Agent$new(
   name = "weather_assistant",
   instruction = "You are a weather assistant.",
-  llm_object = openai_4_1_nano
+  llm_object = openai_4_1
 )
 
 weather_function_algiers <- function() {
@@ -559,12 +559,12 @@ weather_agent$list_tools()
 ###### At the moment, only in the development version
 
 
-The `generate_and_register` method allows you to create tools from simple natural language descriptions (for example, “create a tool that saves files to disk”) and automatically generates the complete R code needed to implement them. It produces a fully functional R function that encapsulates the tool’s logic, along with a complete `ellmer` tool definition that includes proper type specifications and clear parameter descriptions. 
+The `generate_and_register_tool` method allows you to create tools from simple natural language descriptions (for example, “create a tool that saves files to disk”) and automatically generates the complete R code needed to implement them. It produces a fully functional R function that encapsulates the tool’s logic, along with a complete `ellmer` tool definition that includes proper type specifications and clear parameter descriptions. 
 
 
 ```{r}
 weather_agent$generate_and_register_tool(
-  description = "create a tool that uses httr to call the open-meteo api https://open-meteo.com/en/docs to get the current weather about a specific city"
+  description = "create a tool that uses httr to call the open-meteo api https://open-meteo.com/en/docs to get the current weather about any city in the world"
 )
 ```
 
@@ -843,12 +843,6 @@ If the instructions of the Agents differ fundamentally, they won't be able to fi
 
 
 ```{r}
-openai_4_1_mini <- ellmer::chat(
-  name = "openai/gpt-4.1-mini",
-  api_key = Sys.getenv("OPENAI_API_KEY"),
-  echo = "none"
-)
-
 ceo1 <- Agent$new(
   name = "ceo1",
   instruction = paste0(
