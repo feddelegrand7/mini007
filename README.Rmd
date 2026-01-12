@@ -483,7 +483,6 @@ feedback, and validity status, making it easy to audit and improve your agent's
 performance.
 
 ## Tools 
-###### At the moment, only in the development version
 
 You can easily register one or several tools using the `register_tools` method. The tools are created using `ellmer`, consider the following example: 
 
@@ -556,7 +555,6 @@ weather_agent$clear_tools()
 weather_agent$list_tools()
 ```
 ### Tool Generation
-###### At the moment, only in the development version
 
 
 The `generate_and_register_tool` method allows you to create tools from simple natural language descriptions (for example, “create a tool that saves files to disk”) and automatically generates the complete R code needed to implement them. It produces a fully functional R function that encapsulates the tool’s logic, along with a complete `ellmer` tool definition that includes proper type specifications and clear parameter descriptions. 
@@ -790,7 +788,6 @@ best_answer
 ```
 
 ## Agents Dialog
-###### At the moment, only in the development version
 
 The `agents_dialog` method facilitates an intelligent two-agent collaboration process designed to refine and optimize responses through iterative dialogue. 
 
