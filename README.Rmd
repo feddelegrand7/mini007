@@ -60,9 +60,6 @@ install.packages("mini007")
 
 The documentation is available [here](https://feddelegrand7.github.io/mini007/)
 
-```{r}
-library(mini007)
-```
 
 ## Code of Conduct
 
