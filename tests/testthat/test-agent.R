@@ -160,6 +160,26 @@ test_that("keep_last_n_messages with n=1 keeps system and last message", {
   expect_equal(roles, c("system", "user"))
 })
 
+# --- share_context_with ---
+test_that("share_context_with transfers last messages as user entries", {
+  agent1 <- Agent$new("A1", "instr", dummy_chat$clone())
+  agent2 <- Agent$new("A2", "instr", dummy_chat$clone())
+  # create some messages in agent1
+  agent1$messages <- c(agent1$messages,
+                       list(list(role = "user", content = "hello"),
+                            list(role = "assistant", content = "hi"),
+                            list(role = "user", content = "how are you?")))
+  # share two most recent messages
+  agent1$share_context_with(agent2, n = 2)
+  # agent2 should have received two additional user messages
+  expect_true(length(agent2$messages) >= 3)
+  last_roles <- vapply(tail(agent2$messages, 2), `[[`, "role", FUN.VALUE = character(1))
+  expect_equal(last_roles, c("assistant", "user"))
+  last_contents <- vapply(tail(agent2$messages, 2), `[[`, "content", FUN.VALUE = character(1))
+  expect_equal(last_contents,
+               c("hi", "how are you?"))
+})
+
 # --- get_usage_stats ---
 test_that("get_usage_stats returns expected fields and values", {
   agent <- Agent$new("Stats", "Role", dummy_chat$clone())

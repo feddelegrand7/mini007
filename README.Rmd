@@ -196,6 +196,32 @@ This makes it easy to reconstruct or extend sessions, provide custom context, or
 agent$invoke("summarise the previous conversation")
 ```
 
+#### Sharing context between agents
+###### Available at the moment only in the development version
+
+You can copy recent messages from one agent to another. The transferred entries
+are added as user messages in the receiving agent.
+
+```{r}
+agent_1 <- Agent$new(
+  name = "first",
+  instruction = "You are a friendly bot",
+  llm_object = openai_4_1_mini
+)
+agent_2 <- Agent$new(
+  name = "second",
+  instruction = "You are another bot",
+  llm_object = openai_4_1_mini
+)
+agent_1$invoke("Hello there")
+agent_1$invoke("How are you?")
+
+# share the last two exchanges with a2
+# messages arrive as 'user' entries
+agent_1$share_context_with(agent_2, n = 2)
+agent_2$messages
+```
+
 #### Sync between `messages` and `turns`
 
 You can modify the `messages` object as you please, this will be automatically translated to the suitable `turns` required by `ellmer`: 

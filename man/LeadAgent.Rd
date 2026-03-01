@@ -530,6 +530,7 @@ result$dialog_history
 <li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="reset_conversation_history"><a href='../../mini007/html/Agent.html#method-Agent-reset_conversation_history'><code>mini007::Agent$reset_conversation_history()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="set_budget"><a href='../../mini007/html/Agent.html#method-Agent-set_budget'><code>mini007::Agent$set_budget()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="set_budget_policy"><a href='../../mini007/html/Agent.html#method-Agent-set_budget_policy'><code>mini007::Agent$set_budget_policy()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="share_context_with"><a href='../../mini007/html/Agent.html#method-Agent-share_context_with'><code>mini007::Agent$share_context_with()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="update_instruction"><a href='../../mini007/html/Agent.html#method-Agent-update_instruction'><code>mini007::Agent$update_instruction()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="validate_response"><a href='../../mini007/html/Agent.html#method-Agent-validate_response'><code>mini007::Agent$validate_response()</code></a></span></li>
 </ul>

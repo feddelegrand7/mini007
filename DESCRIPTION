@@ -15,6 +15,8 @@ Description: Provides tools for creating agents with persistent state using
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
+URL: https://github.com/feddelegrand7/mini007
+BugReports: https://github.com/feddelegrand7/mini007/issues
 Imports: 
     checkmate (>= 2.3.1),
     cli (>= 3.6.5),

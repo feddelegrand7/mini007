@@ -1,3 +1,7 @@
+# mini007 0.4.0
+#### Adding new methods:
+- `share_context_with()`
+
 # mini007 0.3.0
 #### Adding new methods to work with `tools`: 
 - `register_tools()`

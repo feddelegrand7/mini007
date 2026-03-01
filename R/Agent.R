@@ -370,6 +370,60 @@ Agent <- R6::R6Class(
     },
 
     #' @description
+    #' Share the most recent conversation messages with another agent.
+    #'
+    #' The last \code{n} non-system messages from \code{self} are appended to the
+    #' history of an other \code{agent}. This is useful when
+    #' one agent needs to handoff context or continue a thread in a separate
+    #' agent.
+    #'
+    #' @param agent An object of class \code{Agent} that will receive the
+    #'   messages.
+    #' @param n Number of recent messages to transfer (excluding the system prompt).
+    #'   Defaults to \code{5}.
+    #' @examples
+    #' \dontrun{
+    #' llm_object <- ellmer::chat(
+    #'   name = "openai/gpt-4.1-mini",
+    #'   api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'   echo = "none"
+    #' )
+    #' a1 <- Agent$new("a1", "instr", llm_object)
+    #' a2 <- Agent$new("a2", "instr", llm_object)
+    #' a1$invoke("Hello")
+    #' a1$invoke("How are you?")
+    #' a1$share_context_with(a2, n = 2)
+    #' a2$messages
+    #' }
+    share_context_with = function(agent, n = 5) {
+
+      if (!inherits(agent, "Agent")) {
+        cli::cli_abort("`agent` must be an Agent instance")
+      }
+
+      checkmate::assert_integerish(n, lower = 1)
+
+      total <- length(self$messages)
+
+      if (total <= 1) {
+        cli::cli_alert_info("No conversation messages to share.")
+        return(invisible(agent))
+      }
+
+      start_idx <- max(2, total - n + 1)
+      msgs <- self$messages[start_idx:total]
+
+      for (m in msgs) {
+        agent$add_message(m$role, m$content)
+      }
+
+      cli::cli_alert_success(
+        "Shared {length(msgs)} messages with agent '{agent$name}'."
+      )
+
+    },
+
+    #' @description
     #' Summarises the agent's conversation history into a concise form and appends it
     #' to the system prompt. Unlike `update_instruction()`, this method does not override
     #' the existing instruction but augments it with a summary for future context.

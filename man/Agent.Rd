@@ -145,6 +145,24 @@ agent$add_message("assistant", "I'm doing well, thank you!")
 }
 
 ## ------------------------------------------------
+## Method `Agent$share_context_with`
+## ------------------------------------------------
+
+\dontrun{
+llm_object <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+a1 <- Agent$new("a1", "instr", llm_object)
+a2 <- Agent$new("a2", "instr", llm_object)
+a1$invoke("Hello")
+a1$invoke("How are you?")
+a1$share_context_with(a2, n = 2)
+a2$messages
+}
+
+## ------------------------------------------------
 ## Method `Agent$clear_and_summarise_messages`
 ## ------------------------------------------------
 
@@ -438,6 +456,7 @@ Assignment is validated automatically.}
 \item \href{#method-Agent-set_budget_policy}{\code{Agent$set_budget_policy()}}
 \item \href{#method-Agent-keep_last_n_messages}{\code{Agent$keep_last_n_messages()}}
 \item \href{#method-Agent-add_message}{\code{Agent$add_message()}}
+\item \href{#method-Agent-share_context_with}{\code{Agent$share_context_with()}}
 \item \href{#method-Agent-clear_and_summarise_messages}{\code{Agent$clear_and_summarise_messages()}}
 \item \href{#method-Agent-update_instruction}{\code{Agent$update_instruction()}}
 \item \href{#method-Agent-get_usage_stats}{\code{Agent$get_usage_stats()}}
@@ -748,6 +767,52 @@ agent <- Agent$new(
 )
 agent$add_message("user", "Hello, how are you?")
 agent$add_message("assistant", "I'm doing well, thank you!")
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Agent-share_context_with"></a>}}
+\if{latex}{\out{\hypertarget{method-Agent-share_context_with}{}}}
+\subsection{Method \code{share_context_with()}}{
+Share the most recent conversation messages with another agent.
+
+The last \code{n} non-system messages from \code{self} are appended to the
+history of an other \code{agent}. This is useful when
+one agent needs to handoff context or continue a thread in a separate
+agent.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Agent$share_context_with(agent, n = 5)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{agent}}{An object of class \code{Agent} that will receive the
+messages.}
+
+\item{\code{n}}{Number of recent messages to transfer (excluding the system prompt).
+Defaults to \code{5}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+llm_object <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+a1 <- Agent$new("a1", "instr", llm_object)
+a2 <- Agent$new("a2", "instr", llm_object)
+a1$invoke("Hello")
+a1$invoke("How are you?")
+a1$share_context_with(a2, n = 2)
+a2$messages
 }
 }
 \if{html}{\out{</div>}}
