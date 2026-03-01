@@ -12,6 +12,8 @@ website:
         href: agents.qmd
       - text: LeadAgent
         href: leadagent.qmd
+      - text: Tools
+        href: tools.qmd
     right:
       - icon: github
         href: https://github.com/feddelegrand7/mini007
@@ -20,5 +22,6 @@ format:
   html:
     toc: true
     code-fold: false
-    theme: cosmo
-    css: styles.css
+    theme:
+      light: cosmo
+      dark: darkly

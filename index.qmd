@@ -42,8 +42,6 @@ You can install `mini007` from CRAN with:
 install.packages("mini007")
 ```
 
-Or, during development, load the package as shown in the setup chunk above.
-
 
 ## Get started
 

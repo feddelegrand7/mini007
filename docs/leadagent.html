@@ -72,10 +72,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-4d9afe2b8d18ee9fa5d0d57b5ed4214d.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-5b4ad623e5705c0698d39aec6f10cf02.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-5b4ad623e5705c0698d39aec6f10cf02.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-0d4a9d19931feb4fee1ddab4b2489000.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-5b4ad623e5705c0698d39aec6f10cf02.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -105,10 +109,171 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }</script>
 
 
-<link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="nav-fixed quarto-light">
+<body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -137,6 +302,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="nav-link active" href="./leadagent.html" aria-current="page"> 
 <span class="menu-text">LeadAgent</span></a>
   </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./tools.html"> 
+<span class="menu-text">Tools</span></a>
+  </li>  
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
@@ -147,6 +316,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
 </div>
       </div> <!-- /container-fluid -->
     </nav>
@@ -160,18 +330,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#leadagent" id="toc-leadagent" class="nav-link active" data-scroll-target="#leadagent">LeadAgent</a>
-  <ul class="collapse">
-  <li><a href="#creating-a-multi-agents-orchestraction" id="toc-creating-a-multi-agents-orchestraction" class="nav-link" data-scroll-target="#creating-a-multi-agents-orchestraction">Creating a multi-agents orchestraction</a></li>
-  <li><a href="#visualizing-agent-plans-with-visualize_plan" id="toc-visualizing-agent-plans-with-visualize_plan" class="nav-link" data-scroll-target="#visualizing-agent-plans-with-visualize_plan">Visualizing agent plans with <code>visualize_plan()</code></a></li>
+  <li><a href="#creating-a-multi-agents-orchestraction" id="toc-creating-a-multi-agents-orchestraction" class="nav-link active" data-scroll-target="#creating-a-multi-agents-orchestraction">Creating a multi-agents orchestraction</a></li>
+  <li><a href="#visualizing-agent-plans-with-visualize_plan" id="toc-visualizing-agent-plans-with-visualize_plan" class="nav-link" data-scroll-target="#visualizing-agent-plans-with-visualize_plan">Visualizing agent plans with <strong>visualize_plan()</strong></a></li>
   <li><a href="#broadcasting" id="toc-broadcasting" class="nav-link" data-scroll-target="#broadcasting">Broadcasting</a></li>
   <li><a href="#human-in-the-loop-hitl" id="toc-human-in-the-loop-hitl" class="nav-link" data-scroll-target="#human-in-the-loop-hitl">Human In The Loop (HITL)</a></li>
-  </ul></li>
+  <li><a href="#judge-as-a-decision-process" id="toc-judge-as-a-decision-process" class="nav-link" data-scroll-target="#judge-as-a-decision-process">Judge as a decision process</a></li>
+  <li><a href="#agents-dialog" id="toc-agents-dialog" class="nav-link" data-scroll-target="#agents-dialog">Agents Dialog</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
+
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
@@ -205,11 +375,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">echo =</span> <span class="st">"none"</span></span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<section id="leadagent" class="level1">
-<h1>LeadAgent</h1>
 <section id="creating-a-multi-agents-orchestraction" class="level2">
 <h2 class="anchored" data-anchor-id="creating-a-multi-agents-orchestraction">Creating a multi-agents orchestraction</h2>
-<p>We can create as many Agents as we want; the <code>LeadAgent</code> will dispatch the instructions to the agents and provide the final answer back. Let’s create three Agents, a <code>researcher</code>, a <code>summarizer</code> and a <code>translator</code>:</p>
+<p>We can create as many Agents as we want, the <code>LeadAgent</code> will dispatch the instructions to the agents and provide with the final answer back. Let’s create three Agents, a <code>researcher</code>, a <code>summarizer</code> and a <code>translator</code>:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>researcher <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"researcher"</span>,</span>
@@ -232,7 +400,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Now, the most important part is to create a <code>LeadAgent</code>:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>lead_agent <span class="ot">&lt;-</span> LeadAgent<span class="sc">$</span><span class="fu">new</span>(</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"Leader"</span>,</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"Leader"</span>, </span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -262,7 +430,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
 [[1]]$agent_id
-2405df72-6d26-45bf-b5dd-9a04fff6edf7
+d7c8dfdd-0981-494c-b566-c79cda798196
 
 [[1]]$agent_name
 [1] "researcher"
@@ -274,12 +442,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 [1] "gpt-4.1-mini"
 
 [[1]]$prompt
-[1] "Gather recent data and reports on Algeria's current economic situation including key indicators such as GDP, inflation, employment, and major industries."
+[1] "Research the current economic situation in Algeria, including key indicators like GDP, inflation, employment, and major industries."
 
 
 [[2]]
 [[2]]$agent_id
-7d792c62-1356-4247-b310-750c3bdf16bd
+d25a8a57-05e4-4b43-af4b-8aa71a4bcfc5
 
 [[2]]$agent_name
 [1] "summarizer"
@@ -291,12 +459,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 [1] "gpt-4.1-mini"
 
 [[2]]$prompt
-[1] "Summarize the gathered information into three clear and concise bullet points highlighting the main aspects of Algeria's economic status."
+[1] "Summarize the researched information into 3 concise bullet points highlighting the main aspects of Algeria's economic situation."
 
 
 [[3]]
 [[3]]$agent_id
-f078967b-569f-4932-88f8-bb0192d9ba90
+1c6dc8e6-3ed5-49f4-aaf1-d868062c80fe
 
 [[3]]$agent_name
 [1] "translator"
@@ -308,30 +476,32 @@ f078967b-569f-4932-88f8-bb0192d9ba90
 [1] "gpt-4.1-mini"
 
 [[3]]$prompt
-[1] "Translate the three bullet points from English into German accurately while maintaining the original meaning."</code></pre>
+[1] "Translate the 3 bullet points from English into German accurately, maintaining the original meaning."</code></pre>
 </div>
 </div>
 <p>Now, in order now to execute the workflow, we just need to call the <code>invoke</code> method which will behind the scene delegate the prompts to suitable Agents and retrieve back the final information:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>response <span class="ot">&lt;-</span> lead_agent<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"Tell me about the economic situation in Algeria, summarize it in 3 bullet points, then translate it into German."</span>)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>response</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>response <span class="ot">&lt;-</span> lead_agent<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"Tell me about the economic situation in Algeria, summarize it in 3 bullet points, then translate it into German."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>response</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>- Das BIP-Wachstum Algeriens wird für Anfang 2024 auf 2-3 % prognostiziert, 
-hauptsächlich angetrieben durch eine Erholung der Kohlenwasserstoff-Exporte.  
-- Die Inflation ist mit etwa 6 % moderat, jedoch bleibt die Arbeitslosigkeit 
-hoch, insbesondere unter Jugendlichen, mit 12-14 %.  
-- Die Wirtschaft ist stark vom Öl und Gas abhängig (über 90 % der Exporte), 
-wobei auch die Landwirtschaft und die verarbeitende Industrie einen Beitrag 
-leisten.</code></pre>
+<pre><code>- Die Wirtschaft Algeriens ist stark von Kohlenwasserstoffen abhängig, die 
+30-40 % des BIP und mehr als 90 % der Exporte ausmachen.  
+- Das Land verzeichnet ein moderates BIP-Wachstum (~2-3 %) bei einer Inflation 
+zwischen 5-7 %.  
+- Die Arbeitslosigkeit bleibt mit etwa 11-12 % hoch, besonders betroffen ist 
+die Jugend, ebenso wie wichtige Sektoren wie Öl und Gas, Landwirtschaft und 
+Bauwesen.</code></pre>
 </div>
 </div>
 <p>If you want to inspect the multi-agents orchestration, you have access to the <code>agents_interaction</code> object:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>lead_agent<span class="sc">$</span>agents_interaction</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>lead_agent<span class="sc">$</span>agents_interaction</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
 [[1]]$agent_id
-2405df72-6d26-45bf-b5dd-9a04fff6edf7
+d7c8dfdd-0981-494c-b566-c79cda798196
 
 [[1]]$agent_name
 [1] "researcher"
@@ -343,14 +513,13 @@ leisten.</code></pre>
 [1] "gpt-4.1-mini"
 
 [[1]]$prompt
-[1] "Gather recent data and reports on Algeria's current economic situation including key indicators such as GDP, inflation, employment, and major industries."
+[1] "Research the current economic situation in Algeria, including key indicators like GDP, inflation, employment, and major industries."
 
 [[1]]$response
-As of early 2024, Algeria's GDP growth is projected around 2-3%, driven by a 
-recovery in hydrocarbon exports. Inflation remains moderate near 6%, while 
-unemployment stays high at about 12-14%, especially among youth. Major 
-industries include oil and gas (over 90% of exports), agriculture, and 
-manufacturing.
+As of early 2024, Algeria's economy is driven by hydrocarbons, contributing 
+about 30-40% of GDP and over 90% of exports. GDP growth is moderate (~2-3%), 
+inflation is around 5-7%, and unemployment remains high (~11-12%), especially 
+among youth. Key industries include oil and gas, agriculture, and construction.
 
 [[1]]$edited_by_hitl
 [1] FALSE
@@ -358,7 +527,7 @@ manufacturing.
 
 [[2]]
 [[2]]$agent_id
-7d792c62-1356-4247-b310-750c3bdf16bd
+d25a8a57-05e4-4b43-af4b-8aa71a4bcfc5
 
 [[2]]$agent_name
 [1] "summarizer"
@@ -370,15 +539,15 @@ manufacturing.
 [1] "gpt-4.1-mini"
 
 [[2]]$prompt
-[1] "Summarize the gathered information into three clear and concise bullet points highlighting the main aspects of Algeria's economic status."
+[1] "Summarize the researched information into 3 concise bullet points highlighting the main aspects of Algeria's economic situation."
 
 [[2]]$response
-- Algeria's GDP growth is projected at 2-3% in early 2024, primarily fueled by 
-a recovery in hydrocarbon exports.
-- Inflation is moderate at around 6%, but unemployment remains high, 
-particularly among youth, at 12-14%.
-- The economy heavily depends on oil and gas (over 90% of exports), with 
-agriculture and manufacturing also contributing.
+- Algeria's economy heavily relies on hydrocarbons, accounting for 30-40% of 
+GDP and more than 90% of exports.  
+- The country experiences moderate GDP growth (~2-3%) with inflation between 
+5-7%.  
+- Unemployment remains high at around 11-12%, particularly affecting the youth,
+alongside key sectors like oil and gas, agriculture, and construction.
 
 [[2]]$edited_by_hitl
 [1] FALSE
@@ -386,7 +555,7 @@ agriculture and manufacturing also contributing.
 
 [[3]]
 [[3]]$agent_id
-f078967b-569f-4932-88f8-bb0192d9ba90
+1c6dc8e6-3ed5-49f4-aaf1-d868062c80fe
 
 [[3]]$agent_name
 [1] "translator"
@@ -398,16 +567,16 @@ f078967b-569f-4932-88f8-bb0192d9ba90
 [1] "gpt-4.1-mini"
 
 [[3]]$prompt
-[1] "Translate the three bullet points from English into German accurately while maintaining the original meaning."
+[1] "Translate the 3 bullet points from English into German accurately, maintaining the original meaning."
 
 [[3]]$response
-- Das BIP-Wachstum Algeriens wird für Anfang 2024 auf 2-3 % prognostiziert, 
-hauptsächlich angetrieben durch eine Erholung der Kohlenwasserstoff-Exporte.  
-- Die Inflation ist mit etwa 6 % moderat, jedoch bleibt die Arbeitslosigkeit 
-hoch, insbesondere unter Jugendlichen, mit 12-14 %.  
-- Die Wirtschaft ist stark vom Öl und Gas abhängig (über 90 % der Exporte), 
-wobei auch die Landwirtschaft und die verarbeitende Industrie einen Beitrag 
-leisten.
+- Die Wirtschaft Algeriens ist stark von Kohlenwasserstoffen abhängig, die 
+30-40 % des BIP und mehr als 90 % der Exporte ausmachen.  
+- Das Land verzeichnet ein moderates BIP-Wachstum (~2-3 %) bei einer Inflation 
+zwischen 5-7 %.  
+- Die Arbeitslosigkeit bleibt mit etwa 11-12 % hoch, besonders betroffen ist 
+die Jugend, ebenso wie wichtige Sektoren wie Öl und Gas, Landwirtschaft und 
+Bauwesen.
 
 [[3]]$edited_by_hitl
 [1] FALSE</code></pre>
@@ -416,48 +585,52 @@ leisten.
 <p>The above example is extremely simple, the usefulness of <code>mini007</code> would shine in more complex processes where a multi-agent sequential orchestration has a higher value added.</p>
 </section>
 <section id="visualizing-agent-plans-with-visualize_plan" class="level2">
-<h2 class="anchored" data-anchor-id="visualizing-agent-plans-with-visualize_plan">Visualizing agent plans with <code>visualize_plan()</code></h2>
+<h2 class="anchored" data-anchor-id="visualizing-agent-plans-with-visualize_plan">Visualizing agent plans with <strong>visualize_plan()</strong></h2>
 <p>Sometimes, before running your workflow, it is helpful to view the orchestration as a visual diagram, showing the sequence of agents and which prompt each will receive. After generating a plan, you can call <code>visualize_plan()</code>:</p>
+<p>This function displays the agents in workflow order as labeled boxes. Hovering a box reveals the delegated prompt. The visualization uses the <code>DiagrammeR</code> package. If no plan exists, it asks you to generate one first.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>lead_agent<span class="sc">$</span><span class="fu">visualize_plan</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>lead_agent<span class="sc">$</span><span class="fu">visualize_plan</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="broadcasting" class="level2">
 <h2 class="anchored" data-anchor-id="broadcasting">Broadcasting</h2>
 <p>If you want to compare several <code>LLM</code> models, the <code>LeadAgent</code> provides a <code>broadcast</code> method that allows you to send a prompt to several different agents and get the result for each agent back in order to make a comparison and potentially choose the best agent/model for the defined prompt:</p>
+<p>Let’s go through an example:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>openai_4_1 <span class="ot">&lt;-</span> ellmer<span class="sc">::</span><span class="fu">chat</span>(</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"openai/gpt-4.1"</span>,</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">credentials =</span> retrieve_open_ai_credential,</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">echo =</span> <span class="st">"none"</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>openai_4_1_agent <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"openai_4_1_agent"</span>,</span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"You are an AI assistant. Answer in 1 sentence max."</span>,</span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1</span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>openai_4_1_nano <span class="ot">&lt;-</span> ellmer<span class="sc">::</span><span class="fu">chat</span>(</span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"openai/gpt-4.1-nano"</span>,</span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">credentials =</span> retrieve_open_ai_credential,</span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">echo =</span> <span class="st">"none"</span></span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>openai_4_1_nano_agent <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"openai_4_1_nano_agent"</span>,</span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"You are an AI assistant. Answer in 1 sentence max."</span>,</span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_nano</span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>lead_agent<span class="sc">$</span><span class="fu">clear_agents</span>() <span class="co"># removing previous agents</span></span>
-<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>lead_agent<span class="sc">$</span><span class="fu">register_agents</span>(<span class="fu">c</span>(openai_4_1_agent, openai_4_1_nano_agent))</span>
-<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>lead_agent<span class="sc">$</span><span class="fu">broadcast</span>(<span class="at">prompt =</span> <span class="st">"If I were Algerian, which song would I like to sing when running under the rain? how about a flower?"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>openai_4_1 <span class="ot">&lt;-</span> ellmer<span class="sc">::</span><span class="fu">chat</span>(</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"openai/gpt-4.1"</span>,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">credentials =</span> retrieve_open_ai_credential, </span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">echo =</span> <span class="st">"none"</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>openai_4_1_agent <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"openai_4_1_agent"</span>, </span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"You are an AI assistant. Answer in 1 sentence max."</span>, </span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>openai_4_1_nano <span class="ot">&lt;-</span> ellmer<span class="sc">::</span><span class="fu">chat</span>(</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"openai/gpt-4.1-nano"</span>,</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">credentials =</span> retrieve_open_ai_credential, </span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">echo =</span> <span class="st">"none"</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>openai_4_1_nano_agent <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"openai_4_1_nano_agent"</span>, </span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"You are an AI assistant. Answer in 1 sentence max."</span>, </span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_nano</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>lead_agent<span class="sc">$</span><span class="fu">clear_agents</span>() <span class="co"># removing previous agents</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>lead_agent<span class="sc">$</span><span class="fu">register_agents</span>(<span class="fu">c</span>(openai_4_1_agent, openai_4_1_nano_agent))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>lead_agent<span class="sc">$</span><span class="fu">broadcast</span>(<span class="at">prompt =</span> <span class="st">"If I were Algerian, which song would I like to sing when running under the rain? how about a flower?"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
 [[1]]$agent_id
-[1] "8898b118-cf3a-4d8a-8d10-b7cce1af1471"
+[1] "bf421e87-b811-48ae-9394-bae3cd4f0add"
 
 [[1]]$agent_name
 [1] "openai_4_1_agent"
@@ -469,14 +642,14 @@ leisten.
 [1] "gpt-4.1"
 
 [[1]]$response
-If you were Algerian, you might sing "Ya Rayah" while running under the rain, 
-and perhaps "Ya Bent Ennas" (which mentions a flower) if thinking about a 
-flower.
+As an Algerian, you might love singing "Ya Rayah" when running under the rain, 
+while a flower might prefer to "sing" its own song of blooming in the freshness
+of the rain.
 
 
 [[2]]
 [[2]]$agent_id
-[1] "d59737e8-e24e-424c-96b4-40a055caf5f0"
+[1] "983e2eed-ae6a-4ab1-a459-482a7c33d61e"
 
 [[2]]$agent_name
 [1] "openai_4_1_nano_agent"
@@ -488,13 +661,13 @@ flower.
 [1] "gpt-4.1-nano"
 
 [[2]]$response
-If you're Algerian, you might enjoy singing Khaled's "Aïcha" when running under
-the rain, and "Lily" for a flower.</code></pre>
+If you were Algerian, you might enjoy singing "Ya Rayah" by Rachid Taha when 
+running under the rain, and "Ahlam" by Cheb Khaled for a flower.</code></pre>
 </div>
 </div>
 <p>You can also access the history of the <code>broadcasting</code> using the <code>broadcast_history</code> attribute:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>lead_agent<span class="sc">$</span>broadcast_history</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>lead_agent<span class="sc">$</span>broadcast_history</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
 [[1]]$prompt
@@ -503,7 +676,7 @@ the rain, and "Lily" for a flower.</code></pre>
 [[1]]$responses
 [[1]]$responses[[1]]
 [[1]]$responses[[1]]$agent_id
-[1] "8898b118-cf3a-4d8a-8d10-b7cce1af1471"
+[1] "bf421e87-b811-48ae-9394-bae3cd4f0add"
 
 [[1]]$responses[[1]]$agent_name
 [1] "openai_4_1_agent"
@@ -515,14 +688,14 @@ the rain, and "Lily" for a flower.</code></pre>
 [1] "gpt-4.1"
 
 [[1]]$responses[[1]]$response
-If you were Algerian, you might sing "Ya Rayah" while running under the rain, 
-and perhaps "Ya Bent Ennas" (which mentions a flower) if thinking about a 
-flower.
+As an Algerian, you might love singing "Ya Rayah" when running under the rain, 
+while a flower might prefer to "sing" its own song of blooming in the freshness
+of the rain.
 
 
 [[1]]$responses[[2]]
 [[1]]$responses[[2]]$agent_id
-[1] "d59737e8-e24e-424c-96b4-40a055caf5f0"
+[1] "983e2eed-ae6a-4ab1-a459-482a7c33d61e"
 
 [[1]]$responses[[2]]$agent_name
 [1] "openai_4_1_nano_agent"
@@ -534,8 +707,8 @@ flower.
 [1] "gpt-4.1-nano"
 
 [[1]]$responses[[2]]$response
-If you're Algerian, you might enjoy singing Khaled's "Aïcha" when running under
-the rain, and "Lily" for a flower.</code></pre>
+If you were Algerian, you might enjoy singing "Ya Rayah" by Rachid Taha when 
+running under the rain, and "Ahlam" by Cheb Khaled for a flower.</code></pre>
 </div>
 </div>
 </section>
@@ -543,20 +716,20 @@ the rain, and "Lily" for a flower.</code></pre>
 <h2 class="anchored" data-anchor-id="human-in-the-loop-hitl">Human In The Loop (HITL)</h2>
 <p>When executing an LLM workflow that relies on many steps, you can set <code>Human In The Loop</code> (<code>HITL</code>) trigger that will check the model’s response at a specific step. You can define a <code>HITL</code> trigger after defining a <code>LeadAgent</code> as follows:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>openai_llm_object <span class="ot">&lt;-</span> ellmer<span class="sc">::</span><span class="fu">chat</span>(</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"openai/gpt-4.1-mini"</span>,</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">credentials =</span> retrieve_open_ai_credential,</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">echo =</span> <span class="st">"none"</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>lead_agent <span class="ot">&lt;-</span> LeadAgent<span class="sc">$</span><span class="fu">new</span>(</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"Leader"</span>,</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_llm_object</span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>lead_agent<span class="sc">$</span><span class="fu">set_hitl</span>(<span class="at">steps =</span> <span class="dv">1</span>)</span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>lead_agent<span class="sc">$</span>hitl_steps</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>openai_llm_object <span class="ot">&lt;-</span> ellmer<span class="sc">::</span><span class="fu">chat</span>(</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"openai/gpt-4.1-mini"</span>,</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">credentials =</span> retrieve_open_ai_credential, </span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">echo =</span> <span class="st">"none"</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>lead_agent <span class="ot">&lt;-</span> LeadAgent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"Leader"</span>, </span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_llm_object</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>lead_agent<span class="sc">$</span><span class="fu">set_hitl</span>(<span class="at">steps =</span> <span class="dv">1</span>)</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>lead_agent<span class="sc">$</span>hitl_steps</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1</code></pre>
 </div>
@@ -568,14 +741,455 @@ the rain, and "Lily" for a flower.</code></pre>
 <li>Stop the execution of the workflow (hard error);</li>
 </ol>
 <p>Note that you can set a <code>HITL</code> at several steps, for example <code>lead_agent$set_hitl(steps = c(1, 2))</code> will set the <code>HITL</code> at step 1 and step 2.</p>
-
-
 </section>
+<section id="judge-as-a-decision-process" class="level2">
+<h2 class="anchored" data-anchor-id="judge-as-a-decision-process">Judge as a decision process</h2>
+<p>Sometimes you want to send a prompt to several agents and pick the best answer. In order to choose the best prompt, you can also rely on the <code>Lead</code> Agent which will act a dudge and pick for you the best answer. You can use the <code>judge_and_choose_best_response</code> method as follows:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>openai_4_1 <span class="ot">&lt;-</span> ellmer<span class="sc">::</span><span class="fu">chat</span>(</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"openai/gpt-4.1"</span>,</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">credentials =</span> retrieve_open_ai_credential, </span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">echo =</span> <span class="st">"none"</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>stylist_1 <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"stylist"</span>,</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"You are an AI assistant. Answer in 1 sentence max."</span>,</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>openai_4_1_nano <span class="ot">&lt;-</span> ellmer<span class="sc">::</span><span class="fu">chat</span>(</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"openai/gpt-4.1-nano"</span>,</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">credentials =</span> retrieve_open_ai_credential, </span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">echo =</span> <span class="st">"none"</span></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>stylist_2 <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"stylist2"</span>,</span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"You are an AI assistant. Answer in 1 sentence max."</span>,</span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_nano</span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>openai_4_1_mini <span class="ot">&lt;-</span> ellmer<span class="sc">::</span><span class="fu">chat</span>(</span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"openai/gpt-4.1-mini"</span>,</span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">credentials =</span> retrieve_open_ai_credential, </span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">echo =</span> <span class="st">"none"</span></span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>stylist_lead_agent <span class="ot">&lt;-</span> LeadAgent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"Stylist Leader"</span>,</span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a>stylist_lead_agent<span class="sc">$</span><span class="fu">register_agents</span>(<span class="fu">c</span>(stylist_1, stylist_2))</span>
+<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a>best_answer <span class="ot">&lt;-</span> stylist_lead_agent<span class="sc">$</span><span class="fu">judge_and_choose_best_response</span>(</span>
+<span id="cb22-39"><a href="#cb22-39" aria-hidden="true" tabindex="-1"></a>  <span class="st">"what's the best way to wear a blue kalvin klein shirt in winter with a pink pair of trousers?"</span></span>
+<span id="cb22-40"><a href="#cb22-40" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb22-41"><a href="#cb22-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-42"><a href="#cb22-42" aria-hidden="true" tabindex="-1"></a>best_answer</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$proposals
+$proposals[[1]]
+$proposals[[1]]$agent_id
+[1] "27528433-4b44-40f5-b9ba-d04fedd250f0"
+
+$proposals[[1]]$agent_name
+[1] "stylist"
+
+$proposals[[1]]$response
+Pair the blue Calvin Klein shirt and pink trousers with a tailored navy or grey
+overcoat, neutral shoes (like white or tan), and a scarf in a complementary 
+shade to create a stylish, balanced winter look.
+
+
+$proposals[[2]]
+$proposals[[2]]$agent_id
+[1] "7a4e8023-b87f-430e-9afc-c89bcd6ae1b8"
+
+$proposals[[2]]$agent_name
+[1] "stylist2"
+
+$proposals[[2]]$response
+Layer the blue Calvin Klein shirt with a neutral-colored sweater or blazer and 
+add a warm coat, keeping the pink trousers as a vibrant focal point.
+
+
+
+$chosen_response
+Pair the blue Calvin Klein shirt and pink trousers with a tailored navy or grey
+overcoat, neutral shoes (like white or tan), and a scarf in a complementary 
+shade to create a stylish, balanced winter look.</code></pre>
+</div>
+</div>
+</section>
+<section id="agents-dialog" class="level2">
+<h2 class="anchored" data-anchor-id="agents-dialog">Agents Dialog</h2>
+<p>The <code>agents_dialog</code> method facilitates an intelligent two-agent collaboration process designed to refine and optimize responses through iterative dialogue.</p>
+<p>It enables two registered agents to take alternating turns improving each other’s outputs until a high-quality final response is reached. The method supports a configurable maximum number of iterations (default: 5) and includes a self-stopping mechanism where agents can indicate agreement by beginning their message with “CONSENSUS:”, followed by the final answer.</p>
+<p>If no consensus is achieved within the iteration limit, the lead agent automatically synthesizes a concluding response based on the conversation. Throughout the exchange, every interaction is stored within the <code>self$dialog_history</code> object. Consider the following examples:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>ceo1 <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"ceo1"</span>,</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="fu">paste0</span>(</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"You are a CEO in  a dates company based in Ouergla, Algeria, "</span>, </span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"You want to boost their exports to Germany. "</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>ceo2 <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"ceo2"</span>,</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="fu">paste0</span>(</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"You are the CEO of a dates company based in Ouergla, Algeria. "</span>, </span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"You are considering starting a marketing compaign to boost the exports to Germany. "</span></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>lead_agent <span class="ot">&lt;-</span> LeadAgent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"Leader"</span>,</span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>lead_agent<span class="sc">$</span><span class="fu">register_agents</span>(<span class="fu">c</span>(ceo1, ceo2))</span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> lead_agent<span class="sc">$</span><span class="fu">agents_dialog</span>(</span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">prompt =</span> <span class="st">"Propose a plan in 1 sentence max about a marketing strategy that will boost the export of dates to Germany for the next 2 years"</span>,</span>
+<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">agent_1_id =</span> ceo1<span class="sc">$</span>agent_id,</span>
+<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">agent_2_id =</span> ceo2<span class="sc">$</span>agent_id,</span>
+<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_iterations =</span> <span class="dv">3</span></span>
+<span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb24-32"><a href="#cb24-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-33"><a href="#cb24-33" aria-hidden="true" tabindex="-1"></a><span class="co"># Access the final response</span></span>
+<span id="cb24-34"><a href="#cb24-34" aria-hidden="true" tabindex="-1"></a>result<span class="sc">$</span>final_response</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Launch a targeted digital marketing campaign in Germany highlighting premium 
+Ouergla dates’ unique heritage, traditional cultivation, and organic qualities,
+partnered with German gourmet retailers, influencers, and active participation 
+in leading food trade fairs to build brand awareness and secure direct export 
+partnerships.</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># View the dialog history</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>result<span class="sc">$</span>dialog_history</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+[[1]]$iteration
+[1] 1
+
+[[1]]$agent_id
+[1] "a330fc9e-4a3e-492f-8c0d-d6df8dc359c0"
+
+[[1]]$agent_name
+[1] "ceo1"
+
+[[1]]$response
+Launch a targeted digital marketing campaign in Germany highlighting the 
+premium quality and unique origin of Ouergla dates, partnered with German 
+gourmet retailers and influencers to build brand awareness and trust.
+
+
+[[2]]
+[[2]]$iteration
+[1] 1
+
+[[2]]$agent_id
+[1] "941091d7-ad87-4977-9e26-2b91864f0b58"
+
+[[2]]$agent_name
+[1] "ceo2"
+
+[[2]]$response
+The proposal is strong in targeting digital channels and leveraging local 
+German influencers and retailers, which aligns well with boosting exports; 
+however, it could be enhanced by incorporating participation in key German 
+trade fairs and food expos to directly connect with distributors and retailers,
+thereby fostering stronger business-to-business relationships critical for 
+sustained export growth.
+
+Counterproposal: Launch a targeted digital marketing campaign in Germany 
+highlighting premium Ouergla dates, partnered with German gourmet retailers, 
+influencers, and active participation in leading food trade fairs to 
+simultaneously build brand awareness and establish direct export partnerships.
+
+
+[[3]]
+[[3]]$iteration
+[1] 2
+
+[[3]]$agent_id
+[1] "a330fc9e-4a3e-492f-8c0d-d6df8dc359c0"
+
+[[3]]$agent_name
+[1] "ceo1"
+
+[[3]]$response
+The counterproposal effectively aligns with my role and requirements by adding 
+trade fairs participation, which is crucial for establishing direct export 
+partnerships and deeper market penetration in Germany, thus complementing 
+digital marketing and influencer engagement; I accept this enhanced strategy as
+it respects our company’s export growth goals without imposing conflicting 
+constraints.
+
+CONSENSUS: Launch a targeted digital marketing campaign in Germany highlighting
+premium Ouergla dates, partnered with German gourmet retailers, influencers, 
+and active participation in leading food trade fairs to simultaneously build 
+brand awareness and establish direct export partnerships.
+
+
+[[4]]
+[[4]]$iteration
+[1] 2
+
+[[4]]$agent_id
+[1] "941091d7-ad87-4977-9e26-2b91864f0b58"
+
+[[4]]$agent_name
+[1] "ceo2"
+
+[[4]]$response
+The consensus proposal aligns well with our goal as a dates company in Ouergla 
+aiming to boost German exports through a multi-channel approach, but to further
+leverage Ouergla’s unique regional heritage and ensure sustainability appeal in
+Germany’s market, I propose adding storytelling about traditional cultivation 
+practices and organic certifications in the messaging.
+
+Counterproposal: Launch a targeted digital marketing campaign in Germany 
+highlighting premium Ouergla dates’ unique heritage, traditional cultivation, 
+and organic qualities, partnered with German gourmet retailers, influencers, 
+and active participation in leading food trade fairs to build brand awareness 
+and secure direct export partnerships.
+
+
+[[5]]
+[[5]]$iteration
+[1] 3
+
+[[5]]$agent_id
+[1] "a330fc9e-4a3e-492f-8c0d-d6df8dc359c0"
+
+[[5]]$agent_name
+[1] "ceo1"
+
+[[5]]$response
+The addition of storytelling around Ouergla’s unique heritage, traditional 
+cultivation, and organic certification directly supports our brand’s 
+distinctiveness and matches growing consumer preferences in Germany, enhancing 
+the original strategy without creating conflicts or constraints; therefore, 
+this enriched messaging combined with digital campaigns, retail partnerships, 
+influencer engagement, and trade fair participation fully aligns with our 
+export growth goals.
+
+CONSENSUS: Launch a targeted digital marketing campaign in Germany highlighting
+premium Ouergla dates’ unique heritage, traditional cultivation, and organic 
+qualities, partnered with German gourmet retailers, influencers, and active 
+participation in leading food trade fairs to build brand awareness and secure 
+direct export partnerships.
+
+
+[[6]]
+[[6]]$iteration
+[1] 3
+
+[[6]]$agent_id
+[1] "941091d7-ad87-4977-9e26-2b91864f0b58"
+
+[[6]]$agent_name
+[1] "ceo2"
+
+[[6]]$response
+CONSENSUS: Launch a targeted digital marketing campaign in Germany highlighting
+premium Ouergla dates’ unique heritage, traditional cultivation, and organic 
+qualities, partnered with German gourmet retailers, influencers, and active 
+participation in leading food trade fairs to build brand awareness and secure 
+direct export partnerships.</code></pre>
+</div>
+</div>
+<p>If the instructions of the Agents differ fundamentally, they won’t be able to find a consensus and the <code>LeadAgent</code> will take over and provide a final response:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>ceo1 <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"ceo1"</span>,</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="fu">paste0</span>(</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"You are a CEO in  a dates company based in Ouergla, Algeria, "</span>, </span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"You want to boost their exports to Germany. "</span>, </span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"You don't care about the budget. You want to spend as much as possible. "</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>ceo2 <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"ceo2"</span>,</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="fu">paste0</span>(</span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"You are the CEO of a dates company based in Ouergla, Algeria. "</span>, </span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"You are considering starting a marketing compaign to boost the exports to Germany. "</span>,</span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"For you the marketing budget is super important and you don't want to spend too much. "</span></span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-21"><a href="#cb28-21" aria-hidden="true" tabindex="-1"></a>lead_agent <span class="ot">&lt;-</span> LeadAgent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb28-22"><a href="#cb28-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"Leader"</span>,</span>
+<span id="cb28-23"><a href="#cb28-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb28-24"><a href="#cb28-24" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb28-25"><a href="#cb28-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-26"><a href="#cb28-26" aria-hidden="true" tabindex="-1"></a>lead_agent<span class="sc">$</span><span class="fu">register_agents</span>(<span class="fu">c</span>(ceo1, ceo2))</span>
+<span id="cb28-27"><a href="#cb28-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-28"><a href="#cb28-28" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> lead_agent<span class="sc">$</span><span class="fu">agents_dialog</span>(</span>
+<span id="cb28-29"><a href="#cb28-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">prompt =</span> <span class="st">"Propose a plan in 1 sentence max about a marketing strategy that will boost the export of dates to Germany for the next 2 years"</span>,</span>
+<span id="cb28-30"><a href="#cb28-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">agent_1_id =</span> ceo1<span class="sc">$</span>agent_id,</span>
+<span id="cb28-31"><a href="#cb28-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">agent_2_id =</span> ceo2<span class="sc">$</span>agent_id,</span>
+<span id="cb28-32"><a href="#cb28-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_iterations =</span> <span class="dv">3</span></span>
+<span id="cb28-33"><a href="#cb28-33" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb28-34"><a href="#cb28-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-35"><a href="#cb28-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Access the final response</span></span>
+<span id="cb28-36"><a href="#cb28-36" aria-hidden="true" tabindex="-1"></a>result<span class="sc">$</span>final_response</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Implement a phased, balanced marketing strategy over the next two years that 
+begins with cost-effective targeted digital campaigns and micro-influencer 
+partnerships within niche German markets, gradually scaling to include premium 
+events, collaborations with renowned chefs, luxury retail placement, and 
+broader multimedia storytelling based on export growth and budget performance 
+to maximize impact while controlling costs.</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># View the dialog history</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>result<span class="sc">$</span>dialog_history</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+[[1]]$iteration
+[1] 1
+
+[[1]]$agent_id
+[1] "bb1e6fef-6439-4379-a850-d5be37edba65"
+
+[[1]]$agent_name
+[1] "ceo1"
+
+[[1]]$response
+Launch a premium, culturally immersive marketing campaign in Germany featuring 
+high-end sampling events, collaborations with top German chefs and influencers,
+and extensive multimedia storytelling highlighting the unique quality and 
+heritage of Ouergla dates.
+
+
+[[2]]
+[[2]]$iteration
+[1] 1
+
+[[2]]$agent_id
+[1] "1e6066a3-20d5-4d83-b7a4-424e23f9ce07"
+
+[[2]]$agent_name
+[1] "ceo2"
+
+[[2]]$response
+While your proposal to launch a premium campaign with high-end events and 
+collaborations could strongly boost our brand image, it seems costly and risks 
+exceeding our strict budget constraints, so I suggest a more cost-effective 
+strategy focusing on targeted digital marketing through German social media 
+platforms, leveraging affordable influencer partnerships and storytelling that 
+highlights Ouergla's dates' unique heritage and quality to stimulate demand 
+over the next two years.
+
+
+[[3]]
+[[3]]$iteration
+[1] 2
+
+[[3]]$agent_id
+[1] "bb1e6fef-6439-4379-a850-d5be37edba65"
+
+[[3]]$agent_name
+[1] "ceo1"
+
+[[3]]$response
+Your suggestion to focus on cost-effective digital marketing and affordable 
+influencer partnerships conflicts with my unlimited budget approach and desire 
+to maximize spending for greater impact; therefore, I propose simultaneously 
+executing a large-scale premium campaign across Germany involving exclusive 
+high-end tastings, partnerships with Michelin-starred chefs, luxury retail 
+placements, plus a comprehensive digital and traditional media blitz to deeply 
+embed Ouergla dates into the German market over the next two years.
+
+
+[[4]]
+[[4]]$iteration
+[1] 2
+
+[[4]]$agent_id
+[1] "1e6066a3-20d5-4d83-b7a4-424e23f9ce07"
+
+[[4]]$agent_name
+[1] "ceo2"
+
+[[4]]$response
+Your large-scale, high-budget approach clearly conflicts with my core 
+constraint of maintaining a low marketing spend; therefore, I counterpropose a 
+phased strategy that begins with focused digital marketing and micro-influencer
+collaborations to build brand awareness cost-effectively in Germany, with 
+potential gradual scaling depending on export growth and budget availability 
+over the next two years.
+
+
+[[5]]
+[[5]]$iteration
+[1] 3
+
+[[5]]$agent_id
+[1] "bb1e6fef-6439-4379-a850-d5be37edba65"
+
+[[5]]$agent_name
+[1] "ceo1"
+
+[[5]]$response
+Your phased, low-budget approach directly conflicts with my position of having 
+no budget constraints and the intent to maximize spending and impact 
+immediately; thus, I firmly propose implementing a full-scale, multi-channel 
+marketing blitz from the outset, including luxury events, top-tier influencer 
+partnerships, extensive traditional and digital advertising, and strategic 
+collaborations within Germany's premium retail and culinary sectors to 
+exponentially increase Ouergla dates exports over the next two years.
+
+
+[[6]]
+[[6]]$iteration
+[1] 3
+
+[[6]]$agent_id
+[1] "1e6066a3-20d5-4d83-b7a4-424e23f9ce07"
+
+[[6]]$agent_name
+[1] "ceo2"
+
+[[6]]$response
+Your insistence on a full-scale, high-cost marketing blitz conflicts with my 
+fixed priority of controlling expenses to avoid overspending; therefore, I 
+propose a balanced approach: initiate a targeted, low-cost digital campaign 
+focusing on niche German markets and build incremental collaborations with 
+mid-tier influencers and specialty retailers, allowing us to closely monitor 
+export growth and optimize budget allocation over two years without risking 
+financial strain.</code></pre>
+</div>
+</div>
+
+
 </section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
     const icon = "";
     const anchorJS = new window.AnchorJS();
     anchorJS.options = {
