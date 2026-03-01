@@ -1,0 +1,16 @@
+/* custom styles for code blocks */
+pre.quarto-code-block,
+
+code.sourceCode {
+  background-color: #f0f2f0 !important;
+  color: #333 !important;
+  padding: 1.2em 0.4em;
+}
+
+code {
+  color: #333;
+  padding: 0.2em 0.4em;
+  border-radius: 5px;
+  font-weight: bolder;
+  padding: 1.2em 0.4em;
+}

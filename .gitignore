@@ -4,3 +4,6 @@
 .Ruserdata
 *.Rproj
 README_cache/
+
+/.quarto/
+**/*.quarto_ipynb

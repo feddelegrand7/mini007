@@ -8,3 +8,8 @@
 ^\.lintr$
 ^\.cursor$
 ^\.claude$
+^docs$
+^_quarto\.yml$
+^index\.qmd$
+^agents\.qmd$
+^leadagent\.qmd$

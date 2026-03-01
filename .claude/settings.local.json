@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:cran.r-project.org)",
+      "Bash(R:*)",
+      "WebFetch(domain:ellmer.tidyverse.org)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

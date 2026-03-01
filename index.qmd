@@ -1,0 +1,53 @@
+---
+title: "mini007"
+format:
+  html:
+    toc: true
+execute:
+  echo: true
+  warning: false
+  error: false
+---
+
+```{r}
+#| include: false
+# load the development version of the package so examples run locally
+if (requireNamespace("pkgload", quietly = TRUE)) pkgload::load_all()
+library(mini007)
+```
+
+# Welcome to **mini007**
+
+`mini007` provides a lightweight and extensible framework for multi-agents orchestration
+processes capable of decomposing complex tasks and assigning them to specialized agents.
+
+> Each `agent` is an extension of an `ellmer` object. `mini007` relies heavily on the
+> excellent `ellmer` package but aims to make it easy to create a process where multiple
+> specialized agents help each other sequentially in order to execute a task.
+
+## Highlights
+
+- 🧠 Memory and identity for each agent via `uuid` and message history.
+- ⚙️ Built-in task decomposition and delegation via `LLM`.
+- 🔄 Agent-to-agent orchestration with result chaining.
+- 🌐 Compatible with any chat model supported by `ellmer`.
+- 🧑 Possibility to set a Human In The Loop (`HITL`) at various execution steps
+
+## Installation
+
+You can install `mini007` from CRAN with:
+
+```{r}
+#| eval: false
+install.packages("mini007")
+```
+
+Or, during development, load the package as shown in the setup chunk above.
+
+
+## Get started
+
+Navigate to the **Agents** page to see how to create and interact with individual
+agents, or jump straight to the **LeadAgent** page for multi‑agent orchestration.
+
+

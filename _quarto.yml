@@ -1,0 +1,24 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "mini007"
+  navbar:
+    left:
+      - text: Home
+        href: index.qmd
+      - text: Agents
+        href: agents.qmd
+      - text: LeadAgent
+        href: leadagent.qmd
+    right:
+      - icon: github
+        href: https://github.com/feddelegrand7/mini007
+
+format:
+  html:
+    toc: true
+    code-fold: false
+    theme: cosmo
+    css: styles.css

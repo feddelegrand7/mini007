@@ -1,0 +1,157 @@
+---
+title: "Agent"
+format:
+  html:
+    toc: true
+execute:
+  echo: true
+  warning: false
+  error: false
+---
+
+```{r}
+#| include: false
+if (requireNamespace("pkgload", quietly = TRUE)) pkgload::load_all()
+library(mini007)
+
+# helper for examples; adjust your API key retrieval
+retrieve_open_ai_credential <- function() {
+  Sys.getenv("OPENAI_API_KEY")
+}
+
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  credentials = retrieve_open_ai_credential,
+  echo = "none"
+)
+```
+
+# Agent
+
+## Creating an Agent
+
+An Agent is built upon an LLM object created by the `ellmer` package, in the
+following examples, we'll work with the `OpenAI` models, however you can use any
+model/combination of models you want:
+
+```{r}
+polar_bear_researcher <- Agent$new(
+  name = "POLAR BEAR RESEARCHER",
+  instruction = "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max.",
+  llm_object = openai_4_1_mini
+)
+```
+
+Each created Agent has an `agent_id` (among other meta information):
+
+```{r}
+polar_bear_researcher$agent_id
+```
+
+At any time, you can tweak the `llm_object`:
+
+```{r}
+polar_bear_researcher$llm_object
+```
+
+An agent can provide the answer to a prompt using the `invoke` method:
+
+```{r}
+# Note: the following call will actually hit the LLM if the key is set
+# and may incur cost.
+polar_bear_researcher$invoke("Are polar bears dangerous for humans?")
+```
+
+You can also retrieve a list that displays the history of the agent:
+
+```{r}
+polar_bear_researcher$messages
+```
+Or the `ellmer` way:
+
+```{r}
+polar_bear_researcher$llm_object
+```
+
+## Agents and Messages
+
+### Managing Agent Conversation History
+
+The `clear_and_summarise_messages` method allows you to compress an agent's
+conversation history into a concise summary and clear the message history while
+preserving context. This is useful for maintaining memory efficiency while
+keeping important conversation context.
+
+```{r}
+polar_bear_researcher$clear_and_summarise_messages()
+polar_bear_researcher$messages
+```
+
+This method summarises all previous conversations into a paragraph and appends
+it to the system prompt, then clears the conversation history. The agent
+retains the context but with reduced memory usage.
+
+### Keep only the most recent messages
+
+When a conversation grows long, you can keep just the last N messages while
+preserving the system prompt. This helps control token usage without fully
+resetting context.
+
+```{r}
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  credentials = retrieve_open_ai_credential,
+  echo = "none"
+)
+
+agent <- Agent$new(
+  name = "history_manager",
+  instruction = "You are a concise assistant.",
+  llm_object = openai_4_1_mini
+)
+
+agent$invoke("What is the capital of Italy?")
+agent$invoke("What is the capital of Germany?")
+agent$invoke("What is the capital of Algeria?")
+agent$messages
+```
+
+```{r}
+# Keep only the last 2 messages (system prompt is preserved)
+agent$keep_last_n_messages(n = 2)
+agent$messages
+```
+
+### Manually Adding Messages to an Agent’s History
+
+You can inject any message (system, user, or assistant) directly into an
+Agent’s history with `add_message(role, content)`. This is helpful to
+reconstruct, supplement, or simulate conversation steps.
+
+```{r}
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  credentials = retrieve_open_ai_credential,
+  echo = "none"
+)
+agent <- Agent$new(
+  name = "Pizza expert",
+  instruction = "You are a Pizza expert",
+  llm_object = openai_4_1_mini
+)
+
+# Add a user message, an assistant reply, and a system instruction:
+agent$add_message("user", "Where can I find the best pizza in the world?")
+agent$add_message("assistant", "You can find the best pizza in the world in Algiers, Algeria. It's tasty and crunchy.")
+
+# View conversation history
+agent$messages
+```
+
+```{r}
+agent$invoke("summarise the previous conversation")
+```
+
+A subset of the examples from the README.  Additional functionality such as
+`generate_and_register_tool()` and planning is covered in the LeadAgent page.
+

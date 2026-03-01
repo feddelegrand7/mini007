@@ -1,0 +1,193 @@
+---
+title: "LeadAgent"
+format:
+  html:
+    toc: true
+execute:
+  echo: true
+  warning: false
+  error: false
+---
+
+```{r}
+library(mini007)
+
+retrieve_open_ai_credential <- function() {
+  Sys.getenv("OPENAI_API_KEY")
+}
+
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  credentials = retrieve_open_ai_credential,
+  echo = "none"
+)
+```
+
+# LeadAgent
+
+## Creating a multi-agents orchestraction
+
+We can create as many Agents as we want; the `LeadAgent` will dispatch the
+instructions to the agents and provide the final answer back. Let's create three
+Agents, a `researcher`, a `summarizer` and a `translator`:
+
+```{r}
+researcher <- Agent$new(
+  name = "researcher",
+  instruction = "You are a research assistant. Your job is to answer factual questions with detailed and accurate information. Do not answer with more than 2 lines",
+  llm_object = openai_4_1_mini
+)
+
+summarizer <- Agent$new(
+  name = "summarizer",
+  instruction = "You are agent designed to summarise a give text into 3 distinct bullet points.",
+  llm_object = openai_4_1_mini
+)
+
+translator <- Agent$new(
+  name = "translator",
+  instruction = "Your role is to translate a text from English to German",
+  llm_object = openai_4_1_mini
+)
+```
+
+Now, the most important part is to create a `LeadAgent`:
+
+```{r}
+lead_agent <- LeadAgent$new(
+  name = "Leader",
+  llm_object = openai_4_1_mini
+)
+```
+
+Note that the `LeadAgent` cannot receive an `instruction` as it has already the
+necessary instructions.
+
+Next, we need to assign the Agents to `LeadAgent`, we do it as follows:
+
+```{r}
+lead_agent$register_agents(c(researcher, summarizer, translator))
+
+lapply(lead_agent$agents, function(x) {x$name})
+```
+
+Before executing your prompt, you can ask the `LeadAgent` to generate a plan so
+that you can see which `Agent` will be used for which prompt, you can do it as
+follows:
+
+```{r}
+prompt_to_execute <- "Tell me about the economic situation in Algeria, summarize it in 3 bullet points, then translate it into German."
+
+plan <- lead_agent$generate_plan(prompt_to_execute)
+plan
+```
+
+Now, in order now to execute the workflow, we just need to call the `invoke`
+method which will behind the scene delegate the prompts to suitable Agents and
+retrieve back the final information:
+
+```{r}
+response <- lead_agent$invoke("Tell me about the economic situation in Algeria, summarize it in 3 bullet points, then translate it into German.")
+response
+```
+
+If you want to inspect the multi-agents orchestration, you have access to the
+`agents_interaction` object:
+
+```{r}
+lead_agent$agents_interaction
+```
+
+The above example is extremely simple, the usefulness of `mini007` would shine
+in more complex processes where a multi-agent sequential orchestration has a
+higher value added.
+
+## Visualizing agent plans with `visualize_plan()`
+
+Sometimes, before running your workflow, it is helpful to view the orchestration
+as a visual diagram, showing the sequence of agents and which prompt each will
+receive. After generating a plan, you can call `visualize_plan()`:
+
+```{r, eval=FALSE}
+lead_agent$visualize_plan()
+```
+
+## Broadcasting
+
+If you want to compare several `LLM` models, the `LeadAgent` provides a
+`broadcast` method that allows you to send a prompt to several different agents
+and get the result for each agent back in order to make a comparison and
+potentially choose the best agent/model for the defined prompt:
+
+```{r}
+openai_4_1 <- ellmer::chat(
+  name = "openai/gpt-4.1",
+  credentials = retrieve_open_ai_credential,
+  echo = "none"
+)
+
+openai_4_1_agent <- Agent$new(
+  name = "openai_4_1_agent",
+  instruction = "You are an AI assistant. Answer in 1 sentence max.",
+  llm_object = openai_4_1
+)
+
+openai_4_1_nano <- ellmer::chat(
+  name = "openai/gpt-4.1-nano",
+  credentials = retrieve_open_ai_credential,
+  echo = "none"
+)
+
+openai_4_1_nano_agent <- Agent$new(
+  name = "openai_4_1_nano_agent",
+  instruction = "You are an AI assistant. Answer in 1 sentence max.",
+  llm_object = openai_4_1_nano
+)
+
+lead_agent$clear_agents() # removing previous agents
+lead_agent$register_agents(c(openai_4_1_agent, openai_4_1_nano_agent))
+
+lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to sing when running under the rain? how about a flower?")
+```
+
+You can also access the history of the `broadcasting` using the
+`broadcast_history` attribute:
+
+```{r}
+lead_agent$broadcast_history
+```
+
+## Human In The Loop (HITL)
+
+When executing an LLM workflow that relies on many steps, you can set `Human In
+The Loop` (`HITL`) trigger that will check the model's response at a specific
+step. You can define a `HITL` trigger after defining a `LeadAgent` as follows:
+
+```{r}
+openai_llm_object <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  credentials = retrieve_open_ai_credential,
+  echo = "none"
+)
+
+lead_agent <- LeadAgent$new(
+  name = "Leader",
+  llm_object = openai_llm_object
+)
+
+lead_agent$set_hitl(steps = 1)
+
+lead_agent$hitl_steps
+```
+
+After setting the `HITL` to step 1, the workflow execution will pose and give
+the user 3 choices:
+
+1. Continue the execution of the workflow as it is;
+2. Change manually the answer of the specified step and continue the execution
+   of the workflow;
+3. Stop the execution of the workflow (hard error);
+
+Note that you can set a `HITL` at several steps, for example
+`lead_agent$set_hitl(steps = c(1, 2))` will set the `HITL` at step 1 and step 2.
+
