@@ -11,7 +11,7 @@ execute:
 
 The non-deterministic behavior of LLM models makes `unit testing` impossible, nevertheless, there are ways to determine with a certain degree of a certainty the level of quality of a model. In this approach, we rely on the principle of `LLM as judge` to create `tests`. These tests can be evaluated at anytime using the `testthat` package.
 
-Using the `agent$validate_response` function, it is possible to test the outputs produced by LLM agents. This is extremely useful if you want to test the responses given by a specific model. Note that the agent responsible for validating the responses can use any model supported by `ellmer`, meaning the `Agent` that generated the response and the `Agent` validating it don't have to share the same underlying model.  
+Using the `validate_response` method available provided by any `Agent` created with `mini007`, it is possible to test the outputs produced by LLM agents. This is extremely useful if you want to test the responses given by a specific model. Note that the agent responsible for validating the responses can use any model supported by `ellmer`, meaning the `Agent` that generated the response and the `Agent` validating it don't have to share the same underlying model.  
 
 
 ## Example 

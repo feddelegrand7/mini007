@@ -362,7 +362,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <p>The non-deterministic behavior of LLM models makes <code>unit testing</code> impossible, nevertheless, there are ways to determine with a certain degree of a certainty the level of quality of a model. In this approach, we rely on the principle of <code>LLM as judge</code> to create <code>tests</code>. These tests can be evaluated at anytime using the <code>testthat</code> package.</p>
-<p>Using the <code>agent$validate_response</code> function, it is possible to test the outputs produced by LLM agents. This is extremely useful if you want to test the responses given by a specific model. Note that the agent responsible for validating the responses can use any model supported by <code>ellmer</code>, meaning the <code>Agent</code> that generated the response and the <code>Agent</code> validating it don’t have to share the same underlying model.</p>
+<p>Using the <code>validate_response</code> method available provided by any <code>Agent</code> created with <code>mini007</code>, it is possible to test the outputs produced by LLM agents. This is extremely useful if you want to test the responses given by a specific model. Note that the agent responsible for validating the responses can use any model supported by <code>ellmer</code>, meaning the <code>Agent</code> that generated the response and the <code>Agent</code> validating it don’t have to share the same underlying model.</p>
 <section id="example" class="level2">
 <h2 class="anchored" data-anchor-id="example">Example</h2>
 <p>First we need to create an <code>Agent</code> responsible for testing our response:</p>
