@@ -25,9 +25,6 @@ heavily on the excellent `ellmer` package but aims to make it easy to
 create a process where multiple specialized agents help each other
 sequentially in order to execute a task.
 
-> 🚧 A companion website is built with Quarto — run `quarto render` and
-> browse `docs/index.html` to view examples interactively.
-
 `mini007` provides two types of agents:
 
 - A normal `Agent` containing a name and an instruction,
