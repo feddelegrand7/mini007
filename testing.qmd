@@ -1,0 +1,64 @@
+---
+title: "Testing"
+format:
+  html:
+    toc: true
+execute:
+  echo: true
+  warning: false
+  error: false
+---
+
+The non-deterministic behavior of LLM models makes `unit testing` impossible, nevertheless, there are ways to determine with a certain degree of a certainty the level of quality of a model. In this approach, we rely on the principle of `LLM as judge` to create `tests`. These tests can be evaluated at anytime using the `testthat` package.
+
+Using the `agent$validate_response` function, it is possible to test the outputs produced by LLM agents. This is extremely useful if you want to test the responses given by a specific model. Note that the agent responsible for validating the responses can use any model supported by `ellmer`, meaning the `Agent` that generated the response and the `Agent` validating it don't have to share the same underlying model.  
+
+
+## Example 
+
+First we need to create an `Agent` responsible for testing our response:
+
+```{r}
+library(mini007)
+
+retrieve_open_ai_credential <- function() {
+  Sys.getenv("OPENAI_API_KEY")
+}
+
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  credentials = retrieve_open_ai_credential,
+  echo = "none"
+)
+
+tester <- Agent$new(
+  name = "tester",
+  instruction = "You are agent responsible of testing LLM responses",
+  llm_object = openai_4_1_mini
+)
+```
+
+Then, testing the response is relatively straightforward, not that in the following example, I've hard coded the `response` argument, however in practical application, it should come from an LLM agent.
+
+```{r}
+testthat::test_that("LLM provides good answers", {
+  validation <- tester$validate_response(
+    prompt = "What is the capital of Algeria",
+    response = "The capital of algeria is Algiers", # This should come from an LLM Agent
+    validation_criteria = "The capital of algeria should be Algiers",
+    validation_score = 0.8
+  )
+  testthat::expect_true(validation$valid)
+})
+```
+```{r, error=TRUE}
+testthat::test_that("LLM provides good answers", {
+  validation <- tester$validate_response(
+    prompt = "What is the capital of Algeria",
+    response = "The capital of algeria is Tokyo",
+    validation_criteria = "The capital of algeria should be Algiers",
+    validation_score = 0.8
+  )
+  testthat::expect_true(validation$valid)
+})
+```
