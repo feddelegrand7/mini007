@@ -1452,7 +1452,7 @@ Agent <- R6::R6Class(
       }
 
       if (is.character(raw_cost)) {
-        numeric_cost <- suppressWarnings(as.numeric(raw_cost[[1]]))
+        numeric_cost <- suppressWarnings(as.numeric(raw_cost))
         return(numeric_cost)
       }
 
