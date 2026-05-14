@@ -1429,13 +1429,41 @@ Agent <- R6::R6Class(
         return(NA_real_)
       }
 
-      numeric_cost <- suppressWarnings(as.numeric(raw_cost))
+      if (is.data.frame(raw_cost)) {
+        if (nrow(raw_cost) == 0 || ncol(raw_cost) == 0) {
+          return(NA_real_)
+        }
+        raw_cost <- raw_cost[[1]]
+      }
 
-      if (length(numeric_cost) == 0) {
+      if (is.list(raw_cost)) {
+        if (length(raw_cost) == 0) {
+          return(NA_real_)
+        }
+        raw_cost <- raw_cost[[1]]
+      }
+
+      if (is.null(raw_cost) || length(raw_cost) == 0) {
         return(NA_real_)
       }
 
-      numeric_cost[[1]]
+      if (is.factor(raw_cost)) {
+        raw_cost <- as.character(raw_cost)
+      }
+
+      if (is.character(raw_cost)) {
+        parsed_cost <- type.convert(raw_cost[[1]], as.is = TRUE)
+        if (!is.numeric(parsed_cost)) {
+          return(NA_real_)
+        }
+        return(as.numeric(parsed_cost))
+      }
+
+      if (!is.numeric(raw_cost)) {
+        return(NA_real_)
+      }
+
+      as.numeric(raw_cost[[1]])
     },
 
     .update_llm_tools = function() {
