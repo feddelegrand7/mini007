@@ -110,10 +110,10 @@ Agent <- R6::R6Class(
 
       response <- self$llm_object$chat(prompt)
 
-      cost <- self$llm_object$get_cost()
+      cost <- private$.get_numeric_cost()
 
       if (!is.na(cost)) {
-        self$cost <- as.numeric(round(cost, 4))
+        self$cost <- round(cost, 4)
       }
 
       private$.set_messages_from_turns()
@@ -1368,7 +1368,11 @@ Agent <- R6::R6Class(
 
     .check_budget = function() {
 
-      current_cost <- as.numeric(self$llm_object$get_cost())
+      current_cost <- private$.get_numeric_cost()
+
+      if (is.na(current_cost)) {
+        return(invisible(NULL))
+      }
 
       warn_at <- self$budget_policy$warn_at
       ratio <- current_cost / as.numeric(self$budget)
@@ -1416,6 +1420,22 @@ Agent <- R6::R6Class(
           "Cost: {round(current_cost, 4)}, Budget: {round(self$budget, 4)}"
         ))
       }
+    },
+
+    .get_numeric_cost = function() {
+      raw_cost <- self$llm_object$get_cost()
+
+      if (is.null(raw_cost) || length(raw_cost) == 0) {
+        return(NA_real_)
+      }
+
+      numeric_cost <- suppressWarnings(as.numeric(raw_cost))
+
+      if (length(numeric_cost) == 0) {
+        return(NA_real_)
+      }
+
+      numeric_cost[[1]]
     },
 
     .update_llm_tools = function() {

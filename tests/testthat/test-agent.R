@@ -31,6 +31,26 @@ DummyChat <- R6::R6Class(
   )
 )
 
+DummyChatNullCost <- R6::R6Class(
+  "ChatNullCost",
+  public = list(
+    roles = NULL,
+    system_prompt = NULL,
+    turns = list(),
+    tools = list(),
+    provider = provider,
+    chat = function(prompt) paste("Echo:", prompt),
+    get_cost = function() NULL,
+    get_tokens = function() data.frame(tokens_total = 10),
+    set_system_prompt = function(value) { self$system_prompt <- value },
+    get_system_prompt = function() if (!is.null(self$system_prompt)) self$system_prompt else "default",
+    set_turns = function(turns) { self$turns <- turns },
+    get_turns = function(include_system_prompt = FALSE) { return(self$turns) },
+    register_tools = function(tools) { self$tools <- tools },
+    get_provider = function() { self$provider }
+  )
+)
+
 dummy_chat <- DummyChat$new()
 
 # --- Agent initialization ---
@@ -401,6 +421,14 @@ test_that("get_usage_stats handles different cost scenarios", {
   stats <- agent$get_usage_stats()
   expect_equal(stats$estimated_cost, 3.5)
   expect_equal(stats$budget_remaining, 6.5)
+})
+
+test_that("invoke handles NULL get_cost safely", {
+  null_cost_chat <- DummyChatNullCost$new()
+  agent <- Agent$new("NullCost", "I", null_cost_chat)
+  agent$set_budget(10)
+  expect_no_error(agent$invoke("hello"))
+  expect_true(is.na(agent$cost))
 })
 
 # --- Field access and initialization ---
