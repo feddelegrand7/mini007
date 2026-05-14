@@ -46,7 +46,7 @@ DummyChatNullCost <- R6::R6Class(
     set_turns = function(turns) { self$turns <- turns },
     get_turns = function(include_system_prompt = FALSE) { return(self$turns) },
     register_tools = function(tools) { self$tools <- tools },
-    get_provider = function() { provider }
+    get_provider = function() { new("Provider", name = "dummy", model = "v0") }
   )
 )
 

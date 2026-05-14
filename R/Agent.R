@@ -1447,12 +1447,13 @@ Agent <- R6::R6Class(
         raw_cost <- as.character(raw_cost)
       }
 
+      if (length(raw_cost) > 1) {
+        raw_cost <- raw_cost[[1]]
+      }
+
       if (is.character(raw_cost)) {
-        parsed_cost <- type.convert(raw_cost[[1]], as.is = TRUE)
-        if (!is.numeric(parsed_cost)) {
-          return(NA_real_)
-        }
-        return(as.numeric(parsed_cost))
+        numeric_cost <- suppressWarnings(as.numeric(raw_cost[[1]]))
+        return(numeric_cost)
       }
 
       if (!is.numeric(raw_cost)) {
