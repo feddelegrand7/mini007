@@ -38,7 +38,6 @@ DummyChatNullCost <- R6::R6Class(
     system_prompt = NULL,
     turns = list(),
     tools = list(),
-    provider = provider,
     chat = function(prompt) paste("Echo:", prompt),
     get_cost = function() NULL,
     get_tokens = function() data.frame(tokens_total = 10),
@@ -47,7 +46,7 @@ DummyChatNullCost <- R6::R6Class(
     set_turns = function(turns) { self$turns <- turns },
     get_turns = function(include_system_prompt = FALSE) { return(self$turns) },
     register_tools = function(tools) { self$tools <- tools },
-    get_provider = function() { self$provider }
+    get_provider = function() { provider }
   )
 )
 

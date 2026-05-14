@@ -1425,10 +1425,6 @@ Agent <- R6::R6Class(
     .get_numeric_cost = function() {
       raw_cost <- self$llm_object$get_cost()
 
-      if (is.null(raw_cost) || length(raw_cost) == 0) {
-        return(NA_real_)
-      }
-
       if (is.data.frame(raw_cost)) {
         if (nrow(raw_cost) == 0 || ncol(raw_cost) == 0) {
           return(NA_real_)
