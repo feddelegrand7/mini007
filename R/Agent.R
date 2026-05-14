@@ -1460,7 +1460,7 @@ Agent <- R6::R6Class(
         return(NA_real_)
       }
 
-      as.numeric(raw_cost[[1]])
+      as.numeric(raw_cost)
     },
 
     .update_llm_tools = function() {
