@@ -3,7 +3,11 @@
     "allow": [
       "WebFetch(domain:cran.r-project.org)",
       "Bash(R:*)",
-      "WebFetch(domain:ellmer.tidyverse.org)"
+      "WebFetch(domain:ellmer.tidyverse.org)",
+      "Bash(Rscript -e \"rmarkdown::render\\('README.Rmd', quiet = TRUE\\)\")",
+      "Bash(Rscript *)",
+      "Bash(awk '{print $NF}')",
+      "Bash(xargs -I {} basename {})"
     ],
     "deny": [],
     "ask": []

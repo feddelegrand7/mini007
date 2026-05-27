@@ -2,7 +2,8 @@
 
 export(Agent)
 export(LeadAgent)
-export(expect_llm_response)
+export(Workflow)
+export(WorkflowAgent)
 importFrom(DiagrammeR,grViz)
 importFrom(R6,R6Class)
 importFrom(checkmate,assert_character)

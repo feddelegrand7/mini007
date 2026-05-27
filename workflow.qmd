@@ -1,0 +1,388 @@
+---
+title: "Workflow (only in DEV Version)"
+format:
+  html:
+    toc: true
+execute:
+  echo: true
+  warning: false
+  error: false
+---
+
+```{r}
+library(mini007)
+
+retrieve_open_ai_credential <- function() {
+  Sys.getenv("OPENAI_API_KEY")
+}
+
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  credentials = retrieve_open_ai_credential,
+  echo = "none"
+)
+
+```
+
+A `Workflow` is a predefined, sequential pipeline of processing units called **Stations**. Each Station receives the output of the previous one as its input, transforms it, and passes the result forward. **Routes** define which Station comes next and can be gated by optional condition functions that inspect the current output to decide the execution path.
+
+Workflows complement `Agent` and `LeadAgent`:
+
+- An `Agent` is LLM-driven and decides its own steps dynamically.
+- A `LeadAgent` decomposes a prompt and delegates subtasks to agents automatically.
+- A `Workflow` gives you **explicit control** over every step of the pipeline — you decide the order, the branching logic, and which handler runs where.
+
+There are two main building blocks:
+
+- `add_station(name, handler)` — registers a named processing unit. The handler can be an `Agent`, a `WorkflowAgent`, or a plain R `function`.
+- `add_route(from, to)` — connects two Stations in sequence.
+
+## A minimal linear pipeline
+
+The simplest `Workflow` is a straight chain of Stations executed one after the other. Here we wire three specialised agents: a researcher that gathers facts, a writer that shapes them into a paragraph, and an editor that polishes the result.
+
+```{r}
+researcher <- Agent$new(
+  name        = "researcher",
+  instruction = "You are a research assistant. Provide concise, accurate facts on the given topic in 3 to 5 sentences.",
+  llm_object  = openai_4_1_mini
+)
+
+writer <- Agent$new(
+  name        = "writer",
+  instruction = "You are a skilled writer. Turn the research notes you receive into a single, engaging paragraph.",
+  llm_object  = openai_4_1_mini
+)
+
+editor <- Agent$new(
+  name        = "editor",
+  instruction = "You are a copy editor. Polish the paragraph you receive for grammar, clarity, and conciseness. Return only the final text.",
+  llm_object  = openai_4_1_mini
+)
+```
+
+```{r}
+article_pipeline <- Workflow$new(
+  name        = "article-pipeline",
+  description = "Research → Write → Edit"
+)
+
+article_pipeline$add_station("research", researcher)
+article_pipeline$add_station("write",    writer)
+article_pipeline$add_station("edit",     editor)
+
+article_pipeline$add_route("research", "write")
+article_pipeline$add_route("write",    "edit")
+
+article_pipeline$set_entry("research")
+```
+
+Calling `$run()` executes every Station in order. Each Station's output becomes the next Station's input automatically.
+
+```{r}
+result <- article_pipeline$run("The role of sleep in memory consolidation")
+result
+```
+
+The `run_history` attribute records every execution, including the full trace of inputs and outputs for each Station:
+
+```{r}
+str(article_pipeline$run_history[[1]], max.level = 2)
+```
+
+## Mixing agents with plain R functions
+
+Stations do not have to be `Agent` objects. Any R function that accepts a single character argument and returns a character value is a valid handler. This makes it easy to add pre-processing or post-processing steps without an LLM call.
+
+```{r}
+# Plain R function stations — no LLM involved
+normalise <- function(text) {
+  trimws(gsub("\\s+", " ", text))
+}
+
+add_markdown_header <- function(text) {
+  paste0("## Summary\n\n", text)
+}
+
+summariser <- Agent$new(
+  name        = "summariser",
+  instruction = "Summarise the text you receive into exactly three concise bullet points.",
+  llm_object  = openai_4_1_mini
+)
+```
+
+```{r}
+format_pipeline <- Workflow$new("format-and-summarise")
+
+format_pipeline$add_station("normalise",  normalise,           description = "Collapse whitespace")
+format_pipeline$add_station("summarise",  summariser,          description = "LLM bullet summary")
+format_pipeline$add_station("add_header", add_markdown_header, description = "Prepend markdown header")
+
+format_pipeline$add_route("normalise",  "summarise")
+format_pipeline$add_route("summarise",  "add_header")
+```
+
+```{r}
+messy_text <- "  Quantum   entanglement  is   a phenomenon where    two particles become   linked. Measuring one instantly   affects  the other,   regardless of   distance.  "
+
+format_pipeline$run(messy_text)
+```
+
+## Caching station results
+
+When `use_cache = TRUE` (the default), every Station's output is stored keyed by its name and the input it received. A subsequent `$run()` call with the same input skips re-invoking any handler and returns the cached result immediately — saving both time and LLM costs when you are iterating on later Stations.
+
+```{r}
+cached_pipeline <- Workflow$new(
+  name      = "cached-pipeline",
+  use_cache = TRUE
+)
+
+cached_pipeline$add_station("draft", Agent$new(
+  name        = "drafter",
+  instruction = "Write a two-sentence draft on the topic provided.",
+  llm_object  = openai_4_1_mini
+))
+
+cached_pipeline$add_station("refine", Agent$new(
+  name        = "refiner",
+  instruction = "Improve the draft you receive. Make it more vivid and precise.",
+  llm_object  = openai_4_1_mini
+))
+
+cached_pipeline$add_route("draft", "refine")
+```
+
+```{r}
+# First run — both stations are executed
+start <- Sys.time()
+first_run <- cached_pipeline$run("The formation of black holes")
+first_run
+end <- Sys.time()
+print(end - start)
+```
+
+```{r}
+# Second run with the same input — cache is served, no LLM calls are made
+start <- Sys.time()
+second_run <- cached_pipeline$run("The formation of black holes")
+second_run
+end <- Sys.time()
+print(end - start)
+```
+
+To force a fresh execution, call `$clear_cache()`:
+
+```{r}
+cached_pipeline$clear_cache()
+
+# Fresh run after clearing the cache
+start <- Sys.time()
+fresh_run <- cached_pipeline$run("The formation of black holes")
+fresh_run
+end <- Sys.time()
+print(end - start)
+```
+
+## Conditional routing
+
+Routes can carry a `condition` — a function that inspects the current Station's output and returns `TRUE` or `FALSE`. When a Station has multiple outgoing Routes, conditional ones are evaluated first (in the order they were added). The first condition that returns `TRUE` determines the next Station. If none match, the first unconditional Route is used as the default fallback.
+
+This makes it possible to build branching pipelines where the path taken depends on what an earlier Station produces.
+
+```{r}
+classifier <- Agent$new(
+  name        = "classifier",
+  instruction = 'Classify the sentiment of the text. Reply with exactly one word: "positive" or "negative".',
+  llm_object  = openai_4_1_mini
+)
+
+positive_handler <- Agent$new(
+  name        = "positive_handler",
+  instruction = "Write a warm, enthusiastic one-sentence reply to the following positive message.",
+  llm_object  = openai_4_1_mini
+)
+
+negative_handler <- Agent$new(
+  name        = "negative_handler",
+  instruction = "Write an empathetic, solution-focused one-sentence reply to the following negative message.",
+  llm_object  = openai_4_1_mini
+)
+```
+
+```{r}
+sentiment_router <- Workflow$new("sentiment-router")
+
+sentiment_router$add_station("classify",  classifier)
+sentiment_router$add_station("reply_pos", positive_handler)
+sentiment_router$add_station("reply_neg", negative_handler)
+
+# Conditional routes — evaluated against the classifier's output
+sentiment_router$add_route(
+  from      = "classify",
+  to        = "reply_pos",
+  condition = function(out) grepl("positive", tolower(out))
+)
+sentiment_router$add_route(
+  from      = "classify",
+  to        = "reply_neg",
+  condition = function(out) grepl("negative", tolower(out))
+)
+
+sentiment_router$set_entry("classify")
+```
+
+```{r}
+sentiment_router$run("I absolutely love this product — it changed my life!")
+```
+
+```{r}
+sentiment_router$run("Very disappointed. The quality is nothing like advertised.")
+```
+
+A more structured example uses a plain function as the router so the branching logic is deterministic and free of LLM calls:
+
+```{r}
+route_by_length <- function(text) {
+  if (nchar(text) < 80) "short" else "long"
+}
+
+brief_expander <- Agent$new(
+  name        = "brief_expander",
+  instruction = "The input is short. Expand it into a well-rounded paragraph of 4–6 sentences.",
+  llm_object  = openai_4_1_mini
+)
+
+long_summariser <- Agent$new(
+  name        = "long_summariser",
+  instruction = "The input is long. Distill it into a single crisp sentence.",
+  llm_object  = openai_4_1_mini
+)
+
+length_router <- Workflow$new("length-router")
+
+length_router$add_station("router", route_by_length)
+length_router$add_station("short",  brief_expander)
+length_router$add_station("long",   long_summariser)
+
+length_router$add_route("router", "short", condition = function(x) x == "short")
+length_router$add_route("router", "long",  condition = function(x) x == "long")
+
+length_router$set_entry("router")
+```
+
+```{r}
+# Short input — routed to the expander
+length_router$run("Bees pollinate flowers.")
+```
+
+```{r}
+# Long input — routed to the summariser
+long_input <- paste(
+  "Bees are among the most important pollinators on the planet.",
+  "They transfer pollen from one flower to another, enabling plants to reproduce.",
+  "Without bees, many of the fruits and vegetables we eat would disappear.",
+  "Colony collapse disorder has threatened bee populations worldwide,",
+  "raising serious concerns about food security and ecosystem stability."
+)
+length_router$run(long_input)
+```
+
+## Wrapping a workflow as an agent
+
+`$as_agent()` converts any `Workflow` into a `WorkflowAgent`. The result exposes the same `$invoke()` interface as a regular `Agent`, which means it can be:
+
+- **registered with a `LeadAgent`** as one of its sub-agents, or
+- **used as a Station handler** inside another `Workflow`.
+
+This lets you compose complex pipelines from simpler ones without rewriting any logic.
+
+### Using a WorkflowAgent inside a LeadAgent
+
+```{r}
+# Inner workflow: research + summarise
+research_wf <- Workflow$new("research-wf")
+
+research_wf$add_station("gather", Agent$new(
+  name        = "gatherer",
+  instruction = "Gather three key facts about the topic provided. Be concise.",
+  llm_object  = openai_4_1_mini
+))
+
+research_wf$add_station("condense", Agent$new(
+  name        = "condenser",
+  instruction = "Condense the facts you receive into a single sentence.",
+  llm_object  = openai_4_1_mini
+))
+
+research_wf$add_route("gather", "condense")
+
+# Wrap as a WorkflowAgent
+research_agent <- research_wf$as_agent(
+  name        = "research_agent",
+  instruction = "An agent that gathers and condenses facts on any topic into one sentence."
+)
+```
+
+```{r}
+# Use the WorkflowAgent directly
+research_agent$invoke("The discovery of penicillin")
+```
+
+```{r}
+# Register with a LeadAgent alongside regular agents
+translator <- Agent$new(
+  name        = "translator",
+  instruction = "Translate the text you receive from English into French.",
+  llm_object  = openai_4_1_mini
+)
+
+lead <- LeadAgent$new(
+  name       = "Lead",
+  llm_object = openai_4_1_mini
+)
+
+lead$register_agents(c(research_agent, translator))
+
+lead$invoke("Tell me about Marie Curie in one sentence, then translate it into French.")
+```
+
+### Nesting a WorkflowAgent inside another Workflow
+
+```{r}
+# Outer workflow: use the wrapped inner workflow as a Station
+presentation_wf <- Workflow$new("presentation-wf")
+
+presentation_wf$add_station(
+  name    = "research",
+  handler = research_agent  # WorkflowAgent used as a station handler
+)
+
+presentation_wf$add_station(
+  name    = "present",
+  handler = Agent$new(
+    name        = "presenter",
+    instruction = "Turn the one-sentence summary you receive into a polished three-sentence report.",
+    llm_object  = openai_4_1_mini
+  )
+)
+
+presentation_wf$add_route("research", "present")
+presentation_wf$set_entry("research")
+
+presentation_wf$run("The invention of the printing press")
+```
+
+## Visualising a workflow
+
+Call `$visualize()` on any `Workflow` to render an interactive directed graph. Stations appear as rounded blue boxes, conditional Routes as dashed arrows labelled "cond", and the entry Station is reached via a green **START** node.
+
+```{r, eval=TRUE}
+article_pipeline$visualize()
+```
+
+```{r, eval=TRUE}
+sentiment_router$visualize()
+```
+
+The graph updates automatically to reflect whatever Stations and Routes are currently registered, making it a convenient tool for checking that the pipeline is wired correctly before running it.

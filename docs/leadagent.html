@@ -107,6 +107,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
+<link href="site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="site_libs/viz-1.8.2/viz.js"></script>
+<link href="site_libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet">
+<script src="site_libs/grViz-binding-1.0.11/grViz.js"></script>
 
 
 </head>
@@ -307,6 +312,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="menu-text">Tools</span></a>
   </li>  
   <li class="nav-item">
+    <a class="nav-link" href="./workflow.html"> 
+<span class="menu-text">Workflow</span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link" href="./testing.html"> 
 <span class="menu-text">Testing</span></a>
   </li>  
@@ -434,7 +443,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
 [[1]]$agent_id
-d7c8dfdd-0981-494c-b566-c79cda798196
+2dd4e19e-32a7-4255-ae78-1d25a16182d1
 
 [[1]]$agent_name
 [1] "researcher"
@@ -446,12 +455,12 @@ d7c8dfdd-0981-494c-b566-c79cda798196
 [1] "gpt-4.1-mini"
 
 [[1]]$prompt
-[1] "Research the current economic situation in Algeria, including key indicators like GDP, inflation, employment, and major industries."
+[1] "Research the current economic situation in Algeria using reliable and up-to-date sources."
 
 
 [[2]]
 [[2]]$agent_id
-d25a8a57-05e4-4b43-af4b-8aa71a4bcfc5
+01009372-bb61-4c2c-b944-d7968f3f33f0
 
 [[2]]$agent_name
 [1] "summarizer"
@@ -463,12 +472,12 @@ d25a8a57-05e4-4b43-af4b-8aa71a4bcfc5
 [1] "gpt-4.1-mini"
 
 [[2]]$prompt
-[1] "Summarize the researched information into 3 concise bullet points highlighting the main aspects of Algeria's economic situation."
+[1] "Summarize the key points of Algeria's economic situation into 3 clear and concise bullet points."
 
 
 [[3]]
 [[3]]$agent_id
-1c6dc8e6-3ed5-49f4-aaf1-d868062c80fe
+f18d776c-6807-4f66-a8eb-7ac2b695ce1f
 
 [[3]]$agent_name
 [1] "translator"
@@ -480,7 +489,7 @@ d25a8a57-05e4-4b43-af4b-8aa71a4bcfc5
 [1] "gpt-4.1-mini"
 
 [[3]]$prompt
-[1] "Translate the 3 bullet points from English into German accurately, maintaining the original meaning."</code></pre>
+[1] "Translate the 3 bullet points from English into German accurately."</code></pre>
 </div>
 </div>
 <p>Now, in order now to execute the workflow, we just need to call the <code>invoke</code> method which will behind the scene delegate the prompts to suitable Agents and retrieve back the final information:</p>
@@ -490,13 +499,14 @@ d25a8a57-05e4-4b43-af4b-8aa71a4bcfc5
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>response</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>- Die Wirtschaft Algeriens ist stark von Kohlenwasserstoffen abhängig, die 
-30-40 % des BIP und mehr als 90 % der Exporte ausmachen.  
-- Das Land verzeichnet ein moderates BIP-Wachstum (~2-3 %) bei einer Inflation 
-zwischen 5-7 %.  
-- Die Arbeitslosigkeit bleibt mit etwa 11-12 % hoch, besonders betroffen ist 
-die Jugend, ebenso wie wichtige Sektoren wie Öl und Gas, Landwirtschaft und 
-Bauwesen.</code></pre>
+<pre><code>- Die algerische Wirtschaft befindet sich auf einem allmählichen Erholungskurs,
+unterstützt durch steigende Einnahmen aus dem Bereich der Kohlenwasserstoffe 
+aufgrund höherer globaler Ölpreise.  
+- Das Land steht weiterhin vor Herausforderungen wie Inflation, 
+Arbeitslosigkeit und dem Bedarf an wirtschaftlicher Diversifizierung.  
+- Die Regierungsbemühungen konzentrieren sich auf Wirtschaftsreformen, 
+Investitionen im Energiesektor und den Ausbau der nicht-ölbasierten Industrien,
+um die Abhängigkeit von Kohlenwasserstoffen zu verringern.</code></pre>
 </div>
 </div>
 <p>If you want to inspect the multi-agents orchestration, you have access to the <code>agents_interaction</code> object:</p>
@@ -505,7 +515,7 @@ Bauwesen.</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
 [[1]]$agent_id
-d7c8dfdd-0981-494c-b566-c79cda798196
+2dd4e19e-32a7-4255-ae78-1d25a16182d1
 
 [[1]]$agent_name
 [1] "researcher"
@@ -517,13 +527,14 @@ d7c8dfdd-0981-494c-b566-c79cda798196
 [1] "gpt-4.1-mini"
 
 [[1]]$prompt
-[1] "Research the current economic situation in Algeria, including key indicators like GDP, inflation, employment, and major industries."
+[1] "Research the current economic situation in Algeria using reliable and up-to-date sources."
 
 [[1]]$response
-As of early 2024, Algeria's economy is driven by hydrocarbons, contributing 
-about 30-40% of GDP and over 90% of exports. GDP growth is moderate (~2-3%), 
-inflation is around 5-7%, and unemployment remains high (~11-12%), especially 
-among youth. Key industries include oil and gas, agriculture, and construction.
+As of mid-2024, Algeria’s economy is gradually recovering from the COVID-19 
+impact, driven by hydrocarbon revenues amid rising global oil prices, yet 
+facing challenges like inflation, unemployment, and diversification efforts. 
+The government prioritizes economic reforms, energy sector investments, and 
+boosting non-oil industries to reduce dependence on hydrocarbons.
 
 [[1]]$edited_by_hitl
 [1] FALSE
@@ -531,7 +542,7 @@ among youth. Key industries include oil and gas, agriculture, and construction.
 
 [[2]]
 [[2]]$agent_id
-d25a8a57-05e4-4b43-af4b-8aa71a4bcfc5
+01009372-bb61-4c2c-b944-d7968f3f33f0
 
 [[2]]$agent_name
 [1] "summarizer"
@@ -543,15 +554,15 @@ d25a8a57-05e4-4b43-af4b-8aa71a4bcfc5
 [1] "gpt-4.1-mini"
 
 [[2]]$prompt
-[1] "Summarize the researched information into 3 concise bullet points highlighting the main aspects of Algeria's economic situation."
+[1] "Summarize the key points of Algeria's economic situation into 3 clear and concise bullet points."
 
 [[2]]$response
-- Algeria's economy heavily relies on hydrocarbons, accounting for 30-40% of 
-GDP and more than 90% of exports.  
-- The country experiences moderate GDP growth (~2-3%) with inflation between 
-5-7%.  
-- Unemployment remains high at around 11-12%, particularly affecting the youth,
-alongside key sectors like oil and gas, agriculture, and construction.
+- Algeria's economy is on a gradual recovery path, supported by rising 
+hydrocarbon revenues due to higher global oil prices.  
+- The country faces ongoing challenges including inflation, unemployment, and 
+the need for economic diversification.  
+- Government efforts focus on economic reforms, energy sector investments, and 
+expanding non-oil industries to reduce reliance on hydrocarbons.
 
 [[2]]$edited_by_hitl
 [1] FALSE
@@ -559,7 +570,7 @@ alongside key sectors like oil and gas, agriculture, and construction.
 
 [[3]]
 [[3]]$agent_id
-1c6dc8e6-3ed5-49f4-aaf1-d868062c80fe
+f18d776c-6807-4f66-a8eb-7ac2b695ce1f
 
 [[3]]$agent_name
 [1] "translator"
@@ -571,16 +582,17 @@ alongside key sectors like oil and gas, agriculture, and construction.
 [1] "gpt-4.1-mini"
 
 [[3]]$prompt
-[1] "Translate the 3 bullet points from English into German accurately, maintaining the original meaning."
+[1] "Translate the 3 bullet points from English into German accurately."
 
 [[3]]$response
-- Die Wirtschaft Algeriens ist stark von Kohlenwasserstoffen abhängig, die 
-30-40 % des BIP und mehr als 90 % der Exporte ausmachen.  
-- Das Land verzeichnet ein moderates BIP-Wachstum (~2-3 %) bei einer Inflation 
-zwischen 5-7 %.  
-- Die Arbeitslosigkeit bleibt mit etwa 11-12 % hoch, besonders betroffen ist 
-die Jugend, ebenso wie wichtige Sektoren wie Öl und Gas, Landwirtschaft und 
-Bauwesen.
+- Die algerische Wirtschaft befindet sich auf einem allmählichen Erholungskurs,
+unterstützt durch steigende Einnahmen aus dem Bereich der Kohlenwasserstoffe 
+aufgrund höherer globaler Ölpreise.  
+- Das Land steht weiterhin vor Herausforderungen wie Inflation, 
+Arbeitslosigkeit und dem Bedarf an wirtschaftlicher Diversifizierung.  
+- Die Regierungsbemühungen konzentrieren sich auf Wirtschaftsreformen, 
+Investitionen im Energiesektor und den Ausbau der nicht-ölbasierten Industrien,
+um die Abhängigkeit von Kohlenwasserstoffen zu verringern.
 
 [[3]]$edited_by_hitl
 [1] FALSE</code></pre>
@@ -594,6 +606,10 @@ Bauwesen.
 <p>This function displays the agents in workflow order as labeled boxes. Hovering a box reveals the delegated prompt. The visualization uses the <code>DiagrammeR</code> package. If no plan exists, it asks you to generate one first.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>lead_agent<span class="sc">$</span><span class="fu">visualize_plan</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="grViz html-widget html-fill-item" id="htmlwidget-273a9e16c599618104c7" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-273a9e16c599618104c7">{"x":{"diagram":"digraph workflow {\n      graph [rankdir=LR, splines=true, overlap=false];\n      node [shape=box, style=filled, fillcolor=lightblue, fontname=\"Helvetica\", fontsize=12];\n      edge [color=gray50, arrowsize=0.8];\n      A1 [label=\"researcher\", tooltip=\"Research the current economic situation in Algeria using reliable and up-to-date sources.\", shape=box, style=filled, fillcolor=lightblue, fontname=\"Helvetica\"];\nA2 [label=\"summarizer\", tooltip=\"Summarize the key points of Algeria\\\"s economic situation into 3 clear and concise bullet points.\", shape=box, style=filled, fillcolor=lightblue, fontname=\"Helvetica\"];\nA3 [label=\"translator\", tooltip=\"Translate the 3 bullet points from English into German accurately.\", shape=box, style=filled, fillcolor=lightblue, fontname=\"Helvetica\"];\nA1 -> A2 [arrowhead=normal];\nA2 -> A3 [arrowhead=normal];\n    }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+</div>
 </div>
 </section>
 <section id="broadcasting" class="level2">
@@ -634,7 +650,7 @@ Bauwesen.
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
 [[1]]$agent_id
-[1] "bf421e87-b811-48ae-9394-bae3cd4f0add"
+[1] "dff023ad-1a73-4864-a1e5-d6985888cc50"
 
 [[1]]$agent_name
 [1] "openai_4_1_agent"
@@ -646,14 +662,14 @@ Bauwesen.
 [1] "gpt-4.1"
 
 [[1]]$response
-As an Algerian, you might love singing "Ya Rayah" when running under the rain, 
-while a flower might prefer to "sing" its own song of blooming in the freshness
-of the rain.
+If you were Algerian, you might enjoy singing "Ya Rayah" when running in the 
+rain, and for a flower, perhaps "Fleur Fanée" or "Nass el Ghiwane - Ya Sah" 
+which often evoke nature and nostalgia.
 
 
 [[2]]
 [[2]]$agent_id
-[1] "983e2eed-ae6a-4ab1-a459-482a7c33d61e"
+[1] "1c8fc4dc-d765-4dee-8ffd-6a05f70e0bca"
 
 [[2]]$agent_name
 [1] "openai_4_1_nano_agent"
@@ -665,8 +681,8 @@ of the rain.
 [1] "gpt-4.1-nano"
 
 [[2]]$response
-If you were Algerian, you might enjoy singing "Ya Rayah" by Rachid Taha when 
-running under the rain, and "Ahlam" by Cheb Khaled for a flower.</code></pre>
+As an Algerian, you might enjoy singing "Ya Rayah" by Rachid Taha when running 
+under the rain and "Aly" by Cheb Khaled when contemplating a flower.</code></pre>
 </div>
 </div>
 <p>You can also access the history of the <code>broadcasting</code> using the <code>broadcast_history</code> attribute:</p>
@@ -680,7 +696,7 @@ running under the rain, and "Ahlam" by Cheb Khaled for a flower.</code></pre>
 [[1]]$responses
 [[1]]$responses[[1]]
 [[1]]$responses[[1]]$agent_id
-[1] "bf421e87-b811-48ae-9394-bae3cd4f0add"
+[1] "dff023ad-1a73-4864-a1e5-d6985888cc50"
 
 [[1]]$responses[[1]]$agent_name
 [1] "openai_4_1_agent"
@@ -692,14 +708,14 @@ running under the rain, and "Ahlam" by Cheb Khaled for a flower.</code></pre>
 [1] "gpt-4.1"
 
 [[1]]$responses[[1]]$response
-As an Algerian, you might love singing "Ya Rayah" when running under the rain, 
-while a flower might prefer to "sing" its own song of blooming in the freshness
-of the rain.
+If you were Algerian, you might enjoy singing "Ya Rayah" when running in the 
+rain, and for a flower, perhaps "Fleur Fanée" or "Nass el Ghiwane - Ya Sah" 
+which often evoke nature and nostalgia.
 
 
 [[1]]$responses[[2]]
 [[1]]$responses[[2]]$agent_id
-[1] "983e2eed-ae6a-4ab1-a459-482a7c33d61e"
+[1] "1c8fc4dc-d765-4dee-8ffd-6a05f70e0bca"
 
 [[1]]$responses[[2]]$agent_name
 [1] "openai_4_1_nano_agent"
@@ -711,8 +727,8 @@ of the rain.
 [1] "gpt-4.1-nano"
 
 [[1]]$responses[[2]]$response
-If you were Algerian, you might enjoy singing "Ya Rayah" by Rachid Taha when 
-running under the rain, and "Ahlam" by Cheb Khaled for a flower.</code></pre>
+As an Algerian, you might enjoy singing "Ya Rayah" by Rachid Taha when running 
+under the rain and "Aly" by Cheb Khaled when contemplating a flower.</code></pre>
 </div>
 </div>
 </section>
@@ -796,34 +812,35 @@ running under the rain, and "Ahlam" by Cheb Khaled for a flower.</code></pre>
 <pre><code>$proposals
 $proposals[[1]]
 $proposals[[1]]$agent_id
-[1] "27528433-4b44-40f5-b9ba-d04fedd250f0"
+[1] "248a0060-c082-4cf6-a1c3-c06e9c193beb"
 
 $proposals[[1]]$agent_name
 [1] "stylist"
 
 $proposals[[1]]$response
-Pair the blue Calvin Klein shirt and pink trousers with a tailored navy or grey
-overcoat, neutral shoes (like white or tan), and a scarf in a complementary 
-shade to create a stylish, balanced winter look.
+Layer your blue Calvin Klein shirt with a neutral-colored sweater or blazer, 
+add a scarf for warmth, and pair with your pink trousers and classic shoes for 
+a balanced, stylish winter look.
 
 
 $proposals[[2]]
 $proposals[[2]]$agent_id
-[1] "7a4e8023-b87f-430e-9afc-c89bcd6ae1b8"
+[1] "d591bda3-d0ff-4d39-a656-403ee9f31844"
 
 $proposals[[2]]$agent_name
 [1] "stylist2"
 
 $proposals[[2]]$response
-Layer the blue Calvin Klein shirt with a neutral-colored sweater or blazer and 
-add a warm coat, keeping the pink trousers as a vibrant focal point.
+Pair the blue Calvin Klein shirt with a neutral-colored blazer or sweater and a
+stylish coat, along with warm accessories like a scarf and boots, to create a 
+fashionable winter look with pink trousers.
 
 
 
 $chosen_response
-Pair the blue Calvin Klein shirt and pink trousers with a tailored navy or grey
-overcoat, neutral shoes (like white or tan), and a scarf in a complementary 
-shade to create a stylish, balanced winter look.</code></pre>
+Pair the blue Calvin Klein shirt with a neutral-colored blazer or sweater and a
+stylish coat, along with warm accessories like a scarf and boots, to create a 
+fashionable winter look with pink trousers.</code></pre>
 </div>
 </div>
 </section>
@@ -868,11 +885,12 @@ shade to create a stylish, balanced winter look.</code></pre>
 <span id="cb24-33"><a href="#cb24-33" aria-hidden="true" tabindex="-1"></a><span class="co"># Access the final response</span></span>
 <span id="cb24-34"><a href="#cb24-34" aria-hidden="true" tabindex="-1"></a>result<span class="sc">$</span>final_response</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Launch a targeted digital marketing campaign in Germany highlighting premium 
-Ouergla dates’ unique heritage, traditional cultivation, and organic qualities,
-partnered with German gourmet retailers, influencers, and active participation 
-in leading food trade fairs to build brand awareness and secure direct export 
-partnerships.</code></pre>
+<pre><code>Implement a phased marketing strategy beginning with securing organic and 
+fair-trade certifications and partnerships with key German health food 
+retailers while simultaneously launching targeted digital storytelling 
+campaigns about Ouergla’s unique date heritage and health benefits, then 
+gradually expanding to gourmet retailers and increased trade show participation
+to ensure sustainable export growth over two years.</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># View the dialog history</span></span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>result<span class="sc">$</span>dialog_history</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -882,15 +900,16 @@ partnerships.</code></pre>
 [1] 1
 
 [[1]]$agent_id
-[1] "a330fc9e-4a3e-492f-8c0d-d6df8dc359c0"
+[1] "b9af655f-12bf-4f03-a603-a32be64a39ba"
 
 [[1]]$agent_name
 [1] "ceo1"
 
 [[1]]$response
-Launch a targeted digital marketing campaign in Germany highlighting the 
-premium quality and unique origin of Ouergla dates, partnered with German 
-gourmet retailers and influencers to build brand awareness and trust.
+Develop a targeted digital marketing campaign highlighting the premium quality 
+and unique Algerian origin of our dates, combined with partnerships with German
+gourmet retailers and participation in major food trade fairs to build brand 
+awareness and trust.
 
 
 [[2]]
@@ -898,23 +917,26 @@ gourmet retailers and influencers to build brand awareness and trust.
 [1] 1
 
 [[2]]$agent_id
-[1] "941091d7-ad87-4977-9e26-2b91864f0b58"
+[1] "5257637e-c645-4d86-9713-b9a7b2d109d7"
 
 [[2]]$agent_name
 [1] "ceo2"
 
 [[2]]$response
-The proposal is strong in targeting digital channels and leveraging local 
-German influencers and retailers, which aligns well with boosting exports; 
-however, it could be enhanced by incorporating participation in key German 
-trade fairs and food expos to directly connect with distributors and retailers,
-thereby fostering stronger business-to-business relationships critical for 
-sustained export growth.
+Their proposal is strong in emphasizing premium quality, unique origin, and 
+collaboration with German gourmet retailers and trade fairs, which aligns well 
+with boosting exports. However, it lacks direct emphasis on leveraging the rich
+cultural heritage and health benefits of Algerian dates, which could resonate 
+well with German consumers interested in organic and natural health foods. 
+Additionally, it does not mention local certifications or compliance that can 
+be critical in the German market.
 
-Counterproposal: Launch a targeted digital marketing campaign in Germany 
-highlighting premium Ouergla dates, partnered with German gourmet retailers, 
-influencers, and active participation in leading food trade fairs to 
-simultaneously build brand awareness and establish direct export partnerships.
+Counterproposal: Launch a comprehensive marketing strategy focused on promoting
+the authentic Algerian heritage and superior health benefits of our dates 
+through targeted digital campaigns, certification endorsements for organic and 
+fair-trade standards, partnerships with German gourmet and health food 
+retailers, and active participation in key German food trade shows over the 
+next two years.
 
 
 [[3]]
@@ -922,23 +944,22 @@ simultaneously build brand awareness and establish direct export partnerships.
 [1] 2
 
 [[3]]$agent_id
-[1] "a330fc9e-4a3e-492f-8c0d-d6df8dc359c0"
+[1] "b9af655f-12bf-4f03-a603-a32be64a39ba"
 
 [[3]]$agent_name
 [1] "ceo1"
 
 [[3]]$response
-The counterproposal effectively aligns with my role and requirements by adding 
-trade fairs participation, which is crucial for establishing direct export 
-partnerships and deeper market penetration in Germany, thus complementing 
-digital marketing and influencer engagement; I accept this enhanced strategy as
-it respects our company’s export growth goals without imposing conflicting 
-constraints.
-
-CONSENSUS: Launch a targeted digital marketing campaign in Germany highlighting
-premium Ouergla dates, partnered with German gourmet retailers, influencers, 
-and active participation in leading food trade fairs to simultaneously build 
-brand awareness and establish direct export partnerships.
+Their counterproposal addresses important aspects like cultural heritage, 
+health benefits, and certification endorsements which are crucial for the 
+German organic market; however, it risks spreading resources too thin by 
+focusing on both gourmet and health food retailers without prioritizing the 
+most impactful segment first. Given our company’s current scale and resources 
+in Ouergla, I propose a phased strategy: initially concentrate on securing 
+organic and fair-trade certifications and partnering with key health food 
+retailers in Germany to build a strong, targeted reputation, then expand to 
+gourmet segments and increase trade show participation after establishing a 
+foothold, ensuring sustainable growth over two years.
 
 
 [[4]]
@@ -946,23 +967,26 @@ brand awareness and establish direct export partnerships.
 [1] 2
 
 [[4]]$agent_id
-[1] "941091d7-ad87-4977-9e26-2b91864f0b58"
+[1] "5257637e-c645-4d86-9713-b9a7b2d109d7"
 
 [[4]]$agent_name
 [1] "ceo2"
 
 [[4]]$response
-The consensus proposal aligns well with our goal as a dates company in Ouergla 
-aiming to boost German exports through a multi-channel approach, but to further
-leverage Ouergla’s unique regional heritage and ensure sustainability appeal in
-Germany’s market, I propose adding storytelling about traditional cultivation 
-practices and organic certifications in the messaging.
+Their phased approach effectively addresses resource limitations by 
+prioritizing organic and fair-trade certifications and health food retailers 
+before expanding to gourmet markets and trade shows, which aligns well with our
+company's current scale and goals to sustainably boost exports to Germany. To 
+further optimize, I suggest incorporating early digital storytelling campaigns 
+to share Ouergla's unique date heritage and health benefits, building consumer 
+awareness even during the certification phase.
 
-Counterproposal: Launch a targeted digital marketing campaign in Germany 
-highlighting premium Ouergla dates’ unique heritage, traditional cultivation, 
-and organic qualities, partnered with German gourmet retailers, influencers, 
-and active participation in leading food trade fairs to build brand awareness 
-and secure direct export partnerships.
+Counterproposal: Implement a phased marketing strategy beginning with securing 
+organic and fair-trade certifications and partnerships with key German health 
+food retailers while simultaneously launching targeted digital storytelling 
+campaigns about Ouergla’s unique date heritage and health benefits, then 
+gradually expanding to gourmet retailers and increased trade show participation
+to ensure sustainable export growth over two years.
 
 
 [[5]]
@@ -970,43 +994,18 @@ and secure direct export partnerships.
 [1] 3
 
 [[5]]$agent_id
-[1] "a330fc9e-4a3e-492f-8c0d-d6df8dc359c0"
+[1] "b9af655f-12bf-4f03-a603-a32be64a39ba"
 
 [[5]]$agent_name
 [1] "ceo1"
 
 [[5]]$response
-The addition of storytelling around Ouergla’s unique heritage, traditional 
-cultivation, and organic certification directly supports our brand’s 
-distinctiveness and matches growing consumer preferences in Germany, enhancing 
-the original strategy without creating conflicts or constraints; therefore, 
-this enriched messaging combined with digital campaigns, retail partnerships, 
-influencer engagement, and trade fair participation fully aligns with our 
-export growth goals.
-
-CONSENSUS: Launch a targeted digital marketing campaign in Germany highlighting
-premium Ouergla dates’ unique heritage, traditional cultivation, and organic 
-qualities, partnered with German gourmet retailers, influencers, and active 
-participation in leading food trade fairs to build brand awareness and secure 
-direct export partnerships.
-
-
-[[6]]
-[[6]]$iteration
-[1] 3
-
-[[6]]$agent_id
-[1] "941091d7-ad87-4977-9e26-2b91864f0b58"
-
-[[6]]$agent_name
-[1] "ceo2"
-
-[[6]]$response
-CONSENSUS: Launch a targeted digital marketing campaign in Germany highlighting
-premium Ouergla dates’ unique heritage, traditional cultivation, and organic 
-qualities, partnered with German gourmet retailers, influencers, and active 
-participation in leading food trade fairs to build brand awareness and secure 
-direct export partnerships.</code></pre>
+CONSENSUS: Implement a phased marketing strategy beginning with securing 
+organic and fair-trade certifications and partnerships with key German health 
+food retailers while simultaneously launching targeted digital storytelling 
+campaigns about Ouergla’s unique date heritage and health benefits, then 
+gradually expanding to gourmet retailers and increased trade show participation
+to ensure sustainable export growth over two years.</code></pre>
 </div>
 </div>
 <p>If the instructions of the Agents differ fundamentally, they won’t be able to find a consensus and the <code>LeadAgent</code> will take over and provide a final response:</p>
@@ -1048,12 +1047,11 @@ direct export partnerships.</code></pre>
 <span id="cb28-35"><a href="#cb28-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Access the final response</span></span>
 <span id="cb28-36"><a href="#cb28-36" aria-hidden="true" tabindex="-1"></a>result<span class="sc">$</span>final_response</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Implement a phased, balanced marketing strategy over the next two years that 
-begins with cost-effective targeted digital campaigns and micro-influencer 
-partnerships within niche German markets, gradually scaling to include premium 
-events, collaborations with renowned chefs, luxury retail placement, and 
-broader multimedia storytelling based on export growth and budget performance 
-to maximize impact while controlling costs.</code></pre>
+<pre><code>Develop a balanced two-year marketing strategy that combines targeted digital 
+campaigns and partnerships with local German organic and health food stores for
+cost-effective market penetration, while selectively investing in premium 
+influencer collaborations and experiential events in key cities to elevate 
+brand prestige and accelerate export growth of Ouergla dates in Germany.</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># View the dialog history</span></span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>result<span class="sc">$</span>dialog_history</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1063,16 +1061,17 @@ to maximize impact while controlling costs.</code></pre>
 [1] 1
 
 [[1]]$agent_id
-[1] "bb1e6fef-6439-4379-a850-d5be37edba65"
+[1] "0fe23155-af27-43a4-a3fd-76bfed227dce"
 
 [[1]]$agent_name
 [1] "ceo1"
 
 [[1]]$response
 Launch a premium, culturally immersive marketing campaign in Germany featuring 
-high-end sampling events, collaborations with top German chefs and influencers,
-and extensive multimedia storytelling highlighting the unique quality and 
-heritage of Ouergla dates.
+high-profile influencer partnerships, exclusive tastings, sustainability 
+storytelling, and strategic collaborations with gourmet retailers and top chefs
+to position Ouergla dates as a luxury, must-have delicacy over the next two 
+years.
 
 
 [[2]]
@@ -1080,19 +1079,18 @@ heritage of Ouergla dates.
 [1] 1
 
 [[2]]$agent_id
-[1] "1e6066a3-20d5-4d83-b7a4-424e23f9ce07"
+[1] "81833f54-d7d2-4a6c-966c-421608e09fb4"
 
 [[2]]$agent_name
 [1] "ceo2"
 
 [[2]]$response
-While your proposal to launch a premium campaign with high-end events and 
-collaborations could strongly boost our brand image, it seems costly and risks 
-exceeding our strict budget constraints, so I suggest a more cost-effective 
-strategy focusing on targeted digital marketing through German social media 
-platforms, leveraging affordable influencer partnerships and storytelling that 
-highlights Ouergla's dates' unique heritage and quality to stimulate demand 
-over the next two years.
+While the proposed campaign could elevate the brand image, partnering with 
+high-profile influencers and exclusive tastings might exceed our limited 
+marketing budget and pose financial risks; instead, I suggest leveraging 
+cost-effective digital marketing targeted at German niche markets, combined 
+with partnerships with local organic food stores and participation in German 
+food fairs, to boost exports sustainably over the next two years.
 
 
 [[3]]
@@ -1100,19 +1098,21 @@ over the next two years.
 [1] 2
 
 [[3]]$agent_id
-[1] "bb1e6fef-6439-4379-a850-d5be37edba65"
+[1] "0fe23155-af27-43a4-a3fd-76bfed227dce"
 
 [[3]]$agent_name
 [1] "ceo1"
 
 [[3]]$response
-Your suggestion to focus on cost-effective digital marketing and affordable 
-influencer partnerships conflicts with my unlimited budget approach and desire 
-to maximize spending for greater impact; therefore, I propose simultaneously 
-executing a large-scale premium campaign across Germany involving exclusive 
-high-end tastings, partnerships with Michelin-starred chefs, luxury retail 
-placements, plus a comprehensive digital and traditional media blitz to deeply 
-embed Ouergla dates into the German market over the next two years.
+Their proposal emphasizes cost-effectiveness and budget constraints, which 
+directly conflicts with my position as CEO who prioritizes spending as much as 
+needed to maximize export growth; therefore, I must reject the suggestion to 
+limit spending and propose instead an expansive, high-investment marketing 
+strategy involving high-profile influencer partnerships, large-scale 
+experiential events across major German cities, premium in-store placements in 
+upscale organic and gourmet retailers, and a comprehensive sustainability 
+branding campaign to dominate the German luxury dates market over the next two 
+years.
 
 
 [[4]]
@@ -1120,17 +1120,17 @@ embed Ouergla dates into the German market over the next two years.
 [1] 2
 
 [[4]]$agent_id
-[1] "1e6066a3-20d5-4d83-b7a4-424e23f9ce07"
+[1] "81833f54-d7d2-4a6c-966c-421608e09fb4"
 
 [[4]]$agent_name
 [1] "ceo2"
 
 [[4]]$response
-Your large-scale, high-budget approach clearly conflicts with my core 
-constraint of maintaining a low marketing spend; therefore, I counterpropose a 
-phased strategy that begins with focused digital marketing and micro-influencer
-collaborations to build brand awareness cost-effectively in Germany, with 
-potential gradual scaling depending on export growth and budget availability 
+The proposed high-investment strategy directly conflicts with my critical 
+constraint of keeping marketing expenses low to protect our budget; therefore, 
+I must reiterate a more budget-conscious plan focusing on targeted digital 
+marketing, collaborations with niche German organic stores, and participation 
+in affordable food fairs to gradually increase exports without overspending 
 over the next two years.
 
 
@@ -1139,19 +1139,20 @@ over the next two years.
 [1] 3
 
 [[5]]$agent_id
-[1] "bb1e6fef-6439-4379-a850-d5be37edba65"
+[1] "0fe23155-af27-43a4-a3fd-76bfed227dce"
 
 [[5]]$agent_name
 [1] "ceo1"
 
 [[5]]$response
-Your phased, low-budget approach directly conflicts with my position of having 
-no budget constraints and the intent to maximize spending and impact 
-immediately; thus, I firmly propose implementing a full-scale, multi-channel 
-marketing blitz from the outset, including luxury events, top-tier influencer 
-partnerships, extensive traditional and digital advertising, and strategic 
-collaborations within Germany's premium retail and culinary sectors to 
-exponentially increase Ouergla dates exports over the next two years.
+Your focus on budget constraints is noted, but as CEO with no budget limits and
+a goal to maximize exports quickly and significantly, I propose an 
+unparalleled, high-expenditure marketing blitz including premium collaborations
+with top-tier German luxury retailers, sponsorship of major cultural and 
+culinary events, multi-channel influencer campaigns featuring renowned German 
+and international celebrities, immersive brand experiences, and cutting-edge 
+digital and traditional media presence to establish Ouergla dates as the 
+unmatched market leader in Germany over the next two years.
 
 
 [[6]]
@@ -1159,19 +1160,19 @@ exponentially increase Ouergla dates exports over the next two years.
 [1] 3
 
 [[6]]$agent_id
-[1] "1e6066a3-20d5-4d83-b7a4-424e23f9ce07"
+[1] "81833f54-d7d2-4a6c-966c-421608e09fb4"
 
 [[6]]$agent_name
 [1] "ceo2"
 
 [[6]]$response
-Your insistence on a full-scale, high-cost marketing blitz conflicts with my 
-fixed priority of controlling expenses to avoid overspending; therefore, I 
-propose a balanced approach: initiate a targeted, low-cost digital campaign 
-focusing on niche German markets and build incremental collaborations with 
-mid-tier influencers and specialty retailers, allowing us to closely monitor 
-export growth and optimize budget allocation over two years without risking 
-financial strain.</code></pre>
+Their proposal ignores my core constraint of maintaining a strict, low 
+marketing budget and involves high expenditures that I cannot afford; 
+therefore, I propose a cost-effective two-year plan focusing on targeted social
+media advertising, partnerships with local German health food stores, 
+leveraging Algerian cultural festivals in Germany for visibility, and direct 
+outreach to niche distributors to incrementally grow exports without 
+overspending.</code></pre>
 </div>
 </div>
 

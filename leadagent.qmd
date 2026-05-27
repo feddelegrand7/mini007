@@ -104,7 +104,7 @@ Sometimes, before running your workflow, it is helpful to view the orchestration
 
 This function displays the agents in workflow order as labeled boxes. Hovering a box reveals the delegated prompt. The visualization uses the `DiagrammeR` package. If no plan exists, it asks you to generate one first.
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 lead_agent$visualize_plan()
 ```
 
