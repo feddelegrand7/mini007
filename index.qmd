@@ -11,41 +11,215 @@ execute:
 
 ```{r}
 #| include: false
-# load the development version of the package so examples run locally
 if (requireNamespace("pkgload", quietly = TRUE)) pkgload::load_all()
 library(mini007)
 ```
 
+```{r}
+#| eval: false
+retrieve_open_ai_credential <- function() {
+  Sys.getenv("OPENAI_API_KEY")
+}
+
+llm <- ellmer::chat(
+  name        = "openai/gpt-4.1-mini",
+  credentials = retrieve_open_ai_credential,
+  echo        = "none"
+)
+```
+
 # Welcome to **mini007**
 
-`mini007` provides a lightweight and extensible framework for multi-agents orchestration
-processes capable of decomposing complex tasks and assigning them to specialized agents.
+`mini007` is a lightweight and extensible R framework for building multi-agent
+AI systems. It provides three complementary components — `Agent`,
+`LeadAgent`, and `Workflow` — that can be used independently or combined to
+tackle complex tasks that benefit from specialised, collaborating LLM workers.
 
-> Each `agent` is an extension of an `ellmer` object. `mini007` relies heavily on the
-> excellent `ellmer` package but aims to make it easy to create a process where multiple
-> specialized agents help each other sequentially in order to execute a task.
+> `mini007` relies heavily on the excellent
+> [`ellmer`](https://ellmer.tidyverse.org/) package and is compatible with any
+> chat model it supports: OpenAI, Anthropic, Google, Ollama, and more.
 
 ## Highlights
 
-- 🧠 Memory and identity for each agent via `uuid` and message history.
-- ⚙️ Built-in task decomposition and delegation via `LLM`.
-- 🔄 Agent-to-agent orchestration with result chaining.
-- 🌐 Compatible with any chat model supported by `ellmer`.
-- 🧑 Possibility to set a Human In The Loop (`HITL`) at various execution steps
+- 🧠 **Persistent memory** — every agent maintains its full conversation
+  history with export, import, and summarisation support.
+- ⚙️ **Task decomposition** — `LeadAgent` automatically splits a complex
+  prompt into subtasks and delegates each one to the most suitable agent.
+- 🔀 **Sequential pipelines** — `Workflow` gives you explicit control over
+  execution order, branching logic, and which handler runs at each step.
+- 💾 **Caching** — workflow station results are cached by input so subsequent
+  runs skip redundant LLM calls.
+- 🔧 **Tool support** — register `ellmer` tools on any agent, or generate new
+  ones from a natural-language description.
+- 💰 **Budget control** — set a USD spending cap on any agent with a
+  configurable policy (`abort`, `warn`, or `ask`).
+- 🧑 **Human In The Loop** — pause a `LeadAgent` run at specific steps so a
+  human can review, edit, or stop the response before it continues.
+- 🌐 **Model-agnostic** — swap the underlying LLM without changing any
+  orchestration logic.
 
 ## Installation
-
-You can install `mini007` from CRAN with:
 
 ```{r}
 #| eval: false
 install.packages("mini007")
 ```
 
+## Key components
+
+### `Agent`
+
+An `Agent` wraps an `ellmer` chat object and adds identity (UUID), persistent
+message history, budget tracking, and tool support. It is the fundamental
+building block of the framework.
+
+```{r}
+#| eval: false
+researcher <- Agent$new(
+  name        = "researcher",
+  instruction = "Answer factual questions concisely and accurately.",
+  llm_object  = llm
+)
+
+researcher$invoke("What is the boiling point of water at high altitude?")
+```
+
+Agents remember the conversation, so follow-up questions work naturally:
+
+```{r}
+#| eval: false
+researcher$invoke("Why does it change with altitude?")
+```
+
+Notable methods:
+
+| Method | Purpose |
+|---|---|
+| `$invoke(prompt)` | Send a prompt and get a response |
+| `$keep_last_n_messages(n)` | Trim history to the last *n* turns |
+| `$share_context_with(agent)` | Copy recent messages to another agent |
+| `$set_budget(amount)` | Set a USD spending limit |
+| `$register_tools(...)` | Attach `ellmer` tool objects |
+| `$generate_and_register_tool(desc)` | Generate a tool from plain English |
+| `$generate_execute_r_code()` | Write, validate, and run R code |
+| `$validate_response(response, criteria)` | LLM-based output verification |
+| `$clone_agent()` | Create an independent copy with a new UUID |
+| `$export_messages_history(path)` | Save conversation to JSON |
+| `$load_messages_history(path)` | Restore conversation from JSON |
+
+---
+
+### `LeadAgent`
+
+A `LeadAgent` extends `Agent` with multi-agent orchestration: it decomposes a
+complex prompt into subtasks and routes each one to the most suitable
+registered agent, collecting and chaining the results.
+
+```{r}
+#| eval: false
+summariser <- Agent$new(
+  name        = "summariser",
+  instruction = "Summarise the text you receive into three bullet points.",
+  llm_object  = llm
+)
+
+translator <- Agent$new(
+  name        = "translator",
+  instruction = "Translate the text you receive from English to French.",
+  llm_object  = llm
+)
+
+lead <- LeadAgent$new(name = "Lead", llm_object = llm)
+lead$register_agents(c(summariser, translator))
+
+lead$invoke("Summarise the history of the Sahara Desert, then translate it into French.")
+```
+
+Notable methods:
+
+| Method | Purpose |
+|---|---|
+| `$register_agents(agents)` | Add agents to the pool |
+| `$generate_plan(prompt)` | Preview task-to-agent assignments before running |
+| `$visualize_plan()` | Render the plan as an interactive directed graph |
+| `$invoke(prompt)` | Decompose, delegate, and return the final answer |
+| `$broadcast(prompt)` | Send one prompt to all agents and collect every response |
+| `$judge_and_choose_best_response(prompt)` | Let the lead pick the best answer from all agents |
+| `$agents_dialog(prompt, id1, id2)` | Run an iterative negotiation between two agents |
+| `$set_hitl(steps)` | Pause at specified steps for human review or editing |
+
+---
+
+### `Workflow`
+
+A `Workflow` is a predefined, sequential pipeline of **Stations** connected by
+**Routes**. Each Station's output feeds directly into the next one's input. You
+decide the order, the branching conditions, and what runs at each step — the
+handler can be an `Agent`, a `WorkflowAgent`, or a plain R function.
+
+```{r}
+#| eval: false
+# Plain R function as a station — no LLM needed
+clean <- function(text) trimws(gsub("\\s+", " ", text))
+
+wf <- Workflow$new(name = "article-pipeline", use_cache = TRUE)
+
+wf$add_station("clean",    clean)
+wf$add_station("write",    Agent$new(
+  name        = "writer",
+  instruction = "Turn the notes you receive into an engaging paragraph.",
+  llm_object  = llm
+))
+wf$add_station("edit",     Agent$new(
+  name        = "editor",
+  instruction = "Polish the paragraph for grammar and conciseness.",
+  llm_object  = llm
+))
+
+wf$add_route("clean", "write")
+wf$add_route("write", "edit")
+
+wf$run("  The  history  of   the  printing   press  ")
+```
+
+Routes can carry a condition function to create branching pipelines:
+
+```{r}
+#| eval: false
+wf$add_route(
+  from      = "classify",
+  to        = "positive_reply",
+  condition = function(out) grepl("positive", tolower(out))
+)
+```
+
+A finished `Workflow` can be wrapped as a `WorkflowAgent` and registered with
+a `LeadAgent` or nested inside another `Workflow`:
+
+```{r}
+#| eval: false
+wa <- wf$as_agent(name = "article_agent")
+lead$register_agents(list(wa))
+```
+
+Notable methods:
+
+| Method | Purpose |
+|---|---|
+| `$add_station(name, handler)` | Register a Station (agent or function) |
+| `$add_route(from, to, condition)` | Connect two Stations, optionally gated by a condition |
+| `$set_entry(name)` | Set the starting Station |
+| `$run(input)` | Execute the pipeline sequentially |
+| `$clear_cache()` | Invalidate cached Station results |
+| `$as_agent(name, instruction)` | Wrap the workflow as a `WorkflowAgent` |
+| `$visualize()` | Render the pipeline as an interactive directed graph |
 
 ## Get started
 
-Navigate to the **Agents** page to see how to create and interact with individual
-agents, or jump straight to the **LeadAgent** page for multi‑agent orchestration.
+Navigate through the pages in the top navigation bar:
 
-
+- **Agents** — individual agent creation, memory, tools, budgets, and code generation.
+- **LeadAgent** — multi-agent orchestration, broadcasting, HITL, and agent dialog.
+- **Tools** — building and registering custom tools.
+- **Workflow** — sequential pipelines, conditional routing, caching, and nesting.
+- **Testing** — utilities for writing tests against LLM responses.
