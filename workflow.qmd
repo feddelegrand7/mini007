@@ -43,51 +43,60 @@ The simplest `Workflow` is a straight chain of Stations executed one after the o
 
 ```{r}
 researcher <- Agent$new(
-  name        = "researcher",
-  instruction = "You are a research assistant. Provide concise, accurate facts on the given topic in 3 to 5 sentences.",
+  name = "researcher",
+  instruction = "You are a research assistant. Provide concise, accurate facts on the given topic in 3 max",
   llm_object  = openai_4_1_mini
 )
 
 writer <- Agent$new(
-  name        = "writer",
+  name = "writer",
   instruction = "You are a skilled writer. Turn the research notes you receive into a single, engaging paragraph.",
   llm_object  = openai_4_1_mini
 )
 
 editor <- Agent$new(
-  name        = "editor",
+  name = "editor",
   instruction = "You are a copy editor. Polish the paragraph you receive for grammar, clarity, and conciseness. Return only the final text.",
   llm_object  = openai_4_1_mini
+)
+
+translator <- Agent$new(
+  name = "translator", 
+  instruction = "You're a English-German Translater, translate text from English to German", 
+  llm_object = openai_4_1_mini
 )
 ```
 
 ```{r}
 article_pipeline <- Workflow$new(
-  name        = "article-pipeline",
-  description = "Research → Write → Edit"
+  name        = "article pipeline",
+  description = "Research → Write → Edit -> Transalte", 
+  use_cache = TRUE
 )
 
-article_pipeline$add_station("research", researcher)
-article_pipeline$add_station("write",    writer)
-article_pipeline$add_station("edit",     editor)
+article_pipeline$add_station(name = "research", handler = researcher, )
+article_pipeline$add_station(name = "write", handler = writer)
+article_pipeline$add_station(name = "edit", handler = editor)
+article_pipeline$add_station(name = "translate", handler = translator)
 
-article_pipeline$add_route("research", "write")
-article_pipeline$add_route("write",    "edit")
+article_pipeline$add_route(from = "research", to = "write")
+article_pipeline$add_route(from = "write", to = "edit")
+article_pipeline$add_route(from = "edit", to = "translate")
 
-article_pipeline$set_entry("research")
+article_pipeline$set_entry(station_name = "research")
 ```
 
 Calling `$run()` executes every Station in order. Each Station's output becomes the next Station's input automatically.
 
 ```{r}
-result <- article_pipeline$run("The role of sleep in memory consolidation")
+result <- article_pipeline$run("The potential of Algeria when it comes to tourism in the Sahara")
 result
 ```
 
 The `run_history` attribute records every execution, including the full trace of inputs and outputs for each Station:
 
 ```{r}
-str(article_pipeline$run_history[[1]], max.level = 2)
+article_pipeline$run_history
 ```
 
 ## Mixing agents with plain R functions
@@ -95,7 +104,7 @@ str(article_pipeline$run_history[[1]], max.level = 2)
 Stations do not have to be `Agent` objects. Any R function that accepts a single character argument and returns a character value is a valid handler. This makes it easy to add pre-processing or post-processing steps without an LLM call.
 
 ```{r}
-# Plain R function stations — no LLM involved
+# Plain R function stations, no LLM involved
 normalise <- function(text) {
   trimws(gsub("\\s+", " ", text))
 }
@@ -112,18 +121,30 @@ summariser <- Agent$new(
 ```
 
 ```{r}
-format_pipeline <- Workflow$new("format-and-summarise")
+format_pipeline <- Workflow$new("format and summarise")
 
-format_pipeline$add_station("normalise",  normalise,           description = "Collapse whitespace")
-format_pipeline$add_station("summarise",  summariser,          description = "LLM bullet summary")
-format_pipeline$add_station("add_header", add_markdown_header, description = "Prepend markdown header")
+format_pipeline$add_station(
+  name = "normalise",
+  handler = normalise, 
+  description = "Collapse whitespace"
+)
+format_pipeline$add_station(
+  name = "summarise", 
+  handler = summariser, 
+  description = "LLM bullet summary"
+)
+format_pipeline$add_station(
+  name = "add_header", 
+  handler = add_markdown_header, 
+  description = "Prepend markdown header"
+)
 
-format_pipeline$add_route("normalise",  "summarise")
-format_pipeline$add_route("summarise",  "add_header")
+format_pipeline$add_route(from = "normalise",  to = "summarise")
+format_pipeline$add_route(from = "summarise",  to = "add_header")
 ```
 
 ```{r}
-messy_text <- "  Quantum   entanglement  is   a phenomenon where    two particles become   linked. Measuring one instantly   affects  the other,   regardless of   distance.  "
+messy_text <- "  The   2026    worldcup is    approachine.   Algeria's first game   is against     Argentina          "
 
 format_pipeline$run(messy_text)
 ```
@@ -138,25 +159,27 @@ cached_pipeline <- Workflow$new(
   use_cache = TRUE
 )
 
-cached_pipeline$add_station("draft", Agent$new(
+drafter <- Agent$new(
   name        = "drafter",
   instruction = "Write a two-sentence draft on the topic provided.",
   llm_object  = openai_4_1_mini
-))
+)
 
-cached_pipeline$add_station("refine", Agent$new(
+refiner <- Agent$new(
   name        = "refiner",
   instruction = "Improve the draft you receive. Make it more vivid and precise.",
   llm_object  = openai_4_1_mini
-))
+)
 
-cached_pipeline$add_route("draft", "refine")
+cached_pipeline$add_station(name = "draft", handler = drafter)
+cached_pipeline$add_station(name = "refine", handler = refiner)
+cached_pipeline$add_route(from = "draft", to = "refine")
 ```
 
 ```{r}
 # First run — both stations are executed
 start <- Sys.time()
-first_run <- cached_pipeline$run("The formation of black holes")
+first_run <- cached_pipeline$run("Rare fish in the Algerian see")
 first_run
 end <- Sys.time()
 print(end - start)
@@ -165,7 +188,7 @@ print(end - start)
 ```{r}
 # Second run with the same input — cache is served, no LLM calls are made
 start <- Sys.time()
-second_run <- cached_pipeline$run("The formation of black holes")
+second_run <- cached_pipeline$run("Rare fish in the Algerian see")
 second_run
 end <- Sys.time()
 print(end - start)
@@ -178,7 +201,7 @@ cached_pipeline$clear_cache()
 
 # Fresh run after clearing the cache
 start <- Sys.time()
-fresh_run <- cached_pipeline$run("The formation of black holes")
+fresh_run <- cached_pipeline$run("Rare fish in the Algerian see")
 fresh_run
 end <- Sys.time()
 print(end - start)
@@ -186,7 +209,7 @@ print(end - start)
 
 ## Conditional routing
 
-Routes can carry a `condition` — a function that inspects the current Station's output and returns `TRUE` or `FALSE`. When a Station has multiple outgoing Routes, conditional ones are evaluated first (in the order they were added). The first condition that returns `TRUE` determines the next Station. If none match, the first unconditional Route is used as the default fallback.
+Routes can carry a `condition`, a function that inspects the current Station's output and returns `TRUE` or `FALSE`. When a Station has multiple outgoing Routes, conditional ones are evaluated first (in the order they were added). The first condition that returns `TRUE` determines the next Station. If none match, the first unconditional Route is used as the default fallback.
 
 This makes it possible to build branching pipelines where the path taken depends on what an earlier Station produces.
 
@@ -211,11 +234,11 @@ negative_handler <- Agent$new(
 ```
 
 ```{r}
-sentiment_router <- Workflow$new("sentiment-router")
+sentiment_router <- Workflow$new("sentiment router")
 
-sentiment_router$add_station("classify",  classifier)
-sentiment_router$add_station("reply_pos", positive_handler)
-sentiment_router$add_station("reply_neg", negative_handler)
+sentiment_router$add_station(name = "classify",  handler = classifier)
+sentiment_router$add_station(name = "reply_pos", handler = positive_handler)
+sentiment_router$add_station(name = "reply_neg", handler = negative_handler)
 
 # Conditional routes — evaluated against the classifier's output
 sentiment_router$add_route(
@@ -229,27 +252,25 @@ sentiment_router$add_route(
   condition = function(out) grepl("negative", tolower(out))
 )
 
-sentiment_router$set_entry("classify")
+sentiment_router$set_entry(station_name = "classify")
 ```
 
 ```{r}
-sentiment_router$run("I absolutely love this product — it changed my life!")
+sentiment_router$run("I absolutely love this product, it changed my life!")
 ```
 
 ```{r}
 sentiment_router$run("Very disappointed. The quality is nothing like advertised.")
 ```
 
-A more structured example uses a plain function as the router so the branching logic is deterministic and free of LLM calls:
+A more structured example uses a plain function as the router so the branching logic is deterministic and free of LLM calls.
+
+**Important pattern:** the router station must be a **passthrough** — it returns the original text unchanged so that downstream agents receive the real content. The routing classification belongs in the **route conditions**, which inspect the station output and decide where it goes next.
 
 ```{r}
-route_by_length <- function(text) {
-  if (nchar(text) < 80) "short" else "long"
-}
-
 brief_expander <- Agent$new(
   name        = "brief_expander",
-  instruction = "The input is short. Expand it into a well-rounded paragraph of 4–6 sentences.",
+  instruction = "The input is short. Expand it into a well-rounded paragraph of 2 sentences.",
   llm_object  = openai_4_1_mini
 )
 
@@ -259,21 +280,32 @@ long_summariser <- Agent$new(
   llm_object  = openai_4_1_mini
 )
 
-length_router <- Workflow$new("length-router")
+length_router <- Workflow$new("length router")
 
-length_router$add_station("router", route_by_length)
-length_router$add_station("short",  brief_expander)
-length_router$add_station("long",   long_summariser)
+# The router station is a passthrough: it returns the text as-is.
+# The length check lives in the route conditions below, not here.
+length_router$add_station(name = "router", handler = function(text) text)
+length_router$add_station(name = "short-to-long",  handler = brief_expander)
+length_router$add_station(name = "long-to-short",   handler = long_summariser)
 
-length_router$add_route("router", "short", condition = function(x) x == "short")
-length_router$add_route("router", "long",  condition = function(x) x == "long")
+# Conditions receive the router's output (the original text) and decide the branch.
+length_router$add_route(
+  from      = "router",
+  to        = "short-to-long",
+  condition = function(x) nchar(x) < 80
+)
+length_router$add_route(
+  from      = "router",
+  to        = "long-to-short",
+  condition = function(x) nchar(x) >= 80
+)
 
-length_router$set_entry("router")
+length_router$set_entry(station_name = "router")
 ```
 
 ```{r}
 # Short input — routed to the expander
-length_router$run("Bees pollinate flowers.")
+length_router$run("Fennec Algeria football team")
 ```
 
 ```{r}
@@ -301,39 +333,42 @@ This lets you compose complex pipelines from simpler ones without rewriting any 
 
 ```{r}
 # Inner workflow: research + summarise
-research_wf <- Workflow$new("research-wf")
+research_wf <- Workflow$new("research workflow")
 
-research_wf$add_station("gather", Agent$new(
-  name        = "gatherer",
+gatherer <- Agent$new(
+  name = "gatherer",
   instruction = "Gather three key facts about the topic provided. Be concise.",
   llm_object  = openai_4_1_mini
-))
+)
 
-research_wf$add_station("condense", Agent$new(
-  name        = "condenser",
+condonser <- Agent$new(
+  name = "condenser",
   instruction = "Condense the facts you receive into a single sentence.",
   llm_object  = openai_4_1_mini
-))
+)
 
-research_wf$add_route("gather", "condense")
+research_wf$add_station(name = "gather", handler = gatherer)
+research_wf$add_station(name = "condense", handler = condonser)
+research_wf$add_route(from = "gather", to = "condense")
 
+research_wf$set_entry(station_name = "gather")
 # Wrap as a WorkflowAgent
 research_agent <- research_wf$as_agent(
-  name        = "research_agent",
+  name = "research_agent",
   instruction = "An agent that gathers and condenses facts on any topic into one sentence."
 )
 ```
 
 ```{r}
 # Use the WorkflowAgent directly
-research_agent$invoke("The discovery of penicillin")
+research_agent$invoke("The city of Bejaia in Algeria")
 ```
 
 ```{r}
 # Register with a LeadAgent alongside regular agents
 translator <- Agent$new(
   name        = "translator",
-  instruction = "Translate the text you receive from English into French.",
+  instruction = "Translate the text you receive from English into German",
   llm_object  = openai_4_1_mini
 )
 
@@ -344,33 +379,35 @@ lead <- LeadAgent$new(
 
 lead$register_agents(c(research_agent, translator))
 
-lead$invoke("Tell me about Marie Curie in one sentence, then translate it into French.")
+lead$invoke("Tell me about the city of Bejaia in one sentence, then translate it into German")
 ```
 
 ### Nesting a WorkflowAgent inside another Workflow
 
 ```{r}
 # Outer workflow: use the wrapped inner workflow as a Station
-presentation_wf <- Workflow$new("presentation-wf")
+presentation_wf <- Workflow$new("Presentation workflow")
 
 presentation_wf$add_station(
   name    = "research",
   handler = research_agent  # WorkflowAgent used as a station handler
 )
 
-presentation_wf$add_station(
-  name    = "present",
-  handler = Agent$new(
-    name        = "presenter",
+presenter <- Agent$new(
+    name = "presenter",
     instruction = "Turn the one-sentence summary you receive into a polished three-sentence report.",
     llm_object  = openai_4_1_mini
   )
+
+presentation_wf$add_station(
+  name = "present",
+  handler = presenter
 )
 
-presentation_wf$add_route("research", "present")
-presentation_wf$set_entry("research")
+presentation_wf$add_route(from = "research", to = "present")
+presentation_wf$set_entry(station_name = "research")
 
-presentation_wf$run("The invention of the printing press")
+presentation_wf$run("Algeria and Coffee")
 ```
 
 ## Human In The Loop (HITL)
@@ -392,21 +429,24 @@ HITL only fires on fresh executions; cache hits are skipped since the result
 has already been reviewed in a prior run.
 
 ```{r}
-hitl_pipeline <- Workflow$new("hitl-pipeline")
+hitl_pipeline <- Workflow$new("hitl pipeline", use_cache = FALSE)
 
-hitl_pipeline$add_station("draft", Agent$new(
-  name        = "drafter",
+drafter <- Agent$new(
+  name = "drafter",
   instruction = "Write a short two-sentence paragraph on the topic provided.",
-  llm_object  = openai_4_1_mini
-))
+  llm_object = openai_4_1_mini
+)
 
-hitl_pipeline$add_station("translate", Agent$new(
-  name        = "translator",
+translator <- Agent$new(
+  name = "translator",
   instruction = "Translate the text you receive from English into Spanish.",
-  llm_object  = openai_4_1_mini
-))
+  llm_object = openai_4_1_mini
+)
 
-hitl_pipeline$add_route("draft", "translate")
+hitl_pipeline$add_station(name = "draft", handler = drafter)
+hitl_pipeline$add_station(name = "translate", handler = translator)
+
+hitl_pipeline$add_route(from = "draft", to = "translate")
 
 # Pause after step 1 (the drafter) so a human can review the draft
 # before it is sent to the translator
