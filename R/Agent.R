@@ -1378,8 +1378,8 @@ Agent <- R6::R6Class(
       if (ratio >= warn_at && !budget_exceeded) {
         cli::cli_alert_warning(
           glue::glue(
-            "{self$name} budget nearing limit: Cost {round(current_cost, 4)} / . ",
-            "Budget {round(self$budget, 4)} ({round(ratio * 100, 1)}%)"
+            "{self$name} budget nearing limit: Cost {format(round(current_cost, 4), scientific = FALSE)} / . ",
+            "Budget {format(round(self$budget, 4), scientific = FALSE)} ({round(ratio * 100, 1)}%)"
           ))
       }
 
@@ -1391,20 +1391,20 @@ Agent <- R6::R6Class(
 
       if (policy == "warn") {
         cli::cli_alert_warning(glue::glue(
-          "{self$name} exceeded budget: Cost {round(current_cost,4)} > ",
-          "Budget {round(self$budget,4)}. Proceeding per policy 'warn'."
+          "{self$name} exceeded budget: Cost {format(round(current_cost,4), scientific = FALSE)} > ",
+          "Budget {format(round(self$budget,4), scientific = FALSE)}. Proceeding per policy 'warn'."
         ))
       }
 
       if (policy == "ask") {
         user_input <- readline(prompt = glue::glue(
-          "Budget exceeded (Cost {round(current_cost,4)} > Budget {round(self$budget,4)}). ",
+          "Budget exceeded (Cost {format(round(current_cost,4), scientific = FALSE)} > Budget {format(round(self$budget,4), scientific = FALSE)}). ",
           "Continue? [y/N]: "
         ))
         if (tolower(user_input) != "y") {
           cli::cli_abort(glue::glue(
             "{self$name} agent cancelled due to budget exceedance. ",
-            "Cost: {round(current_cost,4)}, Budget: {round(self$budget,4)}"
+            "Cost: {format(round(current_cost,4), scientific = FALSE)}, Budget: {format(round(self$budget,4), scientific = FALSE)}"
           ))
           return(invisible(NULL))
         }
@@ -1413,7 +1413,7 @@ Agent <- R6::R6Class(
       if (policy == "abort") {
         cli::cli_abort(glue::glue(
           "{self$name} agent has exceeded its budget. ",
-          "Cost: {round(current_cost, 4)}, Budget: {round(self$budget, 4)}"
+          "Cost: {format(round(current_cost, 4), scientific = FALSE)}, Budget: {format(round(self$budget, 4), scientific = FALSE)}"
         ))
       }
     },
