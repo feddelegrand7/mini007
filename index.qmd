@@ -41,21 +41,21 @@ tackle complex tasks that benefit from specialised, collaborating LLM workers.
 
 ## Highlights
 
-- 🧠 **Persistent memory** — every agent maintains its full conversation
+- 🧠 **Persistent memory**: every agent maintains its full conversation
   history with export, import, and summarisation support.
-- ⚙️ **Task decomposition** — `LeadAgent` automatically splits a complex
+- ⚙️ **Task decomposition**: `LeadAgent` automatically splits a complex
   prompt into subtasks and delegates each one to the most suitable agent.
-- 🔀 **Sequential pipelines** — `Workflow` gives you explicit control over
+- 🔀 **Sequential pipelines**: `Workflow` gives you explicit control over
   execution order, branching logic, and which handler runs at each step.
-- 💾 **Caching** — workflow station results are cached by input so subsequent
+- 💾 **Caching**: workflow station results are cached by input so subsequent
   runs skip redundant LLM calls.
-- 🔧 **Tool support** — register `ellmer` tools on any agent, or generate new
+- 🔧 **Tool support**: register `ellmer` tools on any agent, or generate new
   ones from a natural-language description.
-- 💰 **Budget control** — set a USD spending cap on any agent with a
+- 💰 **Budget control**: set a USD spending cap on any agent with a
   configurable policy (`abort`, `warn`, or `ask`).
-- 🧑 **Human In The Loop** — pause a `LeadAgent` run at specific steps so a
+- 🧑 **Human In The Loop**: pause at specific steps so a
   human can review, edit, or stop the response before it continues.
-- 🌐 **Model-agnostic** — swap the underlying LLM without changing any
+- 🌐 **Model-agnostic**: swap the underlying LLM without changing any
   orchestration logic.
 
 ## Installation
