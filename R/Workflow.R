@@ -2,7 +2,7 @@
 #'
 #' @description
 #' An R6 class for building sequential multi-agent pipelines. A `Workflow`
-#' is composed of **Stations** (processing units — an `Agent`, a
+#' is composed of **Stations** (processing units - an `Agent`, a
 #' `WorkflowAgent`, or any plain R function) connected by **Routes** (directed
 #' links, optionally gated by a condition function). Execution is always
 #' sequential: the output of one Station becomes the input of the next.
@@ -21,7 +21,7 @@ Workflow <- R6::R6Class(
   "Workflow",
   cloneable = FALSE,
 
-  # ── public ──────────────────────────────────────────────────────────────────
+  # -- public -----------------------------------------------------------------
   public = list(
 
     #' @field name Workflow identifier.
@@ -43,7 +43,7 @@ Workflow <- R6::R6Class(
     #'   for human review. Set via \code{$set_hitl()}.
     hitl_steps = NULL,
 
-    # ── initialize ────────────────────────────────────────────────────────────
+    # -- initialize ------------------------------------------------------------
 
     #' @description Create a new `Workflow`.
     #'
@@ -62,15 +62,15 @@ Workflow <- R6::R6Class(
       self$run_history <- list()
     },
 
-    # ── add_station ───────────────────────────────────────────────────────────
+    # -- add_station -----------------------------------------------------------
 
     #' @description Add a Station to the workflow.
     #'
     #' A Station is a named processing unit. Its `handler` can be:
     #' \itemize{
-    #'   \item An `Agent` or `WorkflowAgent` — the Station calls
+    #'   \item An `Agent` or `WorkflowAgent` - the Station calls
     #'         \code{handler$invoke(input)}.
-    #'   \item A plain R `function(input)` — the Station calls
+    #'   \item A plain R `function(input)` - the Station calls
     #'         \code{handler(input)} and coerces the return value to
     #'         `character`.
     #' }
@@ -109,7 +109,7 @@ Workflow <- R6::R6Class(
       invisible(self)
     },
 
-    # ── add_route ─────────────────────────────────────────────────────────────
+    # -- add_route -------------------------------------------------------------
 
     #' @description Add a Route between two Stations.
     #'
@@ -151,7 +151,7 @@ Workflow <- R6::R6Class(
       invisible(self)
     },
 
-    # ── set_entry ─────────────────────────────────────────────────────────────
+    # -- set_entry -------------------------------------------------------------
 
     #' @description Set the entry Station where execution begins.
     #'
@@ -172,7 +172,7 @@ Workflow <- R6::R6Class(
       invisible(self)
     },
 
-    # ── run ───────────────────────────────────────────────────────────────────
+    # -- run -------------------------------------------------------------------
 
     #' @description Execute the workflow sequentially.
     #'
@@ -202,7 +202,7 @@ Workflow <- R6::R6Class(
 
       if (is.null(private$.entry)) {
         cli::cli_alert_info(
-          "No entry Station set — defaulting to first Station: {.val {entry}}."
+          "No entry Station set - defaulting to first Station: {.val {entry}}."
         )
       }
 
@@ -231,7 +231,7 @@ Workflow <- R6::R6Class(
           cli::cli_alert_info("[cache] Station {.val {current}}.")
           result <- get(cache_key, envir = self$cache, inherits = FALSE)
         } else {
-          cli::cli_text("  {cli::col_blue('→')} Station {.val {current}}")
+          cli::cli_text("  {cli::col_blue('->')} Station {.val {current}}")
           result <- private$.invoke_handler(station$handler, current_input)
 
           if (!is.null(self$hitl_steps) && steps_taken %in% self$hitl_steps) {
@@ -272,7 +272,7 @@ Workflow <- R6::R6Class(
       result
     },
 
-    # ── set_hitl ──────────────────────────────────────────────────────────────
+    # -- set_hitl --------------------------------------------------------------
 
     #' @description Set Human-In-The-Loop (HITL) pause points.
     #'
@@ -283,7 +283,7 @@ Workflow <- R6::R6Class(
     #'   \item Edit the output manually before the next Station receives it.
     #'   \item Stop the workflow immediately (raises an error).
     #' }
-    #' HITL only fires on fresh Station executions — cache hits are skipped.
+    #' HITL only fires on fresh Station executions - cache hits are skipped.
     #' Steps are numbered from 1 in execution order, matching the step counter
     #' shown in \code{$run()} output. You can set multiple steps at once:
     #' \code{wf$set_hitl(c(1, 3))}.
@@ -300,7 +300,7 @@ Workflow <- R6::R6Class(
       invisible(self)
     },
 
-    # ── clear_cache ───────────────────────────────────────────────────────────
+    # -- clear_cache -----------------------------------------------------------
 
     #' @description Remove all cached Station results.
     #'
@@ -312,7 +312,7 @@ Workflow <- R6::R6Class(
       invisible(self)
     },
 
-    # ── as_agent ──────────────────────────────────────────────────────────────
+    # -- as_agent --------------------------------------------------------------
 
     #' @description Wrap this Workflow as a `WorkflowAgent`.
     #'
@@ -362,7 +362,7 @@ Workflow <- R6::R6Class(
       wa
     },
 
-    # ── visualize ─────────────────────────────────────────────────────────────
+    # -- visualize -------------------------------------------------------------
 
     #' @description Render the workflow as a directed graph via DiagrammeR.
     #'
@@ -373,7 +373,7 @@ Workflow <- R6::R6Class(
     #' @return A `DiagrammeR` / `htmlwidget` object.
     visualize = function() {
       if (length(private$.stations) == 0L) {
-        cli::cli_abort("Nothing to visualize — no Stations have been added.")
+        cli::cli_abort("Nothing to visualize - no Stations have been added.")
       }
 
       nodes <- vapply(names(private$.stations), function(n) {
@@ -426,7 +426,7 @@ Workflow <- R6::R6Class(
     }
   ),
 
-  # ── private ─────────────────────────────────────────────────────────────────
+  # -- private ----------------------------------------------------------------
   private = list(
     .stations = list(),
     .routes   = list(),
@@ -477,7 +477,7 @@ Workflow <- R6::R6Class(
     # Pause execution, show the station's input and output, then ask the human
     # what to do. Returns the result to continue with (original or edited).
     .human_confirm = function(step_index, station_name, input, result) {
-      cli::cli_rule(left = glue::glue("HITL — Step {step_index}"))
+      cli::cli_rule(left = glue::glue("HITL - Step {step_index}"))
       cli::cli_text("Station: {.strong {station_name}}")
       cli::cli_alert_info("Input:")
       cli::cli_verbatim(input)
@@ -518,7 +518,7 @@ Workflow <- R6::R6Class(
 )
 
 
-# ══════════════════════════════════════════════════════════════════════════════
+# ==============================================================================
 
 #' @title WorkflowAgent
 #'
@@ -534,7 +534,7 @@ Workflow <- R6::R6Class(
 #'   \item Used as a Station handler inside another `Workflow`.
 #' }
 #'
-#' Do not instantiate `WorkflowAgent` directly — use \code{Workflow$as_agent()}.
+#' Do not instantiate `WorkflowAgent` directly - use \code{Workflow$as_agent()}.
 #'
 #' @export
 WorkflowAgent <- R6::R6Class(

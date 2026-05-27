@@ -5,7 +5,7 @@
 \title{Workflow}
 \description{
 An R6 class for building sequential multi-agent pipelines. A `Workflow`
-is composed of **Stations** (processing units — an `Agent`, a
+is composed of **Stations** (processing units - an `Agent`, a
 `WorkflowAgent`, or any plain R function) connected by **Routes** (directed
 links, optionally gated by a condition function). Execution is always
 sequential: the output of one Station becomes the input of the next.
@@ -31,6 +31,9 @@ a Station inside another `Workflow`.
 \item{\code{cache}}{Environment used as a hash-map for cached Station outputs.}
 
 \item{\code{run_history}}{List of records from every \code{$run()} call.}
+
+\item{\code{hitl_steps}}{Integer vector of step numbers at which execution pauses
+for human review. Set via \code{$set_hitl()}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -42,6 +45,7 @@ a Station inside another `Workflow`.
 \item \href{#method-Workflow-add_route}{\code{Workflow$add_route()}}
 \item \href{#method-Workflow-set_entry}{\code{Workflow$set_entry()}}
 \item \href{#method-Workflow-run}{\code{Workflow$run()}}
+\item \href{#method-Workflow-set_hitl}{\code{Workflow$set_hitl()}}
 \item \href{#method-Workflow-clear_cache}{\code{Workflow$clear_cache()}}
 \item \href{#method-Workflow-as_agent}{\code{Workflow$as_agent()}}
 \item \href{#method-Workflow-visualize}{\code{Workflow$visualize()}}
@@ -76,9 +80,9 @@ Add a Station to the workflow.
 
 A Station is a named processing unit. Its `handler` can be:
 \itemize{
-  \item An `Agent` or `WorkflowAgent` — the Station calls
+  \item An `Agent` or `WorkflowAgent` - the Station calls
         \code{handler$invoke(input)}.
-  \item A plain R `function(input)` — the Station calls
+  \item A plain R `function(input)` - the Station calls
         \code{handler(input)} and coerces the return value to
         `character`.
 }
@@ -182,6 +186,38 @@ handler. Use \code{$clear_cache()} to force re-execution.
 }
 \subsection{Returns}{
 `[character(1)]` The output of the last Station executed.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Workflow-set_hitl"></a>}}
+\if{latex}{\out{\hypertarget{method-Workflow-set_hitl}{}}}
+\subsection{Method \code{set_hitl()}}{
+Set Human-In-The-Loop (HITL) pause points.
+
+When execution reaches a step whose number is listed in `steps`, it
+pauses and presents the human with three choices:
+\enumerate{
+  \item Continue with the Station's original output.
+  \item Edit the output manually before the next Station receives it.
+  \item Stop the workflow immediately (raises an error).
+}
+HITL only fires on fresh Station executions - cache hits are skipped.
+Steps are numbered from 1 in execution order, matching the step counter
+shown in \code{$run()} output. You can set multiple steps at once:
+\code{wf$set_hitl(c(1, 3))}.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Workflow$set_hitl(steps)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{steps}}{`[integerish]` One or more step numbers (>= 1).}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Invisibly returns `self` for method chaining.
 }
 }
 \if{html}{\out{<hr>}}

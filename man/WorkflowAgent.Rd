@@ -15,7 +15,7 @@ any agent (\code{name}, \code{instruction}, \code{agent_id},
   \item Used as a Station handler inside another `Workflow`.
 }
 
-Do not instantiate `WorkflowAgent` directly — use \code{Workflow$as_agent()}.
+Do not instantiate `WorkflowAgent` directly - use \code{Workflow$as_agent()}.
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
