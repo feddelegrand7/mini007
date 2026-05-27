@@ -162,7 +162,6 @@ agent$invoke("summarise the previous conversation")
 ```
 
 #### Sharing context between agents
-###### Available at the moment only in the development version
 
 You can copy recent messages from one agent to another. The transferred entries
 are added as user messages in the receiving agent.

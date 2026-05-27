@@ -307,6 +307,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="menu-text">Tools</span></a>
   </li>  
   <li class="nav-item">
+    <a class="nav-link" href="./workflow.html"> 
+<span class="menu-text">Workflow</span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link" href="./testing.html"> 
 <span class="menu-text">Testing</span></a>
   </li>  
@@ -400,7 +404,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>polar_bear_researcher<span class="sc">$</span>agent_id</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "5dfe7e38-b8c6-4c11-aa3a-decbda630bdd"</code></pre>
+<pre><code>[1] "4c6d32a7-2bae-4910-8529-82132ccb910c"</code></pre>
 </div>
 </div>
 <p>At any time, you can tweak the <code>llm_object</code>:</p>
@@ -416,8 +420,8 @@ You are an expert in polar bears, you task is to collect information about polar
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>polar_bear_researcher<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"Are polar bears dangerous for humans?"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Yes, polar bears can be dangerous to humans as they are powerful predators and 
-may attack if threatened or hungry.</code></pre>
+<pre><code>Yes, polar bears are dangerous to humans as they are powerful predators and can
+be aggressive if threatened or hungry.</code></pre>
 </div>
 </div>
 <p>You can also retrieve a list that displays the history of the agent:</p>
@@ -445,7 +449,7 @@ may attack if threatened or hungry.</code></pre>
 [1] "assistant"
 
 [[3]]$content
-[1] "Yes, polar bears can be dangerous to humans as they are powerful predators and may attack if threatened or hungry."</code></pre>
+[1] "Yes, polar bears are dangerous to humans as they are powerful predators and can be aggressive if threatened or hungry."</code></pre>
 </div>
 </div>
 <p>Or the <code>ellmer</code> way:</p>
@@ -458,7 +462,7 @@ You are an expert in polar bears, you task is to collect information about polar
 ── user ────────────────────────────────────────────────────────────────────────
 Are polar bears dangerous for humans?
 ── assistant [input=43 output=23 cost=$0.00] ───────────────────────────────────
-Yes, polar bears can be dangerous to humans as they are powerful predators and may attack if threatened or hungry.</code></pre>
+Yes, polar bears are dangerous to humans as they are powerful predators and can be aggressive if threatened or hungry.</code></pre>
 </div>
 </div>
 </section>
@@ -477,7 +481,7 @@ Yes, polar bears can be dangerous to humans as they are powerful predators and m
 [1] "system"
 
 [[1]]$content
-[1] "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max. \n\n--- Conversation Summary ---\n The user asked if polar bears are dangerous to humans, and the expert assistant responded that polar bears can indeed be dangerous because they are powerful predators and may attack when threatened or hungry."</code></pre>
+[1] "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max. \n\n--- Conversation Summary ---\n The user asked if polar bears are dangerous to humans, and the assistant responded that polar bears are indeed dangerous because they are powerful predators and can become aggressive when threatened or hungry."</code></pre>
 </div>
 </div>
 <p>This method summarises all previous conversations into a paragraph and appends it to the system prompt, then clears the conversation history. The agent retains the context but with reduced memory usage.</p>
@@ -655,15 +659,13 @@ Yes, polar bears can be dangerous to humans as they are powerful predators and m
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>agent<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"summarise the previous conversation"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>You asked where to find the best pizza in the world, and I told you it's in 
-Algiers, Algeria, known for being tasty and crunchy.</code></pre>
+<pre><code>You asked where to find the best pizza in the world, and I responded that the 
+best pizza can be found in Algiers, Algeria, known for being tasty and crunchy.</code></pre>
 </div>
 </div>
 </section>
 <section id="sharing-context-between-agents" class="level4">
 <h4 class="anchored" data-anchor-id="sharing-context-between-agents">Sharing context between agents</h4>
-<section id="available-at-the-moment-only-in-the-development-version" class="level6">
-<h6 class="anchored" data-anchor-id="available-at-the-moment-only-in-the-development-version">Available at the moment only in the development version</h6>
 <p>You can copy recent messages from one agent to another. The transferred entries are added as user messages in the receiving agent.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>agent_1 <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
@@ -682,7 +684,7 @@ Algiers, Algeria, known for being tasty and crunchy.</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>agent_1<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"How are you?"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>I'm doing great, thank you for asking! How about you? 😊</code></pre>
+<pre><code>I'm doing great, thank you! How about you? 😊</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># share the last two exchanges with a2</span></span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="co"># messages arrive as 'user' entries</span></span>
@@ -710,10 +712,9 @@ Algiers, Algeria, known for being tasty and crunchy.</code></pre>
 [1] "assistant"
 
 [[3]]$content
-[1] "I'm doing great, thank you for asking! How about you? 😊"</code></pre>
+[1] "I'm doing great, thank you! How about you? 😊"</code></pre>
 </div>
 </div>
-</section>
 </section>
 <section id="sync-between-messages-and-turns" class="level4">
 <h4 class="anchored" data-anchor-id="sync-between-messages-and-turns">Sync between <strong>messages</strong> and <strong>turns</strong></h4>
@@ -767,7 +768,7 @@ Algiers, Algeria, known for being tasty and crunchy.</code></pre>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>agent<span class="sc">$</span>llm_object</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>&lt;Chat OpenAI/gpt-4.1-mini turns=5 input=62 output=32&gt;
+<pre><code>&lt;Chat OpenAI/gpt-4.1-mini turns=5 input=62 output=37&gt;
 ── system ──────────────────────────────────────────────────────────────────────
 You are a Pizza expert
 ── user ────────────────────────────────────────────────────────────────────────
@@ -776,7 +777,7 @@ Where can I find the best pizza in the world?
 You can find the best pizza in the world in Algiers, Algeria. It's tasty and crunchy.
 ── user ────────────────────────────────────────────────────────────────────────
 summarise the previous conversation
-── assistant [input=62 output=32] ──────────────────────────────────────────────
+── assistant [input=62 output=37] ──────────────────────────────────────────────
 Obivously you asked me about the best pizza in the world which is of course in Algiery!</code></pre>
 </div>
 </div>
@@ -799,13 +800,17 @@ Obivously you asked me about the best pizza in the world which is of course in A
 <span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a>agent<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"Tell me a short fun fact about dates (the fruit)."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Sure! Did you know that date palms can produce up to 200 pounds of dates per 
-tree each year? That’s a lot of sweet fruit from just one tree!</code></pre>
+<pre><code>Sure! Did you know that dates are one of the oldest cultivated fruits, with 
+evidence of date palm farming dating back over 6,000 years in the Middle East? 
+They were so valued in ancient times that they were often called the "bread of 
+the desert"!</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>agent<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"And one more."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Of course! Dates have been cultivated for over 6,000 years, making them one of 
-the oldest cultivated fruits in human history!</code></pre>
+<pre><code>Absolutely! Here’s another fun fact: Dates are naturally very sweet because 
+they contain a high amount of natural sugars, making them a perfect 
+energy-boosting snack that was traditionally eaten by desert travelers to keep 
+their energy up during long journeys.</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Clear all messages except the system prompt</span></span>
 <span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>agent<span class="sc">$</span><span class="fu">reset_conversation_history</span>()</span>
@@ -921,8 +926,8 @@ the oldest cultivated fruits in human history!</code></pre>
 <span id="cb48-20"><a href="#cb48-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Normal usage</span></span>
 <span id="cb48-21"><a href="#cb48-21" aria-hidden="true" tabindex="-1"></a>agent<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"Give me a one-sentence fun fact about Algeria."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Algeria is home to the Sahara Desert, the largest hot desert in the world, 
-covering over 80% of the country!</code></pre>
+<pre><code>Algeria is home to part of the Sahara Desert, the largest hot desert in the 
+world!</code></pre>
 </div>
 </div>
 <p>The current policy is echoed when setting the budget. You can update the policy at any time before or during an interaction lifecycle to adapt to your workflow’s tolerance for cost overruns.</p>
@@ -934,13 +939,13 @@ covering over 80% of the country!</code></pre>
 <span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>stats</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$estimated_cost
-[1] 1e-04
+[1] 0
 
 $budget
 [1] 5
 
 $budget_remaining
-[1] 4.9999</code></pre>
+[1] 5</code></pre>
 </div>
 </div>
 </section>
@@ -980,7 +985,7 @@ $budget_remaining
 [1] "using ggplot2, generate a scatterplot of hwy and cty in red"
 
 $code
-library(ggplot2);ggplot(mpg,aes(x=hwy,y=cty))+geom_point(color="red")
+library(ggplot2);ggplot(mpg,aes(x=cty,y=hwy))+geom_point(color="red")
 
 $validated
 [1] TRUE
@@ -1022,7 +1027,7 @@ character(0)</code></pre>
 <span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb55-9"><a href="#cb55-9" aria-hidden="true" tabindex="-1"></a>rai_agent<span class="sc">$</span>agent_id</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "710bd175-784b-4814-9a19-6df9b0a9431f"</code></pre>
+<pre><code>[1] "3966b176-7e05-414c-b83c-3fe98afcc01f"</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>rai_agent<span class="sc">$</span>name</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -1055,7 +1060,7 @@ character(0)</code></pre>
 [1] "assistant"
 
 [[3]]$content
-[1] "Cheb Khaled – \"Didi.\""</code></pre>
+[1] "\"Ya Rayah\" by Dahmane El Harrachi."</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -1063,7 +1068,7 @@ character(0)</code></pre>
 <span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>new_rai_agent<span class="sc">$</span>agent_id</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "b1fcf67d-783a-4714-a4f2-03a1a545a038"</code></pre>
+<pre><code>[1] "5429d160-5be0-470e-b427-cf86dd3b3bde"</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>new_rai_agent<span class="sc">$</span>name</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -1096,7 +1101,7 @@ character(0)</code></pre>
 [1] "assistant"
 
 [[3]]$content
-[1] "Cheb Khaled – \"Didi.\""</code></pre>
+[1] "\"Ya Rayah\" by Dahmane El Harrachi."</code></pre>
 </div>
 </div>
 </section>
@@ -1155,7 +1160,7 @@ $score
 [1] 1
 
 $feedback
-[1] "The response is factually accurate and correctly mentions Algiers as the capital of Algeria, fully meeting the validation criteria."</code></pre>
+[1] "The response correctly identifies Algiers as the capital of Algeria, which is factually accurate and meets the validation criteria precisely."</code></pre>
 </div>
 </div>
 </section>
@@ -1185,8 +1190,8 @@ $feedback
 [1] "Write a 1 sentence advertisment about an Algerian dates (the fruid)"
 
 $response
-Discover the rich, sweet taste of Algerian dates—nature’s perfect energy boost 
-packed with tradition and sunshine in every bite!
+Discover the rich, sun-kissed sweetness of authentic Algerian dates – nature’s 
+perfect energy boost packed with tradition and unmatched flavor!
 
 $validation_criteria
 [1] "Response must be under 100 words, professional tone, and highlight Algerian dates"
@@ -1201,7 +1206,7 @@ $score
 [1] 1
 
 $feedback
-[1] "The response is a single sentence advertisement that highlights Algerian dates by emphasizing their rich, sweet taste and natural energy benefits. It maintains a professional tone and is well under the 100-word limit. The description effectively conveys both the quality and cultural significance of the product, fulfilling all the specified criteria."</code></pre>
+[1] "The response is under 100 words, maintains a professional tone, and effectively highlights Algerian dates by emphasizing their authentic, rich sweetness and cultural significance. It meets all the specified validation criteria perfectly."</code></pre>
 </div>
 </div>
 </section>

@@ -352,6 +352,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#using-a-workflowagent-inside-a-leadagent" id="toc-using-a-workflowagent-inside-a-leadagent" class="nav-link" data-scroll-target="#using-a-workflowagent-inside-a-leadagent">Using a WorkflowAgent inside a LeadAgent</a></li>
   <li><a href="#nesting-a-workflowagent-inside-another-workflow" id="toc-nesting-a-workflowagent-inside-another-workflow" class="nav-link" data-scroll-target="#nesting-a-workflowagent-inside-another-workflow">Nesting a WorkflowAgent inside another Workflow</a></li>
   </ul></li>
+  <li><a href="#human-in-the-loop-hitl" id="toc-human-in-the-loop-hitl" class="nav-link" data-scroll-target="#human-in-the-loop-hitl">Human In The Loop (HITL)</a></li>
   <li><a href="#visualising-a-workflow" id="toc-visualising-a-workflow" class="nav-link" data-scroll-target="#visualising-a-workflow">Visualising a workflow</a></li>
   </ul>
 </nav>
@@ -409,64 +410,213 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The simplest <code>Workflow</code> is a straight chain of Stations executed one after the other. Here we wire three specialised agents: a researcher that gathers facts, a writer that shapes them into a paragraph, and an editor that polishes the result.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>researcher <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"researcher"</span>,</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"You are a research assistant. Provide concise, accurate facts on the given topic in 3 to 5 sentences."</span>,</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"researcher"</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"You are a research assistant. Provide concise, accurate facts on the given topic in 3 max"</span>,</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object  =</span> openai_4_1_mini</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>writer <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"writer"</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"writer"</span>,</span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"You are a skilled writer. Turn the research notes you receive into a single, engaging paragraph."</span>,</span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object  =</span> openai_4_1_mini</span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>editor <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"editor"</span>,</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"editor"</span>,</span>
 <span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"You are a copy editor. Polish the paragraph you receive for grammar, clarity, and conciseness. Return only the final text."</span>,</span>
 <span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object  =</span> openai_4_1_mini</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>translator <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"translator"</span>, </span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"You're a English-German Translater, translate text from English to German"</span>, </span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>article_pipeline <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"article-pipeline"</span>,</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">"Research → Write → Edit"</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>article_pipeline<span class="sc">$</span><span class="fu">add_station</span>(<span class="st">"research"</span>, researcher)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>article_pipeline<span class="sc">$</span><span class="fu">add_station</span>(<span class="st">"write"</span>,    writer)</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>article_pipeline<span class="sc">$</span><span class="fu">add_station</span>(<span class="st">"edit"</span>,     editor)</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>article_pipeline<span class="sc">$</span><span class="fu">add_route</span>(<span class="st">"research"</span>, <span class="st">"write"</span>)</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>article_pipeline<span class="sc">$</span><span class="fu">add_route</span>(<span class="st">"write"</span>,    <span class="st">"edit"</span>)</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>article_pipeline<span class="sc">$</span><span class="fu">set_entry</span>(<span class="st">"research"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"article pipeline"</span>,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">"Research → Write → Edit -&gt; Transalte"</span>, </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">use_cache =</span> <span class="cn">TRUE</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>article_pipeline<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"research"</span>, <span class="at">handler =</span> researcher, )</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>article_pipeline<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"write"</span>, <span class="at">handler =</span> writer)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>article_pipeline<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"edit"</span>, <span class="at">handler =</span> editor)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>article_pipeline<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"translate"</span>, <span class="at">handler =</span> translator)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>article_pipeline<span class="sc">$</span><span class="fu">add_route</span>(<span class="at">from =</span> <span class="st">"research"</span>, <span class="at">to =</span> <span class="st">"write"</span>)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>article_pipeline<span class="sc">$</span><span class="fu">add_route</span>(<span class="at">from =</span> <span class="st">"write"</span>, <span class="at">to =</span> <span class="st">"edit"</span>)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>article_pipeline<span class="sc">$</span><span class="fu">add_route</span>(<span class="at">from =</span> <span class="st">"edit"</span>, <span class="at">to =</span> <span class="st">"translate"</span>)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>article_pipeline<span class="sc">$</span><span class="fu">set_entry</span>(<span class="at">station_name =</span> <span class="st">"research"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Calling <code>$run()</code> executes every Station in order. Each Station’s output becomes the next Station’s input automatically.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> article_pipeline<span class="sc">$</span><span class="fu">run</span>(<span class="st">"The role of sleep in memory consolidation"</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> article_pipeline<span class="sc">$</span><span class="fu">run</span>(<span class="st">"The potential of Algeria when it comes to tourism in the Sahara"</span>)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>result</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Sleep is essential for memory consolidation, stabilizing and integrating newly 
-acquired information into long-term storage. During non-rapid eye movement 
-(NREM) sleep, especially the slow-wave phase, the brain replays and transfers 
-memories from the hippocampus to the neocortex, strengthening retention. 
-Meanwhile, rapid eye movement (REM) sleep solidifies emotional and procedural 
-memories. Together, these sleep stages ensure that quality rest enhances 
-learning and supports overall cognitive function.</code></pre>
+<pre><code>Die Sahara in Algerien, die etwa 80 % des Landes bedeckt, bietet eine 
+faszinierende Mischung aus Landschaften – von weitläufigen Dünen und üppigen 
+Oasen bis hin zu bemerkenswerter prähistorischer Felskunst – und macht sie zu 
+einem außergewöhnlichen Ziel für Abenteuer- und Kulturtourismus. Zu den 
+bemerkenswerten Attraktionen zählen UNESCO-Welterbestätten wie der Tassili 
+n'Ajjer Nationalpark, bekannt für seine antiken Petroglyphen, und das 
+M'Zab-Tal, berühmt für seine charakteristische Berber-Architektur. Trotz dieser
+natürlichen und kulturellen Schätze ist der Tourismussektor Algeriens aufgrund 
+von infrastrukturellen Herausforderungen und begrenzter internationaler 
+Vermarktung wenig entwickelt. Diese Hindernisse verdeutlichen jedoch auch ein 
+erhebliches Potenzial für Wachstum im Bereich des Wüsten-Ökotourismus und des 
+Kulturerbe-Tourismus.</code></pre>
 </div>
 </div>
 <p>The <code>run_history</code> attribute records every execution, including the full trace of inputs and outputs for each Station:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(article_pipeline<span class="sc">$</span>run_history[[<span class="dv">1</span>]], <span class="at">max.level =</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>article_pipeline<span class="sc">$</span>run_history</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>List of 4
- $ input : chr "The role of sleep in memory consolidation"
- $ output: 'ellmer_output' chr "Sleep is essential for memory consolidation, stabilizing and integrating newly acquired information into long-t"| __truncated__
- $ steps : int 3
- $ trace :List of 3
-  ..$ :List of 4
-  ..$ :List of 4
-  ..$ :List of 4</code></pre>
+<pre><code>[[1]]
+[[1]]$input
+[1] "The potential of Algeria when it comes to tourism in the Sahara"
+
+[[1]]$output
+Die Sahara in Algerien, die etwa 80 % des Landes bedeckt, bietet eine 
+faszinierende Mischung aus Landschaften – von weitläufigen Dünen und üppigen 
+Oasen bis hin zu bemerkenswerter prähistorischer Felskunst – und macht sie zu 
+einem außergewöhnlichen Ziel für Abenteuer- und Kulturtourismus. Zu den 
+bemerkenswerten Attraktionen zählen UNESCO-Welterbestätten wie der Tassili 
+n'Ajjer Nationalpark, bekannt für seine antiken Petroglyphen, und das 
+M'Zab-Tal, berühmt für seine charakteristische Berber-Architektur. Trotz dieser
+natürlichen und kulturellen Schätze ist der Tourismussektor Algeriens aufgrund 
+von infrastrukturellen Herausforderungen und begrenzter internationaler 
+Vermarktung wenig entwickelt. Diese Hindernisse verdeutlichen jedoch auch ein 
+erhebliches Potenzial für Wachstum im Bereich des Wüsten-Ökotourismus und des 
+Kulturerbe-Tourismus.
+
+[[1]]$steps
+[1] 4
+
+[[1]]$trace
+[[1]]$trace[[1]]
+[[1]]$trace[[1]]$step
+[1] 1
+
+[[1]]$trace[[1]]$station
+[1] "research"
+
+[[1]]$trace[[1]]$input
+[1] "The potential of Algeria when it comes to tourism in the Sahara"
+
+[[1]]$trace[[1]]$output
+1. Algeria's Sahara Desert, covering about 80% of its territory, offers vast, 
+diverse landscapes including dunes, oases, and prehistoric rock art, making it 
+a unique destination for adventure and cultural tourism.  
+2. Key attractions include the UNESCO World Heritage sites like the Tassili 
+n'Ajjer National Park, known for its ancient petroglyphs, and the M'Zab Valley,
+showcasing traditional Berber architecture.  
+3. Despite its potential, Algeria's tourism is underdeveloped due to 
+infrastructure challenges and limited international promotion, representing 
+significant growth opportunities in desert ecotourism and cultural heritage 
+travel.
+
+
+[[1]]$trace[[2]]
+[[1]]$trace[[2]]$step
+[1] 2
+
+[[1]]$trace[[2]]$station
+[1] "write"
+
+[[1]]$trace[[2]]$input
+1. Algeria's Sahara Desert, covering about 80% of its territory, offers vast, 
+diverse landscapes including dunes, oases, and prehistoric rock art, making it 
+a unique destination for adventure and cultural tourism.  
+2. Key attractions include the UNESCO World Heritage sites like the Tassili 
+n'Ajjer National Park, known for its ancient petroglyphs, and the M'Zab Valley,
+showcasing traditional Berber architecture.  
+3. Despite its potential, Algeria's tourism is underdeveloped due to 
+infrastructure challenges and limited international promotion, representing 
+significant growth opportunities in desert ecotourism and cultural heritage 
+travel.
+
+[[1]]$trace[[2]]$output
+Algeria's Sahara Desert, which spans about 80% of the country, presents a 
+captivating array of landscapes—from sweeping dunes and lush oases to 
+remarkable prehistoric rock art—that make it an exceptional destination for 
+adventure and cultural tourism. Among its standout attractions are UNESCO World
+Heritage sites like Tassili n'Ajjer National Park, famed for its ancient 
+petroglyphs, and the M'Zab Valley, renowned for its distinctive Berber 
+architecture. However, despite this wealth of natural and cultural treasures, 
+Algeria's tourism sector remains underdeveloped, hindered by infrastructure 
+challenges and limited international promotion, yet these obstacles also 
+highlight immense potential for growth in desert ecotourism and heritage 
+travel.
+
+
+[[1]]$trace[[3]]
+[[1]]$trace[[3]]$step
+[1] 3
+
+[[1]]$trace[[3]]$station
+[1] "edit"
+
+[[1]]$trace[[3]]$input
+Algeria's Sahara Desert, which spans about 80% of the country, presents a 
+captivating array of landscapes—from sweeping dunes and lush oases to 
+remarkable prehistoric rock art—that make it an exceptional destination for 
+adventure and cultural tourism. Among its standout attractions are UNESCO World
+Heritage sites like Tassili n'Ajjer National Park, famed for its ancient 
+petroglyphs, and the M'Zab Valley, renowned for its distinctive Berber 
+architecture. However, despite this wealth of natural and cultural treasures, 
+Algeria's tourism sector remains underdeveloped, hindered by infrastructure 
+challenges and limited international promotion, yet these obstacles also 
+highlight immense potential for growth in desert ecotourism and heritage 
+travel.
+
+[[1]]$trace[[3]]$output
+Algeria's Sahara Desert, covering about 80% of the country, offers a 
+captivating mix of landscapes—from sweeping dunes and lush oases to remarkable 
+prehistoric rock art—making it an exceptional destination for adventure and 
+cultural tourism. Notable attractions include UNESCO World Heritage sites like 
+Tassili n'Ajjer National Park, famous for its ancient petroglyphs, and the 
+M'Zab Valley, known for its distinctive Berber architecture. Despite these 
+natural and cultural treasures, Algeria's tourism sector remains underdeveloped
+due to infrastructure challenges and limited international promotion. However, 
+these obstacles also highlight significant potential for growth in desert 
+ecotourism and heritage travel.
+
+
+[[1]]$trace[[4]]
+[[1]]$trace[[4]]$step
+[1] 4
+
+[[1]]$trace[[4]]$station
+[1] "translate"
+
+[[1]]$trace[[4]]$input
+Algeria's Sahara Desert, covering about 80% of the country, offers a 
+captivating mix of landscapes—from sweeping dunes and lush oases to remarkable 
+prehistoric rock art—making it an exceptional destination for adventure and 
+cultural tourism. Notable attractions include UNESCO World Heritage sites like 
+Tassili n'Ajjer National Park, famous for its ancient petroglyphs, and the 
+M'Zab Valley, known for its distinctive Berber architecture. Despite these 
+natural and cultural treasures, Algeria's tourism sector remains underdeveloped
+due to infrastructure challenges and limited international promotion. However, 
+these obstacles also highlight significant potential for growth in desert 
+ecotourism and heritage travel.
+
+[[1]]$trace[[4]]$output
+Die Sahara in Algerien, die etwa 80 % des Landes bedeckt, bietet eine 
+faszinierende Mischung aus Landschaften – von weitläufigen Dünen und üppigen 
+Oasen bis hin zu bemerkenswerter prähistorischer Felskunst – und macht sie zu 
+einem außergewöhnlichen Ziel für Abenteuer- und Kulturtourismus. Zu den 
+bemerkenswerten Attraktionen zählen UNESCO-Welterbestätten wie der Tassili 
+n'Ajjer Nationalpark, bekannt für seine antiken Petroglyphen, und das 
+M'Zab-Tal, berühmt für seine charakteristische Berber-Architektur. Trotz dieser
+natürlichen und kulturellen Schätze ist der Tourismussektor Algeriens aufgrund 
+von infrastrukturellen Herausforderungen und begrenzter internationaler 
+Vermarktung wenig entwickelt. Diese Hindernisse verdeutlichen jedoch auch ein 
+erhebliches Potenzial für Wachstum im Bereich des Wüsten-Ökotourismus und des 
+Kulturerbe-Tourismus.</code></pre>
 </div>
 </div>
 </section>
@@ -474,7 +624,7 @@ learning and supports overall cognitive function.</code></pre>
 <h2 class="anchored" data-anchor-id="mixing-agents-with-plain-r-functions">Mixing agents with plain R functions</h2>
 <p>Stations do not have to be <code>Agent</code> objects. Any R function that accepts a single character argument and returns a character value is a valid handler. This makes it easy to add pre-processing or post-processing steps without an LLM call.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plain R function stations — no LLM involved</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plain R function stations, no LLM involved</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>normalise <span class="ot">&lt;-</span> <span class="cf">function</span>(text) {</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">trimws</span>(<span class="fu">gsub</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">s+"</span>, <span class="st">" "</span>, text))</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>}</span>
@@ -490,21 +640,33 @@ learning and supports overall cognitive function.</code></pre>
 <span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>format_pipeline <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"format-and-summarise"</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>format_pipeline <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"format and summarise"</span>)</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>format_pipeline<span class="sc">$</span><span class="fu">add_station</span>(<span class="st">"normalise"</span>,  normalise,           <span class="at">description =</span> <span class="st">"Collapse whitespace"</span>)</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>format_pipeline<span class="sc">$</span><span class="fu">add_station</span>(<span class="st">"summarise"</span>,  summariser,          <span class="at">description =</span> <span class="st">"LLM bullet summary"</span>)</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>format_pipeline<span class="sc">$</span><span class="fu">add_station</span>(<span class="st">"add_header"</span>, add_markdown_header, <span class="at">description =</span> <span class="st">"Prepend markdown header"</span>)</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>format_pipeline<span class="sc">$</span><span class="fu">add_route</span>(<span class="st">"normalise"</span>,  <span class="st">"summarise"</span>)</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>format_pipeline<span class="sc">$</span><span class="fu">add_route</span>(<span class="st">"summarise"</span>,  <span class="st">"add_header"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>format_pipeline<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"normalise"</span>,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler =</span> normalise, </span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">"Collapse whitespace"</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>format_pipeline<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"summarise"</span>, </span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler =</span> summariser, </span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">"LLM bullet summary"</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>format_pipeline<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"add_header"</span>, </span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler =</span> add_markdown_header, </span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">"Prepend markdown header"</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>format_pipeline<span class="sc">$</span><span class="fu">add_route</span>(<span class="at">from =</span> <span class="st">"normalise"</span>,  <span class="at">to =</span> <span class="st">"summarise"</span>)</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>format_pipeline<span class="sc">$</span><span class="fu">add_route</span>(<span class="at">from =</span> <span class="st">"summarise"</span>,  <span class="at">to =</span> <span class="st">"add_header"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>messy_text <span class="ot">&lt;-</span> <span class="st">"  Quantum   entanglement  is   a phenomenon where    two particles become   linked. Measuring one instantly   affects  the other,   regardless of   distance.  "</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>messy_text <span class="ot">&lt;-</span> <span class="st">"  The   2026    worldcup is    approachine.   Algeria's first game   is against     Argentina          "</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>format_pipeline<span class="sc">$</span><span class="fu">run</span>(messy_text)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "## Summary\n\n- Quantum entanglement links two particles in a connected state.  \n- Measuring one particle instantly influences the other.  \n- This effect occurs regardless of the distance between the particles."</code></pre>
+<pre><code>[1] "## Summary\n\n- The 2026 World Cup is approaching.  \n- Algeria's first match will be against Argentina.  \n- This sets an exciting opening game for Algeria in the tournament."</code></pre>
 </div>
 </div>
 </section>
@@ -517,56 +679,60 @@ learning and supports overall cognitive function.</code></pre>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">use_cache =</span> <span class="cn">TRUE</span></span>
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>cached_pipeline<span class="sc">$</span><span class="fu">add_station</span>(<span class="st">"draft"</span>, Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>drafter <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
 <span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"drafter"</span>,</span>
 <span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"Write a two-sentence draft on the topic provided."</span>,</span>
 <span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object  =</span> openai_4_1_mini</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>cached_pipeline<span class="sc">$</span><span class="fu">add_station</span>(<span class="st">"refine"</span>, Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>refiner <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
 <span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"refiner"</span>,</span>
 <span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"Improve the draft you receive. Make it more vivid and precise."</span>,</span>
 <span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object  =</span> openai_4_1_mini</span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>cached_pipeline<span class="sc">$</span><span class="fu">add_route</span>(<span class="st">"draft"</span>, <span class="st">"refine"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>cached_pipeline<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"draft"</span>, <span class="at">handler =</span> drafter)</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>cached_pipeline<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"refine"</span>, <span class="at">handler =</span> refiner)</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>cached_pipeline<span class="sc">$</span><span class="fu">add_route</span>(<span class="at">from =</span> <span class="st">"draft"</span>, <span class="at">to =</span> <span class="st">"refine"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First run — both stations are executed</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>start <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>first_run <span class="ot">&lt;-</span> cached_pipeline<span class="sc">$</span><span class="fu">run</span>(<span class="st">"The formation of black holes"</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>first_run <span class="ot">&lt;-</span> cached_pipeline<span class="sc">$</span><span class="fu">run</span>(<span class="st">"Rare fish in the Algerian see"</span>)</span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>first_run</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Black holes form when massive stars run out of nuclear fuel and undergo a 
-catastrophic collapse under their own immense gravity, compressing matter into 
-an infinitely dense point called a singularity. This gravitational force 
-becomes so overwhelmingly powerful that nothing—not even light—can escape its 
-grasp, giving rise to the mysterious, pitch-black voids in space known as black
-holes.</code></pre>
+<pre><code>The Algerian Sea harbors an array of rare and vibrant fish species, such as the
+dazzling Mediterranean rainbow wrasse and the imposing dusky grouper. These 
+fish are not only celebrated for their striking colors but also play a vital 
+role in maintaining the region’s delicate marine ecosystem. Protecting these 
+vulnerable species from escalating threats like overfishing and habitat 
+destruction demands urgent and sustained conservation efforts to preserve the 
+rich biodiversity of this underwater realm.</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>end <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(end <span class="sc">-</span> start)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Time difference of 3.56771 secs</code></pre>
+<pre><code>Time difference of 3.57596 secs</code></pre>
 </div>
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Second run with the same input — cache is served, no LLM calls are made</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>start <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>second_run <span class="ot">&lt;-</span> cached_pipeline<span class="sc">$</span><span class="fu">run</span>(<span class="st">"The formation of black holes"</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>second_run <span class="ot">&lt;-</span> cached_pipeline<span class="sc">$</span><span class="fu">run</span>(<span class="st">"Rare fish in the Algerian see"</span>)</span>
 <span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>second_run</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Black holes form when massive stars run out of nuclear fuel and undergo a 
-catastrophic collapse under their own immense gravity, compressing matter into 
-an infinitely dense point called a singularity. This gravitational force 
-becomes so overwhelmingly powerful that nothing—not even light—can escape its 
-grasp, giving rise to the mysterious, pitch-black voids in space known as black
-holes.</code></pre>
+<pre><code>The Algerian Sea harbors an array of rare and vibrant fish species, such as the
+dazzling Mediterranean rainbow wrasse and the imposing dusky grouper. These 
+fish are not only celebrated for their striking colors but also play a vital 
+role in maintaining the region’s delicate marine ecosystem. Protecting these 
+vulnerable species from escalating threats like overfishing and habitat 
+destruction demands urgent and sustained conservation efforts to preserve the 
+rich biodiversity of this underwater realm.</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>end <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(end <span class="sc">-</span> start)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Time difference of 0.05274892 secs</code></pre>
+<pre><code>Time difference of 0.06066895 secs</code></pre>
 </div>
 </div>
 <p>To force a fresh execution, call <code>$clear_cache()</code>:</p>
@@ -575,25 +741,26 @@ holes.</code></pre>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Fresh run after clearing the cache</span></span>
 <span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>start <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>fresh_run <span class="ot">&lt;-</span> cached_pipeline<span class="sc">$</span><span class="fu">run</span>(<span class="st">"The formation of black holes"</span>)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>fresh_run <span class="ot">&lt;-</span> cached_pipeline<span class="sc">$</span><span class="fu">run</span>(<span class="st">"Rare fish in the Algerian see"</span>)</span>
 <span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>fresh_run</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Black holes form when massive stars reach the end of their life cycle and 
-undergo a dramatic collapse, compressing their core into a point of infinite 
-density known as a singularity. This collapse generates a region in space where
-gravity becomes so intense that nothing—not even light—can break free, creating
-a celestial void of unimaginable power.</code></pre>
+<pre><code>The Algerian Sea is a vibrant sanctuary for rare fish species like the ornate 
+wrasse and the Mediterranean dentex, both of which play a crucial role in 
+sustaining the region’s rich marine biodiversity. Safeguarding these uncommon 
+inhabitants is vital to preserving the ecological balance of Algeria’s coastal 
+waters, ensuring the health and resilience of its delicate marine ecosystems 
+for generations to come.</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>end <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(end <span class="sc">-</span> start)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Time difference of 3.200477 secs</code></pre>
+<pre><code>Time difference of 10.16937 secs</code></pre>
 </div>
 </div>
 </section>
 <section id="conditional-routing" class="level2">
 <h2 class="anchored" data-anchor-id="conditional-routing">Conditional routing</h2>
-<p>Routes can carry a <code>condition</code> — a function that inspects the current Station’s output and returns <code>TRUE</code> or <code>FALSE</code>. When a Station has multiple outgoing Routes, conditional ones are evaluated first (in the order they were added). The first condition that returns <code>TRUE</code> determines the next Station. If none match, the first unconditional Route is used as the default fallback.</p>
+<p>Routes can carry a <code>condition</code>, a function that inspects the current Station’s output and returns <code>TRUE</code> or <code>FALSE</code>. When a Station has multiple outgoing Routes, conditional ones are evaluated first (in the order they were added). The first condition that returns <code>TRUE</code> determines the next Station. If none match, the first unconditional Route is used as the default fallback.</p>
 <p>This makes it possible to build branching pipelines where the path taken depends on what an earlier Station produces.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>classifier <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
@@ -615,11 +782,11 @@ a celestial void of unimaginable power.</code></pre>
 <span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>sentiment_router <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"sentiment-router"</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>sentiment_router <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"sentiment router"</span>)</span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>sentiment_router<span class="sc">$</span><span class="fu">add_station</span>(<span class="st">"classify"</span>,  classifier)</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>sentiment_router<span class="sc">$</span><span class="fu">add_station</span>(<span class="st">"reply_pos"</span>, positive_handler)</span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>sentiment_router<span class="sc">$</span><span class="fu">add_station</span>(<span class="st">"reply_neg"</span>, negative_handler)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>sentiment_router<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"classify"</span>,  <span class="at">handler =</span> classifier)</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>sentiment_router<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"reply_pos"</span>, <span class="at">handler =</span> positive_handler)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>sentiment_router<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"reply_neg"</span>, <span class="at">handler =</span> negative_handler)</span>
 <span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Conditional routes — evaluated against the classifier's output</span></span>
 <span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>sentiment_router<span class="sc">$</span><span class="fu">add_route</span>(</span>
@@ -633,64 +800,68 @@ a celestial void of unimaginable power.</code></pre>
 <span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">condition =</span> <span class="cf">function</span>(out) <span class="fu">grepl</span>(<span class="st">"negative"</span>, <span class="fu">tolower</span>(out))</span>
 <span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>sentiment_router<span class="sc">$</span><span class="fu">set_entry</span>(<span class="st">"classify"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>sentiment_router<span class="sc">$</span><span class="fu">set_entry</span>(<span class="at">station_name =</span> <span class="st">"classify"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>sentiment_router<span class="sc">$</span><span class="fu">run</span>(<span class="st">"I absolutely love this product — it changed my life!"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>sentiment_router<span class="sc">$</span><span class="fu">run</span>(<span class="st">"I absolutely love this product, it changed my life!"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Thank you so much for your positive vibes—they truly brighten my day!</code></pre>
+<pre><code>Thank you so much for your positivity—it truly brightens my day!</code></pre>
 </div>
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>sentiment_router<span class="sc">$</span><span class="fu">run</span>(<span class="st">"Very disappointed. The quality is nothing like advertised."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>I’m sorry to hear you’re feeling this way—please let me know how I can help or 
-support you.</code></pre>
+<pre><code>I'm sorry you're feeling this way—please let me know how I can help or support 
+you.</code></pre>
 </div>
 </div>
-<p>A more structured example uses a plain function as the router so the branching logic is deterministic and free of LLM calls:</p>
+<p>A more structured example uses a plain function as the router so the branching logic is deterministic and free of LLM calls.</p>
+<p><strong>Important pattern:</strong> the router station must be a <strong>passthrough</strong> — it returns the original text unchanged so that downstream agents receive the real content. The routing classification belongs in the <strong>route conditions</strong>, which inspect the station output and decide where it goes next.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>route_by_length <span class="ot">&lt;-</span> <span class="cf">function</span>(text) {</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">nchar</span>(text) <span class="sc">&lt;</span> <span class="dv">80</span>) <span class="st">"short"</span> <span class="cf">else</span> <span class="st">"long"</span></span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>brief_expander <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"brief_expander"</span>,</span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"The input is short. Expand it into a well-rounded paragraph of 4–6 sentences."</span>,</span>
-<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object  =</span> openai_4_1_mini</span>
-<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>long_summariser <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
-<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"long_summariser"</span>,</span>
-<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"The input is long. Distill it into a single crisp sentence."</span>,</span>
-<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object  =</span> openai_4_1_mini</span>
-<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>length_router <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"length-router"</span>)</span>
-<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>length_router<span class="sc">$</span><span class="fu">add_station</span>(<span class="st">"router"</span>, route_by_length)</span>
-<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>length_router<span class="sc">$</span><span class="fu">add_station</span>(<span class="st">"short"</span>,  brief_expander)</span>
-<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a>length_router<span class="sc">$</span><span class="fu">add_station</span>(<span class="st">"long"</span>,   long_summariser)</span>
-<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a>length_router<span class="sc">$</span><span class="fu">add_route</span>(<span class="st">"router"</span>, <span class="st">"short"</span>, <span class="at">condition =</span> <span class="cf">function</span>(x) x <span class="sc">==</span> <span class="st">"short"</span>)</span>
-<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a>length_router<span class="sc">$</span><span class="fu">add_route</span>(<span class="st">"router"</span>, <span class="st">"long"</span>,  <span class="at">condition =</span> <span class="cf">function</span>(x) x <span class="sc">==</span> <span class="st">"long"</span>)</span>
-<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a>length_router<span class="sc">$</span><span class="fu">set_entry</span>(<span class="st">"router"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>brief_expander <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"brief_expander"</span>,</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"The input is short. Expand it into a well-rounded paragraph of 2 sentences."</span>,</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object  =</span> openai_4_1_mini</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>long_summariser <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"long_summariser"</span>,</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"The input is long. Distill it into a single crisp sentence."</span>,</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object  =</span> openai_4_1_mini</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>length_router <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"length router"</span>)</span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a><span class="co"># The router station is a passthrough: it returns the text as-is.</span></span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a><span class="co"># The length check lives in the route conditions below, not here.</span></span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>length_router<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"router"</span>, <span class="at">handler =</span> <span class="cf">function</span>(text) text)</span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>length_router<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"short-to-long"</span>,  <span class="at">handler =</span> brief_expander)</span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>length_router<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"long-to-short"</span>,   <span class="at">handler =</span> long_summariser)</span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Conditions receive the router's output (the original text) and decide the branch.</span></span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a>length_router<span class="sc">$</span><span class="fu">add_route</span>(</span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">from      =</span> <span class="st">"router"</span>,</span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">to        =</span> <span class="st">"short-to-long"</span>,</span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">condition =</span> <span class="cf">function</span>(x) <span class="fu">nchar</span>(x) <span class="sc">&lt;</span> <span class="dv">80</span></span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a>length_router<span class="sc">$</span><span class="fu">add_route</span>(</span>
+<span id="cb31-28"><a href="#cb31-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">from      =</span> <span class="st">"router"</span>,</span>
+<span id="cb31-29"><a href="#cb31-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">to        =</span> <span class="st">"long-to-short"</span>,</span>
+<span id="cb31-30"><a href="#cb31-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">condition =</span> <span class="cf">function</span>(x) <span class="fu">nchar</span>(x) <span class="sc">&gt;=</span> <span class="dv">80</span></span>
+<span id="cb31-31"><a href="#cb31-31" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-32"><a href="#cb31-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-33"><a href="#cb31-33" aria-hidden="true" tabindex="-1"></a>length_router<span class="sc">$</span><span class="fu">set_entry</span>(<span class="at">station_name =</span> <span class="st">"router"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Short input — routed to the expander</span></span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>length_router<span class="sc">$</span><span class="fu">run</span>(<span class="st">"Bees pollinate flowers."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>length_router<span class="sc">$</span><span class="fu">run</span>(<span class="st">"Fennec Algeria football team"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Certainly! Here's an expanded version of the word "short": 
-
-The word "short" is often used to describe something that has a small length, 
-duration, or height. For example, a short book might be one that can be read 
-quickly, while a short person is someone who is not very tall. It can also 
-refer to something that lasts for a brief period of time, such as a short 
-meeting or a short break. Additionally, "short" can be used in various contexts
-like describing a short temper, indicating impatience or quickness to anger. 
-Overall, the term conveys the idea of something being limited or less than 
-usual in size, time, or extent.</code></pre>
+<pre><code>The Fennecs is the nickname for the Algeria national football team, known for 
+their distinctive sand-colored uniforms that reflect the desert fox, or 
+"Fennec," which is a symbol of Algeria. The team has a proud history in African
+and international football, having won the Africa Cup of Nations and 
+participated in multiple FIFA World Cup tournaments, showcasing their talent 
+and passion on the global stage.</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -704,7 +875,8 @@ usual in size, time, or extent.</code></pre>
 <span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>length_router<span class="sc">$</span><span class="fu">run</span>(long_input)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>The input is very lengthy.</code></pre>
+<pre><code>Bees are crucial pollinators essential for plant reproduction and food 
+security, but their populations are threatened by colony collapse disorder.</code></pre>
 </div>
 </div>
 </section>
@@ -720,42 +892,45 @@ usual in size, time, or extent.</code></pre>
 <h3 class="anchored" data-anchor-id="using-a-workflowagent-inside-a-leadagent">Using a WorkflowAgent inside a LeadAgent</h3>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Inner workflow: research + summarise</span></span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>research_wf <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"research-wf"</span>)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>research_wf <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"research workflow"</span>)</span>
 <span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>research_wf<span class="sc">$</span><span class="fu">add_station</span>(<span class="st">"gather"</span>, Agent<span class="sc">$</span><span class="fu">new</span>(</span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"gatherer"</span>,</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>gatherer <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"gatherer"</span>,</span>
 <span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"Gather three key facts about the topic provided. Be concise."</span>,</span>
 <span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object  =</span> openai_4_1_mini</span>
-<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>research_wf<span class="sc">$</span><span class="fu">add_station</span>(<span class="st">"condense"</span>, Agent<span class="sc">$</span><span class="fu">new</span>(</span>
-<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"condenser"</span>,</span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>condonser <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"condenser"</span>,</span>
 <span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"Condense the facts you receive into a single sentence."</span>,</span>
 <span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object  =</span> openai_4_1_mini</span>
-<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>research_wf<span class="sc">$</span><span class="fu">add_route</span>(<span class="st">"gather"</span>, <span class="st">"condense"</span>)</span>
-<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Wrap as a WorkflowAgent</span></span>
-<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a>research_agent <span class="ot">&lt;-</span> research_wf<span class="sc">$</span><span class="fu">as_agent</span>(</span>
-<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"research_agent"</span>,</span>
-<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"An agent that gathers and condenses facts on any topic into one sentence."</span></span>
-<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>research_wf<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"gather"</span>, <span class="at">handler =</span> gatherer)</span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>research_wf<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"condense"</span>, <span class="at">handler =</span> condonser)</span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>research_wf<span class="sc">$</span><span class="fu">add_route</span>(<span class="at">from =</span> <span class="st">"gather"</span>, <span class="at">to =</span> <span class="st">"condense"</span>)</span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a>research_wf<span class="sc">$</span><span class="fu">set_entry</span>(<span class="at">station_name =</span> <span class="st">"gather"</span>)</span>
+<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Wrap as a WorkflowAgent</span></span>
+<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a>research_agent <span class="ot">&lt;-</span> research_wf<span class="sc">$</span><span class="fu">as_agent</span>(</span>
+<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"research_agent"</span>,</span>
+<span id="cb36-24"><a href="#cb36-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"An agent that gathers and condenses facts on any topic into one sentence."</span></span>
+<span id="cb36-25"><a href="#cb36-25" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use the WorkflowAgent directly</span></span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>research_agent<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"The discovery of penicillin"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>research_agent<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"The city of Bejaia in Algeria"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Penicillin, discovered by Alexander Fleming in 1928 after observing mold 
-killing bacteria, revolutionized bacterial infection treatment as the first 
-antibiotic and was mass-produced during World War II, saving countless lives.</code></pre>
+<pre><code>Bejaia is a historically significant coastal city in northern Algeria on the 
+Mediterranean Sea, known for its medieval port, cultural landmarks like the 
+ancient Casbah, and scenic mountains and beaches.</code></pre>
 </div>
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Register with a LeadAgent alongside regular agents</span></span>
 <span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>translator <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
 <span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"translator"</span>,</span>
-<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"Translate the text you receive from English into French."</span>,</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"Translate the text you receive from English into German"</span>,</span>
 <span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object  =</span> openai_4_1_mini</span>
 <span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a></span>
@@ -766,12 +941,12 @@ antibiotic and was mass-produced during World War II, saving countless lives.</c
 <span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a>lead<span class="sc">$</span><span class="fu">register_agents</span>(<span class="fu">c</span>(research_agent, translator))</span>
 <span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a>lead<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"Tell me about Marie Curie in one sentence, then translate it into French."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a>lead<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"Tell me about the city of Bejaia in one sentence, then translate it into German"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Marie Curie, physicienne et chimiste pionnière, a découvert le polonium et le 
-radium, a créé le terme « radioactivité », et a été la première femme à 
-recevoir des prix Nobel en Physique et en Chimie pour ses recherches 
-révolutionnaires.</code></pre>
+<pre><code>Bejaia ist eine historische Mittelmeerhafenstadt in der Kabylien-Region 
+Nordalgeriens, bekannt für ihren mittelalterlichen Wachs-Handel, das 
+berberisch-kabile kulturelle Erbe und Sehenswürdigkeiten wie die Kasbah, die 
+Festung Bordj Moussa und den Nationalpark Gouraya.</code></pre>
 </div>
 </div>
 </section>
@@ -779,52 +954,96 @@ révolutionnaires.</code></pre>
 <h3 class="anchored" data-anchor-id="nesting-a-workflowagent-inside-another-workflow">Nesting a WorkflowAgent inside another Workflow</h3>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Outer workflow: use the wrapped inner workflow as a Station</span></span>
-<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>presentation_wf <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"presentation-wf"</span>)</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>presentation_wf <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"Presentation workflow"</span>)</span>
 <span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>presentation_wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
 <span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">name    =</span> <span class="st">"research"</span>,</span>
 <span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler =</span> research_agent  <span class="co"># WorkflowAgent used as a station handler</span></span>
 <span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>presentation_wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
-<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">name    =</span> <span class="st">"present"</span>,</span>
-<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler =</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
-<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">name        =</span> <span class="st">"presenter"</span>,</span>
-<span id="cb41-13"><a href="#cb41-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">instruction =</span> <span class="st">"Turn the one-sentence summary you receive into a polished three-sentence report."</span>,</span>
-<span id="cb41-14"><a href="#cb41-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">llm_object  =</span> openai_4_1_mini</span>
-<span id="cb41-15"><a href="#cb41-15" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb41-16"><a href="#cb41-16" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb41-17"><a href="#cb41-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb41-18"><a href="#cb41-18" aria-hidden="true" tabindex="-1"></a>presentation_wf<span class="sc">$</span><span class="fu">add_route</span>(<span class="st">"research"</span>, <span class="st">"present"</span>)</span>
-<span id="cb41-19"><a href="#cb41-19" aria-hidden="true" tabindex="-1"></a>presentation_wf<span class="sc">$</span><span class="fu">set_entry</span>(<span class="st">"research"</span>)</span>
-<span id="cb41-20"><a href="#cb41-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb41-21"><a href="#cb41-21" aria-hidden="true" tabindex="-1"></a>presentation_wf<span class="sc">$</span><span class="fu">run</span>(<span class="st">"The invention of the printing press"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>presenter <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">"presenter"</span>,</span>
+<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">instruction =</span> <span class="st">"Turn the one-sentence summary you receive into a polished three-sentence report."</span>,</span>
+<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">llm_object  =</span> openai_4_1_mini</span>
+<span id="cb41-13"><a href="#cb41-13" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb41-14"><a href="#cb41-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-15"><a href="#cb41-15" aria-hidden="true" tabindex="-1"></a>presentation_wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb41-16"><a href="#cb41-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"present"</span>,</span>
+<span id="cb41-17"><a href="#cb41-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler =</span> presenter</span>
+<span id="cb41-18"><a href="#cb41-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb41-19"><a href="#cb41-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-20"><a href="#cb41-20" aria-hidden="true" tabindex="-1"></a>presentation_wf<span class="sc">$</span><span class="fu">add_route</span>(<span class="at">from =</span> <span class="st">"research"</span>, <span class="at">to =</span> <span class="st">"present"</span>)</span>
+<span id="cb41-21"><a href="#cb41-21" aria-hidden="true" tabindex="-1"></a>presentation_wf<span class="sc">$</span><span class="fu">set_entry</span>(<span class="at">station_name =</span> <span class="st">"research"</span>)</span>
+<span id="cb41-22"><a href="#cb41-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-23"><a href="#cb41-23" aria-hidden="true" tabindex="-1"></a>presentation_wf<span class="sc">$</span><span class="fu">run</span>(<span class="st">"Algeria and Coffee"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Johannes Gutenberg invented the printing press around 1440, revolutionizing the
-production of books. This innovation facilitated the rapid spread of knowledge,
-literacy, and ideas across Europe, playing a crucial role in the Renaissance 
-and the Scientific Revolution. Additionally, the printing press made 
-information more accessible, diminishing the church and nobility's control over
-knowledge.</code></pre>
+<pre><code>Algeria’s coffee culture artfully blends Mediterranean and Arab traditions, 
+showcasing a preference for strong, spiced brews such as Turkish-style coffee. 
+Despite the country’s reliance on imported coffee beans, these rich flavors 
+remain deeply popular across Algeria. Coffee is widely enjoyed both in bustling
+cafes and in the comfort of Algerian homes, highlighting its integral role in 
+daily social life.</code></pre>
 </div>
 </div>
 </section>
+</section>
+<section id="human-in-the-loop-hitl" class="level2">
+<h2 class="anchored" data-anchor-id="human-in-the-loop-hitl">Human In The Loop (HITL)</h2>
+<p><code>$set_hitl(steps)</code> lets you pause the workflow at specific steps so a human can inspect the Station’s output before execution continues. Steps are numbered from 1 in execution order — the same counter shown in the <code>run()</code> console output.</p>
+<p>When execution reaches a HITL step, it prints the Station name, the input it received, and the output it produced, then offers three choices:</p>
+<ol type="1">
+<li><strong>Continue</strong> — use the output as-is and move to the next Station.</li>
+<li><strong>Edit</strong> — type a replacement output; that value is forwarded to the next Station (and cached, if caching is on).</li>
+<li><strong>Stop</strong> — abort the workflow immediately.</li>
+</ol>
+<p>HITL only fires on fresh executions; cache hits are skipped since the result has already been reviewed in a prior run.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>hitl_pipeline <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"hitl pipeline"</span>, <span class="at">use_cache =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>drafter <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"drafter"</span>,</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"Write a short two-sentence paragraph on the topic provided."</span>,</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>translator <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"translator"</span>,</span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"Translate the text you receive from English into Spanish."</span>,</span>
+<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb43-13"><a href="#cb43-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb43-14"><a href="#cb43-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-15"><a href="#cb43-15" aria-hidden="true" tabindex="-1"></a>hitl_pipeline<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"draft"</span>, <span class="at">handler =</span> drafter)</span>
+<span id="cb43-16"><a href="#cb43-16" aria-hidden="true" tabindex="-1"></a>hitl_pipeline<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"translate"</span>, <span class="at">handler =</span> translator)</span>
+<span id="cb43-17"><a href="#cb43-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-18"><a href="#cb43-18" aria-hidden="true" tabindex="-1"></a>hitl_pipeline<span class="sc">$</span><span class="fu">add_route</span>(<span class="at">from =</span> <span class="st">"draft"</span>, <span class="at">to =</span> <span class="st">"translate"</span>)</span>
+<span id="cb43-19"><a href="#cb43-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-20"><a href="#cb43-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Pause after step 1 (the drafter) so a human can review the draft</span></span>
+<span id="cb43-21"><a href="#cb43-21" aria-hidden="true" tabindex="-1"></a><span class="co"># before it is sent to the translator</span></span>
+<span id="cb43-22"><a href="#cb43-22" aria-hidden="true" tabindex="-1"></a>hitl_pipeline<span class="sc">$</span><span class="fu">set_hitl</span>(<span class="at">steps =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>hitl_pipeline<span class="sc">$</span><span class="fu">run</span>(<span class="st">"The discovery of penicillin"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>You can set HITL at multiple steps at once:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>hitl_pipeline<span class="sc">$</span><span class="fu">set_hitl</span>(<span class="at">steps =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
 </section>
 <section id="visualising-a-workflow" class="level2">
 <h2 class="anchored" data-anchor-id="visualising-a-workflow">Visualising a workflow</h2>
 <p>Call <code>$visualize()</code> on any <code>Workflow</code> to render an interactive directed graph. Stations appear as rounded blue boxes, conditional Routes as dashed arrows labelled “cond”, and the entry Station is reached via a green <strong>START</strong> node.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>article_pipeline<span class="sc">$</span><span class="fu">visualize</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>article_pipeline<span class="sc">$</span><span class="fu">visualize</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div class="grViz html-widget html-fill-item" id="htmlwidget-fbe6a67efd3108b4c740" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-fbe6a67efd3108b4c740">{"x":{"diagram":"digraph workflow {\n  graph [rankdir=TB, label=\"article-pipeline\", labelloc=t, fontsize=18, fontname=\"Helvetica\"]\n  node [fontname=\"Helvetica\", fontsize=12]\n  edge [fontname=\"Helvetica\", fontsize=10]\n  \"research\" [label=\"research\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"write\" [label=\"write\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"edit\" [label=\"edit\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"START\" [label=\"START\", shape=circle, style=filled, fillcolor=\"#82E0AA\", width=0.5]\n  \"START\" -> \"research\"\n  \"research\" -> \"write\"\n  \"write\" -> \"edit\"\n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-f5bb09178803f2309492" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-f5bb09178803f2309492">{"x":{"diagram":"digraph workflow {\n  graph [rankdir=TB, label=\"article pipeline\", labelloc=t, fontsize=18, fontname=\"Helvetica\"]\n  node [fontname=\"Helvetica\", fontsize=12]\n  edge [fontname=\"Helvetica\", fontsize=10]\n  \"research\" [label=\"research\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"write\" [label=\"write\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"edit\" [label=\"edit\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"translate\" [label=\"translate\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"START\" [label=\"START\", shape=circle, style=filled, fillcolor=\"#82E0AA\", width=0.5]\n  \"START\" -> \"research\"\n  \"research\" -> \"write\"\n  \"write\" -> \"edit\"\n  \"edit\" -> \"translate\"\n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>sentiment_router<span class="sc">$</span><span class="fu">visualize</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>sentiment_router<span class="sc">$</span><span class="fu">visualize</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div class="grViz html-widget html-fill-item" id="htmlwidget-176445030a2b9e9fbe71" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-176445030a2b9e9fbe71">{"x":{"diagram":"digraph workflow {\n  graph [rankdir=TB, label=\"sentiment-router\", labelloc=t, fontsize=18, fontname=\"Helvetica\"]\n  node [fontname=\"Helvetica\", fontsize=12]\n  edge [fontname=\"Helvetica\", fontsize=10]\n  \"classify\" [label=\"classify\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"reply_pos\" [label=\"reply_pos\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"reply_neg\" [label=\"reply_neg\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"START\" [label=\"START\", shape=circle, style=filled, fillcolor=\"#82E0AA\", width=0.5]\n  \"START\" -> \"classify\"\n  \"classify\" -> \"reply_pos\" [label=\"  cond\", style=dashed]\n  \"classify\" -> \"reply_neg\" [label=\"  cond\", style=dashed]\n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-b869bbb7e5343bc9bf2f" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-b869bbb7e5343bc9bf2f">{"x":{"diagram":"digraph workflow {\n  graph [rankdir=TB, label=\"sentiment router\", labelloc=t, fontsize=18, fontname=\"Helvetica\"]\n  node [fontname=\"Helvetica\", fontsize=12]\n  edge [fontname=\"Helvetica\", fontsize=10]\n  \"classify\" [label=\"classify\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"reply_pos\" [label=\"reply_pos\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"reply_neg\" [label=\"reply_neg\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"START\" [label=\"START\", shape=circle, style=filled, fillcolor=\"#82E0AA\", width=0.5]\n  \"START\" -> \"classify\"\n  \"classify\" -> \"reply_pos\" [label=\"  cond\", style=dashed]\n  \"classify\" -> \"reply_neg\" [label=\"  cond\", style=dashed]\n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>The graph updates automatically to reflect whatever Stations and Routes are currently registered, making it a convenient tool for checking that the pipeline is wired correctly before running it.</p>
