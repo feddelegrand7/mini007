@@ -211,6 +211,7 @@ Notable methods:
 | `$set_entry(name)` | Set the starting Station |
 | `$run(input)` | Execute the pipeline sequentially |
 | `$clear_cache()` | Invalidate cached Station results |
+| `$set_hitl(steps)` | Pause at specified steps for human review or editing |
 | `$as_agent(name, instruction)` | Wrap the workflow as a `WorkflowAgent` |
 | `$visualize()` | Render the pipeline as an interactive directed graph |
 

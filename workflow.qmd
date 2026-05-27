@@ -373,6 +373,58 @@ presentation_wf$set_entry("research")
 presentation_wf$run("The invention of the printing press")
 ```
 
+## Human In The Loop (HITL)
+
+`$set_hitl(steps)` lets you pause the workflow at specific steps so a human
+can inspect the Station's output before execution continues. Steps are
+numbered from 1 in execution order — the same counter shown in the `run()`
+console output.
+
+When execution reaches a HITL step, it prints the Station name, the input it
+received, and the output it produced, then offers three choices:
+
+1. **Continue** — use the output as-is and move to the next Station.
+2. **Edit** — type a replacement output; that value is forwarded to the next
+   Station (and cached, if caching is on).
+3. **Stop** — abort the workflow immediately.
+
+HITL only fires on fresh executions; cache hits are skipped since the result
+has already been reviewed in a prior run.
+
+```{r}
+hitl_pipeline <- Workflow$new("hitl-pipeline")
+
+hitl_pipeline$add_station("draft", Agent$new(
+  name        = "drafter",
+  instruction = "Write a short two-sentence paragraph on the topic provided.",
+  llm_object  = openai_4_1_mini
+))
+
+hitl_pipeline$add_station("translate", Agent$new(
+  name        = "translator",
+  instruction = "Translate the text you receive from English into Spanish.",
+  llm_object  = openai_4_1_mini
+))
+
+hitl_pipeline$add_route("draft", "translate")
+
+# Pause after step 1 (the drafter) so a human can review the draft
+# before it is sent to the translator
+hitl_pipeline$set_hitl(steps = 1)
+```
+
+```{r}
+#| eval: false
+hitl_pipeline$run("The discovery of penicillin")
+```
+
+You can set HITL at multiple steps at once:
+
+```{r}
+#| eval: false
+hitl_pipeline$set_hitl(steps = c(1, 2))
+```
+
 ## Visualising a workflow
 
 Call `$visualize()` on any `Workflow` to render an interactive directed graph. Stations appear as rounded blue boxes, conditional Routes as dashed arrows labelled "cond", and the entry Station is reached via a green **START** node.

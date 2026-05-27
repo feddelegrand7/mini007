@@ -39,6 +39,10 @@ Workflow <- R6::R6Class(
     #' @field run_history List of records from every \code{$run()} call.
     run_history = NULL,
 
+    #' @field hitl_steps Integer vector of step numbers at which execution pauses
+    #'   for human review. Set via \code{$set_hitl()}.
+    hitl_steps = NULL,
+
     # ── initialize ────────────────────────────────────────────────────────────
 
     #' @description Create a new `Workflow`.
@@ -230,6 +234,10 @@ Workflow <- R6::R6Class(
           cli::cli_text("  {cli::col_blue('→')} Station {.val {current}}")
           result <- private$.invoke_handler(station$handler, current_input)
 
+          if (!is.null(self$hitl_steps) && steps_taken %in% self$hitl_steps) {
+            result <- private$.human_confirm(steps_taken, current, current_input, result)
+          }
+
           if (self$use_cache) {
             assign(cache_key, result, envir = self$cache)
           }
@@ -262,6 +270,34 @@ Workflow <- R6::R6Class(
       )
 
       result
+    },
+
+    # ── set_hitl ──────────────────────────────────────────────────────────────
+
+    #' @description Set Human-In-The-Loop (HITL) pause points.
+    #'
+    #' When execution reaches a step whose number is listed in `steps`, it
+    #' pauses and presents the human with three choices:
+    #' \enumerate{
+    #'   \item Continue with the Station's original output.
+    #'   \item Edit the output manually before the next Station receives it.
+    #'   \item Stop the workflow immediately (raises an error).
+    #' }
+    #' HITL only fires on fresh Station executions — cache hits are skipped.
+    #' Steps are numbered from 1 in execution order, matching the step counter
+    #' shown in \code{$run()} output. You can set multiple steps at once:
+    #' \code{wf$set_hitl(c(1, 3))}.
+    #'
+    #' @param steps `[integerish]` One or more step numbers (>= 1).
+    #'
+    #' @return Invisibly returns `self` for method chaining.
+    set_hitl = function(steps) {
+      checkmate::assert_integerish(steps, lower = 1L, any.missing = FALSE)
+      self$hitl_steps <- unique(as.integer(steps))
+      cli::cli_alert_success(
+        "HITL enabled at step(s): {.val {toString(self$hitl_steps)}}."
+      )
+      invisible(self)
     },
 
     # ── clear_cache ───────────────────────────────────────────────────────────
@@ -435,6 +471,41 @@ Workflow <- R6::R6Class(
       } else {
         out <- handler(input)
         if (!is.character(out)) as.character(out) else out
+      }
+    },
+
+    # Pause execution, show the station's input and output, then ask the human
+    # what to do. Returns the result to continue with (original or edited).
+    .human_confirm = function(step_index, station_name, input, result) {
+      cli::cli_rule(left = glue::glue("HITL — Step {step_index}"))
+      cli::cli_text("Station: {.strong {station_name}}")
+      cli::cli_alert_info("Input:")
+      cli::cli_verbatim(input)
+      cli::cli_alert_info("Output:")
+      cli::cli_verbatim(result)
+
+      cli::cli_text(cli::cli_ul(c(
+        "[1] Continue with this output",
+        "[2] Edit the output",
+        "[3] Stop the workflow"
+      )))
+
+      repeat {
+        answer <- readline("Your choice [1/2/3]: ")
+        if (nzchar(answer) && answer %in% c("1", "2", "3")) break
+        cli::cli_alert_warning("Invalid input. Please enter 1, 2, or 3.")
+      }
+
+      if (answer == "2") {
+        new_result <- readline("(->) Enter edited output: ")
+        cli::cli_alert_success("Output updated.")
+        return(new_result)
+      } else if (answer == "3") {
+        cli::cli_alert_danger("Workflow stopped by user at step {step_index}.")
+        cli::cli_abort("HITL: Execution stopped by user.")
+      } else {
+        cli::cli_alert_success("Continuing with original output.")
+        return(result)
       }
     },
 

@@ -177,6 +177,9 @@ Key capabilities:
 - **Caching**: with `use_cache = TRUE` (default), each Station's result is
   stored by `(name, input)`. Re-running the same input serves the cache
   instantly. Use `$clear_cache()` to reset.
+- **Human In The Loop (HITL)**: `$set_hitl(steps)` pauses execution at
+  specified steps so a human can review, edit, or stop the output before it
+  flows into the next Station.
 - **Wrapping as an agent**: `$as_agent()` converts any `Workflow` into a
   `WorkflowAgent` that can be registered with a `LeadAgent` or embedded as a
   Station inside another `Workflow`.
