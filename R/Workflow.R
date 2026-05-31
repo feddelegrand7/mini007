@@ -70,20 +70,36 @@ Workflow <- R6::R6Class(
     #' \itemize{
     #'   \item An `Agent` or `WorkflowAgent` - the Station calls
     #'         \code{handler$invoke(input)}.
-    #'   \item A plain R `function(input)` - the Station calls
-    #'         \code{handler(input)} and coerces the return value to
-    #'         `character`.
+    #'   \item A plain R \code{function(input)} - called directly; return value
+    #'         is coerced to `character`.
     #' }
     #'
     #' @param name `[character(1)]` Unique Station name within this workflow.
     #' @param handler An `Agent`, `WorkflowAgent`, or `function`.
     #' @param description `[character(1)]` Optional human-readable description
     #'   (shown in \code{$visualize()}).
+    #' @param max_retries `[integerish(1)]` Number of additional attempts after
+    #'   the first failure (default `0`, i.e. no retries).
+    #' @param retry_delay `[numeric(1)]` Seconds to wait between retry attempts
+    #'   (default `1`).
+    #' @param fallback `[function | NULL]` A \code{function(input, error)}
+    #'   invoked when all retry attempts are exhausted. `NULL` re-raises the
+    #'   last error.
     #'
     #' @return Invisibly returns `self` for method chaining.
-    add_station = function(name, handler, description = NULL) {
+    add_station = function(name, handler, description = NULL,
+                           max_retries = 0, retry_delay = 1,
+                           fallback = NULL) {
       checkmate::assert_string(name)
       if (!is.null(description)) checkmate::assert_string(description)
+      checkmate::assert_integerish(max_retries, lower = 0L, len = 1L,
+                                   any.missing = FALSE)
+      checkmate::assert_number(retry_delay, lower = 0)
+      if (!is.null(fallback) && !is.function(fallback)) {
+        cli::cli_abort(
+          "{.arg fallback} must be a {.cls function}(input, error) or {.val NULL}."
+        )
+      }
 
       is_agent    <- inherits(handler, "Agent") || inherits(handler, "WorkflowAgent")
       is_function <- is.function(handler)
@@ -91,7 +107,7 @@ Workflow <- R6::R6Class(
       if (!is_agent && !is_function) {
         cli::cli_abort(c(
           "{.arg handler} must be an {.cls Agent}, {.cls WorkflowAgent}, or a {.cls function}.",
-          "i" = "Received: {.cls {class(handler)[[1L]]}}."
+          "i" = "Received: {.cls {class(handler)[[1L]]}}." 
         ))
       }
 
@@ -102,7 +118,10 @@ Workflow <- R6::R6Class(
       private$.stations[[name]] <- list(
         name        = name,
         handler     = handler,
-        description = description
+        description = description,
+        max_retries = as.integer(max_retries),
+        retry_delay = retry_delay,
+        fallback    = fallback
       )
 
       cli::cli_alert_success("Station {.val {name}} added.")
@@ -232,7 +251,7 @@ Workflow <- R6::R6Class(
           result <- get(cache_key, envir = self$cache, inherits = FALSE)
         } else {
           cli::cli_text("  {cli::col_blue('->')} Station {.val {current}}")
-          result <- private$.invoke_handler(station$handler, current_input)
+          result <- private$.invoke_handler_safe(station, current_input)
 
           if (!is.null(self$hitl_steps) && steps_taken %in% self$hitl_steps) {
             result <- private$.human_confirm(steps_taken, current, current_input, result)
@@ -472,6 +491,46 @@ Workflow <- R6::R6Class(
         out <- handler(input)
         if (!is.character(out)) as.character(out) else out
       }
+    },
+
+    # Invoke a station handler with retry and fallback support.
+    # Wraps .invoke_handler, retrying up to max_retries additional times with
+    # retry_delay seconds between attempts. If all attempts fail and a fallback
+    # is defined, calls fallback(input, error); otherwise re-raises the last error.
+    .invoke_handler_safe = function(station, input) {
+      max_retries <- station$max_retries
+      retry_delay <- station$retry_delay
+      fallback    <- station$fallback
+
+      last_err <- NULL
+
+      for (attempt in seq_len(max_retries + 1L)) {
+        out <- tryCatch(
+          list(ok = TRUE,
+               value = private$.invoke_handler(station$handler, input)),
+          error = function(e) list(ok = FALSE, error = e)
+        )
+
+        if (isTRUE(out$ok)) return(out$value)
+
+        last_err <- out$error
+
+        if (attempt <= max_retries) {
+          cli::cli_alert_warning(
+            "Station {.val {station$name}} failed (attempt {attempt}/{max_retries + 1L}): {last_err$message}. Retrying in {retry_delay}s."
+          )
+          Sys.sleep(retry_delay)
+        }
+      }
+
+      if (!is.null(fallback)) {
+        cli::cli_alert_warning(
+          "Station {.val {station$name}}: all {max_retries + 1L} attempt(s) failed. Invoking fallback."
+        )
+        return(fallback(input, last_err))
+      }
+
+      stop(last_err)
     },
 
     # Pause execution, show the station's input and output, then ask the human

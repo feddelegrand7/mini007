@@ -728,3 +728,276 @@ test_that("full method-chaining pipeline works end-to-end", {
     run("hello")
   expect_equal(result, "[HELLO]")
 })
+
+
+# ── add_station: new parameter validation ────────────────────────────────────
+
+test_that("add_station accepts max_retries = 0 (default)", {
+  wf <- Workflow$new("W")
+  expect_no_error(wf$add_station("s1", toupper, max_retries = 0L))
+})
+
+test_that("add_station errors on negative max_retries", {
+  wf <- Workflow$new("W")
+  expect_error(wf$add_station("s1", toupper, max_retries = -1L))
+})
+
+test_that("add_station errors on non-integerish max_retries", {
+  wf <- Workflow$new("W")
+  expect_error(wf$add_station("s1", toupper, max_retries = "three"))
+  expect_error(wf$add_station("s1", toupper, max_retries = 1.5))
+})
+
+test_that("add_station errors when max_retries has length > 1", {
+  wf <- Workflow$new("W")
+  expect_error(wf$add_station("s1", toupper, max_retries = c(1L, 2L)))
+})
+
+test_that("add_station accepts retry_delay = 0", {
+  wf <- Workflow$new("W")
+  expect_no_error(wf$add_station("s1", toupper, retry_delay = 0))
+})
+
+test_that("add_station errors on negative retry_delay", {
+  wf <- Workflow$new("W")
+  expect_error(wf$add_station("s1", toupper, retry_delay = -1))
+})
+
+test_that("add_station errors when retry_delay is not numeric", {
+  wf <- Workflow$new("W")
+  expect_error(wf$add_station("s1", toupper, retry_delay = "fast"))
+})
+
+test_that("add_station accepts NULL fallback (default)", {
+  wf <- Workflow$new("W")
+  expect_no_error(wf$add_station("s1", toupper, fallback = NULL))
+})
+
+test_that("add_station accepts a valid function as fallback", {
+  wf <- Workflow$new("W")
+  expect_no_error(
+    wf$add_station("s1", toupper, fallback = function(input, err) "fb")
+  )
+})
+
+test_that("add_station errors when fallback is not a function or NULL", {
+  wf <- Workflow$new("W")
+  expect_error(wf$add_station("s1", toupper, fallback = "handler"), "fallback")
+  expect_error(wf$add_station("s1", toupper, fallback = 42L),        "fallback")
+  expect_error(wf$add_station("s1", toupper, fallback = TRUE),       "fallback")
+})
+
+# ── per-station retry: execution behaviour ───────────────────────────────────
+
+test_that("station that always succeeds is called exactly once even with max_retries > 0", {
+  calls <- 0L
+  wf <- Workflow$new("W", use_cache = FALSE)
+  wf$add_station("s1", function(x) { calls <<- calls + 1L; toupper(x) },
+                 max_retries = 3L, retry_delay = 0)
+  wf$run("hello")
+  expect_equal(calls, 1L)
+})
+
+test_that("station that fails once then recovers succeeds with max_retries >= 1", {
+  attempt <- 0L
+  wf <- Workflow$new("W", use_cache = FALSE)
+  wf$add_station("s1", function(x) {
+    attempt <<- attempt + 1L
+    if (attempt < 2L) stop("transient")
+    "recovered"
+  }, max_retries = 1L, retry_delay = 0)
+  expect_equal(wf$run("in"), "recovered")
+  expect_equal(attempt, 2L)
+})
+
+test_that("station that fails twice then recovers succeeds with max_retries >= 2", {
+  attempt <- 0L
+  wf <- Workflow$new("W", use_cache = FALSE)
+  wf$add_station("s1", function(x) {
+    attempt <<- attempt + 1L
+    if (attempt < 3L) stop("transient")
+    "ok"
+  }, max_retries = 2L, retry_delay = 0)
+  expect_equal(wf$run("in"), "ok")
+  expect_equal(attempt, 3L)
+})
+
+test_that("handler is called max_retries + 1 times total when always failing and no fallback", {
+  calls <- 0L
+  wf <- Workflow$new("W", use_cache = FALSE)
+  wf$add_station("s1", function(x) {
+    calls <<- calls + 1L
+    stop("always fails")
+  }, max_retries = 2L, retry_delay = 0)
+  expect_error(wf$run("in"), "always fails")
+  expect_equal(calls, 3L)
+})
+
+test_that("station with max_retries = 0 propagates error immediately and is called once", {
+  calls <- 0L
+  wf <- Workflow$new("W", use_cache = FALSE)
+  wf$add_station("s1", function(x) {
+    calls <<- calls + 1L
+    stop("boom")
+  }, max_retries = 0L, retry_delay = 0)
+  expect_error(wf$run("in"), "boom")
+  expect_equal(calls, 1L)
+})
+
+test_that("failing station with max_retries = 1 is tried exactly twice", {
+  calls <- 0L
+  wf <- Workflow$new("W", use_cache = FALSE)
+  wf$add_station("s1", function(x) {
+    calls <<- calls + 1L
+    stop("err")
+  }, max_retries = 1L, retry_delay = 0)
+  expect_error(wf$run("in"))
+  expect_equal(calls, 2L)
+})
+
+test_that("retry does not fire on subsequent run when result is cache-hit", {
+  calls <- 0L
+  wf <- Workflow$new("W", use_cache = TRUE)
+  wf$add_station("s1", function(x) {
+    calls <<- calls + 1L
+    toupper(x)
+  }, max_retries = 2L, retry_delay = 0)
+  wf$run("hello")
+  wf$run("hello")   # cache hit — handler must NOT be called again
+  expect_equal(calls, 1L)
+})
+
+test_that("each station's retries are independent in a multi-station chain", {
+  calls_a <- 0L
+  calls_b <- 0L
+  attempt_b <- 0L
+  wf <- Workflow$new("W", use_cache = FALSE)
+  wf$add_station("a", function(x) { calls_a <<- calls_a + 1L; toupper(x) },
+                 max_retries = 1L, retry_delay = 0)
+  wf$add_station("b", function(x) {
+    calls_b  <<- calls_b  + 1L
+    attempt_b <<- attempt_b + 1L
+    if (attempt_b < 2L) stop("b transient")
+    paste("B:", x)
+  }, max_retries = 2L, retry_delay = 0)
+  wf$add_route("a", "b")
+  expect_equal(wf$run("hello"), "B: HELLO")
+  expect_equal(calls_a, 1L)
+  expect_equal(calls_b, 2L)
+})
+
+# ── fallback handlers: execution behaviour ───────────────────────────────────
+
+test_that("fallback is NOT called when station succeeds", {
+  fallback_called <- FALSE
+  wf <- Workflow$new("W", use_cache = FALSE)
+  wf$add_station("s1", toupper,
+    fallback = function(i, e) { fallback_called <<- TRUE; "fb" })
+  wf$run("hello")
+  expect_false(fallback_called)
+})
+
+test_that("fallback is called when station fails with max_retries = 0", {
+  wf <- Workflow$new("W", use_cache = FALSE)
+  wf$add_station("s1",
+    function(x) stop("boom"),
+    fallback = function(input, err) "from fallback")
+  expect_equal(wf$run("in"), "from fallback")
+})
+
+test_that("fallback receives the original station input", {
+  received_input <- NULL
+  wf <- Workflow$new("W", use_cache = FALSE)
+  wf$add_station("s1",
+    function(x) stop("err"),
+    fallback = function(input, err) { received_input <<- input; "fb" })
+  wf$run("original-input")
+  expect_equal(received_input, "original-input")
+})
+
+test_that("fallback receives the error object as its second argument", {
+  received_err <- NULL
+  wf <- Workflow$new("W", use_cache = FALSE)
+  wf$add_station("s1",
+    function(x) stop("specific-error-msg"),
+    fallback = function(input, err) { received_err <<- err; "fb" })
+  wf$run("in")
+  expect_true(grepl("specific-error-msg", conditionMessage(received_err)))
+})
+
+test_that("fallback return value is used as the station output", {
+  wf <- Workflow$new("W", use_cache = FALSE)
+  wf$add_station("s1",
+    function(x) stop("fail"),
+    fallback = function(input, err) paste("fallback:", input))
+  expect_equal(wf$run("hello"), "fallback: hello")
+})
+
+test_that("fallback is called only after all retries are exhausted", {
+  calls <- 0L
+  fallback_called <- FALSE
+  wf <- Workflow$new("W", use_cache = FALSE)
+  wf$add_station("s1",
+    function(x) { calls <<- calls + 1L; stop("always fails") },
+    max_retries = 2L, retry_delay = 0,
+    fallback = function(input, err) { fallback_called <<- TRUE; "fb" })
+  result <- wf$run("in")
+  expect_equal(result, "fb")
+  expect_equal(calls, 3L)   # 1 initial + 2 retries
+  expect_true(fallback_called)
+})
+
+test_that("without fallback a persistently failing station propagates the error", {
+  wf <- Workflow$new("W", use_cache = FALSE)
+  wf$add_station("s1", function(x) stop("fatal"), max_retries = 0L)
+  expect_error(wf$run("in"), "fatal")
+})
+
+test_that("fallback output is forwarded to the next station via a route", {
+  wf <- Workflow$new("W", use_cache = FALSE)
+  wf$add_station("s1",
+    function(x) stop("fail"),
+    fallback = function(input, err) "fallback-out")
+  wf$add_station("s2", function(x) paste("next:", x))
+  wf$add_route("s1", "s2")
+  expect_equal(wf$run("in"), "next: fallback-out")
+})
+
+test_that("fallback is only used for its own station, not for other stations", {
+  wf <- Workflow$new("W", use_cache = FALSE)
+  wf$add_station("s1", toupper)  # succeeds
+  wf$add_station("s2",
+    function(x) stop("fail"),
+    fallback = function(input, err) "fb")
+  wf$add_route("s1", "s2")
+  expect_equal(wf$run("hello"), "fb")
+})
+
+test_that("fallback run is recorded in run_history trace with correct station name", {
+  wf <- Workflow$new("W", use_cache = FALSE)
+  wf$add_station("s1",
+    function(x) stop("err"),
+    fallback = function(input, err) "fallback-result")
+  wf$run("in")
+  trace <- wf$run_history[[1L]]$trace
+  expect_equal(trace[[1L]]$station, "s1")
+  expect_equal(trace[[1L]]$output,  "fallback-result")
+})
+
+# ── integration: retry + fallback ────────────────────────────────────────────
+
+test_that("retry succeeds before fallback when handler eventually recovers", {
+  attempt <- 0L
+  fallback_called <- FALSE
+  wf <- Workflow$new("W", use_cache = FALSE)
+  wf$add_station("s1",
+    function(x) {
+      attempt <<- attempt + 1L
+      if (attempt < 2L) stop("transient")
+      "recovered"
+    },
+    max_retries = 3L, retry_delay = 0,
+    fallback = function(input, err) { fallback_called <<- TRUE; "fb" })
+  expect_equal(wf$run("in"), "recovered")
+  expect_false(fallback_called)
+})

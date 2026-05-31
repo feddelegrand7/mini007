@@ -478,3 +478,192 @@ sentiment_router$visualize()
 ```
 
 The graph updates automatically to reflect whatever Stations and Routes are currently registered, making it a convenient tool for checking that the pipeline is wired correctly before running it.
+
+---
+
+## Per-station retry (Not yet on CRAN)
+
+Real-world pipelines talk to external services — LLM providers, APIs, databases — that can fail transiently: rate-limit errors, network blips, brief provider outages. Rather than letting a single transient failure abort the entire run, you can attach a **retry logic** to any Station via two parameters of `$add_station()`:
+
+| Parameter | Default | Meaning |
+|-----------|---------|---------|
+| `max_retries` | `0` | Extra attempts after the first failure |
+| `retry_delay` | `1` | Seconds to sleep between attempts |
+
+The station is tried up to `max_retries + 1` times in total. If it succeeds on any attempt, execution continues normally. If all attempts fail, the error is either forwarded to a [fallback handler](#fallback-handlers) (see below) or re-raised.
+
+### Simulating a flaky service
+
+```{r}
+# Factory that returns a handler which fails the first `fail_times` calls
+make_flaky_service <- function(fail_times = 2L) {
+  attempts <- 0
+  function(text) {
+    attempts <<- attempts + 1L
+    if (attempts <= fail_times) {
+      stop(sprintf("HTTP 429: Rate limit (attempt %d of %d)", attempts, fail_times + 1L))
+    }
+    paste("Service result:", toupper(text))
+  }
+}
+```
+
+```{r}
+#| message: false
+retry_wf <- Workflow$new("retry pipeline", use_cache = FALSE)
+
+retry_wf$add_station(
+  name        = "call_service",
+  handler     = make_flaky_service(fail_times = 2L),
+  max_retries = 3,
+  retry_delay = 0     # set to a positive number (e.g. 2) in production
+)
+
+retry_wf$run("summarise this document")
+```
+
+The station fails on attempts 1 and 2, then succeeds on attempt 3. The workflow returns the successful result transparently.
+
+### Attaching retries to an Agent station
+
+`max_retries` works identically for Agent stations — the LLM call is retried the same way.
+
+```{r}
+#| eval: false
+fragile_pipeline <- Workflow$new("fragile pipeline")
+
+fragile_pipeline$add_station(
+  name        = "analyse",
+  handler     = some_agent,      # any Agent or WorkflowAgent
+  max_retries = 2,
+  retry_delay = 3                # wait 3 s between retries
+)
+```
+
+### Behaviour when all retries are exhausted
+
+When every attempt fails and no [fallback](#fallback-handlers) is defined, the last error is re-raised and propagates up from `$run()`.
+
+```{r}
+always_fails_wf <- Workflow$new("always-fails pipeline", use_cache = FALSE)
+
+always_fails_wf$add_station(
+  name        = "broken_step",
+  handler     = function(x) stop("Service permanently unavailable"),
+  max_retries = 1,
+  retry_delay = 0
+)
+
+tryCatch(
+  always_fails_wf$run("input"),
+  error = function(e) paste("Caught:", conditionMessage(e))
+)
+```
+
+---
+
+## Fallback handlers {#fallback-handlers} (not yet on CRAN)
+
+A **fallback** is a `function(input, error)` attached to a specific Station. It is invoked only after all retry attempts for that Station have been exhausted, giving you a controlled degradation path instead of a hard failure.
+
+```r
+wf$add_station(
+  name     = "step",
+  handler  = primary_handler,
+  fallback = function(input, error) {
+    # `input`  — the string the station received
+    # `error`  — the condition object from the last failed attempt
+    "default output"
+  }
+)
+```
+
+The fallback's return value is used as the station's output and the pipeline continues normally from there.
+
+### Simple graceful degradation
+
+```{r}
+safe_wf <- Workflow$new("safe pipeline", use_cache = FALSE)
+
+safe_wf$add_station(
+  name     = "fetch_summary",
+  handler  = function(x) stop("Connection refused"),
+  fallback = function(input, err) {
+    paste("(Summary unavailable — service error:", conditionMessage(err), ")\nOriginal:", input)
+  }
+)
+
+safe_wf$run("Analyse this quarterly report")
+```
+
+### Fallback fires only after all retries
+
+The fallback is a last resort. With `max_retries > 0` the primary handler is tried repeatedly; the fallback only runs if every attempt fails.
+
+```{r}
+#| message: false
+attempts <- 0L
+
+resilient_wf <- Workflow$new("resilient pipeline", use_cache = FALSE)
+
+resilient_wf$add_station(
+  name        = "external_call",
+  handler     = function(x) {
+    attempts <<- attempts + 1L
+    stop(sprintf("Attempt %d failed", attempts))
+  },
+  max_retries = 2,
+  retry_delay = 0,
+  fallback    = function(input, err) {
+    paste0("[Fallback after ", attempts, " attempt(s)] ", input)
+  }
+)
+
+resilient_wf$run("Process this document")
+```
+
+### Routing continues after a fallback
+
+The fallback's output flows into the next Station via the normal routing mechanism. The rest of the pipeline is unaware that a fallback fired.
+
+```{r}
+routed_fallback_wf <- Workflow$new("routed fallback", use_cache = FALSE)
+
+routed_fallback_wf$add_station(
+  name     = "fetch",
+  handler  = function(x) stop("API down"),
+  fallback = function(input, err) paste("CACHED VERSION OF:", input)
+)
+
+routed_fallback_wf$add_station(
+  "format",
+  function(x) paste0("**", trimws(x), "**")
+)
+
+routed_fallback_wf$add_route("fetch", "format")
+
+routed_fallback_wf$run("monthly sales figures")
+```
+
+### Using a backup LLM as the fallback
+
+A common production pattern is to call a premium model as the primary handler and fall back to a cheaper or local model when the primary is unavailable.
+
+```{r}
+#| eval: false
+primary_agent  <- Agent$new("primary",  "You are a senior analyst.", premium_llm)
+fallback_agent <- Agent$new("fallback", "You are a concise analyst.", cheap_llm)
+
+pipeline <- Workflow$new("model-with-backup")
+
+pipeline$add_station(
+  name     = "analyse",
+  handler  = primary_agent,
+  max_retries = 1,
+  retry_delay = 2,
+  fallback = function(input, err) {
+    fallback_agent$invoke(input)   # delegate to the backup model
+  }
+)
+```
+

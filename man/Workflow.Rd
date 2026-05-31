@@ -82,12 +82,18 @@ A Station is a named processing unit. Its `handler` can be:
 \itemize{
   \item An `Agent` or `WorkflowAgent` - the Station calls
         \code{handler$invoke(input)}.
-  \item A plain R `function(input)` - the Station calls
-        \code{handler(input)} and coerces the return value to
-        `character`.
+  \item A plain R \code{function(input)} - called directly; return value
+        is coerced to `character`.
 }
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Workflow$add_station(name, handler, description = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Workflow$add_station(
+  name,
+  handler,
+  description = NULL,
+  max_retries = 0,
+  retry_delay = 1,
+  fallback = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -99,6 +105,16 @@ A Station is a named processing unit. Its `handler` can be:
 
 \item{\code{description}}{`[character(1)]` Optional human-readable description
 (shown in \code{$visualize()}).}
+
+\item{\code{max_retries}}{`[integerish(1)]` Number of additional attempts after
+the first failure (default `0`, i.e. no retries).}
+
+\item{\code{retry_delay}}{`[numeric(1)]` Seconds to wait between retry attempts
+(default `1`).}
+
+\item{\code{fallback}}{`[function | NULL]` A \code{function(input, error)}
+invoked when all retry attempts are exhausted. `NULL` re-raises the
+last error.}
 }
 \if{html}{\out{</div>}}
 }

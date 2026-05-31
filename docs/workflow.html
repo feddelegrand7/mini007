@@ -354,6 +354,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </ul></li>
   <li><a href="#human-in-the-loop-hitl" id="toc-human-in-the-loop-hitl" class="nav-link" data-scroll-target="#human-in-the-loop-hitl">Human In The Loop (HITL)</a></li>
   <li><a href="#visualising-a-workflow" id="toc-visualising-a-workflow" class="nav-link" data-scroll-target="#visualising-a-workflow">Visualising a workflow</a></li>
+  <li><a href="#per-station-retry-not-yet-on-cran" id="toc-per-station-retry-not-yet-on-cran" class="nav-link" data-scroll-target="#per-station-retry-not-yet-on-cran">Per-station retry (Not yet on CRAN)</a>
+  <ul class="collapse">
+  <li><a href="#simulating-a-flaky-service" id="toc-simulating-a-flaky-service" class="nav-link" data-scroll-target="#simulating-a-flaky-service">Simulating a flaky service</a></li>
+  <li><a href="#attaching-retries-to-an-agent-station" id="toc-attaching-retries-to-an-agent-station" class="nav-link" data-scroll-target="#attaching-retries-to-an-agent-station">Attaching retries to an Agent station</a></li>
+  <li><a href="#behaviour-when-all-retries-are-exhausted" id="toc-behaviour-when-all-retries-are-exhausted" class="nav-link" data-scroll-target="#behaviour-when-all-retries-are-exhausted">Behaviour when all retries are exhausted</a></li>
+  </ul></li>
+  <li><a href="#fallback-handlers-fallback-handlers-not-yet-on-cran" id="toc-fallback-handlers-fallback-handlers-not-yet-on-cran" class="nav-link" data-scroll-target="#fallback-handlers-fallback-handlers-not-yet-on-cran">Fallback handlers {#fallback-handlers} (not yet on CRAN)</a>
+  <ul class="collapse">
+  <li><a href="#simple-graceful-degradation" id="toc-simple-graceful-degradation" class="nav-link" data-scroll-target="#simple-graceful-degradation">Simple graceful degradation</a></li>
+  <li><a href="#fallback-fires-only-after-all-retries" id="toc-fallback-fires-only-after-all-retries" class="nav-link" data-scroll-target="#fallback-fires-only-after-all-retries">Fallback fires only after all retries</a></li>
+  <li><a href="#routing-continues-after-a-fallback" id="toc-routing-continues-after-a-fallback" class="nav-link" data-scroll-target="#routing-continues-after-a-fallback">Routing continues after a fallback</a></li>
+  <li><a href="#using-a-backup-llm-as-the-fallback" id="toc-using-a-backup-llm-as-the-fallback" class="nav-link" data-scroll-target="#using-a-backup-llm-as-the-fallback">Using a backup LLM as the fallback</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -456,17 +469,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> article_pipeline<span class="sc">$</span><span class="fu">run</span>(<span class="st">"The potential of Algeria when it comes to tourism in the Sahara"</span>)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>result</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Die Sahara, die etwa 80 % Algeriens bedeckt, beeindruckt mit atemberaubenden 
-Landschaften und einem reichen kulturellen Erbe, einschließlich der 
-Felsformationen von Tassili n'Ajjer und der antiken Berberzivilisationen. Diese
-majestätische Region bietet Reisenden eine Vielzahl von Attraktionen, von 
-ruhigen Wüstenoasen und hohen Sanddünen bis hin zu prähistorischer Höhlenkunst 
-und lebendigen Tuareg-Gemeinschaften, was sie zu einem faszinierenden Reiseziel
-für Abenteuerlustige und Kulturinteressierte macht. Obwohl infrastrukturelle 
-Herausforderungen und Sicherheitsbedenken historisch das Tourismuswachstum 
-behinderten, positionieren Entwicklungsfortschritte und eine zunehmende 
-Stabilität die algerische Sahara als eine vielversprechende und weitgehend 
-unerschlossene Region für einzigartige Wüstentourismus-Erlebnisse.</code></pre>
+<pre><code>Die Sahara Algeriens, die größte Wüstenexpanse innerhalb eines Landes, 
+fasziniert Besucher mit ihren imposanten Dünen, ruhigen Oasen, antiken 
+Felskunstwerken und historischen Ksars und ist somit ein Schatz für den 
+Wüstentourismus. Diese Region ist auch ein lebendiges kulturelles Zentrum, in 
+dem Berbergemeinschaften Traditionen durch Musik und Festivals bewahren und 
+kulturelle Enthusiasten ebenso anziehen wie Abenteuersuchende, die sich auf 
+Kameltouren und 4x4-Expeditionen freuen. Obwohl die Tourismusinfrastruktur und 
+die internationale Zugänglichkeit sich noch in der Entwicklung befinden, 
+versprechen staatliche Initiativen, die auf nachhaltigen Tourismus ausgerichtet
+sind, das volle Potenzial der Sahara zu erschließen, die lokalen Wirtschaften 
+zu fördern und das einzigartige Wüstenerbe Algeriens mit der Welt zu teilen.</code></pre>
 </div>
 </div>
 <p>The <code>run_history</code> attribute records every execution, including the full trace of inputs and outputs for each Station:</p>
@@ -478,17 +491,17 @@ unerschlossene Region für einzigartige Wüstentourismus-Erlebnisse.</code></pre
 [1] "The potential of Algeria when it comes to tourism in the Sahara"
 
 [[1]]$output
-Die Sahara, die etwa 80 % Algeriens bedeckt, beeindruckt mit atemberaubenden 
-Landschaften und einem reichen kulturellen Erbe, einschließlich der 
-Felsformationen von Tassili n'Ajjer und der antiken Berberzivilisationen. Diese
-majestätische Region bietet Reisenden eine Vielzahl von Attraktionen, von 
-ruhigen Wüstenoasen und hohen Sanddünen bis hin zu prähistorischer Höhlenkunst 
-und lebendigen Tuareg-Gemeinschaften, was sie zu einem faszinierenden Reiseziel
-für Abenteuerlustige und Kulturinteressierte macht. Obwohl infrastrukturelle 
-Herausforderungen und Sicherheitsbedenken historisch das Tourismuswachstum 
-behinderten, positionieren Entwicklungsfortschritte und eine zunehmende 
-Stabilität die algerische Sahara als eine vielversprechende und weitgehend 
-unerschlossene Region für einzigartige Wüstentourismus-Erlebnisse.
+Die Sahara Algeriens, die größte Wüstenexpanse innerhalb eines Landes, 
+fasziniert Besucher mit ihren imposanten Dünen, ruhigen Oasen, antiken 
+Felskunstwerken und historischen Ksars und ist somit ein Schatz für den 
+Wüstentourismus. Diese Region ist auch ein lebendiges kulturelles Zentrum, in 
+dem Berbergemeinschaften Traditionen durch Musik und Festivals bewahren und 
+kulturelle Enthusiasten ebenso anziehen wie Abenteuersuchende, die sich auf 
+Kameltouren und 4x4-Expeditionen freuen. Obwohl die Tourismusinfrastruktur und 
+die internationale Zugänglichkeit sich noch in der Entwicklung befinden, 
+versprechen staatliche Initiativen, die auf nachhaltigen Tourismus ausgerichtet
+sind, das volle Potenzial der Sahara zu erschließen, die lokalen Wirtschaften 
+zu fördern und das einzigartige Wüstenerbe Algeriens mit der Welt zu teilen.
 
 [[1]]$steps
 [1] 4
@@ -505,15 +518,16 @@ unerschlossene Region für einzigartige Wüstentourismus-Erlebnisse.
 [1] "The potential of Algeria when it comes to tourism in the Sahara"
 
 [[1]]$trace[[1]]$output
-1. Algeria's Sahara covers about 80% of the country, featuring vast deserts, 
-unique landscapes like the Tassili n'Ajjer rock formations, and rich cultural 
-heritage from ancient Berber civilizations.  
-2. It offers attractions such as desert oases, prehistoric cave art, sand 
-dunes, and traditional Tuareg communities, appealing to adventure and cultural 
-tourism.  
-3. Infrastructure and security concerns have limited tourism growth, but with 
-development and stability, Algeria's Sahara has significant potential as a 
-unique and untapped desert tourism destination.
+1. Algeria's Sahara, the largest portion of the vast desert in any country, 
+offers unique landscapes including vast dunes, oases, ancient rock art, and 
+historic ksars, making it a rich destination for desert tourism.  
+2. The region holds significant cultural heritage with Berber communities, 
+traditional music, and festivals that attract cultural tourism alongside 
+adventure activities like camel trekking and 4x4 expeditions.  
+3. Despite its immense potential, tourism infrastructure and international 
+accessibility remain limited, but ongoing government efforts aim to develop 
+sustainable tourism to boost local economies and showcase Algeria’s desert 
+attractions.
 
 
 [[1]]$trace[[2]]
@@ -524,27 +538,28 @@ unique and untapped desert tourism destination.
 [1] "write"
 
 [[1]]$trace[[2]]$input
-1. Algeria's Sahara covers about 80% of the country, featuring vast deserts, 
-unique landscapes like the Tassili n'Ajjer rock formations, and rich cultural 
-heritage from ancient Berber civilizations.  
-2. It offers attractions such as desert oases, prehistoric cave art, sand 
-dunes, and traditional Tuareg communities, appealing to adventure and cultural 
-tourism.  
-3. Infrastructure and security concerns have limited tourism growth, but with 
-development and stability, Algeria's Sahara has significant potential as a 
-unique and untapped desert tourism destination.
+1. Algeria's Sahara, the largest portion of the vast desert in any country, 
+offers unique landscapes including vast dunes, oases, ancient rock art, and 
+historic ksars, making it a rich destination for desert tourism.  
+2. The region holds significant cultural heritage with Berber communities, 
+traditional music, and festivals that attract cultural tourism alongside 
+adventure activities like camel trekking and 4x4 expeditions.  
+3. Despite its immense potential, tourism infrastructure and international 
+accessibility remain limited, but ongoing government efforts aim to develop 
+sustainable tourism to boost local economies and showcase Algeria’s desert 
+attractions.
 
 [[1]]$trace[[2]]$output
-Covering approximately 80% of Algeria, the vast Sahara Desert is a land of 
-breathtaking landscapes and rich cultural heritage, home to stunning features 
-like the Tassili n'Ajjer rock formations and ancient Berber civilizations. This
-majestic region offers travelers an array of attractions, from tranquil desert 
-oases and towering sand dunes to prehistoric cave art and vibrant Tuareg 
-communities, making it a captivating destination for both adventure seekers and
-cultural enthusiasts. Although infrastructure challenges and security concerns 
-have historically limited tourism growth, ongoing development and improving 
-stability position Algeria’s Sahara as a promising and largely untapped 
-frontier for unique desert tourism experiences.
+Algeria's Sahara, the largest expanse of the desert within any country, 
+captivates visitors with its breathtaking landscapes of towering dunes, serene 
+oases, ancient rock art, and historic ksars, making it a treasure trove for 
+desert tourism. This region is also a vibrant cultural hub, where Berber 
+communities keep traditions alive through music and festivals, drawing cultural
+enthusiasts alongside adventure seekers eager for camel treks and 4x4 
+expeditions. Although tourism infrastructure and international accessibility 
+are still developing, government initiatives focused on sustainable tourism 
+promise to unlock the Sahara’s full potential, aiming to boost local economies 
+and share the unique allure of Algeria’s desert heritage with the world.
 
 
 [[1]]$trace[[3]]
@@ -555,28 +570,28 @@ frontier for unique desert tourism experiences.
 [1] "edit"
 
 [[1]]$trace[[3]]$input
-Covering approximately 80% of Algeria, the vast Sahara Desert is a land of 
-breathtaking landscapes and rich cultural heritage, home to stunning features 
-like the Tassili n'Ajjer rock formations and ancient Berber civilizations. This
-majestic region offers travelers an array of attractions, from tranquil desert 
-oases and towering sand dunes to prehistoric cave art and vibrant Tuareg 
-communities, making it a captivating destination for both adventure seekers and
-cultural enthusiasts. Although infrastructure challenges and security concerns 
-have historically limited tourism growth, ongoing development and improving 
-stability position Algeria’s Sahara as a promising and largely untapped 
-frontier for unique desert tourism experiences.
+Algeria's Sahara, the largest expanse of the desert within any country, 
+captivates visitors with its breathtaking landscapes of towering dunes, serene 
+oases, ancient rock art, and historic ksars, making it a treasure trove for 
+desert tourism. This region is also a vibrant cultural hub, where Berber 
+communities keep traditions alive through music and festivals, drawing cultural
+enthusiasts alongside adventure seekers eager for camel treks and 4x4 
+expeditions. Although tourism infrastructure and international accessibility 
+are still developing, government initiatives focused on sustainable tourism 
+promise to unlock the Sahara’s full potential, aiming to boost local economies 
+and share the unique allure of Algeria’s desert heritage with the world.
 
 [[1]]$trace[[3]]$output
-Covering approximately 80% of Algeria, the vast Sahara Desert boasts 
-breathtaking landscapes and a rich cultural heritage, including the Tassili 
-n'Ajjer rock formations and ancient Berber civilizations. This majestic region 
-offers travelers a range of attractions, from tranquil desert oases and 
-towering sand dunes to prehistoric cave art and vibrant Tuareg communities, 
-making it a captivating destination for both adventure seekers and cultural 
-enthusiasts. Although infrastructure challenges and security concerns have 
-historically hindered tourism growth, ongoing development and improving 
-stability position Algeria’s Sahara as a promising and largely untapped 
-frontier for unique desert tourism experiences.
+Algeria's Sahara, the largest desert expanse within any country, captivates 
+visitors with its towering dunes, serene oases, ancient rock art, and historic 
+ksars, making it a treasure trove for desert tourism. This region is also a 
+vibrant cultural hub where Berber communities preserve traditions through music
+and festivals, attracting cultural enthusiasts alongside adventure seekers 
+eager for camel treks and 4x4 expeditions. Although tourism infrastructure and 
+international accessibility are still developing, government initiatives 
+focused on sustainable tourism promise to unlock the Sahara’s full potential, 
+boost local economies, and share Algeria’s unique desert heritage with the 
+world.
 
 
 [[1]]$trace[[4]]
@@ -587,29 +602,29 @@ frontier for unique desert tourism experiences.
 [1] "translate"
 
 [[1]]$trace[[4]]$input
-Covering approximately 80% of Algeria, the vast Sahara Desert boasts 
-breathtaking landscapes and a rich cultural heritage, including the Tassili 
-n'Ajjer rock formations and ancient Berber civilizations. This majestic region 
-offers travelers a range of attractions, from tranquil desert oases and 
-towering sand dunes to prehistoric cave art and vibrant Tuareg communities, 
-making it a captivating destination for both adventure seekers and cultural 
-enthusiasts. Although infrastructure challenges and security concerns have 
-historically hindered tourism growth, ongoing development and improving 
-stability position Algeria’s Sahara as a promising and largely untapped 
-frontier for unique desert tourism experiences.
+Algeria's Sahara, the largest desert expanse within any country, captivates 
+visitors with its towering dunes, serene oases, ancient rock art, and historic 
+ksars, making it a treasure trove for desert tourism. This region is also a 
+vibrant cultural hub where Berber communities preserve traditions through music
+and festivals, attracting cultural enthusiasts alongside adventure seekers 
+eager for camel treks and 4x4 expeditions. Although tourism infrastructure and 
+international accessibility are still developing, government initiatives 
+focused on sustainable tourism promise to unlock the Sahara’s full potential, 
+boost local economies, and share Algeria’s unique desert heritage with the 
+world.
 
 [[1]]$trace[[4]]$output
-Die Sahara, die etwa 80 % Algeriens bedeckt, beeindruckt mit atemberaubenden 
-Landschaften und einem reichen kulturellen Erbe, einschließlich der 
-Felsformationen von Tassili n'Ajjer und der antiken Berberzivilisationen. Diese
-majestätische Region bietet Reisenden eine Vielzahl von Attraktionen, von 
-ruhigen Wüstenoasen und hohen Sanddünen bis hin zu prähistorischer Höhlenkunst 
-und lebendigen Tuareg-Gemeinschaften, was sie zu einem faszinierenden Reiseziel
-für Abenteuerlustige und Kulturinteressierte macht. Obwohl infrastrukturelle 
-Herausforderungen und Sicherheitsbedenken historisch das Tourismuswachstum 
-behinderten, positionieren Entwicklungsfortschritte und eine zunehmende 
-Stabilität die algerische Sahara als eine vielversprechende und weitgehend 
-unerschlossene Region für einzigartige Wüstentourismus-Erlebnisse.</code></pre>
+Die Sahara Algeriens, die größte Wüstenexpanse innerhalb eines Landes, 
+fasziniert Besucher mit ihren imposanten Dünen, ruhigen Oasen, antiken 
+Felskunstwerken und historischen Ksars und ist somit ein Schatz für den 
+Wüstentourismus. Diese Region ist auch ein lebendiges kulturelles Zentrum, in 
+dem Berbergemeinschaften Traditionen durch Musik und Festivals bewahren und 
+kulturelle Enthusiasten ebenso anziehen wie Abenteuersuchende, die sich auf 
+Kameltouren und 4x4-Expeditionen freuen. Obwohl die Tourismusinfrastruktur und 
+die internationale Zugänglichkeit sich noch in der Entwicklung befinden, 
+versprechen staatliche Initiativen, die auf nachhaltigen Tourismus ausgerichtet
+sind, das volle Potenzial der Sahara zu erschließen, die lokalen Wirtschaften 
+zu fördern und das einzigartige Wüstenerbe Algeriens mit der Welt zu teilen.</code></pre>
 </div>
 </div>
 </section>
@@ -659,7 +674,7 @@ unerschlossene Region für einzigartige Wüstentourismus-Erlebnisse.</code></pre
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>format_pipeline<span class="sc">$</span><span class="fu">run</span>(messy_text)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "## Summary\n\n- The 2026 World Cup is approaching.  \n- Algeria's first match will be against Argentina.  \n- The opening game is significant for both teams."</code></pre>
+<pre><code>[1] "## Summary\n\n- The 2026 World Cup is approaching.  \n- Algeria's first game will be against Argentina.  \n- This match marks the start of Algeria's World Cup campaign."</code></pre>
 </div>
 </div>
 </section>
@@ -694,17 +709,15 @@ unerschlossene Region für einzigartige Wüstentourismus-Erlebnisse.</code></pre
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>first_run <span class="ot">&lt;-</span> cached_pipeline<span class="sc">$</span><span class="fu">run</span>(<span class="st">"Rare fish in the Algerian see"</span>)</span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>first_run</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>The Algerian Sea harbors a remarkable array of rare marine life, including the 
-endangered Mediterranean sand tiger shark and the distinctive Algerian grouper.
-These extraordinary species play a crucial role in maintaining the delicate 
-balance of the marine ecosystem. To safeguard their survival, intensified 
-conservation efforts are urgently needed to shield their fragile habitats from 
-the escalating threats of pollution and overfishing.</code></pre>
+<pre><code>The Algerian seas harbor rare and extraordinary fish species, many of which 
+exist nowhere else in the Mediterranean. These exceptional fish not only enrich
+the region’s vibrant biodiversity but also underscore the critical need for 
+dedicated marine conservation efforts in Algeria.</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>end <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(end <span class="sc">-</span> start)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Time difference of 20.84 secs</code></pre>
+<pre><code>Time difference of 2.822783 secs</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -713,17 +726,15 @@ the escalating threats of pollution and overfishing.</code></pre>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>second_run <span class="ot">&lt;-</span> cached_pipeline<span class="sc">$</span><span class="fu">run</span>(<span class="st">"Rare fish in the Algerian see"</span>)</span>
 <span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>second_run</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>The Algerian Sea harbors a remarkable array of rare marine life, including the 
-endangered Mediterranean sand tiger shark and the distinctive Algerian grouper.
-These extraordinary species play a crucial role in maintaining the delicate 
-balance of the marine ecosystem. To safeguard their survival, intensified 
-conservation efforts are urgently needed to shield their fragile habitats from 
-the escalating threats of pollution and overfishing.</code></pre>
+<pre><code>The Algerian seas harbor rare and extraordinary fish species, many of which 
+exist nowhere else in the Mediterranean. These exceptional fish not only enrich
+the region’s vibrant biodiversity but also underscore the critical need for 
+dedicated marine conservation efforts in Algeria.</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>end <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(end <span class="sc">-</span> start)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Time difference of 0.05784392 secs</code></pre>
+<pre><code>Time difference of 0.05783606 secs</code></pre>
 </div>
 </div>
 <p>To force a fresh execution, call <code>$clear_cache()</code>:</p>
@@ -735,16 +746,15 @@ the escalating threats of pollution and overfishing.</code></pre>
 <span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>fresh_run <span class="ot">&lt;-</span> cached_pipeline<span class="sc">$</span><span class="fu">run</span>(<span class="st">"Rare fish in the Algerian see"</span>)</span>
 <span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>fresh_run</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>The Algerian Sea is a sanctuary for several rare fish species, including the 
-elusive Mediterranean spearfish and the critically endangered dusky grouper. 
-Preserving these extraordinary species is essential for sustaining the region’s
-rich marine biodiversity and ensuring the health and resilience of its 
-underwater ecosystems.</code></pre>
+<pre><code>The Algerian Sea is home to several rare and vital fish species that play a key
+role in maintaining the health of the marine ecosystem. Safeguarding these 
+unique species is essential for preserving the rich biodiversity of the entire 
+Mediterranean region.</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>end <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(end <span class="sc">-</span> start)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Time difference of 3.006597 secs</code></pre>
+<pre><code>Time difference of 2.993069 secs</code></pre>
 </div>
 </div>
 </section>
@@ -795,14 +805,14 @@ underwater ecosystems.</code></pre>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>sentiment_router<span class="sc">$</span><span class="fu">run</span>(<span class="st">"I absolutely love this product, it changed my life!"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Thank you so much for the positive vibes – they truly made my day brighter!</code></pre>
+<pre><code>Thank you so much for your positive energy—it truly brightens my day!</code></pre>
 </div>
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>sentiment_router<span class="sc">$</span><span class="fu">run</span>(<span class="st">"Very disappointed. The quality is nothing like advertised."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>I’m sorry to hear you’re feeling this way—how can I help make things better for
-you?</code></pre>
+<pre><code>I’m sorry to hear you’re feeling this way—please let me know how I can help 
+improve your experience.</code></pre>
 </div>
 </div>
 <p>A more structured example uses a plain function as the router so the branching logic is deterministic and free of LLM calls.</p>
@@ -846,12 +856,10 @@ you?</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Short input — routed to the expander</span></span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>length_router<span class="sc">$</span><span class="fu">run</span>(<span class="st">"Fennec Algeria football team"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>The Fennec Algeria football team, often referred to simply as "Les Fennecs," is
-the national football team of Algeria known for its passionate style of play 
-and rich football history. Representing the country in international 
-competitions, they have earned recognition for their skillful players and 
-significant achievements, including winning the Africa Cup of Nations multiple 
-times.</code></pre>
+<pre><code>The Fennec Algeria football team, also known as the Desert Foxes, is the 
+national football team of Algeria. Renowned for their skill and determination, 
+they have a passionate fan base and have achieved significant success in 
+African and international competitions.</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -865,9 +873,8 @@ times.</code></pre>
 <span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>length_router<span class="sc">$</span><span class="fu">run</span>(long_input)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Bees play a crucial role in pollination essential for plant reproduction and 
-food production, but their populations are threatened by colony collapse 
-disorder, posing risks to food security and ecosystems.</code></pre>
+<pre><code>Bees are crucial pollinators essential for plant reproduction and food 
+security, but their populations are threatened by colony collapse disorder.</code></pre>
 </div>
 </div>
 </section>
@@ -912,10 +919,10 @@ disorder, posing risks to food security and ecosystems.</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use the WorkflowAgent directly</span></span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>research_agent<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"The city of Bejaia in Algeria"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Bejaia is a Mediterranean port city in northeastern Algeria, historically 
-significant as a medieval commercial and cultural center during the Hammadid 
-dynasty, and today recognized for its beautiful coastline, oil and gas 
-industries, and role as a regional economic hub.</code></pre>
+<pre><code>Béjaïa is a Mediterranean port city in northern Algeria's Kabylie region, 
+historically significant as a medieval trade and cultural center under the 
+Hammadid dynasty, and today recognized for its diverse population and role as 
+an economic hub for fishing, commerce, and tourism.</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -935,13 +942,9 @@ industries, and role as a regional economic hub.</code></pre>
 <span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a>lead<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"Tell me about the city of Bejaia in one sentence, then translate it into German"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Bejaia is a historic Mediterranean port city in northeastern Algeria’s Kabylie 
-region, known for its medieval commerce, vibrant Berber culture, scenic 
-coastline, and significant oil and gas industry today.  
-Bejaia ist eine historische Mittelmeer-Hafenstadt in der Kabylien-Region im 
-Nordosten Algeriens, bekannt für ihren mittelalterlichen Handel, die lebendige 
-Berberkultur, die malerische Küstenlinie und die heute bedeutende Öl- und 
-Gasindustrie.</code></pre>
+<pre><code>Béjaïa ist eine lebendige Küstenstadt im Norden Algeriens, bekannt für ihr 
+historisches Erbe, ihre wirtschaftliche Vitalität und die atemberaubenden 
+mediterranen Landschaften.</code></pre>
 </div>
 </div>
 </section>
@@ -972,12 +975,12 @@ Gasindustrie.</code></pre>
 <span id="cb41-22"><a href="#cb41-22" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb41-23"><a href="#cb41-23" aria-hidden="true" tabindex="-1"></a>presentation_wf<span class="sc">$</span><span class="fu">run</span>(<span class="st">"Algeria and Coffee"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Algeria’s coffee culture is deeply influenced by Mediterranean and French 
-traditions, with cafés serving as important social hubs in communities. The 
-culture primarily depends on imported coffee and features popular beverages 
-such as espresso, Turkish coffee, and café au lait. These drinks are often 
-enjoyed alongside traditional pastries, highlighting the rich blend of 
-historical and cultural flavors in Algerian coffee enjoyment.</code></pre>
+<pre><code>Algeria's coffee culture is a unique blend of traditional Arab customs and 
+French colonial influences, creating a vibrant and diverse coffee scene. 
+Popular beverages include both Arabic coffee and espresso-style drinks, enjoyed
+widely in cafés and homes across the country. Despite this growing appreciation
+for coffee, Algeria relies heavily on imports to meet demand due to limited 
+local cultivation.</code></pre>
 </div>
 </div>
 </section>
@@ -1030,20 +1033,221 @@ historical and cultural flavors in Algerian coffee enjoyment.</code></pre>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>article_pipeline<span class="sc">$</span><span class="fu">visualize</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div class="grViz html-widget html-fill-item" id="htmlwidget-4543d09834d02c384d3a" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-4543d09834d02c384d3a">{"x":{"diagram":"digraph workflow {\n  graph [rankdir=TB, label=\"article pipeline\", labelloc=t, fontsize=18, fontname=\"Helvetica\"]\n  node [fontname=\"Helvetica\", fontsize=12]\n  edge [fontname=\"Helvetica\", fontsize=10]\n  \"research\" [label=\"research\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"write\" [label=\"write\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"edit\" [label=\"edit\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"translate\" [label=\"translate\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"START\" [label=\"START\", shape=circle, style=filled, fillcolor=\"#82E0AA\", width=0.5]\n  \"START\" -> \"research\"\n  \"research\" -> \"write\"\n  \"write\" -> \"edit\"\n  \"edit\" -> \"translate\"\n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-c763071564d0940ea7fd" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-c763071564d0940ea7fd">{"x":{"diagram":"digraph workflow {\n  graph [rankdir=TB, label=\"article pipeline\", labelloc=t, fontsize=18, fontname=\"Helvetica\"]\n  node [fontname=\"Helvetica\", fontsize=12]\n  edge [fontname=\"Helvetica\", fontsize=10]\n  \"research\" [label=\"research\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"write\" [label=\"write\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"edit\" [label=\"edit\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"translate\" [label=\"translate\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"START\" [label=\"START\", shape=circle, style=filled, fillcolor=\"#82E0AA\", width=0.5]\n  \"START\" -> \"research\"\n  \"research\" -> \"write\"\n  \"write\" -> \"edit\"\n  \"edit\" -> \"translate\"\n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>sentiment_router<span class="sc">$</span><span class="fu">visualize</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div class="grViz html-widget html-fill-item" id="htmlwidget-c7bc9fa52e34cc5b69ea" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-c7bc9fa52e34cc5b69ea">{"x":{"diagram":"digraph workflow {\n  graph [rankdir=TB, label=\"sentiment router\", labelloc=t, fontsize=18, fontname=\"Helvetica\"]\n  node [fontname=\"Helvetica\", fontsize=12]\n  edge [fontname=\"Helvetica\", fontsize=10]\n  \"classify\" [label=\"classify\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"reply_pos\" [label=\"reply_pos\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"reply_neg\" [label=\"reply_neg\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"START\" [label=\"START\", shape=circle, style=filled, fillcolor=\"#82E0AA\", width=0.5]\n  \"START\" -> \"classify\"\n  \"classify\" -> \"reply_pos\" [label=\"  cond\", style=dashed]\n  \"classify\" -> \"reply_neg\" [label=\"  cond\", style=dashed]\n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-d46dc32ec9185dc50772" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-d46dc32ec9185dc50772">{"x":{"diagram":"digraph workflow {\n  graph [rankdir=TB, label=\"sentiment router\", labelloc=t, fontsize=18, fontname=\"Helvetica\"]\n  node [fontname=\"Helvetica\", fontsize=12]\n  edge [fontname=\"Helvetica\", fontsize=10]\n  \"classify\" [label=\"classify\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"reply_pos\" [label=\"reply_pos\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"reply_neg\" [label=\"reply_neg\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"START\" [label=\"START\", shape=circle, style=filled, fillcolor=\"#82E0AA\", width=0.5]\n  \"START\" -> \"classify\"\n  \"classify\" -> \"reply_pos\" [label=\"  cond\", style=dashed]\n  \"classify\" -> \"reply_neg\" [label=\"  cond\", style=dashed]\n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>The graph updates automatically to reflect whatever Stations and Routes are currently registered, making it a convenient tool for checking that the pipeline is wired correctly before running it.</p>
+<hr>
+</section>
+<section id="per-station-retry-not-yet-on-cran" class="level2">
+<h2 class="anchored" data-anchor-id="per-station-retry-not-yet-on-cran">Per-station retry (Not yet on CRAN)</h2>
+<p>Real-world pipelines talk to external services — LLM providers, APIs, databases — that can fail transiently: rate-limit errors, network blips, brief provider outages. Rather than letting a single transient failure abort the entire run, you can attach a <strong>retry logic</strong> to any Station via two parameters of <code>$add_station()</code>:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Parameter</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>max_retries</code></td>
+<td><code>0</code></td>
+<td>Extra attempts after the first failure</td>
+</tr>
+<tr class="even">
+<td><code>retry_delay</code></td>
+<td><code>1</code></td>
+<td>Seconds to sleep between attempts</td>
+</tr>
+</tbody>
+</table>
+<p>The station is tried up to <code>max_retries + 1</code> times in total. If it succeeds on any attempt, execution continues normally. If all attempts fail, the error is either forwarded to a <a href="#fallback-handlers">fallback handler</a> (see below) or re-raised.</p>
+<section id="simulating-a-flaky-service" class="level3">
+<h3 class="anchored" data-anchor-id="simulating-a-flaky-service">Simulating a flaky service</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Factory that returns a handler which fails the first `fail_times` calls</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>make_flaky_service <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">fail_times =</span> <span class="dv">2</span>L) {</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>  attempts <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">function</span>(text) {</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>    attempts <span class="ot">&lt;&lt;-</span> attempts <span class="sc">+</span> <span class="dv">1</span>L</span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (attempts <span class="sc">&lt;=</span> fail_times) {</span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">stop</span>(<span class="fu">sprintf</span>(<span class="st">"HTTP 429: Rate limit (attempt %d of %d)"</span>, attempts, fail_times <span class="sc">+</span> <span class="dv">1</span>L))</span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste</span>(<span class="st">"Service result:"</span>, <span class="fu">toupper</span>(text))</span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>retry_wf <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"retry pipeline"</span>, <span class="at">use_cache =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>retry_wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"call_service"</span>,</span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler     =</span> <span class="fu">make_flaky_service</span>(<span class="at">fail_times =</span> <span class="dv">2</span>L),</span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_retries =</span> <span class="dv">3</span>,</span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">retry_delay =</span> <span class="dv">0</span>     <span class="co"># set to a positive number (e.g. 2) in production</span></span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a>retry_wf<span class="sc">$</span><span class="fu">run</span>(<span class="st">"summarise this document"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Service result: SUMMARISE THIS DOCUMENT"</code></pre>
+</div>
+</div>
+<p>The station fails on attempts 1 and 2, then succeeds on attempt 3. The workflow returns the successful result transparently.</p>
+</section>
+<section id="attaching-retries-to-an-agent-station" class="level3">
+<h3 class="anchored" data-anchor-id="attaching-retries-to-an-agent-station">Attaching retries to an Agent station</h3>
+<p><code>max_retries</code> works identically for Agent stations — the LLM call is retried the same way.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>fragile_pipeline <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"fragile pipeline"</span>)</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>fragile_pipeline<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"analyse"</span>,</span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler     =</span> some_agent,      <span class="co"># any Agent or WorkflowAgent</span></span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_retries =</span> <span class="dv">2</span>,</span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">retry_delay =</span> <span class="dv">3</span>                <span class="co"># wait 3 s between retries</span></span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="behaviour-when-all-retries-are-exhausted" class="level3">
+<h3 class="anchored" data-anchor-id="behaviour-when-all-retries-are-exhausted">Behaviour when all retries are exhausted</h3>
+<p>When every attempt fails and no <a href="#fallback-handlers">fallback</a> is defined, the last error is re-raised and propagates up from <code>$run()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>always_fails_wf <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"always-fails pipeline"</span>, <span class="at">use_cache =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>always_fails_wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"broken_step"</span>,</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler     =</span> <span class="cf">function</span>(x) <span class="fu">stop</span>(<span class="st">"Service permanently unavailable"</span>),</span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_retries =</span> <span class="dv">1</span>,</span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">retry_delay =</span> <span class="dv">0</span></span>
+<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-10"><a href="#cb52-10" aria-hidden="true" tabindex="-1"></a><span class="fu">tryCatch</span>(</span>
+<span id="cb52-11"><a href="#cb52-11" aria-hidden="true" tabindex="-1"></a>  always_fails_wf<span class="sc">$</span><span class="fu">run</span>(<span class="st">"input"</span>),</span>
+<span id="cb52-12"><a href="#cb52-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">error =</span> <span class="cf">function</span>(e) <span class="fu">paste</span>(<span class="st">"Caught:"</span>, <span class="fu">conditionMessage</span>(e))</span>
+<span id="cb52-13"><a href="#cb52-13" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Caught: Service permanently unavailable"</code></pre>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="fallback-handlers-fallback-handlers-not-yet-on-cran" class="level2">
+<h2 class="anchored" data-anchor-id="fallback-handlers-fallback-handlers-not-yet-on-cran">Fallback handlers {#fallback-handlers} (not yet on CRAN)</h2>
+<p>A <strong>fallback</strong> is a <code>function(input, error)</code> attached to a specific Station. It is invoked only after all retry attempts for that Station have been exhausted, giving you a controlled degradation path instead of a hard failure.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name     =</span> <span class="st">"step"</span>,</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler  =</span> primary_handler,</span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">fallback =</span> <span class="cf">function</span>(input, error) {</span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># `input`  — the string the station received</span></span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># `error`  — the condition object from the last failed attempt</span></span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"default output"</span></span>
+<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The fallback’s return value is used as the station’s output and the pipeline continues normally from there.</p>
+<section id="simple-graceful-degradation" class="level3">
+<h3 class="anchored" data-anchor-id="simple-graceful-degradation">Simple graceful degradation</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>safe_wf <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"safe pipeline"</span>, <span class="at">use_cache =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>safe_wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">name     =</span> <span class="st">"fetch_summary"</span>,</span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler  =</span> <span class="cf">function</span>(x) <span class="fu">stop</span>(<span class="st">"Connection refused"</span>),</span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">fallback =</span> <span class="cf">function</span>(input, err) {</span>
+<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste</span>(<span class="st">"(Summary unavailable — service error:"</span>, <span class="fu">conditionMessage</span>(err), <span class="st">")</span><span class="sc">\n</span><span class="st">Original:"</span>, input)</span>
+<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb55-9"><a href="#cb55-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb55-10"><a href="#cb55-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-11"><a href="#cb55-11" aria-hidden="true" tabindex="-1"></a>safe_wf<span class="sc">$</span><span class="fu">run</span>(<span class="st">"Analyse this quarterly report"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "(Summary unavailable — service error: Connection refused )\nOriginal: Analyse this quarterly report"</code></pre>
+</div>
+</div>
+</section>
+<section id="fallback-fires-only-after-all-retries" class="level3">
+<h3 class="anchored" data-anchor-id="fallback-fires-only-after-all-retries">Fallback fires only after all retries</h3>
+<p>The fallback is a last resort. With <code>max_retries &gt; 0</code> the primary handler is tried repeatedly; the fallback only runs if every attempt fails.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>attempts <span class="ot">&lt;-</span> <span class="dv">0</span>L</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>resilient_wf <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"resilient pipeline"</span>, <span class="at">use_cache =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>resilient_wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"external_call"</span>,</span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler     =</span> <span class="cf">function</span>(x) {</span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>    attempts <span class="ot">&lt;&lt;-</span> attempts <span class="sc">+</span> <span class="dv">1</span>L</span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="fu">sprintf</span>(<span class="st">"Attempt %d failed"</span>, attempts))</span>
+<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb57-11"><a href="#cb57-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_retries =</span> <span class="dv">2</span>,</span>
+<span id="cb57-12"><a href="#cb57-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">retry_delay =</span> <span class="dv">0</span>,</span>
+<span id="cb57-13"><a href="#cb57-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">fallback    =</span> <span class="cf">function</span>(input, err) {</span>
+<span id="cb57-14"><a href="#cb57-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste0</span>(<span class="st">"[Fallback after "</span>, attempts, <span class="st">" attempt(s)] "</span>, input)</span>
+<span id="cb57-15"><a href="#cb57-15" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb57-16"><a href="#cb57-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb57-17"><a href="#cb57-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-18"><a href="#cb57-18" aria-hidden="true" tabindex="-1"></a>resilient_wf<span class="sc">$</span><span class="fu">run</span>(<span class="st">"Process this document"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "[Fallback after 3 attempt(s)] Process this document"</code></pre>
+</div>
+</div>
+</section>
+<section id="routing-continues-after-a-fallback" class="level3">
+<h3 class="anchored" data-anchor-id="routing-continues-after-a-fallback">Routing continues after a fallback</h3>
+<p>The fallback’s output flows into the next Station via the normal routing mechanism. The rest of the pipeline is unaware that a fallback fired.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>routed_fallback_wf <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"routed fallback"</span>, <span class="at">use_cache =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>routed_fallback_wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">name     =</span> <span class="st">"fetch"</span>,</span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler  =</span> <span class="cf">function</span>(x) <span class="fu">stop</span>(<span class="st">"API down"</span>),</span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">fallback =</span> <span class="cf">function</span>(input, err) <span class="fu">paste</span>(<span class="st">"CACHED VERSION OF:"</span>, input)</span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a>routed_fallback_wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"format"</span>,</span>
+<span id="cb59-11"><a href="#cb59-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">function</span>(x) <span class="fu">paste0</span>(<span class="st">"**"</span>, <span class="fu">trimws</span>(x), <span class="st">"**"</span>)</span>
+<span id="cb59-12"><a href="#cb59-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb59-13"><a href="#cb59-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-14"><a href="#cb59-14" aria-hidden="true" tabindex="-1"></a>routed_fallback_wf<span class="sc">$</span><span class="fu">add_route</span>(<span class="st">"fetch"</span>, <span class="st">"format"</span>)</span>
+<span id="cb59-15"><a href="#cb59-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-16"><a href="#cb59-16" aria-hidden="true" tabindex="-1"></a>routed_fallback_wf<span class="sc">$</span><span class="fu">run</span>(<span class="st">"monthly sales figures"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "**CACHED VERSION OF: monthly sales figures**"</code></pre>
+</div>
+</div>
+</section>
+<section id="using-a-backup-llm-as-the-fallback" class="level3">
+<h3 class="anchored" data-anchor-id="using-a-backup-llm-as-the-fallback">Using a backup LLM as the fallback</h3>
+<p>A common production pattern is to call a premium model as the primary handler and fall back to a cheaper or local model when the primary is unavailable.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>primary_agent  <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(<span class="st">"primary"</span>,  <span class="st">"You are a senior analyst."</span>, premium_llm)</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>fallback_agent <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(<span class="st">"fallback"</span>, <span class="st">"You are a concise analyst."</span>, cheap_llm)</span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>pipeline <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"model-with-backup"</span>)</span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>pipeline<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">name     =</span> <span class="st">"analyse"</span>,</span>
+<span id="cb61-8"><a href="#cb61-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler  =</span> primary_agent,</span>
+<span id="cb61-9"><a href="#cb61-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_retries =</span> <span class="dv">1</span>,</span>
+<span id="cb61-10"><a href="#cb61-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">retry_delay =</span> <span class="dv">2</span>,</span>
+<span id="cb61-11"><a href="#cb61-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">fallback =</span> <span class="cf">function</span>(input, err) {</span>
+<span id="cb61-12"><a href="#cb61-12" aria-hidden="true" tabindex="-1"></a>    fallback_agent<span class="sc">$</span><span class="fu">invoke</span>(input)   <span class="co"># delegate to the backup model</span></span>
+<span id="cb61-13"><a href="#cb61-13" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb61-14"><a href="#cb61-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
