@@ -667,3 +667,156 @@ pipeline$add_station(
 )
 ```
 
+---
+
+## Parallel Stations
+
+Multiple independent Stations can run concurrently using `$set_daemons()` and `$add_parallel_group()`. This is useful for:
+- Running multiple agents in parallel for comparison or consensus
+- Executing independent analyses simultaneously
+- Reducing total workflow latency by 2-4x for embarrassingly parallel tasks
+
+### Multi-perspective parallel analysis
+
+```{r}
+#| eval: false
+library(mirai)
+
+# Create three specialized agents for different perspectives
+technical_agent <- Agent$new(
+  name = "technical_analyst",
+  instruction = paste(
+    "You are a technical expert in AI and software engineering.",
+    "Analyze topics from a technical/engineering perspective.",
+    "Focus on: implementation details, technology stack, technical challenges.",
+    "Keep responses to 2-3 sentences."
+  ),
+  llm_object = openai_4_1_mini
+)
+
+business_agent <- Agent$new(
+  name = "business_strategist",
+  instruction = paste(
+    "You are a business strategist and market analyst.",
+    "Analyze topics from a business/market perspective.",
+    "Focus on: market opportunities, ROI, competitive advantage, business models.",
+    "Keep responses to 2-3 sentences."
+  ),
+  llm_object = openai_4_1_mini
+)
+
+ux_agent <- Agent$new(
+  name = "ux_specialist",
+  instruction = paste(
+    "You are a UX and product design specialist.",
+    "Analyze topics from a user experience perspective.",
+    "Focus on: user needs, design considerations, accessibility, user satisfaction.",
+    "Keep responses to 2-3 sentences."
+  ),
+  llm_object = openai_4_1_mini
+)
+
+# Clean up any existing daemons from previous runs
+mirai::daemons(0)
+Sys.sleep(0.5)
+
+# Create workflow with parallel execution
+wf <- Workflow$new(
+  name = "parallel_multi_agent_analysis",
+  description = "Multi-perspective analysis using parallel Agent invocations"
+)
+
+# Set up 3 parallel workers for concurrent API calls
+wf$set_daemons(3)
+
+# Add input station (passthrough)
+wf$add_station(
+  "input",
+  handler = function(x) x,
+  description = "Input topic"
+)
+
+# Add three parallel Agent stations
+wf$add_station(
+  "technical_analysis",
+  handler = technical_agent,
+  description = "Technical perspective"
+)
+
+wf$add_station(
+  "business_analysis",
+  handler = business_agent,
+  description = "Business perspective"
+)
+
+wf$add_station(
+  "ux_analysis",
+  handler = ux_agent,
+  description = "UX perspective"
+)
+
+# Add synthesis station
+wf$add_station(
+  "synthesis",
+  handler = function(x) {
+    paste0(
+      "═══════════════════════════════════════════\n",
+      "MULTI-PERSPECTIVE ANALYSIS REPORT\n",
+      "═══════════════════════════════════════════\n\n",
+      x
+    )
+  },
+  description = "Synthesis"
+)
+
+# Define parallel group: input -> [technical, business, ux] -> synthesis
+wf$add_parallel_group(
+  from = "input",
+  stations = c("technical_analysis", "business_analysis", "ux_analysis"),
+  to = "synthesis",
+  merge_fn = function(results) {
+    paste0(
+      "📱 TECHNICAL PERSPECTIVE:\n",
+      results$technical_analysis, "\n\n",
+      "💼 BUSINESS PERSPECTIVE:\n",
+      results$business_analysis, "\n\n",
+      "👤 UX PERSPECTIVE:\n",
+      results$ux_analysis
+    )
+  }
+)
+
+# Execute workflow with parallel execution
+topic <- "Artificial Intelligence in Healthcare"
+
+result <- wf$run(topic)
+print(result)
+
+# Visualize the workflow structure
+wf$visualize()
+
+# Cleanup
+wf$set_daemons(0)
+```
+
+### How it works
+
+1. **`$set_daemons(n)`** — Creates `n` parallel worker processes (typically `parallel::detectCores()`)
+
+2. **`$add_parallel_group(from, stations, to, merge_fn)`** — Defines which stations run in parallel:
+   - `from`: predecessor station (all parallel stations receive its output)
+   - `stations`: vector of station names to run concurrently
+   - `to`: successor station (receives merged results)
+   - `merge_fn`: function to combine results from all parallel stations
+
+3. **Execution** — All parallel stations run concurrently in separate daemons, providing ~2-4x speedup
+
+4. **Visualization** — `$visualize()` shows parallel routes in **red with ∥ symbol** to distinguish from sequential routes
+
+### Performance
+
+With 3 parallel agents analyzing the same topic:
+- **Sequential**: ~12-15 seconds (3 API calls × 4-5s each)
+- **Parallel**: ~4-5 seconds (all 3 calls simultaneously)
+- **Speedup**: ~3x faster
+

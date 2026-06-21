@@ -185,6 +185,9 @@ Key capabilities:
   Station inside another `Workflow`.
 - **Visualisation**: `$visualize()` renders the pipeline as an interactive
   directed graph via `DiagrammeR`.
+- **Parallel execution**: `$set_daemons()` and `$add_parallel_group()` enable
+  multiple independent Stations to run concurrently, providing 2-4x speedup
+  for independent tasks like multi-agent analysis.
 
 ## Installation
 

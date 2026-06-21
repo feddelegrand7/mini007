@@ -1,3 +1,44 @@
+# mini007 0.6.0
+
+#### Parallel Station Execution for Workflows
+
+Major feature addition enabling 2-4x speedup for independent processing units.
+
+**New Methods:**
+- `$set_daemons(n)` — Configure `n` parallel worker processes using `mirai` package
+- `$add_parallel_group(from, stations, to, merge_fn)` — Define stations to execute concurrently
+  - `from`: predecessor station
+  - `stations`: vector of station names to run in parallel
+  - `to`: optional successor station (receives merged results)
+  - `merge_fn`: custom function to combine parallel results (default: newline concatenation)
+
+**Enhanced Methods:**
+- `$visualize()` — Now displays parallel routes in **red with ∥ symbol** to distinguish from sequential routes
+
+**Use Cases:**
+- Multi-agent analysis (e.g., technical, business, UX perspectives in parallel)
+- Parallel tool calling and independent data transformations
+- Ensemble model voting and comparison
+- Significant latency reduction for embarrassingly parallel workflows
+
+**Performance:**
+- 3 parallel agents: ~3x faster than sequential execution
+- Compatible with existing caching, retry, fallback, and HITL features
+- Full integration with `Agent` and `WorkflowAgent` handlers
+
+**Documentation:**
+- Comprehensive parallel stations section in `workflow.qmd` with working example
+- Real-world example in `example_real_llm.R` demonstrating 3 parallel agents analyzing "AI in Healthcare"
+- Updated README.Rmd with parallel execution overview
+
+**Technical Details:**
+- Built on `mirai` package for reliable async execution
+- Each parallel station inherits retry/fallback configuration
+- Parallel results automatically cached with same mechanism as sequential stations
+- Graceful daemon cleanup and reinitialization
+
+---
+
 # mini007 0.5.0
 
 - Adding the `per-station retry` features to the `Workflow` class

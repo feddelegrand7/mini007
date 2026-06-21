@@ -425,14 +425,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>weather_agent<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"How's the weather in Algiers?"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>The weather in Algiers is currently sunny, with a temperature of 35°C and no 
-precipitation.</code></pre>
+<pre><code>The weather in Algiers is currently sunny with no precipitation, and the 
+temperature is 35°C.</code></pre>
 </div>
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>weather_agent<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"How's the weather in Berlin?"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>The weather in Berlin is currently cold, with a temperature of 10°C.</code></pre>
+<pre><code>The weather in Berlin is currently cold with a temperature of 10°C.</code></pre>
 </div>
 </div>
 <p>One can remove one or several tool using the <code>remove_tools</code> method or remove all agents at one using the <code>clear_tools</code> method:</p>
@@ -456,8 +456,9 @@ precipitation.</code></pre>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">prompt =</span> <span class="st">"what is the current weather in Tokyo?"</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>The current weather in Tokyo is 21°C with light wind at 4 km/h coming from the 
-south (175°). The latest report is from 14:00 local time.</code></pre>
+<pre><code>The current weather in Tokyo, Japan is 23.2°C with a wind speed of 4 km/h 
+coming from 350°. The weather code is 2, and the latest update was at 
+2026-06-21T22:30.</code></pre>
 </div>
 </div>
 

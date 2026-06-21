@@ -34,6 +34,8 @@ a Station inside another `Workflow`.
 
 \item{\code{hitl_steps}}{Integer vector of step numbers at which execution pauses
 for human review. Set via \code{$set_hitl()}.}
+
+\item{\code{n_daemons}}{Number of parallel daemons. Set via \code{$set_daemons()}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -45,6 +47,8 @@ for human review. Set via \code{$set_hitl()}.}
 \item \href{#method-Workflow-add_route}{\code{Workflow$add_route()}}
 \item \href{#method-Workflow-set_entry}{\code{Workflow$set_entry()}}
 \item \href{#method-Workflow-run}{\code{Workflow$run()}}
+\item \href{#method-Workflow-set_daemons}{\code{Workflow$set_daemons()}}
+\item \href{#method-Workflow-add_parallel_group}{\code{Workflow$add_parallel_group()}}
 \item \href{#method-Workflow-set_hitl}{\code{Workflow$set_hitl()}}
 \item \href{#method-Workflow-clear_cache}{\code{Workflow$clear_cache()}}
 \item \href{#method-Workflow-as_agent}{\code{Workflow$as_agent()}}
@@ -202,6 +206,68 @@ handler. Use \code{$clear_cache()} to force re-execution.
 }
 \subsection{Returns}{
 `[character(1)]` The output of the last Station executed.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Workflow-set_daemons"></a>}}
+\if{latex}{\out{\hypertarget{method-Workflow-set_daemons}{}}}
+\subsection{Method \code{set_daemons()}}{
+Configure parallel execution daemons using mirai.
+
+Sets up persistent daemon processes for parallel station execution.
+When `n > 0`, daemons are created via \code{mirai::daemons()}.
+Call with `n = 0` to shut down all daemons.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Workflow$set_daemons(n = 0L)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{n}}{`[integerish(1)]` Number of daemon processes (default `0`).
+Use number of cores for optimal CPU parallelism.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Invisibly returns `self` for method chaining.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Workflow-add_parallel_group"></a>}}
+\if{latex}{\out{\hypertarget{method-Workflow-add_parallel_group}{}}}
+\subsection{Method \code{add_parallel_group()}}{
+Define a group of Stations to execute in parallel.
+
+All specified Stations receive the same input and execute concurrently
+via mirai daemons. Their outputs are collected and merged by the
+`merge_fn` before passing to the next Station(s).
+
+Requires `$set_daemons(n > 0)` to be called first.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Workflow$add_parallel_group(from, stations, to = NULL, merge_fn = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{from}}{`[character(1)]` Name of the predecessor Station whose
+output feeds into the parallel group.}
+
+\item{\code{stations}}{`[character]` Names of Stations to run in parallel.
+All must exist and not be the `from` Station.}
+
+\item{\code{to}}{`[character(1)]` Name of the successor Station that receives
+the merged result (optional).}
+
+\item{\code{merge_fn}}{`[function]` A function \code{function(results)} that
+takes a named list of results (names are station names) and returns
+a single character string. Default concatenates results with newlines.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Invisibly returns `self` for method chaining.
 }
 }
 \if{html}{\out{<hr>}}

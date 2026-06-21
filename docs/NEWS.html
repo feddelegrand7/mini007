@@ -303,7 +303,8 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#mini007-0.5.0" id="toc-mini007-0.5.0" class="nav-link active" data-scroll-target="#mini007-0.5.0">mini007 0.5.0</a></li>
+  <li><a href="#mini007-0.6.0" id="toc-mini007-0.6.0" class="nav-link active" data-scroll-target="#mini007-0.6.0">mini007 0.6.0</a></li>
+  <li><a href="#mini007-0.5.0" id="toc-mini007-0.5.0" class="nav-link" data-scroll-target="#mini007-0.5.0">mini007 0.5.0</a></li>
   <li><a href="#mini007-0.4.0" id="toc-mini007-0.4.0" class="nav-link" data-scroll-target="#mini007-0.4.0">mini007 0.4.0</a></li>
   <li><a href="#mini007-0.3.0" id="toc-mini007-0.3.0" class="nav-link" data-scroll-target="#mini007-0.3.0">mini007 0.3.0</a></li>
   <li><a href="#mini007-0.2.2" id="toc-mini007-0.2.2" class="nav-link" data-scroll-target="#mini007-0.2.2">mini007 0.2.2</a>
@@ -324,6 +325,20 @@ ul.task-list li input[type="checkbox"] {
 
 
 
+<section id="mini007-0.6.0" class="level1">
+<h1>mini007 0.6.0</h1>
+<section id="parallel-station-execution-for-workflows" class="level4">
+<h4 class="anchored" data-anchor-id="parallel-station-execution-for-workflows">Parallel Station Execution for Workflows</h4>
+<p>Major feature addition enabling 2-4x speedup for independent processing units.</p>
+<p><strong>New Methods:</strong> - <code>$set_daemons(n)</code> — Configure <code>n</code> parallel worker processes using <code>mirai</code> package - <code>$add_parallel_group(from, stations, to, merge_fn)</code> — Define stations to execute concurrently - <code>from</code>: predecessor station - <code>stations</code>: vector of station names to run in parallel - <code>to</code>: optional successor station (receives merged results) - <code>merge_fn</code>: custom function to combine parallel results (default: newline concatenation)</p>
+<p><strong>Enhanced Methods:</strong> - <code>$visualize()</code> — Now displays parallel routes in <strong>red with ∥ symbol</strong> to distinguish from sequential routes</p>
+<p><strong>Use Cases:</strong> - Multi-agent analysis (e.g., technical, business, UX perspectives in parallel) - Parallel tool calling and independent data transformations - Ensemble model voting and comparison - Significant latency reduction for embarrassingly parallel workflows</p>
+<p><strong>Performance:</strong> - 3 parallel agents: ~3x faster than sequential execution - Compatible with existing caching, retry, fallback, and HITL features - Full integration with <code>Agent</code> and <code>WorkflowAgent</code> handlers</p>
+<p><strong>Documentation:</strong> - Comprehensive parallel stations section in <code>workflow.qmd</code> with working example - Real-world example in <code>example_real_llm.R</code> demonstrating 3 parallel agents analyzing “AI in Healthcare” - Updated README.Rmd with parallel execution overview</p>
+<p><strong>Technical Details:</strong> - Built on <code>mirai</code> package for reliable async execution - Each parallel station inherits retry/fallback configuration - Parallel results automatically cached with same mechanism as sequential stations - Graceful daemon cleanup and reinitialization</p>
+<hr>
+</section>
+</section>
 <section id="mini007-0.5.0" class="level1">
 <h1>mini007 0.5.0</h1>
 <ul>

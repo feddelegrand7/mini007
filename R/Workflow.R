@@ -43,6 +43,9 @@ Workflow <- R6::R6Class(
     #'   for human review. Set via \code{$set_hitl()}.
     hitl_steps = NULL,
 
+    #' @field n_daemons Number of parallel daemons. Set via \code{$set_daemons()}.
+    n_daemons = NULL,
+
     # -- initialize ------------------------------------------------------------
 
     #' @description Create a new `Workflow`.
@@ -60,6 +63,7 @@ Workflow <- R6::R6Class(
       self$use_cache   <- use_cache
       self$cache       <- new.env(hash = TRUE, parent = emptyenv())
       self$run_history <- list()
+      self$n_daemons   <- 0L
     },
 
     # -- add_station -----------------------------------------------------------
@@ -107,7 +111,7 @@ Workflow <- R6::R6Class(
       if (!is_agent && !is_function) {
         cli::cli_abort(c(
           "{.arg handler} must be an {.cls Agent}, {.cls WorkflowAgent}, or a {.cls function}.",
-          "i" = "Received: {.cls {class(handler)[[1L]]}}." 
+          "i" = "Received: {.cls {class(handler)[[1L]]}}."
         ))
       }
 
@@ -243,23 +247,34 @@ Workflow <- R6::R6Class(
           )
         }
 
-        station   <- private$.stations[[current]]
-        cache_key <- private$.cache_key(current, current_input)
+        parallel_group <- private$.find_parallel_group(current)
 
-        if (self$use_cache && exists(cache_key, envir = self$cache, inherits = FALSE)) {
-          cli::cli_alert_info("[cache] Station {.val {current}}.")
-          result <- get(cache_key, envir = self$cache, inherits = FALSE)
+        if (!is.null(parallel_group)) {
+          result <- private$.execute_parallel_group(
+            parallel_group, current_input, steps_taken
+          )
+          next_station <- parallel_group$to
         } else {
-          cli::cli_text("  {cli::col_blue('->')} Station {.val {current}}")
-          result <- private$.invoke_handler_safe(station, current_input)
+          station   <- private$.stations[[current]]
+          cache_key <- private$.cache_key(current, current_input)
 
-          if (!is.null(self$hitl_steps) && steps_taken %in% self$hitl_steps) {
-            result <- private$.human_confirm(steps_taken, current, current_input, result)
+          if (self$use_cache && exists(cache_key, envir = self$cache, inherits = FALSE)) {
+            cli::cli_alert_info("[cache] Station {.val {current}}.")
+            result <- get(cache_key, envir = self$cache, inherits = FALSE)
+          } else {
+            cli::cli_text("  {cli::col_blue('->')} Station {.val {current}}")
+            result <- private$.invoke_handler_safe(station, current_input)
+
+            if (!is.null(self$hitl_steps) && steps_taken %in% self$hitl_steps) {
+              result <- private$.human_confirm(steps_taken, current, current_input, result)
+            }
+
+            if (self$use_cache) {
+              assign(cache_key, result, envir = self$cache)
+            }
           }
 
-          if (self$use_cache) {
-            assign(cache_key, result, envir = self$cache)
-          }
+          next_station <- private$.get_next_station(current, result)
         }
 
         trace[[length(trace) + 1L]] <- list(
@@ -268,8 +283,6 @@ Workflow <- R6::R6Class(
           input   = current_input,
           output  = result
         )
-
-        next_station <- private$.get_next_station(current, result)
 
         if (is.null(next_station)) break
 
@@ -289,6 +302,101 @@ Workflow <- R6::R6Class(
       )
 
       result
+    },
+
+    # -- set_daemons -----------------------------------------------------------
+
+    #' @description Configure parallel execution daemons using mirai.
+    #'
+    #' Sets up persistent daemon processes for parallel station execution.
+    #' When `n > 0`, daemons are created via \code{mirai::daemons()}.
+    #' Call with `n = 0` to shut down all daemons.
+    #'
+    #' @param n `[integerish(1)]` Number of daemon processes (default `0`).
+    #'   Use number of cores for optimal CPU parallelism.
+    #'
+    #' @return Invisibly returns `self` for method chaining.
+    set_daemons = function(n = 0L) {
+      checkmate::assert_integerish(n, lower = 0L, len = 1L, any.missing = FALSE)
+      n <- as.integer(n)
+
+      if (n > 0L && self$n_daemons == 0L) {
+        mirai::daemons(n)
+        self$n_daemons <- n
+        cli::cli_alert_success("Parallel daemons initialized: {n} worker(s).")
+      } else if (n == 0L && self$n_daemons > 0L) {
+        mirai::daemons(0)
+        self$n_daemons <- 0L
+        cli::cli_alert_success("Parallel daemons shut down.")
+      } else if (n > 0L && self$n_daemons > 0L && n != self$n_daemons) {
+        mirai::daemons(n)
+        self$n_daemons <- n
+        cli::cli_alert_success("Parallel daemons resized to {n} worker(s).")
+      }
+
+      invisible(self)
+    },
+
+    # -- add_parallel_group ----------------------------------------------------
+
+    #' @description Define a group of Stations to execute in parallel.
+    #'
+    #' All specified Stations receive the same input and execute concurrently
+    #' via mirai daemons. Their outputs are collected and merged by the
+    #' `merge_fn` before passing to the next Station(s).
+    #'
+    #' Requires `$set_daemons(n > 0)` to be called first.
+    #'
+    #' @param from `[character(1)]` Name of the predecessor Station whose
+    #'   output feeds into the parallel group.
+    #' @param stations `[character]` Names of Stations to run in parallel.
+    #'   All must exist and not be the `from` Station.
+    #' @param to `[character(1)]` Name of the successor Station that receives
+    #'   the merged result (optional).
+    #' @param merge_fn `[function]` A function \code{function(results)} that
+    #'   takes a named list of results (names are station names) and returns
+    #'   a single character string. Default concatenates results with newlines.
+    #'
+    #' @return Invisibly returns `self` for method chaining.
+    add_parallel_group = function(from, stations, to = NULL,
+                                   merge_fn = NULL) {
+      checkmate::assert_string(from)
+      checkmate::assert_character(stations, min.len = 1L)
+      if (!is.null(to)) checkmate::assert_string(to)
+      if (!is.null(merge_fn) && !is.function(merge_fn)) {
+        cli::cli_abort("{.arg merge_fn} must be a {.cls function} or {.val NULL}.")
+      }
+
+      if (!from %in% names(private$.stations)) {
+        cli::cli_abort("Station {.val {from}} not found.")
+      }
+      for (s in stations) {
+        if (!s %in% names(private$.stations)) {
+          cli::cli_abort("Station {.val {s}} not found.")
+        }
+        if (s == from) {
+          cli::cli_abort("Parallel stations cannot include the predecessor {.val {from}}.")
+        }
+      }
+      if (!is.null(to) && !to %in% names(private$.stations)) {
+        cli::cli_abort("Successor Station {.val {to}} not found.")
+      }
+
+      if (is.null(merge_fn)) {
+        merge_fn <- function(results) {
+          paste(unlist(results), collapse = "\n")
+        }
+      }
+
+      private$.parallel_groups <- c(
+        private$.parallel_groups,
+        list(list(from = from, stations = stations, to = to, merge_fn = merge_fn))
+      )
+
+      cli::cli_alert_success(
+        "Parallel group registered: {.val {from}} -> {.str {stations}} {if (!is.null(to)) paste0('-> ', to)}"
+      )
+      invisible(self)
     },
 
     # -- set_hitl --------------------------------------------------------------
@@ -429,6 +537,32 @@ Workflow <- R6::R6Class(
         glue::glue('  "{r$from}" -> "{r$to}"{attrs}')
       }, character(1L))
 
+      # Handle parallel groups visualization
+      parallel_edges <- character(0)
+      if (length(private$.parallel_groups) > 0L) {
+        parallel_edges <- unlist(lapply(private$.parallel_groups, function(group) {
+          from_station <- group$from
+          to_stations <- group$stations
+          to_successor <- group$to
+
+          edges <- character(0)
+
+          # Edges from predecessor to each parallel station
+          edges <- c(edges, vapply(to_stations, function(station) {
+            glue::glue('  "{from_station}" -> "{station}" [color="#FF6B6B", penwidth=2, label="∥"]')
+          }, character(1L)))
+
+          # Edges from each parallel station to successor (if exists)
+          if (!is.null(to_successor)) {
+            edges <- c(edges, vapply(to_stations, function(station) {
+              glue::glue('  "{station}" -> "{to_successor}" [color="#FF6B6B", penwidth=2]')
+            }, character(1L)))
+          }
+
+          edges
+        }))
+      }
+
       dot <- paste0(
         "digraph workflow {\n",
         '  graph [rankdir=TB, label="', self$name,
@@ -438,6 +572,7 @@ Workflow <- R6::R6Class(
         paste(nodes,     collapse = "\n"), "\n",
         paste(entry_def, collapse = "\n"), "\n",
         if (length(routes) > 0L) paste(routes, collapse = "\n") else "",
+        if (length(parallel_edges) > 0L) paste(parallel_edges, collapse = "\n") else "",
         "\n}"
       )
 
@@ -447,9 +582,10 @@ Workflow <- R6::R6Class(
 
   # -- private ----------------------------------------------------------------
   private = list(
-    .stations = list(),
-    .routes   = list(),
-    .entry    = NULL,
+    .stations         = list(),
+    .routes           = list(),
+    .entry            = NULL,
+    .parallel_groups  = list(),
 
     # Resolve the next Station given the current one and its output.
     # Conditional Routes are tried first (in insertion order); the first
@@ -572,6 +708,77 @@ Workflow <- R6::R6Class(
     # The fixed separator is unlikely to appear in normal station names or prompts.
     .cache_key = function(station_name, input) {
       paste0(station_name, "|||", substr(input, 1L, 1024L))
+    },
+
+    # Find a parallel group that starts from the given station.
+    # Returns the group definition or NULL if none exists.
+    .find_parallel_group = function(station_name) {
+      for (group in private$.parallel_groups) {
+        if (group$from == station_name) return(group)
+      }
+      NULL
+    },
+
+    # Execute a parallel group of stations using mirai.
+    # All stations in the group receive the same input and run concurrently.
+    # Results are merged and returned.
+    .execute_parallel_group = function(group, input, step_index) {
+      station_names <- group$stations
+
+      cli::cli_text("{cli::col_cyan('┌ Parallel Group')} ({length(station_names)} station{?s})")
+
+      tasks <- lapply(station_names, function(name) {
+        station <- private$.stations[[name]]
+        cache_key <- private$.cache_key(name, input)
+
+        if (self$use_cache && exists(cache_key, envir = self$cache, inherits = FALSE)) {
+          cli::cli_alert_info("[cache] Parallel station {.val {name}}.")
+          return(get(cache_key, envir = self$cache, inherits = FALSE))
+        }
+
+        cli::cli_text("  {cli::col_blue('→')} {name}")
+
+        mirai::mirai(
+          {
+            private$.invoke_handler_safe(station, input)
+          },
+          private = private,
+          station = station,
+          input = input
+        )
+      })
+
+      names(tasks) <- station_names
+
+      cli::cli_alert_info("Waiting for {length(station_names)} parallel task{?s}...")
+
+      results <- tryCatch(
+        stats::setNames(
+          lapply(tasks, function(m) m[]),
+          names(tasks)
+        ),
+        error = function(e) {
+          cli::cli_alert_danger("Parallel execution failed: {e$message}")
+          stop(e)
+        }
+      )
+
+      cli::cli_text("{cli::col_cyan('└ Parallel Group')} complete.")
+
+      if (self$use_cache) {
+        for (name in station_names) {
+          cache_key <- private$.cache_key(name, input)
+          assign(cache_key, results[[name]], envir = self$cache)
+        }
+      }
+
+      merged <- group$merge_fn(results)
+
+      if (!is.null(self$hitl_steps) && step_index %in% self$hitl_steps) {
+        merged <- private$.human_confirm(step_index, "parallel_group", input, merged)
+      }
+
+      merged
     }
   )
 )

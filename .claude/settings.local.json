@@ -7,7 +7,13 @@
       "Bash(Rscript -e \"rmarkdown::render\\('README.Rmd', quiet = TRUE\\)\")",
       "Bash(Rscript *)",
       "Bash(awk '{print $NF}')",
-      "Bash(xargs -I {} basename {})"
+      "Bash(xargs -I {} basename {})",
+      "Read(//private/tmp/**)",
+      "Bash(npm search *)",
+      "WebSearch",
+      "Skill(update-config)",
+      "WebFetch(domain:mirai.r-lib.org)",
+      "Bash(grep -E \"\\\\.\\(R|md\\)$\")"
     ],
     "deny": [],
     "ask": []
