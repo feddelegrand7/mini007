@@ -669,18 +669,13 @@ pipeline$add_station(
 
 ---
 
-## Parallel Stations
+## Parallel Stations (not yet on CRAN)
 
-Multiple independent Stations can run concurrently using `$set_daemons()` and `$add_parallel_group()`. This is useful for:
-- Running multiple agents in parallel for comparison or consensus
-- Executing independent analyses simultaneously
-- Reducing total workflow latency by 2-4x for embarrassingly parallel tasks
+Multiple independent Stations can run concurrently using `$set_daemons()` and `$add_parallel_group()`. 
 
 ### Multi-perspective parallel analysis
 
 ```{r}
-#| eval: false
-library(mirai)
 
 # Create three specialized agents for different perspectives
 technical_agent <- Agent$new(
@@ -716,9 +711,6 @@ ux_agent <- Agent$new(
   llm_object = openai_4_1_mini
 )
 
-# Clean up any existing daemons from previous runs
-mirai::daemons(0)
-Sys.sleep(0.5)
 
 # Create workflow with parallel execution
 wf <- Workflow$new(
@@ -786,37 +778,36 @@ wf$add_parallel_group(
   }
 )
 
+wf$visualize()
+```
+
+
+
+```{r}
 # Execute workflow with parallel execution
 topic <- "Artificial Intelligence in Healthcare"
 
 result <- wf$run(topic)
-print(result)
 
-# Visualize the workflow structure
-wf$visualize()
+# Clean up any existing daemons from previous runs
+mirai::daemons(0)
 
-# Cleanup
-wf$set_daemons(0)
+result
 ```
+
+
 
 ### How it works
 
-1. **`$set_daemons(n)`** — Creates `n` parallel worker processes (typically `parallel::detectCores()`)
+1. **`$set_daemons(n)`** Creates `n` parallel worker processes.
 
-2. **`$add_parallel_group(from, stations, to, merge_fn)`** — Defines which stations run in parallel:
+2. **`$add_parallel_group(from, stations, to, merge_fn)`** Defines which stations run in parallel:
    - `from`: predecessor station (all parallel stations receive its output)
    - `stations`: vector of station names to run concurrently
    - `to`: successor station (receives merged results)
    - `merge_fn`: function to combine results from all parallel stations
 
-3. **Execution** — All parallel stations run concurrently in separate daemons, providing ~2-4x speedup
+3. **Execution**  All parallel stations run concurrently in separate daemons
 
-4. **Visualization** — `$visualize()` shows parallel routes in **red with ∥ symbol** to distinguish from sequential routes
-
-### Performance
-
-With 3 parallel agents analyzing the same topic:
-- **Sequential**: ~12-15 seconds (3 API calls × 4-5s each)
-- **Parallel**: ~4-5 seconds (all 3 calls simultaneously)
-- **Speedup**: ~3x faster
+4. **Visualization** `$visualize()` shows parallel routes in **red with ∥ symbol** to distinguish from sequential routes
 

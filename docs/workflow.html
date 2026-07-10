@@ -367,11 +367,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#routing-continues-after-a-fallback" id="toc-routing-continues-after-a-fallback" class="nav-link" data-scroll-target="#routing-continues-after-a-fallback">Routing continues after a fallback</a></li>
   <li><a href="#using-a-backup-llm-as-the-fallback" id="toc-using-a-backup-llm-as-the-fallback" class="nav-link" data-scroll-target="#using-a-backup-llm-as-the-fallback">Using a backup LLM as the fallback</a></li>
   </ul></li>
-  <li><a href="#parallel-stations" id="toc-parallel-stations" class="nav-link" data-scroll-target="#parallel-stations">Parallel Stations</a>
+  <li><a href="#parallel-stations-not-yet-on-cran" id="toc-parallel-stations-not-yet-on-cran" class="nav-link" data-scroll-target="#parallel-stations-not-yet-on-cran">Parallel Stations (not yet on CRAN)</a>
   <ul class="collapse">
   <li><a href="#multi-perspective-parallel-analysis" id="toc-multi-perspective-parallel-analysis" class="nav-link" data-scroll-target="#multi-perspective-parallel-analysis">Multi-perspective parallel analysis</a></li>
   <li><a href="#how-it-works" id="toc-how-it-works" class="nav-link" data-scroll-target="#how-it-works">How it works</a></li>
-  <li><a href="#performance" id="toc-performance" class="nav-link" data-scroll-target="#performance">Performance</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -475,19 +474,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> article_pipeline<span class="sc">$</span><span class="fu">run</span>(<span class="st">"The potential of Algeria when it comes to tourism in the Sahara"</span>)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>result</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Die Sahara in Algerien, die etwa 80 % des Landes bedeckt, bietet weite und 
-vielfältige Landschaften – von ausgedehnten Sanddünen über markante 
-Felsformationen bis hin zu ruhigen Oasen – und macht sie damit zu einem 
-erstklassigen Ziel für Abenteuer- und Ökotourismus. Zu den bemerkenswertesten 
-Attraktionen gehört der Nationalpark Tassili n'Ajjer, ein 
-UNESCO-Weltkulturerbe, das für prähistorische Felsmalereien und einzigartige 
-geologische Besonderheiten bekannt ist und kulturelle sowie archäologische 
-Begeisterte aus aller Welt anzieht. Trotz dieses Potenzials ist der 
-Tourismussektor aufgrund von Infrastrukturmängeln, politischen Faktoren und 
-mangelndem internationalem Marketing nach wie vor unterentwickelt. Die 
-Regierung konzentriert sich jedoch zunehmend auf die Förderung nachhaltigen 
-Wüstentourismus, um die reiche Anziehungskraft der Sahara für zukünftige 
-Reisende zu erschließen.</code></pre>
+<pre><code>Die algerische Sahara, die den größten Teil des Landes bedeckt, zeichnet sich 
+durch weite Wüsten und beeindruckende Landschaften wie das Tassili 
+n'Ajjer-Plateau aus, das für seine prähistorischen Felsmalereien und 
+vielfältigen Ökosysteme bekannt ist. Dies macht die Region zu einem Schatz an 
+kulturellen und natürlichen Tourismuserlebnissen. Abenteuerlustige werden von 
+Wüstentrekking, Kamel-Safaris sowie Besuchen in ruhigen Oasen und 
+traditionellen Berberdörfern angezogen, die ein intensives Erlebnis ihres 
+einzigartigen Erbes bieten. Trotz ihres großen Potenzials bleibt die 
+touristische Entwicklung jedoch aufgrund von Infrastrukturproblemen, 
+Sicherheitsbedenken und minimaler internationaler Förderung begrenzt. Mit 
+verbesserter Stabilität und erhöhten Investitionen könnte die Sahara bald zu 
+einem erstklassigen Reiseziel werden und ihre reichen Angebote für Reisende 
+weltweit erschließen.</code></pre>
 </div>
 </div>
 <p>The <code>run_history</code> attribute records every execution, including the full trace of inputs and outputs for each Station:</p>
@@ -499,19 +498,19 @@ Reisende zu erschließen.</code></pre>
 [1] "The potential of Algeria when it comes to tourism in the Sahara"
 
 [[1]]$output
-Die Sahara in Algerien, die etwa 80 % des Landes bedeckt, bietet weite und 
-vielfältige Landschaften – von ausgedehnten Sanddünen über markante 
-Felsformationen bis hin zu ruhigen Oasen – und macht sie damit zu einem 
-erstklassigen Ziel für Abenteuer- und Ökotourismus. Zu den bemerkenswertesten 
-Attraktionen gehört der Nationalpark Tassili n'Ajjer, ein 
-UNESCO-Weltkulturerbe, das für prähistorische Felsmalereien und einzigartige 
-geologische Besonderheiten bekannt ist und kulturelle sowie archäologische 
-Begeisterte aus aller Welt anzieht. Trotz dieses Potenzials ist der 
-Tourismussektor aufgrund von Infrastrukturmängeln, politischen Faktoren und 
-mangelndem internationalem Marketing nach wie vor unterentwickelt. Die 
-Regierung konzentriert sich jedoch zunehmend auf die Förderung nachhaltigen 
-Wüstentourismus, um die reiche Anziehungskraft der Sahara für zukünftige 
-Reisende zu erschließen.
+Die algerische Sahara, die den größten Teil des Landes bedeckt, zeichnet sich 
+durch weite Wüsten und beeindruckende Landschaften wie das Tassili 
+n'Ajjer-Plateau aus, das für seine prähistorischen Felsmalereien und 
+vielfältigen Ökosysteme bekannt ist. Dies macht die Region zu einem Schatz an 
+kulturellen und natürlichen Tourismuserlebnissen. Abenteuerlustige werden von 
+Wüstentrekking, Kamel-Safaris sowie Besuchen in ruhigen Oasen und 
+traditionellen Berberdörfern angezogen, die ein intensives Erlebnis ihres 
+einzigartigen Erbes bieten. Trotz ihres großen Potenzials bleibt die 
+touristische Entwicklung jedoch aufgrund von Infrastrukturproblemen, 
+Sicherheitsbedenken und minimaler internationaler Förderung begrenzt. Mit 
+verbesserter Stabilität und erhöhten Investitionen könnte die Sahara bald zu 
+einem erstklassigen Reiseziel werden und ihre reichen Angebote für Reisende 
+weltweit erschließen.
 
 [[1]]$steps
 [1] 4
@@ -528,15 +527,15 @@ Reisende zu erschließen.
 [1] "The potential of Algeria when it comes to tourism in the Sahara"
 
 [[1]]$trace[[1]]$output
-1. Algeria’s Sahara covers about 80% of its territory, offering vast and 
-diverse landscapes including sand dunes, rock formations, and oases, attractive
-for adventure and eco-tourism.  
-2. Key sites like the Tassili n'Ajjer National Park, a UNESCO World Heritage 
-site, showcase prehistoric rock art and unique geology, enhancing cultural and 
-archaeological tourism appeal.  
-3. Despite its potential, the tourism sector is underdeveloped due to 
-infrastructure challenges, political considerations, and limited international 
-marketing, but government efforts aim to boost sustainable desert tourism.
+1. Algeria's Sahara is the largest part of the country, featuring vast deserts,
+unique landscapes like the Tassili n'Ajjer plateau with prehistoric rock art, 
+and diverse ecosystems, offering rich cultural and natural tourism potential.  
+2. The region holds significant adventure tourism appeal, including desert 
+trekking, camel safaris, and exploration of oases and traditional Berber 
+villages.  
+3. Despite its potential, tourism development is limited due to infrastructure 
+challenges, security concerns, and limited international promotion, but 
+improving stability and investment could boost the Sahara's tourist appeal.
 
 
 [[1]]$trace[[2]]
@@ -547,28 +546,28 @@ marketing, but government efforts aim to boost sustainable desert tourism.
 [1] "write"
 
 [[1]]$trace[[2]]$input
-1. Algeria’s Sahara covers about 80% of its territory, offering vast and 
-diverse landscapes including sand dunes, rock formations, and oases, attractive
-for adventure and eco-tourism.  
-2. Key sites like the Tassili n'Ajjer National Park, a UNESCO World Heritage 
-site, showcase prehistoric rock art and unique geology, enhancing cultural and 
-archaeological tourism appeal.  
-3. Despite its potential, the tourism sector is underdeveloped due to 
-infrastructure challenges, political considerations, and limited international 
-marketing, but government efforts aim to boost sustainable desert tourism.
+1. Algeria's Sahara is the largest part of the country, featuring vast deserts,
+unique landscapes like the Tassili n'Ajjer plateau with prehistoric rock art, 
+and diverse ecosystems, offering rich cultural and natural tourism potential.  
+2. The region holds significant adventure tourism appeal, including desert 
+trekking, camel safaris, and exploration of oases and traditional Berber 
+villages.  
+3. Despite its potential, tourism development is limited due to infrastructure 
+challenges, security concerns, and limited international promotion, but 
+improving stability and investment could boost the Sahara's tourist appeal.
 
 [[1]]$trace[[2]]$output
-Algeria’s Sahara Desert, spanning approximately 80% of the country, offers vast
-and diverse landscapes that range from sweeping sand dunes to striking rock 
-formations and tranquil oases, making it a prime destination for adventure and 
-eco-tourism. Among its most remarkable attractions is the Tassili n'Ajjer 
-National Park, a UNESCO World Heritage site renowned for its prehistoric rock 
-art and unique geological features, which draw cultural and archaeological 
-enthusiasts from around the world. However, despite this immense potential, the
-tourism sector remains underdeveloped due to infrastructure limitations, 
-political factors, and a lack of robust international marketing. Nevertheless, 
-government initiatives are increasingly focused on enhancing sustainable desert
-tourism, aiming to unlock the Sahara’s rich appeal for future travelers.
+Algeria’s Sahara, occupying the largest portion of the country, boasts vast 
+deserts and striking landscapes such as the Tassili n'Ajjer plateau, renowned 
+for its prehistoric rock art and diverse ecosystems, making it a treasure trove
+of cultural and natural tourism opportunities. This expansive region captivates
+adventure seekers with activities like desert trekking, camel safaris, and 
+visits to serene oases and traditional Berber villages, offering an immersive 
+experience into its unique heritage. However, despite its immense potential, 
+tourism development remains limited, hindered by infrastructure challenges, 
+security concerns, and minimal international promotion. With improving 
+stability and increased investment, the Sahara could soon emerge as a premier 
+destination, unlocking its rich offerings for travelers worldwide.
 
 
 [[1]]$trace[[3]]
@@ -579,30 +578,30 @@ tourism, aiming to unlock the Sahara’s rich appeal for future travelers.
 [1] "edit"
 
 [[1]]$trace[[3]]$input
-Algeria’s Sahara Desert, spanning approximately 80% of the country, offers vast
-and diverse landscapes that range from sweeping sand dunes to striking rock 
-formations and tranquil oases, making it a prime destination for adventure and 
-eco-tourism. Among its most remarkable attractions is the Tassili n'Ajjer 
-National Park, a UNESCO World Heritage site renowned for its prehistoric rock 
-art and unique geological features, which draw cultural and archaeological 
-enthusiasts from around the world. However, despite this immense potential, the
-tourism sector remains underdeveloped due to infrastructure limitations, 
-political factors, and a lack of robust international marketing. Nevertheless, 
-government initiatives are increasingly focused on enhancing sustainable desert
-tourism, aiming to unlock the Sahara’s rich appeal for future travelers.
+Algeria’s Sahara, occupying the largest portion of the country, boasts vast 
+deserts and striking landscapes such as the Tassili n'Ajjer plateau, renowned 
+for its prehistoric rock art and diverse ecosystems, making it a treasure trove
+of cultural and natural tourism opportunities. This expansive region captivates
+adventure seekers with activities like desert trekking, camel safaris, and 
+visits to serene oases and traditional Berber villages, offering an immersive 
+experience into its unique heritage. However, despite its immense potential, 
+tourism development remains limited, hindered by infrastructure challenges, 
+security concerns, and minimal international promotion. With improving 
+stability and increased investment, the Sahara could soon emerge as a premier 
+destination, unlocking its rich offerings for travelers worldwide.
 
 [[1]]$trace[[3]]$output
-Algeria’s Sahara Desert, covering approximately 80% of the country, features 
-vast and diverse landscapes, from sweeping sand dunes to striking rock 
-formations and tranquil oases, making it a prime destination for adventure and 
-eco-tourism. Among its most remarkable attractions is Tassili n'Ajjer National 
-Park, a UNESCO World Heritage site renowned for prehistoric rock art and unique
-geological features that draw cultural and archaeological enthusiasts 
-worldwide. Despite this potential, the tourism sector remains underdeveloped 
-due to infrastructure limitations, political factors, and a lack of robust 
-international marketing. However, government initiatives are increasingly 
-focused on enhancing sustainable desert tourism to unlock the Sahara’s rich 
-appeal for future travelers.
+Algeria’s Sahara, which covers the largest part of the country, features vast 
+deserts and striking landscapes such as the Tassili n'Ajjer plateau, known for 
+its prehistoric rock art and diverse ecosystems. This makes the region a 
+treasure trove of cultural and natural tourism opportunities. Adventure seekers
+are drawn to desert trekking, camel safaris, and visits to tranquil oases and 
+traditional Berber villages, providing an immersive experience of its unique 
+heritage. However, despite its great potential, tourism development remains 
+limited due to infrastructure challenges, security concerns, and minimal 
+international promotion. With improving stability and increased investment, the
+Sahara could soon become a premier destination, unlocking its rich offerings 
+for travelers worldwide.
 
 
 [[1]]$trace[[4]]
@@ -613,32 +612,32 @@ appeal for future travelers.
 [1] "translate"
 
 [[1]]$trace[[4]]$input
-Algeria’s Sahara Desert, covering approximately 80% of the country, features 
-vast and diverse landscapes, from sweeping sand dunes to striking rock 
-formations and tranquil oases, making it a prime destination for adventure and 
-eco-tourism. Among its most remarkable attractions is Tassili n'Ajjer National 
-Park, a UNESCO World Heritage site renowned for prehistoric rock art and unique
-geological features that draw cultural and archaeological enthusiasts 
-worldwide. Despite this potential, the tourism sector remains underdeveloped 
-due to infrastructure limitations, political factors, and a lack of robust 
-international marketing. However, government initiatives are increasingly 
-focused on enhancing sustainable desert tourism to unlock the Sahara’s rich 
-appeal for future travelers.
+Algeria’s Sahara, which covers the largest part of the country, features vast 
+deserts and striking landscapes such as the Tassili n'Ajjer plateau, known for 
+its prehistoric rock art and diverse ecosystems. This makes the region a 
+treasure trove of cultural and natural tourism opportunities. Adventure seekers
+are drawn to desert trekking, camel safaris, and visits to tranquil oases and 
+traditional Berber villages, providing an immersive experience of its unique 
+heritage. However, despite its great potential, tourism development remains 
+limited due to infrastructure challenges, security concerns, and minimal 
+international promotion. With improving stability and increased investment, the
+Sahara could soon become a premier destination, unlocking its rich offerings 
+for travelers worldwide.
 
 [[1]]$trace[[4]]$output
-Die Sahara in Algerien, die etwa 80 % des Landes bedeckt, bietet weite und 
-vielfältige Landschaften – von ausgedehnten Sanddünen über markante 
-Felsformationen bis hin zu ruhigen Oasen – und macht sie damit zu einem 
-erstklassigen Ziel für Abenteuer- und Ökotourismus. Zu den bemerkenswertesten 
-Attraktionen gehört der Nationalpark Tassili n'Ajjer, ein 
-UNESCO-Weltkulturerbe, das für prähistorische Felsmalereien und einzigartige 
-geologische Besonderheiten bekannt ist und kulturelle sowie archäologische 
-Begeisterte aus aller Welt anzieht. Trotz dieses Potenzials ist der 
-Tourismussektor aufgrund von Infrastrukturmängeln, politischen Faktoren und 
-mangelndem internationalem Marketing nach wie vor unterentwickelt. Die 
-Regierung konzentriert sich jedoch zunehmend auf die Förderung nachhaltigen 
-Wüstentourismus, um die reiche Anziehungskraft der Sahara für zukünftige 
-Reisende zu erschließen.</code></pre>
+Die algerische Sahara, die den größten Teil des Landes bedeckt, zeichnet sich 
+durch weite Wüsten und beeindruckende Landschaften wie das Tassili 
+n'Ajjer-Plateau aus, das für seine prähistorischen Felsmalereien und 
+vielfältigen Ökosysteme bekannt ist. Dies macht die Region zu einem Schatz an 
+kulturellen und natürlichen Tourismuserlebnissen. Abenteuerlustige werden von 
+Wüstentrekking, Kamel-Safaris sowie Besuchen in ruhigen Oasen und 
+traditionellen Berberdörfern angezogen, die ein intensives Erlebnis ihres 
+einzigartigen Erbes bieten. Trotz ihres großen Potenzials bleibt die 
+touristische Entwicklung jedoch aufgrund von Infrastrukturproblemen, 
+Sicherheitsbedenken und minimaler internationaler Förderung begrenzt. Mit 
+verbesserter Stabilität und erhöhten Investitionen könnte die Sahara bald zu 
+einem erstklassigen Reiseziel werden und ihre reichen Angebote für Reisende 
+weltweit erschließen.</code></pre>
 </div>
 </div>
 </section>
@@ -688,7 +687,7 @@ Reisende zu erschließen.</code></pre>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>format_pipeline<span class="sc">$</span><span class="fu">run</span>(messy_text)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "## Summary\n\n- The 2026 World Cup is approaching.  \n- Algeria will participate in the tournament.  \n- Algeria's first game is against Argentina."</code></pre>
+<pre><code>[1] "## Summary\n\n- The 2026 World Cup is approaching.  \n- Algeria will be participating in the tournament.  \n- Algeria's first game is against Argentina."</code></pre>
 </div>
 </div>
 </section>
@@ -723,15 +722,16 @@ Reisende zu erschließen.</code></pre>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>first_run <span class="ot">&lt;-</span> cached_pipeline<span class="sc">$</span><span class="fu">run</span>(<span class="st">"Rare fish in the Algerian see"</span>)</span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>first_run</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>The Algerian Sea harbors a remarkable array of rare fish species, each playing 
-a vital role in the region’s rich and unique marine biodiversity. Preserving 
-these fragile populations demands urgent and sustained conservation efforts to 
-safeguard them from the threats of overfishing and habitat degradation.</code></pre>
+<pre><code>The Algerian Sea harbors a diverse array of rare fish species, notably the 
+vibrant Mediterranean rainbow wrasse with its shimmering hues, and the elusive,
+shadowy dusky grouper. These remarkable fish not only enrich the region’s 
+marine biodiversity but also play a crucial role in maintaining the delicate 
+balance of the local ecosystem.</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>end <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(end <span class="sc">-</span> start)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Time difference of 2.598306 secs</code></pre>
+<pre><code>Time difference of 2.432292 secs</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -740,15 +740,16 @@ safeguard them from the threats of overfishing and habitat degradation.</code></
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>second_run <span class="ot">&lt;-</span> cached_pipeline<span class="sc">$</span><span class="fu">run</span>(<span class="st">"Rare fish in the Algerian see"</span>)</span>
 <span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>second_run</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>The Algerian Sea harbors a remarkable array of rare fish species, each playing 
-a vital role in the region’s rich and unique marine biodiversity. Preserving 
-these fragile populations demands urgent and sustained conservation efforts to 
-safeguard them from the threats of overfishing and habitat degradation.</code></pre>
+<pre><code>The Algerian Sea harbors a diverse array of rare fish species, notably the 
+vibrant Mediterranean rainbow wrasse with its shimmering hues, and the elusive,
+shadowy dusky grouper. These remarkable fish not only enrich the region’s 
+marine biodiversity but also play a crucial role in maintaining the delicate 
+balance of the local ecosystem.</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>end <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(end <span class="sc">-</span> start)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Time difference of 0.05493307 secs</code></pre>
+<pre><code>Time difference of 0.0547359 secs</code></pre>
 </div>
 </div>
 <p>To force a fresh execution, call <code>$clear_cache()</code>:</p>
@@ -760,16 +761,16 @@ safeguard them from the threats of overfishing and habitat degradation.</code></
 <span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>fresh_run <span class="ot">&lt;-</span> cached_pipeline<span class="sc">$</span><span class="fu">run</span>(<span class="st">"Rare fish in the Algerian see"</span>)</span>
 <span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>fresh_run</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>The Algerian Sea is home to rare fish species like the elusive Mediterranean 
-sand eel and the vibrant ornate wrasse, both of which are essential to the 
-health and balance of the region’s marine ecosystem. Safeguarding these 
-distinctive species is vital to preserving the rich biodiversity and ecological
-harmony of Algerian waters.</code></pre>
+<pre><code>The Algerian Sea is a refuge for rare fish species like the sleek Mediterranean
+spearfish and the elusive European conger eel, rarely glimpsed by divers 
+beneath the waves. Safeguarding these enigmatic inhabitants is essential to 
+preserving the region’s vibrant marine biodiversity and sustaining the delicate
+ecological balance of its underwater world.</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>end <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(end <span class="sc">-</span> start)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Time difference of 2.573498 secs</code></pre>
+<pre><code>Time difference of 2.216671 secs</code></pre>
 </div>
 </div>
 </section>
@@ -820,14 +821,14 @@ harmony of Algerian waters.</code></pre>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>sentiment_router<span class="sc">$</span><span class="fu">run</span>(<span class="st">"I absolutely love this product, it changed my life!"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>I'm so glad to hear that—your positivity truly brightens the day!</code></pre>
+<pre><code>Thank you so much for your positivity—it truly brightens my day!</code></pre>
 </div>
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>sentiment_router<span class="sc">$</span><span class="fu">run</span>(<span class="st">"Very disappointed. The quality is nothing like advertised."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>I’m sorry you’re feeling this way—please let me know how I can help to improve 
-your experience.</code></pre>
+<pre><code>I’m sorry to hear you’re feeling this way—please let me know how I can support 
+you or help improve the situation.</code></pre>
 </div>
 </div>
 <p>A more structured example uses a plain function as the router so the branching logic is deterministic and free of LLM calls.</p>
@@ -871,12 +872,11 @@ your experience.</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Short input — routed to the expander</span></span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>length_router<span class="sc">$</span><span class="fu">run</span>(<span class="st">"Fennec Algeria football team"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>The Fennec Algeria football team, commonly known as the Desert Foxes, 
-represents Algeria in international football and is renowned for its passionate
-style of play and rich history. They have achieved significant success on the 
-African continent, including winning the Africa Cup of Nations multiple times 
-and participating in the FIFA World Cup, showcasing the talent and 
-determination of Algerian players on the global stage.</code></pre>
+<pre><code>The Fennec Algeria football team, also known as the Desert Foxes, is the 
+national team representing Algeria in international football competitions. 
+Renowned for their skillful play and passionate fans, they have achieved 
+significant success, including winning the Africa Cup of Nations multiple times
+and competing in the FIFA World Cup.</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -890,9 +890,8 @@ determination of Algerian players on the global stage.</code></pre>
 <span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>length_router<span class="sc">$</span><span class="fu">run</span>(long_input)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Bees play a crucial role in pollination essential for food production, but 
-their populations are threatened by colony collapse disorder, jeopardizing food
-security and ecosystem health.</code></pre>
+<pre><code>Bees are crucial pollinators vital for plant reproduction and food security, 
+but their populations are threatened by colony collapse disorder.</code></pre>
 </div>
 </div>
 </section>
@@ -937,10 +936,9 @@ security and ecosystem health.</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use the WorkflowAgent directly</span></span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>research_agent<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"The city of Bejaia in Algeria"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Bejaia is a coastal city in northeastern Algeria on the Mediterranean Sea, 
-historically significant as a medieval trade and cultural center under the 
-Hafsid dynasty, and renowned for its natural beauty including beaches, Gouraya 
-National Park, and mountains.</code></pre>
+<pre><code>Béjaïa is a historic coastal city in northeastern Algeria on the Mediterranean 
+Sea, known for its important port, scenic mountains and beaches, and cultural 
+significance dating back to Phoenician and Roman times.</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -960,9 +958,10 @@ National Park, and mountains.</code></pre>
 <span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a>lead<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"Tell me about the city of Bejaia in one sentence, then translate it into German"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Bejaia ist eine historische Mittelmeer-Hafenstadt im Nordosten Algeriens, 
-bekannt für ihre mittelalterliche Handelsbedeutung, die malerische Bucht, den 
-nahegelegenen Nationalpark Gouraya und ihr lebendiges kulturelles Erbe.</code></pre>
+<pre><code>Béjaïa ist eine lebendige Hafenstadt in der Kabylei-Region im Nordosten 
+Algeriens, bekannt für ihren strategischen Mittelmeerhandel, ihr reiches 
+mittelalterliches Erbe, malerische Berge und Küstenlinien sowie vielfältige 
+kulturelle Einflüsse.</code></pre>
 </div>
 </div>
 </section>
@@ -993,12 +992,11 @@ nahegelegenen Nationalpark Gouraya und ihr lebendiges kulturelles Erbe.</code></
 <span id="cb41-22"><a href="#cb41-22" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb41-23"><a href="#cb41-23" aria-hidden="true" tabindex="-1"></a>presentation_wf<span class="sc">$</span><span class="fu">run</span>(<span class="st">"Algeria and Coffee"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Coffee in Algeria is a popular social beverage enjoyed both in cafes and homes,
-where it is traditionally served strong, similar to Turkish coffee or espresso.
-Although Algeria does not produce coffee beans domestically, the country 
-imports them to satisfy the increasing demand for specialty coffee. This 
-growing market reflects a rising appreciation for diverse coffee styles and 
-quality among Algerian consumers.</code></pre>
+<pre><code>Algeria is not a major coffee producer, but it has a rich coffee culture shaped
+by its French colonial history. The country commonly enjoys Turkish-style 
+coffee and espresso in cafes, reflecting diverse brewing traditions. Most of 
+the coffee consumed in Algeria is imported, featuring Arabic blends and popular
+international brands.</code></pre>
 </div>
 </div>
 </section>
@@ -1051,15 +1049,15 @@ quality among Algerian consumers.</code></pre>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>article_pipeline<span class="sc">$</span><span class="fu">visualize</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div class="grViz html-widget html-fill-item" id="htmlwidget-310557d5c3faab44368b" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-310557d5c3faab44368b">{"x":{"diagram":"digraph workflow {\n  graph [rankdir=TB, label=\"article pipeline\", labelloc=t, fontsize=18, fontname=\"Helvetica\"]\n  node [fontname=\"Helvetica\", fontsize=12]\n  edge [fontname=\"Helvetica\", fontsize=10]\n  \"research\" [label=\"research\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"write\" [label=\"write\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"edit\" [label=\"edit\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"translate\" [label=\"translate\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"START\" [label=\"START\", shape=circle, style=filled, fillcolor=\"#82E0AA\", width=0.5]\n  \"START\" -> \"research\"\n  \"research\" -> \"write\"\n  \"write\" -> \"edit\"\n  \"edit\" -> \"translate\"\n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-1de1735407375743f332" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-1de1735407375743f332">{"x":{"diagram":"digraph workflow {\n  graph [rankdir=TB, label=\"article pipeline\", labelloc=t, fontsize=18, fontname=\"Helvetica\"]\n  node [fontname=\"Helvetica\", fontsize=12]\n  edge [fontname=\"Helvetica\", fontsize=10]\n  \"research\" [label=\"research\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"write\" [label=\"write\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"edit\" [label=\"edit\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"translate\" [label=\"translate\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"START\" [label=\"START\", shape=circle, style=filled, fillcolor=\"#82E0AA\", width=0.5]\n  \"START\" -> \"research\"\n  \"research\" -> \"write\"\n  \"write\" -> \"edit\"\n  \"edit\" -> \"translate\"\n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>sentiment_router<span class="sc">$</span><span class="fu">visualize</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div class="grViz html-widget html-fill-item" id="htmlwidget-ad49fff9392a34d793b5" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-ad49fff9392a34d793b5">{"x":{"diagram":"digraph workflow {\n  graph [rankdir=TB, label=\"sentiment router\", labelloc=t, fontsize=18, fontname=\"Helvetica\"]\n  node [fontname=\"Helvetica\", fontsize=12]\n  edge [fontname=\"Helvetica\", fontsize=10]\n  \"classify\" [label=\"classify\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"reply_pos\" [label=\"reply_pos\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"reply_neg\" [label=\"reply_neg\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"START\" [label=\"START\", shape=circle, style=filled, fillcolor=\"#82E0AA\", width=0.5]\n  \"START\" -> \"classify\"\n  \"classify\" -> \"reply_pos\" [label=\"  cond\", style=dashed]\n  \"classify\" -> \"reply_neg\" [label=\"  cond\", style=dashed]\n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-34a1acd62102c0e0dad1" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-34a1acd62102c0e0dad1">{"x":{"diagram":"digraph workflow {\n  graph [rankdir=TB, label=\"sentiment router\", labelloc=t, fontsize=18, fontname=\"Helvetica\"]\n  node [fontname=\"Helvetica\", fontsize=12]\n  edge [fontname=\"Helvetica\", fontsize=10]\n  \"classify\" [label=\"classify\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"reply_pos\" [label=\"reply_pos\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"reply_neg\" [label=\"reply_neg\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"START\" [label=\"START\", shape=circle, style=filled, fillcolor=\"#82E0AA\", width=0.5]\n  \"START\" -> \"classify\"\n  \"classify\" -> \"reply_pos\" [label=\"  cond\", style=dashed]\n  \"classify\" -> \"reply_neg\" [label=\"  cond\", style=dashed]\n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>The graph updates automatically to reflect whatever Stations and Routes are currently registered, making it a convenient tool for checking that the pipeline is wired correctly before running it.</p>
@@ -1266,149 +1264,150 @@ quality among Algerian consumers.</code></pre>
 <hr>
 </section>
 </section>
-<section id="parallel-stations" class="level2">
-<h2 class="anchored" data-anchor-id="parallel-stations">Parallel Stations</h2>
-<p>Multiple independent Stations can run concurrently using <code>$set_daemons()</code> and <code>$add_parallel_group()</code>. This is useful for: - Running multiple agents in parallel for comparison or consensus - Executing independent analyses simultaneously - Reducing total workflow latency by 2-4x for embarrassingly parallel tasks</p>
+<section id="parallel-stations-not-yet-on-cran" class="level2">
+<h2 class="anchored" data-anchor-id="parallel-stations-not-yet-on-cran">Parallel Stations (not yet on CRAN)</h2>
+<p>Multiple independent Stations can run concurrently using <code>$set_daemons()</code> and <code>$add_parallel_group()</code>.</p>
 <section id="multi-perspective-parallel-analysis" class="level3">
 <h3 class="anchored" data-anchor-id="multi-perspective-parallel-analysis">Multi-perspective parallel analysis</h3>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mirai)</span>
-<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Create three specialized agents for different perspectives</span></span>
-<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>technical_agent <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
-<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"technical_analyst"</span>,</span>
-<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="fu">paste</span>(</span>
-<span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"You are a technical expert in AI and software engineering."</span>,</span>
-<span id="cb62-8"><a href="#cb62-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Analyze topics from a technical/engineering perspective."</span>,</span>
-<span id="cb62-9"><a href="#cb62-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Focus on: implementation details, technology stack, technical challenges."</span>,</span>
-<span id="cb62-10"><a href="#cb62-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Keep responses to 2-3 sentences."</span></span>
-<span id="cb62-11"><a href="#cb62-11" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb62-12"><a href="#cb62-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
-<span id="cb62-13"><a href="#cb62-13" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb62-14"><a href="#cb62-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-15"><a href="#cb62-15" aria-hidden="true" tabindex="-1"></a>business_agent <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
-<span id="cb62-16"><a href="#cb62-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"business_strategist"</span>,</span>
-<span id="cb62-17"><a href="#cb62-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="fu">paste</span>(</span>
-<span id="cb62-18"><a href="#cb62-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"You are a business strategist and market analyst."</span>,</span>
-<span id="cb62-19"><a href="#cb62-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Analyze topics from a business/market perspective."</span>,</span>
-<span id="cb62-20"><a href="#cb62-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Focus on: market opportunities, ROI, competitive advantage, business models."</span>,</span>
-<span id="cb62-21"><a href="#cb62-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Keep responses to 2-3 sentences."</span></span>
-<span id="cb62-22"><a href="#cb62-22" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb62-23"><a href="#cb62-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
-<span id="cb62-24"><a href="#cb62-24" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb62-25"><a href="#cb62-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-26"><a href="#cb62-26" aria-hidden="true" tabindex="-1"></a>ux_agent <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
-<span id="cb62-27"><a href="#cb62-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"ux_specialist"</span>,</span>
-<span id="cb62-28"><a href="#cb62-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="fu">paste</span>(</span>
-<span id="cb62-29"><a href="#cb62-29" aria-hidden="true" tabindex="-1"></a>    <span class="st">"You are a UX and product design specialist."</span>,</span>
-<span id="cb62-30"><a href="#cb62-30" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Analyze topics from a user experience perspective."</span>,</span>
-<span id="cb62-31"><a href="#cb62-31" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Focus on: user needs, design considerations, accessibility, user satisfaction."</span>,</span>
-<span id="cb62-32"><a href="#cb62-32" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Keep responses to 2-3 sentences."</span></span>
-<span id="cb62-33"><a href="#cb62-33" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb62-34"><a href="#cb62-34" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
-<span id="cb62-35"><a href="#cb62-35" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb62-36"><a href="#cb62-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-37"><a href="#cb62-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Clean up any existing daemons from previous runs</span></span>
-<span id="cb62-38"><a href="#cb62-38" aria-hidden="true" tabindex="-1"></a>mirai<span class="sc">::</span><span class="fu">daemons</span>(<span class="dv">0</span>)</span>
-<span id="cb62-39"><a href="#cb62-39" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.sleep</span>(<span class="fl">0.5</span>)</span>
-<span id="cb62-40"><a href="#cb62-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-41"><a href="#cb62-41" aria-hidden="true" tabindex="-1"></a><span class="co"># Create workflow with parallel execution</span></span>
-<span id="cb62-42"><a href="#cb62-42" aria-hidden="true" tabindex="-1"></a>wf <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(</span>
-<span id="cb62-43"><a href="#cb62-43" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"parallel_multi_agent_analysis"</span>,</span>
-<span id="cb62-44"><a href="#cb62-44" aria-hidden="true" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">"Multi-perspective analysis using parallel Agent invocations"</span></span>
-<span id="cb62-45"><a href="#cb62-45" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb62-46"><a href="#cb62-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-47"><a href="#cb62-47" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up 3 parallel workers for concurrent API calls</span></span>
-<span id="cb62-48"><a href="#cb62-48" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">set_daemons</span>(<span class="dv">3</span>)</span>
-<span id="cb62-49"><a href="#cb62-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-50"><a href="#cb62-50" aria-hidden="true" tabindex="-1"></a><span class="co"># Add input station (passthrough)</span></span>
-<span id="cb62-51"><a href="#cb62-51" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
-<span id="cb62-52"><a href="#cb62-52" aria-hidden="true" tabindex="-1"></a>  <span class="st">"input"</span>,</span>
-<span id="cb62-53"><a href="#cb62-53" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler =</span> <span class="cf">function</span>(x) x,</span>
-<span id="cb62-54"><a href="#cb62-54" aria-hidden="true" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">"Input topic"</span></span>
-<span id="cb62-55"><a href="#cb62-55" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb62-56"><a href="#cb62-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-57"><a href="#cb62-57" aria-hidden="true" tabindex="-1"></a><span class="co"># Add three parallel Agent stations</span></span>
-<span id="cb62-58"><a href="#cb62-58" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
-<span id="cb62-59"><a href="#cb62-59" aria-hidden="true" tabindex="-1"></a>  <span class="st">"technical_analysis"</span>,</span>
-<span id="cb62-60"><a href="#cb62-60" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler =</span> technical_agent,</span>
-<span id="cb62-61"><a href="#cb62-61" aria-hidden="true" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">"Technical perspective"</span></span>
-<span id="cb62-62"><a href="#cb62-62" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb62-63"><a href="#cb62-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-64"><a href="#cb62-64" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
-<span id="cb62-65"><a href="#cb62-65" aria-hidden="true" tabindex="-1"></a>  <span class="st">"business_analysis"</span>,</span>
-<span id="cb62-66"><a href="#cb62-66" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler =</span> business_agent,</span>
-<span id="cb62-67"><a href="#cb62-67" aria-hidden="true" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">"Business perspective"</span></span>
-<span id="cb62-68"><a href="#cb62-68" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb62-69"><a href="#cb62-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-70"><a href="#cb62-70" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
-<span id="cb62-71"><a href="#cb62-71" aria-hidden="true" tabindex="-1"></a>  <span class="st">"ux_analysis"</span>,</span>
-<span id="cb62-72"><a href="#cb62-72" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler =</span> ux_agent,</span>
-<span id="cb62-73"><a href="#cb62-73" aria-hidden="true" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">"UX perspective"</span></span>
-<span id="cb62-74"><a href="#cb62-74" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb62-75"><a href="#cb62-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-76"><a href="#cb62-76" aria-hidden="true" tabindex="-1"></a><span class="co"># Add synthesis station</span></span>
-<span id="cb62-77"><a href="#cb62-77" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
-<span id="cb62-78"><a href="#cb62-78" aria-hidden="true" tabindex="-1"></a>  <span class="st">"synthesis"</span>,</span>
-<span id="cb62-79"><a href="#cb62-79" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler =</span> <span class="cf">function</span>(x) {</span>
-<span id="cb62-80"><a href="#cb62-80" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste0</span>(</span>
-<span id="cb62-81"><a href="#cb62-81" aria-hidden="true" tabindex="-1"></a>      <span class="st">"═══════════════════════════════════════════</span><span class="sc">\n</span><span class="st">"</span>,</span>
-<span id="cb62-82"><a href="#cb62-82" aria-hidden="true" tabindex="-1"></a>      <span class="st">"MULTI-PERSPECTIVE ANALYSIS REPORT</span><span class="sc">\n</span><span class="st">"</span>,</span>
-<span id="cb62-83"><a href="#cb62-83" aria-hidden="true" tabindex="-1"></a>      <span class="st">"═══════════════════════════════════════════</span><span class="sc">\n\n</span><span class="st">"</span>,</span>
-<span id="cb62-84"><a href="#cb62-84" aria-hidden="true" tabindex="-1"></a>      x</span>
-<span id="cb62-85"><a href="#cb62-85" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb62-86"><a href="#cb62-86" aria-hidden="true" tabindex="-1"></a>  },</span>
-<span id="cb62-87"><a href="#cb62-87" aria-hidden="true" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">"Synthesis"</span></span>
-<span id="cb62-88"><a href="#cb62-88" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb62-89"><a href="#cb62-89" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-90"><a href="#cb62-90" aria-hidden="true" tabindex="-1"></a><span class="co"># Define parallel group: input -&gt; [technical, business, ux] -&gt; synthesis</span></span>
-<span id="cb62-91"><a href="#cb62-91" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">add_parallel_group</span>(</span>
-<span id="cb62-92"><a href="#cb62-92" aria-hidden="true" tabindex="-1"></a>  <span class="at">from =</span> <span class="st">"input"</span>,</span>
-<span id="cb62-93"><a href="#cb62-93" aria-hidden="true" tabindex="-1"></a>  <span class="at">stations =</span> <span class="fu">c</span>(<span class="st">"technical_analysis"</span>, <span class="st">"business_analysis"</span>, <span class="st">"ux_analysis"</span>),</span>
-<span id="cb62-94"><a href="#cb62-94" aria-hidden="true" tabindex="-1"></a>  <span class="at">to =</span> <span class="st">"synthesis"</span>,</span>
-<span id="cb62-95"><a href="#cb62-95" aria-hidden="true" tabindex="-1"></a>  <span class="at">merge_fn =</span> <span class="cf">function</span>(results) {</span>
-<span id="cb62-96"><a href="#cb62-96" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste0</span>(</span>
-<span id="cb62-97"><a href="#cb62-97" aria-hidden="true" tabindex="-1"></a>      <span class="st">"📱 TECHNICAL PERSPECTIVE:</span><span class="sc">\n</span><span class="st">"</span>,</span>
-<span id="cb62-98"><a href="#cb62-98" aria-hidden="true" tabindex="-1"></a>      results<span class="sc">$</span>technical_analysis, <span class="st">"</span><span class="sc">\n\n</span><span class="st">"</span>,</span>
-<span id="cb62-99"><a href="#cb62-99" aria-hidden="true" tabindex="-1"></a>      <span class="st">"💼 BUSINESS PERSPECTIVE:</span><span class="sc">\n</span><span class="st">"</span>,</span>
-<span id="cb62-100"><a href="#cb62-100" aria-hidden="true" tabindex="-1"></a>      results<span class="sc">$</span>business_analysis, <span class="st">"</span><span class="sc">\n\n</span><span class="st">"</span>,</span>
-<span id="cb62-101"><a href="#cb62-101" aria-hidden="true" tabindex="-1"></a>      <span class="st">"👤 UX PERSPECTIVE:</span><span class="sc">\n</span><span class="st">"</span>,</span>
-<span id="cb62-102"><a href="#cb62-102" aria-hidden="true" tabindex="-1"></a>      results<span class="sc">$</span>ux_analysis</span>
-<span id="cb62-103"><a href="#cb62-103" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb62-104"><a href="#cb62-104" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb62-105"><a href="#cb62-105" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb62-106"><a href="#cb62-106" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-107"><a href="#cb62-107" aria-hidden="true" tabindex="-1"></a><span class="co"># Execute workflow with parallel execution</span></span>
-<span id="cb62-108"><a href="#cb62-108" aria-hidden="true" tabindex="-1"></a>topic <span class="ot">&lt;-</span> <span class="st">"Artificial Intelligence in Healthcare"</span></span>
-<span id="cb62-109"><a href="#cb62-109" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-110"><a href="#cb62-110" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> wf<span class="sc">$</span><span class="fu">run</span>(topic)</span>
-<span id="cb62-111"><a href="#cb62-111" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(result)</span>
-<span id="cb62-112"><a href="#cb62-112" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-113"><a href="#cb62-113" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize the workflow structure</span></span>
-<span id="cb62-114"><a href="#cb62-114" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">visualize</span>()</span>
-<span id="cb62-115"><a href="#cb62-115" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-116"><a href="#cb62-116" aria-hidden="true" tabindex="-1"></a><span class="co"># Cleanup</span></span>
-<span id="cb62-117"><a href="#cb62-117" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">set_daemons</span>(<span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create three specialized agents for different perspectives</span></span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>technical_agent <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"technical_analyst"</span>,</span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="fu">paste</span>(</span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"You are a technical expert in AI and software engineering."</span>,</span>
+<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Analyze topics from a technical/engineering perspective."</span>,</span>
+<span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Focus on: implementation details, technology stack, technical challenges."</span>,</span>
+<span id="cb62-8"><a href="#cb62-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Keep responses to 2-3 sentences."</span></span>
+<span id="cb62-9"><a href="#cb62-9" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb62-10"><a href="#cb62-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb62-11"><a href="#cb62-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb62-12"><a href="#cb62-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-13"><a href="#cb62-13" aria-hidden="true" tabindex="-1"></a>business_agent <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb62-14"><a href="#cb62-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"business_strategist"</span>,</span>
+<span id="cb62-15"><a href="#cb62-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="fu">paste</span>(</span>
+<span id="cb62-16"><a href="#cb62-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"You are a business strategist and market analyst."</span>,</span>
+<span id="cb62-17"><a href="#cb62-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Analyze topics from a business/market perspective."</span>,</span>
+<span id="cb62-18"><a href="#cb62-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Focus on: market opportunities, ROI, competitive advantage, business models."</span>,</span>
+<span id="cb62-19"><a href="#cb62-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Keep responses to 2-3 sentences."</span></span>
+<span id="cb62-20"><a href="#cb62-20" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb62-21"><a href="#cb62-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb62-22"><a href="#cb62-22" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb62-23"><a href="#cb62-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-24"><a href="#cb62-24" aria-hidden="true" tabindex="-1"></a>ux_agent <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb62-25"><a href="#cb62-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"ux_specialist"</span>,</span>
+<span id="cb62-26"><a href="#cb62-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="fu">paste</span>(</span>
+<span id="cb62-27"><a href="#cb62-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"You are a UX and product design specialist."</span>,</span>
+<span id="cb62-28"><a href="#cb62-28" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Analyze topics from a user experience perspective."</span>,</span>
+<span id="cb62-29"><a href="#cb62-29" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Focus on: user needs, design considerations, accessibility, user satisfaction."</span>,</span>
+<span id="cb62-30"><a href="#cb62-30" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Keep responses to 2-3 sentences."</span></span>
+<span id="cb62-31"><a href="#cb62-31" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb62-32"><a href="#cb62-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb62-33"><a href="#cb62-33" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb62-34"><a href="#cb62-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-35"><a href="#cb62-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-36"><a href="#cb62-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Create workflow with parallel execution</span></span>
+<span id="cb62-37"><a href="#cb62-37" aria-hidden="true" tabindex="-1"></a>wf <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb62-38"><a href="#cb62-38" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"parallel_multi_agent_analysis"</span>,</span>
+<span id="cb62-39"><a href="#cb62-39" aria-hidden="true" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">"Multi-perspective analysis using parallel Agent invocations"</span></span>
+<span id="cb62-40"><a href="#cb62-40" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb62-41"><a href="#cb62-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-42"><a href="#cb62-42" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up 3 parallel workers for concurrent API calls</span></span>
+<span id="cb62-43"><a href="#cb62-43" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">set_daemons</span>(<span class="dv">3</span>)</span>
+<span id="cb62-44"><a href="#cb62-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-45"><a href="#cb62-45" aria-hidden="true" tabindex="-1"></a><span class="co"># Add input station (passthrough)</span></span>
+<span id="cb62-46"><a href="#cb62-46" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb62-47"><a href="#cb62-47" aria-hidden="true" tabindex="-1"></a>  <span class="st">"input"</span>,</span>
+<span id="cb62-48"><a href="#cb62-48" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler =</span> <span class="cf">function</span>(x) x,</span>
+<span id="cb62-49"><a href="#cb62-49" aria-hidden="true" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">"Input topic"</span></span>
+<span id="cb62-50"><a href="#cb62-50" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb62-51"><a href="#cb62-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-52"><a href="#cb62-52" aria-hidden="true" tabindex="-1"></a><span class="co"># Add three parallel Agent stations</span></span>
+<span id="cb62-53"><a href="#cb62-53" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb62-54"><a href="#cb62-54" aria-hidden="true" tabindex="-1"></a>  <span class="st">"technical_analysis"</span>,</span>
+<span id="cb62-55"><a href="#cb62-55" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler =</span> technical_agent,</span>
+<span id="cb62-56"><a href="#cb62-56" aria-hidden="true" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">"Technical perspective"</span></span>
+<span id="cb62-57"><a href="#cb62-57" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb62-58"><a href="#cb62-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-59"><a href="#cb62-59" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb62-60"><a href="#cb62-60" aria-hidden="true" tabindex="-1"></a>  <span class="st">"business_analysis"</span>,</span>
+<span id="cb62-61"><a href="#cb62-61" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler =</span> business_agent,</span>
+<span id="cb62-62"><a href="#cb62-62" aria-hidden="true" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">"Business perspective"</span></span>
+<span id="cb62-63"><a href="#cb62-63" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb62-64"><a href="#cb62-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-65"><a href="#cb62-65" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb62-66"><a href="#cb62-66" aria-hidden="true" tabindex="-1"></a>  <span class="st">"ux_analysis"</span>,</span>
+<span id="cb62-67"><a href="#cb62-67" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler =</span> ux_agent,</span>
+<span id="cb62-68"><a href="#cb62-68" aria-hidden="true" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">"UX perspective"</span></span>
+<span id="cb62-69"><a href="#cb62-69" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb62-70"><a href="#cb62-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-71"><a href="#cb62-71" aria-hidden="true" tabindex="-1"></a><span class="co"># Add synthesis station</span></span>
+<span id="cb62-72"><a href="#cb62-72" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb62-73"><a href="#cb62-73" aria-hidden="true" tabindex="-1"></a>  <span class="st">"synthesis"</span>,</span>
+<span id="cb62-74"><a href="#cb62-74" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler =</span> <span class="cf">function</span>(x) {</span>
+<span id="cb62-75"><a href="#cb62-75" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste0</span>(</span>
+<span id="cb62-76"><a href="#cb62-76" aria-hidden="true" tabindex="-1"></a>      <span class="st">"═══════════════════════════════════════════</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb62-77"><a href="#cb62-77" aria-hidden="true" tabindex="-1"></a>      <span class="st">"MULTI-PERSPECTIVE ANALYSIS REPORT</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb62-78"><a href="#cb62-78" aria-hidden="true" tabindex="-1"></a>      <span class="st">"═══════════════════════════════════════════</span><span class="sc">\n\n</span><span class="st">"</span>,</span>
+<span id="cb62-79"><a href="#cb62-79" aria-hidden="true" tabindex="-1"></a>      x</span>
+<span id="cb62-80"><a href="#cb62-80" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb62-81"><a href="#cb62-81" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb62-82"><a href="#cb62-82" aria-hidden="true" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">"Synthesis"</span></span>
+<span id="cb62-83"><a href="#cb62-83" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb62-84"><a href="#cb62-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-85"><a href="#cb62-85" aria-hidden="true" tabindex="-1"></a><span class="co"># Define parallel group: input -&gt; [technical, business, ux] -&gt; synthesis</span></span>
+<span id="cb62-86"><a href="#cb62-86" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">add_parallel_group</span>(</span>
+<span id="cb62-87"><a href="#cb62-87" aria-hidden="true" tabindex="-1"></a>  <span class="at">from =</span> <span class="st">"input"</span>,</span>
+<span id="cb62-88"><a href="#cb62-88" aria-hidden="true" tabindex="-1"></a>  <span class="at">stations =</span> <span class="fu">c</span>(<span class="st">"technical_analysis"</span>, <span class="st">"business_analysis"</span>, <span class="st">"ux_analysis"</span>),</span>
+<span id="cb62-89"><a href="#cb62-89" aria-hidden="true" tabindex="-1"></a>  <span class="at">to =</span> <span class="st">"synthesis"</span>,</span>
+<span id="cb62-90"><a href="#cb62-90" aria-hidden="true" tabindex="-1"></a>  <span class="at">merge_fn =</span> <span class="cf">function</span>(results) {</span>
+<span id="cb62-91"><a href="#cb62-91" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste0</span>(</span>
+<span id="cb62-92"><a href="#cb62-92" aria-hidden="true" tabindex="-1"></a>      <span class="st">"📱 TECHNICAL PERSPECTIVE:</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb62-93"><a href="#cb62-93" aria-hidden="true" tabindex="-1"></a>      results<span class="sc">$</span>technical_analysis, <span class="st">"</span><span class="sc">\n\n</span><span class="st">"</span>,</span>
+<span id="cb62-94"><a href="#cb62-94" aria-hidden="true" tabindex="-1"></a>      <span class="st">"💼 BUSINESS PERSPECTIVE:</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb62-95"><a href="#cb62-95" aria-hidden="true" tabindex="-1"></a>      results<span class="sc">$</span>business_analysis, <span class="st">"</span><span class="sc">\n\n</span><span class="st">"</span>,</span>
+<span id="cb62-96"><a href="#cb62-96" aria-hidden="true" tabindex="-1"></a>      <span class="st">"👤 UX PERSPECTIVE:</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb62-97"><a href="#cb62-97" aria-hidden="true" tabindex="-1"></a>      results<span class="sc">$</span>ux_analysis</span>
+<span id="cb62-98"><a href="#cb62-98" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb62-99"><a href="#cb62-99" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb62-100"><a href="#cb62-100" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb62-101"><a href="#cb62-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-102"><a href="#cb62-102" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">visualize</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="grViz html-widget html-fill-item" id="htmlwidget-008c60cd6907b169b4e8" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-008c60cd6907b169b4e8">{"x":{"diagram":"digraph workflow {\n  graph [rankdir=TB, label=\"parallel_multi_agent_analysis\", labelloc=t, fontsize=18, fontname=\"Helvetica\"]\n  node [fontname=\"Helvetica\", fontsize=12]\n  edge [fontname=\"Helvetica\", fontsize=10]\n  \"input\" [label=\"input\\n[Input topic]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"technical_analysis\" [label=\"technical_analysis\\n[Technical perspective]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"business_analysis\" [label=\"business_analysis\\n[Business perspective]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"ux_analysis\" [label=\"ux_analysis\\n[UX perspective]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"synthesis\" [label=\"synthesis\\n[Synthesis]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"START\" [label=\"START\", shape=circle, style=filled, fillcolor=\"#82E0AA\", width=0.5]\n  \"START\" -> \"input\"\n  \"input\" -> \"technical_analysis\" [color=\"#FF6B6B\", penwidth=2, label=\"∥\"]\n  \"input\" -> \"business_analysis\" [color=\"#FF6B6B\", penwidth=2, label=\"∥\"]\n  \"input\" -> \"ux_analysis\" [color=\"#FF6B6B\", penwidth=2, label=\"∥\"]\n  \"technical_analysis\" -> \"synthesis\" [color=\"#FF6B6B\", penwidth=2]\n  \"business_analysis\" -> \"synthesis\" [color=\"#FF6B6B\", penwidth=2]\n  \"ux_analysis\" -> \"synthesis\" [color=\"#FF6B6B\", penwidth=2]\n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Execute workflow with parallel execution</span></span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>topic <span class="ot">&lt;-</span> <span class="st">"Artificial Intelligence in Healthcare"</span></span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> wf<span class="sc">$</span><span class="fu">run</span>(topic)</span>
+<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-6"><a href="#cb63-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Clean up any existing daemons from previous runs</span></span>
+<span id="cb63-7"><a href="#cb63-7" aria-hidden="true" tabindex="-1"></a>mirai<span class="sc">::</span><span class="fu">daemons</span>(<span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>result</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "═══════════════════════════════════════════\nMULTI-PERSPECTIVE ANALYSIS REPORT\n═══════════════════════════════════════════\n\n📱 TECHNICAL PERSPECTIVE:\nAI in healthcare involves implementing machine learning models for diagnostics, predictive analytics, and patient management using technologies like Python, TensorFlow, and PyTorch. Key challenges include handling sensitive health data securely (HIPAA compliance), ensuring model interpretability, and integrating AI solutions with existing Electronic Health Records (EHR) systems. Scalability and real-time processing in clinical environments also require robust infrastructure, often leveraging cloud platforms like AWS or Azure.\n\n💼 BUSINESS PERSPECTIVE:\nArtificial Intelligence in healthcare offers significant market opportunities through enhanced diagnostics, personalized treatment, and operational efficiencies, driving cost reduction and improved patient outcomes. High ROI potential stems from AI-driven predictive analytics and automation, which streamline workflows and reduce errors. Companies investing in proprietary algorithms and integrated AI platforms gain a competitive advantage by delivering scalable, data-driven solutions that enhance provider and patient experiences.\n\n👤 UX PERSPECTIVE:\nArtificial intelligence in healthcare addresses user needs by providing faster diagnostics, personalized treatment, and improved patient monitoring, enhancing overall care quality. Design considerations must prioritize intuitive interfaces for both clinicians and patients, ensuring transparency and trust in AI-driven decisions. Accessibility is critical, requiring solutions that accommodate diverse populations and varying digital literacy, ultimately boosting user satisfaction through improved outcomes and ease of use."</code></pre>
+</div>
 </div>
 </section>
 <section id="how-it-works" class="level3">
 <h3 class="anchored" data-anchor-id="how-it-works">How it works</h3>
 <ol type="1">
-<li><p><strong><code>$set_daemons(n)</code></strong> — Creates <code>n</code> parallel worker processes (typically <code>parallel::detectCores()</code>)</p></li>
-<li><p><strong><code>$add_parallel_group(from, stations, to, merge_fn)</code></strong> — Defines which stations run in parallel:</p>
+<li><p><strong><code>$set_daemons(n)</code></strong> Creates <code>n</code> parallel worker processes.</p></li>
+<li><p><strong><code>$add_parallel_group(from, stations, to, merge_fn)</code></strong> Defines which stations run in parallel:</p>
 <ul>
 <li><code>from</code>: predecessor station (all parallel stations receive its output)</li>
 <li><code>stations</code>: vector of station names to run concurrently</li>
 <li><code>to</code>: successor station (receives merged results)</li>
 <li><code>merge_fn</code>: function to combine results from all parallel stations</li>
 </ul></li>
-<li><p><strong>Execution</strong> — All parallel stations run concurrently in separate daemons, providing ~2-4x speedup</p></li>
-<li><p><strong>Visualization</strong> — <code>$visualize()</code> shows parallel routes in <strong>red with ∥ symbol</strong> to distinguish from sequential routes</p></li>
+<li><p><strong>Execution</strong> All parallel stations run concurrently in separate daemons</p></li>
+<li><p><strong>Visualization</strong> <code>$visualize()</code> shows parallel routes in <strong>red with ∥ symbol</strong> to distinguish from sequential routes</p></li>
 </ol>
-</section>
-<section id="performance" class="level3">
-<h3 class="anchored" data-anchor-id="performance">Performance</h3>
-<p>With 3 parallel agents analyzing the same topic: - <strong>Sequential</strong>: ~12-15 seconds (3 API calls × 4-5s each) - <strong>Parallel</strong>: ~4-5 seconds (all 3 calls simultaneously) - <strong>Speedup</strong>: ~3x faster</p>
 
 
 </section>
