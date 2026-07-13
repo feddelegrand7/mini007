@@ -1,3 +1,4 @@
+#' @importFrom mirai mirai daemons
 #' @title Workflow
 #'
 #' @description
@@ -549,7 +550,7 @@ Workflow <- R6::R6Class(
 
           # Edges from predecessor to each parallel station
           edges <- c(edges, vapply(to_stations, function(station) {
-            glue::glue('  "{from_station}" -> "{station}" [color="#FF6B6B", penwidth=2, label="∥"]')
+            glue::glue('  "{from_station}" -> "{station}" [color="#FF6B6B", penwidth=2, label="\u2225"]')
           }, character(1L)))
 
           # Edges from each parallel station to successor (if exists)
@@ -725,7 +726,7 @@ Workflow <- R6::R6Class(
     .execute_parallel_group = function(group, input, step_index) {
       station_names <- group$stations
 
-      cli::cli_text("{cli::col_cyan('┌ Parallel Group')} ({length(station_names)} station{?s})")
+      cli::cli_text("{cli::col_cyan('\u250c Parallel Group')} ({length(station_names)} station{?s})")
 
       tasks <- lapply(station_names, function(name) {
         station <- private$.stations[[name]]
@@ -736,7 +737,7 @@ Workflow <- R6::R6Class(
           return(get(cache_key, envir = self$cache, inherits = FALSE))
         }
 
-        cli::cli_text("  {cli::col_blue('→')} {name}")
+        cli::cli_text("  {cli::col_blue('\u2192')} {name}")
 
         mirai::mirai(
           {
@@ -763,7 +764,7 @@ Workflow <- R6::R6Class(
         }
       )
 
-      cli::cli_text("{cli::col_cyan('└ Parallel Group')} complete.")
+      cli::cli_text("{cli::col_cyan('\u2514 Parallel Group')} complete.")
 
       if (self$use_cache) {
         for (name in station_names) {
