@@ -269,6 +269,20 @@ executing them with `invoke()`, and storing the results in the `agents_interacti
 }
 
 ## ------------------------------------------------
+## Method `LeadAgent$set_daemons`
+## ------------------------------------------------
+
+\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+lead_agent <- LeadAgent$new(name = "Leader", llm_object = openai_4_1_mini)
+lead_agent$set_daemons(4)
+}
+
+## ------------------------------------------------
 ## Method `LeadAgent$broadcast`
 ## ------------------------------------------------
 
@@ -491,6 +505,8 @@ result$dialog_history
 \item{\code{dialog_history}}{A list storing the history of agent dialogs}
 
 \item{\code{broadcast_history}}{A list storing the history of broadcast interactions}
+
+\item{\code{n_daemons}}{Number of parallel daemons used for parallel broadcast. Set via \code{$set_daemons()}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -504,6 +520,7 @@ result$dialog_history
 \item \href{#method-LeadAgent-visualize_plan}{\code{LeadAgent$visualize_plan()}}
 \item \href{#method-LeadAgent-invoke}{\code{LeadAgent$invoke()}}
 \item \href{#method-LeadAgent-generate_plan}{\code{LeadAgent$generate_plan()}}
+\item \href{#method-LeadAgent-set_daemons}{\code{LeadAgent$set_daemons()}}
 \item \href{#method-LeadAgent-broadcast}{\code{LeadAgent$broadcast()}}
 \item \href{#method-LeadAgent-set_hitl}{\code{LeadAgent$set_hitl()}}
 \item \href{#method-LeadAgent-judge_and_choose_best_response}{\code{LeadAgent$judge_and_choose_best_response()}}
@@ -922,24 +939,66 @@ A list of lists containing agent_id, agent_name, model_name, model_provider, and
 
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-LeadAgent-set_daemons"></a>}}
+\if{latex}{\out{\hypertarget{method-LeadAgent-set_daemons}{}}}
+\subsection{Method \code{set_daemons()}}{
+Configure parallel execution daemons for parallel broadcast using mirai.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{LeadAgent$set_daemons(n = 0L)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{n}}{`[integerish(1)]` Number of daemon processes (default `0`). Use `0` to shut down daemons.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Invisibly returns `self`.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+lead_agent <- LeadAgent$new(name = "Leader", llm_object = openai_4_1_mini)
+lead_agent$set_daemons(4)
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-LeadAgent-broadcast"></a>}}
 \if{latex}{\out{\hypertarget{method-LeadAgent-broadcast}{}}}
 \subsection{Method \code{broadcast()}}{
 Broadcasts a prompt to all registered agents and collects their responses.
 This does not affect the main agent orchestration logic or history.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LeadAgent$broadcast(prompt)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LeadAgent$broadcast(prompt, parallel = FALSE, synthesize = FALSE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{prompt}}{A user prompt to send to all agents.}
+
+\item{\code{parallel}}{`[logical(1)]` When `TRUE`, agents are invoked concurrently via mirai daemons.
+Requires `$set_daemons(n > 0)` to be called first. Default `FALSE`.}
+
+\item{\code{synthesize}}{`[logical(1)]` When `TRUE`, returns a single character string summarising
+each agent's response in the form "agent_name answered with ...". Default `FALSE`.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A list of responses from all agents.
+A list of responses from all agents, or a single character string when `synthesize = TRUE`.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}

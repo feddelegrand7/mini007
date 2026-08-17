@@ -152,11 +152,63 @@ lead_agent$register_agents(c(openai_4_1_agent, openai_4_1_nano_agent))
 lead_agent$broadcast(prompt = "If I were Algerian, which song would I like to sing when running under the rain? how about a flower?")
 ```
 
-You can also access the history of the `broadcasting` using the `broadcast_history` attribute: 
+You can also access the history of the `broadcasting` using the `broadcast_history` attribute:
 
 
 ```{r}
 lead_agent$broadcast_history
+```
+
+### Parallel broadcasting
+
+When working with many agents, you can speed things up by broadcasting in parallel using `mirai` daemons. Call `set_daemons()` first to spin up worker processes, then pass `parallel = TRUE` to `broadcast()`:
+
+```{r}
+lead_agent$set_daemons(2)
+
+lead_agent$broadcast(
+  prompt = "If I were Algerian, which song would I like to sing when running under the rain? how about a flower?",
+  parallel = TRUE, 
+  synthesize = TRUE
+)
+```
+
+Call `set_daemons(0)` to shut the workers down when you are done:
+
+```{r}
+lead_agent$set_daemons(0)
+```
+
+### Synthesized broadcast output
+
+By default `broadcast()` returns a list — one entry per agent. If you just want a single readable string that summarises every agent's answer, set `synthesize = TRUE`:
+
+```{r}
+lead_agent$broadcast(
+  prompt   = "In one word, what is the capital of Algeria?",
+  synthesize = TRUE
+)
+```
+
+The result will look like:
+
+```
+openai_4_1_agent answered with Algiers
+openai_4_1_nano_agent answered with Algiers
+```
+
+Both options can be combined — the agents run in parallel and the results are still collapsed into one string:
+
+```{r}
+lead_agent$set_daemons(2)
+
+lead_agent$broadcast(
+  prompt     = "In one word, what is the capital of Algeria?",
+  parallel   = TRUE,
+  synthesize = TRUE
+)
+
+lead_agent$set_daemons(0)
 ```
 
 ## Human In The Loop (HITL)

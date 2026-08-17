@@ -9,6 +9,7 @@
 #' This class builds intelligent multi-agent workflows by delegating sub-tasks using `delegate_prompt()`,
 #' executing them with `invoke()`, and storing the results in the `agents_interaction` list.
 #' @importFrom DiagrammeR grViz
+#' @importFrom mirai mirai daemons
 #' @export
 LeadAgent <- R6::R6Class(
   classname = "LeadAgent",
@@ -32,6 +33,8 @@ LeadAgent <- R6::R6Class(
     dialog_history = list(),
     #' @field broadcast_history A list storing the history of broadcast interactions
     broadcast_history = list(),
+    #' @field n_daemons Number of parallel daemons used for parallel broadcast. Set via \code{$set_daemons()}.
+    n_daemons = NULL,
 
     #' @description
     #' Initializes the LeadAgent with a built-in task-decomposition prompt.
@@ -63,6 +66,7 @@ LeadAgent <- R6::R6Class(
       )
 
       super$initialize(name = name, instruction = system_prompt, llm_object = llm_object)
+      self$n_daemons <- 0L
 
     },
 
@@ -476,10 +480,48 @@ LeadAgent <- R6::R6Class(
     },
 
     #' @description
+    #' Configure parallel execution daemons for parallel broadcast using mirai.
+    #' @param n `[integerish(1)]` Number of daemon processes (default `0`). Use `0` to shut down daemons.
+    #' @return Invisibly returns `self`.
+    #' @examples \dontrun{
+    #' openai_4_1_mini <- ellmer::chat(
+    #'   name = "openai/gpt-4.1-mini",
+    #'   api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'   echo = "none"
+    #' )
+    #' lead_agent <- LeadAgent$new(name = "Leader", llm_object = openai_4_1_mini)
+    #' lead_agent$set_daemons(4)
+    #' }
+    set_daemons = function(n = 0L) {
+      checkmate::assert_integerish(n, lower = 0L, len = 1L, any.missing = FALSE)
+      n <- as.integer(n)
+
+      if (n > 0L && self$n_daemons == 0L) {
+        mirai::daemons(n)
+        self$n_daemons <- n
+        cli::cli_alert_success("Parallel daemons initialized: {n} worker(s).")
+      } else if (n == 0L && self$n_daemons > 0L) {
+        mirai::daemons(0)
+        self$n_daemons <- 0L
+        cli::cli_alert_success("Parallel daemons shut down.")
+      } else if (n > 0L && self$n_daemons > 0L && n != self$n_daemons) {
+        mirai::daemons(n)
+        self$n_daemons <- n
+        cli::cli_alert_success("Parallel daemons resized to {n} worker(s).")
+      }
+
+      invisible(self)
+    },
+
+    #' @description
     #' Broadcasts a prompt to all registered agents and collects their responses.
     #' This does not affect the main agent orchestration logic or history.
     #' @param prompt A user prompt to send to all agents.
-    #' @return A list of responses from all agents.
+    #' @param parallel `[logical(1)]` When `TRUE`, agents are invoked concurrently via mirai daemons.
+    #'   Requires `$set_daemons(n > 0)` to be called first. Default `FALSE`.
+    #' @param synthesize `[logical(1)]` When `TRUE`, returns a single character string summarising
+    #'   each agent's response in the form "agent_name answered with ...". Default `FALSE`.
+    #' @return A list of responses from all agents, or a single character string when `synthesize = TRUE`.
     #' @examples \dontrun{
     #'  # An API KEY is required in order to invoke the agents
     #' openai_4_1_mini <- ellmer::chat(
@@ -524,28 +566,85 @@ LeadAgent <- R6::R6Class(
     #'   )
     #'   )
     #' }
-    broadcast = function(prompt) {
+    broadcast = function(prompt, parallel = FALSE, synthesize = FALSE) {
       checkmate::assert_string(prompt)
+      checkmate::assert_flag(parallel)
+      checkmate::assert_flag(synthesize)
 
       if (length(self$agents) == 0) {
         cli::cli_abort("No agents have been registered. Use `register_agents()` first.")
       }
 
-      responses <- lapply(self$agents, function(agent) {
-        response <- agent$invoke(prompt)
-        list(
-          agent_id = agent$agent_id,
-          agent_name = agent$name,
-          model_provider = agent$model_provider,
-          model_name = agent$model_name,
-          response = response
+      if (parallel) {
+        if (self$n_daemons == 0L) {
+          cli::cli_abort(
+            "Parallel broadcast requires daemons. Call {.fn set_daemons} with {.arg n > 0} first."
+          )
+        }
+
+        cli::cli_alert_info(
+          "Broadcasting to {length(self$agents)} agent{?s} in parallel..."
         )
-      })
+
+        tasks <- lapply(self$agents, function(agent) {
+          mirai::mirai(
+            {
+              agent$invoke(prompt)
+            },
+            agent  = agent,
+            prompt = prompt
+          )
+        })
+
+        raw_results <- tryCatch(
+          lapply(tasks, function(m) m[]),
+          error = function(e) {
+            cli::cli_alert_danger("Parallel broadcast failed: {e$message}")
+            stop(e)
+          }
+        )
+
+        responses <- lapply(seq_along(self$agents), function(i) {
+          agent <- self$agents[[i]]
+          list(
+            agent_id       = agent$agent_id,
+            agent_name     = agent$name,
+            model_provider = agent$model_provider,
+            model_name     = agent$model_name,
+            response       = raw_results[[i]]
+          )
+        })
+      } else {
+        responses <- lapply(self$agents, function(agent) {
+          response <- agent$invoke(prompt)
+          list(
+            agent_id       = agent$agent_id,
+            agent_name     = agent$name,
+            model_provider = agent$model_provider,
+            model_name     = agent$model_name,
+            response       = response
+          )
+        })
+      }
 
       self$broadcast_history[[length(self$broadcast_history) + 1]] <- list(
-        prompt = prompt,
+        prompt    = prompt,
         responses = responses
       )
+
+      if (synthesize) {
+        return(
+          paste(
+            "To the main prompt ", prompt,
+            paste(
+              vapply(responses, function(r) {
+                paste0(r$agent_name, " answered with ", r$response)
+              }, character(1)),
+              collapse = "\n"
+            )
+          )
+        )
+      }
 
       return(responses)
     },

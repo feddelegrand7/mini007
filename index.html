@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>cran-comments – mini007</title>
+<title>mini007</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,6 +19,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -256,7 +291,7 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./index.html"> 
+    <a class="nav-link active" href="./index.html" aria-current="page"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
@@ -303,40 +338,327 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#mini007-0.3.0" id="toc-mini007-0.3.0" class="nav-link active" data-scroll-target="#mini007-0.3.0">mini007 0.3.0</a></li>
+  <li><a href="#welcome-to-mini007" id="toc-welcome-to-mini007" class="nav-link active" data-scroll-target="#welcome-to-mini007">Welcome to <strong>mini007</strong></a>
+  <ul class="collapse">
+  <li><a href="#highlights" id="toc-highlights" class="nav-link" data-scroll-target="#highlights">Highlights</a></li>
+  <li><a href="#installation" id="toc-installation" class="nav-link" data-scroll-target="#installation">Installation</a></li>
+  <li><a href="#key-components" id="toc-key-components" class="nav-link" data-scroll-target="#key-components">Key components</a>
+  <ul class="collapse">
+  <li><a href="#agent" id="toc-agent" class="nav-link" data-scroll-target="#agent"><code>Agent</code></a></li>
+  <li><a href="#leadagent" id="toc-leadagent" class="nav-link" data-scroll-target="#leadagent"><code>LeadAgent</code></a></li>
+  <li><a href="#workflow" id="toc-workflow" class="nav-link" data-scroll-target="#workflow"><code>Workflow</code></a></li>
+  </ul></li>
+  <li><a href="#get-started" id="toc-get-started" class="nav-link" data-scroll-target="#get-started">Get started</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">mini007</h1>
+</div>
 
 
 
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
 
 
-<p>── R CMD check results ──────────── mini007 0.3.0 ──── Duration: 9.8s</p>
-<p>❯ checking for future file timestamps … NOTE unable to verify current time</p>
-<p>0 errors ✔ | 0 warnings ✔ | 1 note ✖</p>
+</header>
+
+
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>retrieve_open_ai_credential <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">Sys.getenv</span>(<span class="st">"OPENAI_API_KEY"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>llm <span class="ot">&lt;-</span> ellmer<span class="sc">::</span><span class="fu">chat</span>(</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"openai/gpt-4.1-mini"</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">credentials =</span> retrieve_open_ai_credential,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">echo        =</span> <span class="st">"none"</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="welcome-to-mini007" class="level1">
+<h1>Welcome to <strong>mini007</strong></h1>
+<p><code>mini007</code> is a lightweight and extensible R framework for building multi-agent AI systems. It provides three complementary components — <code>Agent</code>, <code>LeadAgent</code>, and <code>Workflow</code> — that can be used independently or combined to tackle complex tasks that benefit from specialised, collaborating LLM workers.</p>
+<blockquote class="blockquote">
+<p><code>mini007</code> relies heavily on the excellent <a href="https://ellmer.tidyverse.org/"><code>ellmer</code></a> package and is compatible with any chat model it supports: OpenAI, Anthropic, Google, Ollama, and more.</p>
+</blockquote>
+<section id="highlights" class="level2">
+<h2 class="anchored" data-anchor-id="highlights">Highlights</h2>
 <ul>
-<li>Implementing the <code>Workflow</code> class which allows one to have full control over a <code>workflow</code> of agents</li>
-<li>Adding new methods: <code>share_context_with()</code></li>
-</ul>
-<p>── R CMD check results ────────────── mini007 0.2.2 ──── Duration: 9.3s</p>
-<p>0 errors ✔ | 0 warnings ✔ | 0 notes ✔ ### Comments:</p>
-<section id="mini007-0.3.0" class="level1">
-<h1>mini007 0.3.0</h1>
-<section id="adding-new-methods-to-work-with-tools" class="level4">
-<h4 class="anchored" data-anchor-id="adding-new-methods-to-work-with-tools">Adding new methods to work with <code>tools</code>:</h4>
-<ul>
-<li><code>register_tools()</code></li>
-<li><code>list_tools()</code></li>
-<li><code>remove_tools()</code></li>
-<li><code>clear_tools()</code></li>
-<li><code>generate_and_register_tool()</code></li>
+<li>🧠 <strong>Persistent memory</strong>: every agent maintains its full conversation history with export, import, and summarisation support.</li>
+<li>⚙️ <strong>Task decomposition</strong>: <code>LeadAgent</code> automatically splits a complex prompt into subtasks and delegates each one to the most suitable agent.</li>
+<li>🔀 <strong>Sequential pipelines</strong>: <code>Workflow</code> gives you explicit control over execution order, branching logic, and which handler runs at each step.</li>
+<li>💾 <strong>Caching</strong>: workflow station results are cached by input so subsequent runs skip redundant LLM calls.</li>
+<li>🔧 <strong>Tool support</strong>: register <code>ellmer</code> tools on any agent, or generate new ones from a natural-language description.</li>
+<li>💰 <strong>Budget control</strong>: set a USD spending cap on any agent with a configurable policy (<code>abort</code>, <code>warn</code>, or <code>ask</code>).</li>
+<li>🧑 <strong>Human In The Loop</strong>: pause at specific steps so a human can review, edit, or stop the response before it continues.</li>
+<li>🌐 <strong>Model-agnostic</strong>: swap the underlying LLM without changing any orchestration logic.</li>
 </ul>
 </section>
-<section id="adding-the-agents_dialog-methods-that-allows-2-agents-to-interact-with-each-other-in-order-to-come-up-with-a-better-outcome." class="level4">
-<h4 class="anchored" data-anchor-id="adding-the-agents_dialog-methods-that-allows-2-agents-to-interact-with-each-other-in-order-to-come-up-with-a-better-outcome.">Adding the <code>agents_dialog()</code> methods that allows 2 agents to interact with each other in order to come up with a better outcome.</h4>
+<section id="installation" class="level2">
+<h2 class="anchored" data-anchor-id="installation">Installation</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"mini007"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="key-components" class="level2">
+<h2 class="anchored" data-anchor-id="key-components">Key components</h2>
+<section id="agent" class="level3">
+<h3 class="anchored" data-anchor-id="agent"><code>Agent</code></h3>
+<p>An <code>Agent</code> wraps an <code>ellmer</code> chat object and adds identity (UUID), persistent message history, budget tracking, and tool support. It is the fundamental building block of the framework.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>researcher <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"researcher"</span>,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"Answer factual questions concisely and accurately."</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object  =</span> llm</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>researcher<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"What is the boiling point of water at high altitude?"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Agents remember the conversation, so follow-up questions work naturally:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>researcher<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"Why does it change with altitude?"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Notable methods:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>$invoke(prompt)</code></td>
+<td>Send a prompt and get a response</td>
+</tr>
+<tr class="even">
+<td><code>$keep_last_n_messages(n)</code></td>
+<td>Trim history to the last <em>n</em> turns</td>
+</tr>
+<tr class="odd">
+<td><code>$share_context_with(agent)</code></td>
+<td>Copy recent messages to another agent</td>
+</tr>
+<tr class="even">
+<td><code>$set_budget(amount)</code></td>
+<td>Set a USD spending limit</td>
+</tr>
+<tr class="odd">
+<td><code>$register_tools(...)</code></td>
+<td>Attach <code>ellmer</code> tool objects</td>
+</tr>
+<tr class="even">
+<td><code>$generate_and_register_tool(desc)</code></td>
+<td>Generate a tool from plain English</td>
+</tr>
+<tr class="odd">
+<td><code>$generate_execute_r_code()</code></td>
+<td>Write, validate, and run R code</td>
+</tr>
+<tr class="even">
+<td><code>$validate_response(response, criteria)</code></td>
+<td>LLM-based output verification</td>
+</tr>
+<tr class="odd">
+<td><code>$clone_agent()</code></td>
+<td>Create an independent copy with a new UUID</td>
+</tr>
+<tr class="even">
+<td><code>$export_messages_history(path)</code></td>
+<td>Save conversation to JSON</td>
+</tr>
+<tr class="odd">
+<td><code>$load_messages_history(path)</code></td>
+<td>Restore conversation from JSON</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="leadagent" class="level3">
+<h3 class="anchored" data-anchor-id="leadagent"><code>LeadAgent</code></h3>
+<p>A <code>LeadAgent</code> extends <code>Agent</code> with multi-agent orchestration: it decomposes a complex prompt into subtasks and routes each one to the most suitable registered agent, collecting and chaining the results.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>summariser <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"summariser"</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"Summarise the text you receive into three bullet points."</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object  =</span> llm</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>translator <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"translator"</span>,</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"Translate the text you receive from English to French."</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object  =</span> llm</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>lead <span class="ot">&lt;-</span> LeadAgent<span class="sc">$</span><span class="fu">new</span>(<span class="at">name =</span> <span class="st">"Lead"</span>, <span class="at">llm_object =</span> llm)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>lead<span class="sc">$</span><span class="fu">register_agents</span>(<span class="fu">c</span>(summariser, translator))</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>lead<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"Summarise the history of the Sahara Desert, then translate it into French."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Notable methods:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>$register_agents(agents)</code></td>
+<td>Add agents to the pool</td>
+</tr>
+<tr class="even">
+<td><code>$generate_plan(prompt)</code></td>
+<td>Preview task-to-agent assignments before running</td>
+</tr>
+<tr class="odd">
+<td><code>$visualize_plan()</code></td>
+<td>Render the plan as an interactive directed graph</td>
+</tr>
+<tr class="even">
+<td><code>$invoke(prompt)</code></td>
+<td>Decompose, delegate, and return the final answer</td>
+</tr>
+<tr class="odd">
+<td><code>$broadcast(prompt)</code></td>
+<td>Send one prompt to all agents and collect every response</td>
+</tr>
+<tr class="even">
+<td><code>$judge_and_choose_best_response(prompt)</code></td>
+<td>Let the lead pick the best answer from all agents</td>
+</tr>
+<tr class="odd">
+<td><code>$agents_dialog(prompt, id1, id2)</code></td>
+<td>Run an iterative negotiation between two agents</td>
+</tr>
+<tr class="even">
+<td><code>$set_hitl(steps)</code></td>
+<td>Pause at specified steps for human review or editing</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="workflow" class="level3">
+<h3 class="anchored" data-anchor-id="workflow"><code>Workflow</code></h3>
+<p>A <code>Workflow</code> is a predefined, sequential pipeline of <strong>Stations</strong> connected by <strong>Routes</strong>. Each Station’s output feeds directly into the next one’s input. You decide the order, the branching conditions, and what runs at each step — the handler can be an <code>Agent</code>, a <code>WorkflowAgent</code>, or a plain R function.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plain R function as a station — no LLM needed</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>clean <span class="ot">&lt;-</span> <span class="cf">function</span>(text) <span class="fu">trimws</span>(<span class="fu">gsub</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">s+"</span>, <span class="st">" "</span>, text))</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>wf <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="at">name =</span> <span class="st">"article-pipeline"</span>, <span class="at">use_cache =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">add_station</span>(<span class="st">"clean"</span>,    clean)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">add_station</span>(<span class="st">"write"</span>,    Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"writer"</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"Turn the notes you receive into an engaging paragraph."</span>,</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object  =</span> llm</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">add_station</span>(<span class="st">"edit"</span>,     Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"editor"</span>,</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"Polish the paragraph for grammar and conciseness."</span>,</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object  =</span> llm</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">add_route</span>(<span class="st">"clean"</span>, <span class="st">"write"</span>)</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">add_route</span>(<span class="st">"write"</span>, <span class="st">"edit"</span>)</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">run</span>(<span class="st">"  The  history  of   the  printing   press  "</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Routes can carry a condition function to create branching pipelines:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">add_route</span>(</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">from      =</span> <span class="st">"classify"</span>,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">to        =</span> <span class="st">"positive_reply"</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">condition =</span> <span class="cf">function</span>(out) <span class="fu">grepl</span>(<span class="st">"positive"</span>, <span class="fu">tolower</span>(out))</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>A finished <code>Workflow</code> can be wrapped as a <code>WorkflowAgent</code> and registered with a <code>LeadAgent</code> or nested inside another <code>Workflow</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>wa <span class="ot">&lt;-</span> wf<span class="sc">$</span><span class="fu">as_agent</span>(<span class="at">name =</span> <span class="st">"article_agent"</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>lead<span class="sc">$</span><span class="fu">register_agents</span>(<span class="fu">list</span>(wa))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Notable methods:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>$add_station(name, handler)</code></td>
+<td>Register a Station (agent or function)</td>
+</tr>
+<tr class="even">
+<td><code>$add_route(from, to, condition)</code></td>
+<td>Connect two Stations, optionally gated by a condition</td>
+</tr>
+<tr class="odd">
+<td><code>$set_entry(name)</code></td>
+<td>Set the starting Station</td>
+</tr>
+<tr class="even">
+<td><code>$run(input)</code></td>
+<td>Execute the pipeline sequentially</td>
+</tr>
+<tr class="odd">
+<td><code>$clear_cache()</code></td>
+<td>Invalidate cached Station results</td>
+</tr>
+<tr class="even">
+<td><code>$set_hitl(steps)</code></td>
+<td>Pause at specified steps for human review or editing</td>
+</tr>
+<tr class="odd">
+<td><code>$as_agent(name, instruction)</code></td>
+<td>Wrap the workflow as a <code>WorkflowAgent</code></td>
+</tr>
+<tr class="even">
+<td><code>$visualize()</code></td>
+<td>Render the pipeline as an interactive directed graph</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="get-started" class="level2">
+<h2 class="anchored" data-anchor-id="get-started">Get started</h2>
+<p>Navigate through the pages in the top navigation bar:</p>
+<ul>
+<li><strong>Agents</strong> — individual agent creation, memory, tools, budgets, and code generation.</li>
+<li><strong>LeadAgent</strong> — multi-agent orchestration, broadcasting, HITL, and agent dialog.</li>
+<li><strong>Tools</strong> — building and registering custom tools.</li>
+<li><strong>Workflow</strong> — sequential pipelines, conditional routing, caching, and nesting.</li>
+<li><strong>Testing</strong> — utilities for writing tests against LLM responses.</li>
+</ul>
 
 
 </section>
