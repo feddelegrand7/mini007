@@ -462,8 +462,98 @@ You can set HITL at multiple steps at once:
 
 ```{r}
 #| eval: false
-hitl_pipeline$set_hitl(steps = c(1, 2))
+hitl_pipeline$set_hitl(steps = c(1, 2), mode = "interactive")
 ```
+
+### Non-blocking HITL: pause and resume (Not yet on CRAN)
+
+The `HITL` above with `mode="interactive"` (the default) only works in an interactive console. Pass `mode = "pause"` to `$set_hitl()` and `$run()` returns immediately instead of
+blocking, handing you back a `mini007_pending` object that describes exactly
+where execution stopped. This is what lets HITL work from a Shiny app, a
+Plumber API, or any batch job: persist the pending object, resume it whenever
+the human actually responds, even in a different R session.
+
+Let's route a teaser about Tassili n'Ajjer, the Algerian Sahara's
+prehistoric rock-art plateau through a drafter and a translator, pausing
+after the draft for review:
+
+```{r}
+sahara_pipeline <- Workflow$new("sahara pipeline", use_cache = FALSE)
+
+drafter <- Agent$new(
+  name = "sahara_drafter",
+  instruction = "Write a punchy two-sentence teaser about the Saharan destination provided.",
+  llm_object = openai_4_1_mini
+)
+
+translator <- Agent$new(
+  name = "translator",
+  instruction = "Translate the text you receive from English into German.",
+  llm_object = openai_4_1_mini
+)
+
+sahara_pipeline$add_station(name = "draft", handler = drafter)
+sahara_pipeline$add_station(name = "translate", handler = translator)
+sahara_pipeline$add_route(from = "draft", to = "translate")
+
+# mode = "pause" instead of the default "console"
+sahara_pipeline$set_hitl(steps = 1, mode = "pause")
+```
+
+```{r}
+#| eval: true
+pending <- sahara_pipeline$run("Tassili n'Ajjer, Algeria")
+pending
+```
+
+```
+── Pending HITL request - step 1 ──
+Request id: "b3f1c2a0-..."
+Station/Agent: draft
+ℹ Input:
+Tassili n'Ajjer, Algeria
+ℹ Proposed output:
+Deep in Algeria's Sahara, Tassili n'Ajjer hides 15,000 years of rock art
+carved into sandstone cathedrals — a UNESCO World Heritage plateau most
+travellers never set foot on.
+! Call `$resume("b3f1c2a0-...", action = "continue"|"edit"|"abort")` to proceed.
+```
+
+`is_pending(pending)` returns `TRUE` for this object (and `FALSE` for a
+normal completed result). Once the human has weighed in, call `$resume()` with one of three actions:
+
+```{r}
+#| eval: false
+# 1. Accept the draft as-is — the translator receives it next
+sahara_pipeline$resume(pending$request_id, action = "continue")
+```
+
+```{r}
+#| eval: false
+# 2. Or edit it first. The edited text is what the translator receives
+sahara_pipeline$resume(
+  pending$request_id,
+  action = "edit",
+  value  = "Tassili n'Ajjer: 15,000 years of rock art etched into Saharan sandstone, in Algeria's far southeast."
+)
+```
+
+```{r}
+#| eval: false
+# 3. Or abort altogether — raises an error, nothing downstream runs
+sahara_pipeline$resume(pending$request_id, action = "abort")
+```
+
+If the workflow has more HITL steps ahead, `$resume()` returns another
+`mini007_pending` object instead of the final result — so a caller typically
+loops `while (is_pending(result))`, persisting `result$request_id` between
+iterations, until a plain character string comes back.
+
+Note that a `Workflow` wrapped as a `WorkflowAgent` (via `$as_agent()`) must
+keep `mode = "console"` (the default): a `WorkflowAgent` is invoked
+synchronously from inside a `Workflow` Station or a `LeadAgent` step, and
+neither knows how to hand a paused run back to you — `$invoke()` raises an
+error if the wrapped workflow pauses.
 
 ## Visualising a workflow
 

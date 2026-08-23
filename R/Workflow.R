@@ -44,6 +44,12 @@ Workflow <- R6::R6Class(
     #'   for human review. Set via \code{$set_hitl()}.
     hitl_steps = NULL,
 
+    #' @field hitl_mode Either `"console"` (blocking \code{readline()} prompt,
+    #'   the default) or `"pause"` (non-blocking: \code{$run()} returns a
+    #'   `mini007_pending` object instead of blocking). Set via
+    #'   \code{$set_hitl()}.
+    hitl_mode = "console",
+
     #' @field n_daemons Number of parallel daemons. Set via \code{$set_daemons()}.
     n_daemons = NULL,
 
@@ -210,7 +216,9 @@ Workflow <- R6::R6Class(
     #'
     #' @param input `[character(1)]` The initial prompt / payload.
     #'
-    #' @return `[character(1)]` The output of the last Station executed.
+    #' @return `[character(1)]` The output of the last Station executed, or -
+    #'   if execution reaches an HITL step while \code{hitl_mode = "pause"} -
+    #'   a `mini007_pending` object. Use \code{\link{is_pending}()} to check.
     run = function(input) {
       checkmate::assert_string(input)
 
@@ -232,77 +240,52 @@ Workflow <- R6::R6Class(
 
       cli::cli_rule(left = glue::glue("Workflow: {self$name}"))
 
-      current       <- entry
-      current_input <- input
-      trace         <- list()
-      steps_taken   <- 0L
-      max_steps     <- 500L
-      result        <- NULL
+      private$.execute(list(
+        current        = entry,
+        current_input  = input,
+        original_input = input,
+        trace          = list(),
+        steps_taken    = 0L
+      ))
+    },
 
-      repeat {
-        steps_taken <- steps_taken + 1L
+    # -- resume ------------------------------------------------------------
 
-        if (steps_taken > max_steps) {
-          cli::cli_abort(
-            "Workflow exceeded {max_steps} steps. Possible cycle in Routes."
-          )
-        }
+    #' @description Resume a Workflow paused at an HITL step.
+    #'
+    #' Only relevant when \code{hitl_mode = "pause"} (see \code{$set_hitl()}).
+    #' \code{$run()} returns a `mini007_pending` object when it reaches a
+    #' paused HITL step; call \code{$resume()} with that object's
+    #' `request_id` and a chosen `action` to continue execution from that
+    #' point.
+    #'
+    #' @param request_id `[character(1)]` The `request_id` from the
+    #'   `mini007_pending` object returned by \code{$run()}.
+    #' @param action `[character(1)]` One of `"continue"` (use the proposed
+    #'   output as-is), `"edit"` (replace it with `value`), or `"abort"`
+    #'   (raise an error, stopping the workflow).
+    #' @param value `[character(1) | NULL]` Required when
+    #'   \code{action = "edit"}: the replacement output.
+    #'
+    #' @return `[character(1)]` The final output, or another `mini007_pending`
+    #'   object if a further HITL step is reached.
+    resume = function(request_id, action = c("continue", "edit", "abort"), value = NULL) {
+      checkmate::assert_string(request_id)
+      action <- match.arg(action)
+      if (identical(action, "edit")) checkmate::assert_string(value)
 
-        parallel_group <- private$.find_parallel_group(current)
-
-        if (!is.null(parallel_group)) {
-          result <- private$.execute_parallel_group(
-            parallel_group, current_input, steps_taken
-          )
-          next_station <- parallel_group$to
-        } else {
-          station   <- private$.stations[[current]]
-          cache_key <- private$.cache_key(current, current_input)
-
-          if (self$use_cache && exists(cache_key, envir = self$cache, inherits = FALSE)) {
-            cli::cli_alert_info("[cache] Station {.val {current}}.")
-            result <- get(cache_key, envir = self$cache, inherits = FALSE)
-          } else {
-            cli::cli_text("  {cli::col_blue('->')} Station {.val {current}}")
-            result <- private$.invoke_handler_safe(station, current_input)
-
-            if (!is.null(self$hitl_steps) && steps_taken %in% self$hitl_steps) {
-              result <- private$.human_confirm(steps_taken, current, current_input, result)
-            }
-
-            if (self$use_cache) {
-              assign(cache_key, result, envir = self$cache)
-            }
-          }
-
-          next_station <- private$.get_next_station(current, result)
-        }
-
-        trace[[length(trace) + 1L]] <- list(
-          step    = steps_taken,
-          station = current,
-          input   = current_input,
-          output  = result
+      pending <- private$.pending[[request_id]]
+      if (is.null(pending)) {
+        cli::cli_abort(
+          "No pending HITL request found with id {.val {request_id}} on workflow {.val {self$name}}."
         )
-
-        if (is.null(next_station)) break
-
-        current       <- next_station
-        current_input <- result
       }
+      private$.pending[[request_id]] <- NULL
 
-      cli::cli_alert_success(
-        "Workflow {.val {self$name}} completed in {steps_taken} step(s)."
+      private$.execute(
+        pending$state,
+        resume_response = list(action = action, value = value)
       )
-
-      self$run_history[[length(self$run_history) + 1L]] <- list(
-        input  = input,
-        output = result,
-        steps  = steps_taken,
-        trace  = trace
-      )
-
-      result
     },
 
     # -- set_daemons -----------------------------------------------------------
@@ -416,14 +399,26 @@ Workflow <- R6::R6Class(
     #' shown in \code{$run()} output. You can set multiple steps at once:
     #' \code{wf$set_hitl(c(1, 3))}.
     #'
+    #' With \code{mode = "console"} (default), a paused step blocks on
+    #' \code{readline()} right there in \code{$run()} - unchanged from
+    #' previous behavior. With \code{mode = "pause"}, \code{$run()} instead
+    #' returns immediately with a `mini007_pending` object describing the
+    #' paused step; call \code{$resume()} with the chosen action to continue.
+    #' This allows HITL to work outside an interactive console (e.g. Shiny,
+    #' Plumber, or a batch job resuming later) and lets workflow state be
+    #' inspected/persisted between steps.
+    #'
     #' @param steps `[integerish]` One or more step numbers (>= 1).
+    #' @param mode `[character(1)]` `"console"` (default) or `"pause"`.
     #'
     #' @return Invisibly returns `self` for method chaining.
-    set_hitl = function(steps) {
+    set_hitl = function(steps, mode = c("console", "pause")) {
       checkmate::assert_integerish(steps, lower = 1L, any.missing = FALSE)
+      mode <- match.arg(mode)
       self$hitl_steps <- unique(as.integer(steps))
+      self$hitl_mode  <- mode
       cli::cli_alert_success(
-        "HITL enabled at step(s): {.val {toString(self$hitl_steps)}}."
+        "HITL enabled at step(s): {.val {toString(self$hitl_steps)}} (mode: {.val {mode}})."
       )
       invisible(self)
     },
@@ -587,6 +582,7 @@ Workflow <- R6::R6Class(
     .routes           = list(),
     .entry            = NULL,
     .parallel_groups  = list(),
+    .pending          = list(),
 
     # Resolve the next Station given the current one and its output.
     # Conditional Routes are tried first (in insertion order); the first
@@ -705,6 +701,55 @@ Workflow <- R6::R6Class(
       }
     },
 
+    # Resolve an HITL pause point. In "console" mode this blocks on
+    # readline() via .human_confirm() exactly as before. In "pause" mode it
+    # instead throws a `mini007_workflow_pause` condition carrying everything
+    # needed to resume later; .execute() catches it and returns a
+    # mini007_pending object to the caller instead of blocking.
+    .request_confirmation = function(step_index, station_name, input, proposed_result, state_snapshot) {
+      if (identical(self$hitl_mode, "pause")) {
+        request_id <- uuid::UUIDgenerate()
+        state_snapshot$proposed_result <- proposed_result
+
+        private$.pending[[request_id]] <- list(state = state_snapshot)
+
+        pending_obj <- new_pending(
+          request_id      = request_id,
+          step            = step_index,
+          station         = station_name,
+          input           = input,
+          proposed_output = proposed_result
+        )
+
+        cond <- structure(
+          class   = c("mini007_workflow_pause", "condition"),
+          list(
+            message = glue::glue(
+              "Workflow '{self$name}' paused at step {step_index} awaiting human input."
+            ),
+            pending = pending_obj
+          )
+        )
+        stop(cond)
+      }
+
+      private$.human_confirm(step_index, station_name, input, proposed_result)
+    },
+
+    # Turn a $resume() response into the result to continue with.
+    .apply_response = function(response, proposed_result, step_index) {
+      if (identical(response$action, "abort")) {
+        cli::cli_alert_danger("Workflow stopped by user at step {step_index}.")
+        cli::cli_abort("HITL: Execution stopped by user.")
+      } else if (identical(response$action, "edit")) {
+        cli::cli_alert_success("Output updated.")
+        return(response$value)
+      }
+
+      cli::cli_alert_success("Continuing with original output.")
+      proposed_result
+    },
+
     # Build a deterministic cache key from a Station name and its input.
     # The fixed separator is unlikely to appear in normal station names or prompts.
     .cache_key = function(station_name, input) {
@@ -722,8 +767,9 @@ Workflow <- R6::R6Class(
 
     # Execute a parallel group of stations using mirai.
     # All stations in the group receive the same input and run concurrently.
-    # Results are merged and returned.
-    .execute_parallel_group = function(group, input, step_index) {
+    # Results are merged and returned (HITL confirmation, if any, happens in
+    # the caller so it can be paused/resumed uniformly with regular stations).
+    .execute_parallel_group_compute = function(group, input) {
       station_names <- group$stations
 
       cli::cli_text("{cli::col_cyan('\u250c Parallel Group')} ({length(station_names)} station{?s})")
@@ -773,13 +819,136 @@ Workflow <- R6::R6Class(
         }
       }
 
-      merged <- group$merge_fn(results)
+      group$merge_fn(results)
+    },
 
-      if (!is.null(self$hitl_steps) && step_index %in% self$hitl_steps) {
-        merged <- private$.human_confirm(step_index, "parallel_group", input, merged)
+    # The resumable execution loop shared by $run() and $resume(). `state`
+    # holds the loop's mutable variables (current station, its input, the
+    # trace so far, step counter, and the original input for run_history).
+    # On a fresh $run() call, `resume_response` is NULL and the loop starts
+    # by computing the current step from scratch. On $resume(), `state` is a
+    # snapshot captured right before the paused step's HITL confirmation, and
+    # `resume_response` is applied instead of recomputing that step.
+    .execute = function(state, resume_response = NULL) {
+      current        <- state$current
+      current_input  <- state$current_input
+      original_input <- state$original_input
+      trace          <- state$trace
+      steps_taken    <- state$steps_taken
+      max_steps      <- 500L
+
+      first_iteration <- TRUE
+      result          <- NULL
+
+      pause_result <- tryCatch({
+        repeat {
+          if (first_iteration && !is.null(resume_response)) {
+            context <- state$context
+            result  <- private$.apply_response(
+              resume_response, state$proposed_result, steps_taken
+            )
+          } else {
+            steps_taken <- steps_taken + 1L
+
+            if (steps_taken > max_steps) {
+              cli::cli_abort(
+                "Workflow exceeded {max_steps} steps. Possible cycle in Routes."
+              )
+            }
+
+            parallel_group <- private$.find_parallel_group(current)
+
+            if (!is.null(parallel_group)) {
+              proposed_result <- private$.execute_parallel_group_compute(
+                parallel_group, current_input
+              )
+              context <- list(kind = "parallel", parallel_group = parallel_group)
+              station_label <- "parallel_group"
+            } else {
+              station   <- private$.stations[[current]]
+              cache_key <- private$.cache_key(current, current_input)
+              from_cache <- self$use_cache &&
+                exists(cache_key, envir = self$cache, inherits = FALSE)
+
+              if (from_cache) {
+                cli::cli_alert_info("[cache] Station {.val {current}}.")
+                proposed_result <- get(cache_key, envir = self$cache, inherits = FALSE)
+              } else {
+                cli::cli_text("  {cli::col_blue('->')} Station {.val {current}}")
+                proposed_result <- private$.invoke_handler_safe(station, current_input)
+              }
+
+              context <- list(
+                kind = "station", cache_key = cache_key, from_cache = from_cache
+              )
+              station_label <- current
+            }
+
+            needs_hitl <- !is.null(self$hitl_steps) &&
+              steps_taken %in% self$hitl_steps &&
+              !(context$kind == "station" && context$from_cache)
+
+            if (needs_hitl) {
+              state_snapshot <- list(
+                current = current, current_input = current_input,
+                original_input = original_input, trace = trace,
+                steps_taken = steps_taken, context = context
+              )
+              result <- private$.request_confirmation(
+                steps_taken, station_label, current_input,
+                proposed_result, state_snapshot
+              )
+            } else {
+              result <- proposed_result
+            }
+          }
+
+          first_iteration <- FALSE
+
+          if (context$kind == "station" && !context$from_cache && self$use_cache) {
+            assign(context$cache_key, result, envir = self$cache)
+          }
+
+          next_station <- if (context$kind == "parallel") {
+            context$parallel_group$to
+          } else {
+            private$.get_next_station(current, result)
+          }
+
+          trace[[length(trace) + 1L]] <- list(
+            step    = steps_taken,
+            station = if (context$kind == "parallel") "parallel_group" else current,
+            input   = current_input,
+            output  = result
+          )
+
+          if (is.null(next_station)) break
+
+          current       <- next_station
+          current_input <- result
+        }
+
+        list(status = "complete")
+      }, mini007_workflow_pause = function(e) {
+        list(status = "awaiting_input", pending = e$pending)
+      })
+
+      if (identical(pause_result$status, "awaiting_input")) {
+        return(pause_result$pending)
       }
 
-      merged
+      cli::cli_alert_success(
+        "Workflow {.val {self$name}} completed in {steps_taken} step(s)."
+      )
+
+      self$run_history[[length(self$run_history) + 1L]] <- list(
+        input  = original_input,
+        output = result,
+        steps  = steps_taken,
+        trace  = trace
+      )
+
+      result
     }
   )
 )
@@ -848,6 +1017,14 @@ WorkflowAgent <- R6::R6Class(
 
     #' @description Run the underlying workflow with `prompt` as input.
     #'
+    #' Not compatible with a wrapped `Workflow` whose \code{hitl_mode} is
+    #' `"pause"`: a `WorkflowAgent` is invoked synchronously from a `Workflow`
+    #' Station or a `LeadAgent` step, both of which expect a single character
+    #' result back, not a `mini007_pending` object to resume later. Use
+    #' \code{hitl_mode = "console"} (the default), or drive the wrapped
+    #' workflow directly with \code{$workflow$run()} / \code{$resume()} if you
+    #' need pause/resume HITL.
+    #'
     #' @param prompt `[character(1)]` The user prompt / input payload.
     #'
     #' @return `[character(1)]` The final output of the workflow.
@@ -860,6 +1037,14 @@ WorkflowAgent <- R6::R6Class(
       )
 
       result <- self$workflow$run(prompt)
+
+      if (is_pending(result)) {
+        cli::cli_abort(c(
+          "Workflow {.val {self$workflow$name}} paused for HITL input (pause mode) while running as a WorkflowAgent.",
+          "i" = "A WorkflowAgent must return a single result synchronously - it cannot be resumed later.",
+          "i" = "Use {.code hitl_mode = \"console\"} on the wrapped Workflow, or drive it directly via {.code $workflow$run()} / {.code $workflow$resume()} instead of {.code $as_agent()}."
+        ))
+      }
 
       self$messages <- c(
         self$messages,

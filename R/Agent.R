@@ -108,7 +108,7 @@ Agent <- R6::R6Class(
         private$.check_budget()
       }
 
-      response <- self$llm_object$chat(prompt)
+      response <- private$.safe_chat(prompt)
 
       cost <- self$llm_object$get_cost()
 
@@ -474,7 +474,7 @@ Agent <- R6::R6Class(
         )
       )
 
-      summary <- self$llm_object$chat(summary_prompt)
+      summary <- private$.safe_chat(summary_prompt)
       summary <- as.character(summary)
 
       new_system_prompt <- paste(
@@ -1003,7 +1003,7 @@ Agent <- R6::R6Class(
       )
 
       # Generate the tool code
-      generated_code <- self$llm_object$chat(generation_prompt)
+      generated_code <- private$.safe_chat(generation_prompt)
 
       cli::cli_h2("The following tool will be registered")
       cli::cli_code(generated_code)
@@ -1164,6 +1164,46 @@ Agent <- R6::R6Class(
       paste(parts, collapse = ", ")
     },
 
+    # Call the underlying LLM's $chat(). Raw failures from the provider
+    # (unreachable API, invalid/missing key, timeout, provider outage) are
+    # translated into an actionable cli error instead of surfacing an
+    # httr2/curl error several stack frames removed from the Agent that
+    # triggered it.
+    .safe_chat = function(prompt) {
+      tryCatch(
+        self$llm_object$chat(prompt),
+        error = function(e) {
+          cli::cli_abort(
+            c(
+              "Agent {.val {self$name}} could not get a response from the LLM provider.",
+              "i" = paste(
+                "This is usually caused by an unreachable API (network issue or",
+                "provider outage), an invalid or missing API key, or a request timeout."
+              ),
+              "x" = conditionMessage(e)
+            ),
+            parent = e,
+            call = NULL
+          )
+        }
+      )
+    },
+
+    # Best-effort conversion of a single ellmer Content object into a
+    # length-1 character string. A content type we don't explicitly
+    # recognise below, or a `@text` slot that's missing/empty/NA, must never
+    # produce anything other than length-1 output here - that is what turns
+    # a malformed or interrupted turn (e.g. an empty/aborted response after
+    # an API hiccup) into an opaque `vapply()` crash deep inside
+    # .set_messages_from_turns() instead of a readable placeholder.
+    .safe_content_text = function(ct) {
+      text <- tryCatch(ct@text, error = function(e) NULL)
+      if (is.null(text) || length(text) == 0L || (length(text) == 1L && is.na(text))) {
+        return("[empty content]")
+      }
+      paste(as.character(text), collapse = "\n")
+    },
+
     .set_messages_from_turns = function() {
 
       turns <- self$llm_object$get_turns(include_system_prompt = TRUE)
@@ -1179,11 +1219,9 @@ Agent <- R6::R6Class(
 
           cls <- class(ct)[[1]]
 
-          if (grepl("ContentText", cls, ignore.case = TRUE)) {
+          msg <- if (grepl("ContentText", cls, ignore.case = TRUE)) {
 
-            msg <- ct@text
-
-            return(msg)
+            private$.safe_content_text(ct)
 
           } else if (grepl("ContentToolRequest", cls, ignore.case = TRUE)) {
 
@@ -1191,37 +1229,50 @@ Agent <- R6::R6Class(
             tool_name <- ct@name
             args <- private$.format_arguments(ct@arguments)
 
-            msg <- sprintf(
+            sprintf(
               "[tool request id=%s]: %s(%s)",
               call_id,
               tool_name,
               args
             )
 
-            return(msg)
-
           } else if (grepl("ContentToolResult", cls, ignore.case = TRUE)) {
 
-            call_id <- ct@request@id
-            result <- ct@value
+            call_id     <- ct@request@id
+            result      <- ct@value
+            tool_error  <- tryCatch(ct@error, error = function(e) NULL)
 
-            if (is.list(result)) {
+            if (!is.null(tool_error)) {
+              # The tool call itself failed (e.g. the underlying API/service
+              # it calls was unreachable) - ellmer records this as a
+              # ContentToolResult with `@value = NULL` and `@error` set.
+              # Surface the actual error instead of an empty/NULL value.
+              result <- paste(
+                "ERROR:",
+                if (inherits(tool_error, "condition")) conditionMessage(tool_error) else as.character(tool_error)
+              )
+            } else if (is.list(result)) {
               result <- glue::glue_collapse(
                 glue::glue("{names(result)}: {lapply(result, toString)}"),
                 sep = "     "
               )
             }
 
-            msg <- sprintf(
+            sprintf(
               "[tool result id=%s]: %s",
               call_id,
               result
             )
-
-            return(msg)
           } else {
-            return(as.character(ct@text))
+            private$.safe_content_text(ct)
           }
+
+          # Whatever branch produced `msg` above, never let a zero-length or
+          # NA value escape here - a malformed/interrupted turn (e.g. an
+          # empty response after an API hiccup) must fall back to a
+          # readable placeholder instead of crashing this vapply() with an
+          # opaque "FUN(X[[i]]) result is length 0" error.
+          if (length(msg) != 1L || is.na(msg)) "[empty content]" else msg
 
         }, FUN.VALUE = character(1))
 

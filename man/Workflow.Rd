@@ -35,6 +35,11 @@ a Station inside another `Workflow`.
 \item{\code{hitl_steps}}{Integer vector of step numbers at which execution pauses
 for human review. Set via \code{$set_hitl()}.}
 
+\item{\code{hitl_mode}}{Either `"console"` (blocking \code{readline()} prompt,
+the default) or `"pause"` (non-blocking: \code{$run()} returns a
+`mini007_pending` object instead of blocking). Set via
+\code{$set_hitl()}.}
+
 \item{\code{n_daemons}}{Number of parallel daemons. Set via \code{$set_daemons()}.}
 }
 \if{html}{\out{</div>}}
@@ -47,6 +52,7 @@ for human review. Set via \code{$set_hitl()}.}
 \item \href{#method-Workflow-add_route}{\code{Workflow$add_route()}}
 \item \href{#method-Workflow-set_entry}{\code{Workflow$set_entry()}}
 \item \href{#method-Workflow-run}{\code{Workflow$run()}}
+\item \href{#method-Workflow-resume}{\code{Workflow$resume()}}
 \item \href{#method-Workflow-set_daemons}{\code{Workflow$set_daemons()}}
 \item \href{#method-Workflow-add_parallel_group}{\code{Workflow$add_parallel_group()}}
 \item \href{#method-Workflow-set_hitl}{\code{Workflow$set_hitl()}}
@@ -205,7 +211,48 @@ handler. Use \code{$clear_cache()} to force re-execution.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-`[character(1)]` The output of the last Station executed.
+`[character(1)]` The output of the last Station executed, or -
+  if execution reaches an HITL step while \code{hitl_mode = "pause"} -
+  a `mini007_pending` object. Use \code{\link{is_pending}()} to check.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Workflow-resume"></a>}}
+\if{latex}{\out{\hypertarget{method-Workflow-resume}{}}}
+\subsection{Method \code{resume()}}{
+Resume a Workflow paused at an HITL step.
+
+Only relevant when \code{hitl_mode = "pause"} (see \code{$set_hitl()}).
+\code{$run()} returns a `mini007_pending` object when it reaches a
+paused HITL step; call \code{$resume()} with that object's
+`request_id` and a chosen `action` to continue execution from that
+point.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Workflow$resume(
+  request_id,
+  action = c("continue", "edit", "abort"),
+  value = NULL
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{request_id}}{`[character(1)]` The `request_id` from the
+`mini007_pending` object returned by \code{$run()}.}
+
+\item{\code{action}}{`[character(1)]` One of `"continue"` (use the proposed
+output as-is), `"edit"` (replace it with `value`), or `"abort"`
+(raise an error, stopping the workflow).}
+
+\item{\code{value}}{`[character(1) | NULL]` Required when
+\code{action = "edit"}: the replacement output.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+`[character(1)]` The final output, or another `mini007_pending`
+  object if a further HITL step is reached.
 }
 }
 \if{html}{\out{<hr>}}
@@ -287,14 +334,25 @@ HITL only fires on fresh Station executions - cache hits are skipped.
 Steps are numbered from 1 in execution order, matching the step counter
 shown in \code{$run()} output. You can set multiple steps at once:
 \code{wf$set_hitl(c(1, 3))}.
+
+With \code{mode = "console"} (default), a paused step blocks on
+\code{readline()} right there in \code{$run()} - unchanged from
+previous behavior. With \code{mode = "pause"}, \code{$run()} instead
+returns immediately with a `mini007_pending` object describing the
+paused step; call \code{$resume()} with the chosen action to continue.
+This allows HITL to work outside an interactive console (e.g. Shiny,
+Plumber, or a batch job resuming later) and lets workflow state be
+inspected/persisted between steps.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Workflow$set_hitl(steps)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Workflow$set_hitl(steps, mode = c("console", "pause"))}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{steps}}{`[integerish]` One or more step numbers (>= 1).}
+
+\item{\code{mode}}{`[character(1)]` `"console"` (default) or `"pause"`.}
 }
 \if{html}{\out{</div>}}
 }

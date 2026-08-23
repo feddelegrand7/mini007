@@ -25,6 +25,11 @@ LeadAgent <- R6::R6Class(
     plan = list(),
     #' @field hitl_steps The steps where the workflow should be stopped in order to allow for a human interaction
     hitl_steps = NULL,
+    #' @field hitl_mode Either `"console"` (blocking \code{readline()} prompt,
+    #'   the default) or `"pause"` (non-blocking: \code{$invoke()} returns a
+    #'   `mini007_pending` object instead of blocking). Set via
+    #'   \code{$set_hitl()}.
+    hitl_mode = "console",
     #'@field prompt_for_plan The prompt used to generate the plan.
     prompt_for_plan = NULL,
     #'@field agents_for_plan The agents used for the plan
@@ -365,33 +370,58 @@ LeadAgent <- R6::R6Class(
 
       self$agents_interaction <- prompts_res
 
-      for (i in seq_along(self$agents_interaction)) {
-        step <- self$agents_interaction[[i]]
+      private$.run_steps(1L)
+    },
 
-        idx <- which(sapply(self$agents, function(agent) agent$agent_id == step$agent_id))
-        selected_agent <- self$agents[[idx]]
+    # -- resume ------------------------------------------------------------
 
-        prompt_to_consider <- step$prompt
-        if (i > 1) {
-          prev_resp <- self$agents_interaction[[i - 1]]$response
-          prompt_to_consider <- paste(
-            "\n\nBefore answering consider the previous response:\n", prev_resp,
-            "\n\n--- Task ---\n", prompt_to_consider
-          )
-        }
+    #' @description Resume a `LeadAgent` paused at an HITL step.
+    #'
+    #' Only relevant when \code{hitl_mode = "pause"} (see \code{$set_hitl()}).
+    #' \code{$invoke()} returns a `mini007_pending` object when it reaches a
+    #' paused HITL step; call \code{$resume()} with that object's
+    #' `request_id` and a chosen `action` to continue delegation from that
+    #' point.
+    #'
+    #' @param request_id `[character(1)]` The `request_id` from the
+    #'   `mini007_pending` object returned by \code{$invoke()}.
+    #' @param action `[character(1)]` One of `"continue"` (use the proposed
+    #'   response as-is), `"edit"` (replace it with `value`), or `"abort"`
+    #'   (raise an error, stopping delegation).
+    #' @param value `[character(1) | NULL]` Required when
+    #'   \code{action = "edit"}: the replacement response.
+    #'
+    #' @return `[character(1)]` The final response, or another
+    #'   `mini007_pending` object if a further HITL step is reached.
+    resume = function(request_id, action = c("continue", "edit", "abort"), value = NULL) {
+      checkmate::assert_string(request_id)
+      action <- match.arg(action)
+      if (identical(action, "edit")) checkmate::assert_string(value)
 
-        response <- selected_agent$invoke(prompt_to_consider)
-        step$response <- response
-        step$edited_by_hitl <- FALSE
-        self$agents_interaction[[i]] <- step
-
-        if (i %in% self$hitl_steps && !is.null(self$hitl_steps)) {
-          private$.human_confirm(i)
-        }
+      pending <- private$.pending[[request_id]]
+      if (is.null(pending)) {
+        cli::cli_abort(
+          "No pending HITL request found with id {.val {request_id}} on LeadAgent {.val {self$name}}."
+        )
       }
+      private$.pending[[request_id]] <- NULL
 
-      self$agents_interaction[[length(self$agents_interaction)]]$response
+      step_index <- pending$step
+      step <- self$agents_interaction[[step_index]]
 
+      if (identical(action, "abort")) {
+        cli::cli_alert_danger("Workflow manually stopped at step {step_index}.")
+        cli::cli_abort("HITL: Execution stopped by user.")
+      } else if (identical(action, "edit")) {
+        step$response <- value
+        step$edited_by_hitl <- TRUE
+        cli::cli_alert_success("Response updated.")
+      } else {
+        cli::cli_alert_success("Continuing with original response.")
+      }
+      self$agents_interaction[[step_index]] <- step
+
+      private$.run_steps(step_index + 1L)
     },
 
     #' @description
@@ -650,8 +680,15 @@ LeadAgent <- R6::R6Class(
     },
 
     #' @description
-    #' Set Human In The Loop (HITL) interaction at determined steps within the workflow
+    #' Set Human In The Loop (HITL) interaction at determined steps within the workflow.
+    #' With \code{mode = "console"} (default) a paused step blocks on
+    #' \code{readline()}, unchanged from previous behavior. With
+    #' \code{mode = "pause"}, \code{$invoke()} instead returns a
+    #' `mini007_pending` object describing the paused step; call
+    #' \code{$resume()} with the chosen action to continue delegation. This
+    #' allows HITL to work outside an interactive console.
     #' @param steps At which steps the Human In The Loop is required?
+    #' @param mode `[character(1)]` `"console"` (default) or `"pause"`.
     #' @return A list of responses from all agents.
     #' @examples \dontrun{
     #'  # An API KEY is required in order to invoke the agents
@@ -706,14 +743,16 @@ LeadAgent <- R6::R6Class(
     #'   )
     #'  )
     #' }
-    set_hitl = function(steps) {
+    set_hitl = function(steps, mode = c("console", "pause")) {
       checkmate::assert_integerish(steps, lower = 1, any.missing = FALSE)
+      mode <- match.arg(mode)
       self$hitl_steps <- unique(as.integer(steps))
+      self$hitl_mode  <- mode
 
       steps_chr <- as.character(steps)
       steps_chr <- toString(steps_chr)
 
-      cli::cli_alert_success("HITL successfully set at step(s) {steps_chr}.")
+      cli::cli_alert_success("HITL successfully set at step(s) {steps_chr} (mode: {mode}).")
 
     },
 
@@ -797,7 +836,7 @@ LeadAgent <- R6::R6Class(
         "\nReturn ONLY the final response text. Nothing else. Do not talk. Just return the best response"
       )
 
-      result <- self$llm_object$chat(judge_prompt)
+      result <- private$.safe_chat(judge_prompt)
 
       final_result <- list(
         proposals = proposals,
@@ -1004,7 +1043,7 @@ LeadAgent <- R6::R6Class(
           "Just provide the direct answer to the task."
         )
 
-        final_response <- self$llm_object$chat(synthesis_prompt)
+        final_response <- private$.safe_chat(synthesis_prompt)
       }
 
       result <- list(
@@ -1028,9 +1067,61 @@ LeadAgent <- R6::R6Class(
 
   private = list(
 
+    .pending = list(),
+
+    # Execute agent-delegation steps from `start_index` through the end of
+    # self$agents_interaction. Shared by $invoke() (start_index = 1) and
+    # $resume() (start_index = the step after the one just confirmed). In
+    # "console" mode, an HITL step blocks on .human_confirm() exactly as
+    # before. In "pause" mode, it instead returns a mini007_pending object
+    # immediately instead of continuing the loop.
+    .run_steps = function(start_index) {
+      if (start_index > length(self$agents_interaction)) {
+        return(self$agents_interaction[[length(self$agents_interaction)]]$response)
+      }
+
+      for (i in seq.int(start_index, length(self$agents_interaction))) {
+        step <- self$agents_interaction[[i]]
+
+        idx <- which(sapply(self$agents, function(agent) agent$agent_id == step$agent_id))
+        selected_agent <- self$agents[[idx]]
+
+        prompt_to_consider <- step$prompt
+        if (i > 1) {
+          prev_resp <- self$agents_interaction[[i - 1]]$response
+          prompt_to_consider <- paste(
+            "\n\nBefore answering consider the previous response:\n", prev_resp,
+            "\n\n--- Task ---\n", prompt_to_consider
+          )
+        }
+
+        response <- selected_agent$invoke(prompt_to_consider)
+        step$response <- response
+        step$edited_by_hitl <- FALSE
+        self$agents_interaction[[i]] <- step
+
+        if (!is.null(self$hitl_steps) && i %in% self$hitl_steps) {
+          if (identical(self$hitl_mode, "pause")) {
+            request_id <- uuid::UUIDgenerate()
+            private$.pending[[request_id]] <- list(step = i)
+            return(new_pending(
+              request_id      = request_id,
+              step            = i,
+              station         = step$agent_name,
+              input           = step$prompt,
+              proposed_output = step$response
+            ))
+          }
+          private$.human_confirm(i)
+        }
+      }
+
+      self$agents_interaction[[length(self$agents_interaction)]]$response
+    },
+
     .analyze_prompt = function(prompt) {
 
-      result <- self$llm_object$chat(prompt)
+      result <- private$.safe_chat(prompt)
 
       tasks <- unlist(strsplit(result, "\n"))
       tasks <- trimws(tasks)
@@ -1068,7 +1159,7 @@ LeadAgent <- R6::R6Class(
         paste(agent_descriptions, collapse = "\n\n")
       )
 
-      agent_id <- self$llm_object$chat(
+      agent_id <- private$.safe_chat(
         user_message
       )
 

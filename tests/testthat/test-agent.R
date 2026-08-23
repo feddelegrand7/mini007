@@ -556,3 +556,69 @@ test_that("Agent cloning preserves all state correctly", {
   expect_equal(agent1$budget, 25.5) # Original unchanged
   expect_equal(agent2$budget, 50)   # Clone changed
 })
+
+# ── invoke(): LLM/tool failures produce readable errors, not opaque crashes ──
+
+test_that("invoke() raises an actionable error when the LLM provider is unreachable, instead of the raw provider error", {
+  FailingChat <- R6::R6Class(
+    "Chat",
+    inherit = DummyChat,
+    public = list(
+      chat = function(prompt) stop("Failed to connect: Could not resolve host")
+    )
+  )
+
+  agent <- Agent$new("Unreachable", "Instr", FailingChat$new())
+
+  err <- tryCatch(agent$invoke("hello"), error = function(e) e)
+  expect_s3_class(err, "error")
+  expect_true(grepl("could not get a response from the LLM provider", conditionMessage(err)))
+  expect_true(grepl("Could not resolve host", conditionMessage(err)))
+})
+
+test_that("invoke() survives a failed tool call (empty ContentToolResult) instead of crashing with an opaque vapply() error", {
+  # Reproduces a real-world crash: a registered tool (e.g. a weather API call)
+  # fails, and ellmer records this as a ContentToolResult with `value = NULL`
+  # and `error` set. Before the fix, mini007's .set_messages_from_turns()
+  # fed that NULL straight into sprintf(), which silently returns
+  # character(0) and crashed vapply() with:
+  #   "values must be length 1, but FUN(X[[1]]) result is length 0"
+  skip_if_not_installed("ellmer")
+
+  tool_request <- ellmer::ContentToolRequest(
+    id = "call_1",
+    name = "get_weather",
+    arguments = list(city = "Tokyo"),
+    tool = NULL
+  )
+  tool_result <- ellmer::ContentToolResult(
+    value = NULL,
+    error = simpleError("weather API unavailable: connection timed out"),
+    request = tool_request
+  )
+
+  ToolFailureChat <- R6::R6Class(
+    "Chat",
+    inherit = DummyChat,
+    public = list(
+      chat = function(prompt) "irrelevant - turns drive the sync",
+      get_turns = function(include_system_prompt = FALSE) {
+        list(
+          ellmer::Turn(role = "system", contents = list(ellmer::ContentText("Instr"))),
+          ellmer::Turn(role = "user", contents = list(ellmer::ContentText("what is the weather in Tokyo?"))),
+          ellmer::Turn(role = "assistant", contents = list(tool_request, tool_result))
+        )
+      }
+    )
+  )
+
+  agent <- Agent$new("weather_agent", "Instr", ToolFailureChat$new())
+
+  expect_no_error({
+    result <- agent$invoke("what is the current weather in Tokyo?")
+  })
+
+  last_message <- agent$messages[[length(agent$messages)]]
+  expect_true(grepl("weather API unavailable", last_message$content))
+  expect_true(grepl("ERROR:", last_message$content, fixed = TRUE))
+})

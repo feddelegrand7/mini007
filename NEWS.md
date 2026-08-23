@@ -1,5 +1,52 @@
 # mini007 0.6.0
 
+#### Bugfix: clearer errors on LLM/tool failures instead of an opaque crash
+
+Two related failures previously surfaced as a cryptic internal error -
+`Error in vapply(): ! values must be length 1, but FUN(X[[1]]) result is
+length 0` - deep inside `Agent$invoke()`'s message-sync internals, with no
+indication of what actually went wrong:
+
+- **The LLM provider itself is unreachable** (network issue, invalid API
+  key, provider outage, timeout). `$invoke()` (and every other direct LLM
+  call inside `Agent` and `LeadAgent`) now catches the raw provider error and
+  raises a clear, actionable message explaining the likely cause, while still
+  preserving the original error for debugging.
+- **A registered tool call fails** (e.g. the API a tool wraps - like a
+  weather service - is down). `ellmer` records this as a result with an
+  empty value and an error attached; mini007 was feeding that empty value
+  straight into `sprintf()`, which silently produced a zero-length string and
+  crashed the vapply() call that assembles message history. `$invoke()` now
+  survives this and records the actual tool error (e.g. `"ERROR: connection
+  refused: weather API is down"`) in the conversation history instead of
+  crashing.
+
+#### Non-blocking Human-In-The-Loop: pause and resume
+
+HITL no longer requires a blocking `readline()` prompt inside an interactive
+console. `$set_hitl()` on both `Workflow` and `LeadAgent` gains a `mode`
+argument:
+
+- `mode = "console"` (default) — unchanged: blocks on `readline()` exactly as
+  before.
+- `mode = "pause"` — `$run()` / `$invoke()` return immediately with a
+  `mini007_pending` object describing the paused step instead of blocking.
+  Inspect it, then call the new `$resume(request_id, action, value)` method
+  (`action` is one of `"continue"`, `"edit"`, `"abort"`) to continue
+  execution from that point.
+
+This makes HITL usable outside an interactive console - e.g. from a Shiny
+app, a Plumber endpoint, or any batch job that needs to persist a paused
+run and resume it later.
+
+**New:**
+- `Workflow$resume()` / `LeadAgent$resume()`
+- `is_pending()` — check whether a value is a paused `mini007_pending` object
+
+**Changed:**
+- `Workflow$set_hitl()` / `LeadAgent$set_hitl()` gain a `mode` argument
+  (`"console"` default, `"pause"`)
+
 #### Parallel Station Execution for Workflows
 
 Major feature addition enabling 2-4x speedup for independent processing units.

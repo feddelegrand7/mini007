@@ -497,6 +497,159 @@ test_that("HITL is skipped on cache hit", {
   expect_false(hitl_called)
 })
 
+# ── HITL: pause mode (non-blocking resume) ──────────────────────────────────
+
+test_that("set_hitl(mode = 'pause') sets hitl_mode", {
+  wf <- Workflow$new("W")
+  expect_equal(wf$hitl_mode, "console")
+  wf$set_hitl(1L, mode = "pause")
+  expect_equal(wf$hitl_mode, "pause")
+})
+
+test_that("run() returns a mini007_pending object at a paused HITL step, without blocking on readline", {
+  wf <- Workflow$new("W", use_cache = FALSE)
+  wf$add_station("s1", function(x) "original")
+  wf$set_hitl(1L, mode = "pause")
+
+  local_mocked_bindings(
+    readline = function(prompt) stop("readline should not be called in pause mode"),
+    .package = "base"
+  )
+
+  result <- wf$run("input")
+  expect_true(is_pending(result))
+  expect_equal(result$step, 1L)
+  expect_equal(result$station, "s1")
+  expect_equal(result$input, "input")
+  expect_equal(result$proposed_output, "original")
+  expect_true(nzchar(result$request_id))
+  expect_length(wf$run_history, 0L)
+})
+
+test_that("resume(action = 'continue') completes the workflow with the proposed output", {
+  wf <- Workflow$new("W", use_cache = FALSE)
+  wf$add_station("s1", function(x) "original")
+  wf$set_hitl(1L, mode = "pause")
+
+  pending <- wf$run("input")
+  result <- wf$resume(pending$request_id, action = "continue")
+
+  expect_equal(result, "original")
+  expect_length(wf$run_history, 1L)
+  expect_equal(wf$run_history[[1L]]$output, "original")
+})
+
+test_that("resume(action = 'edit') replaces the output and downstream stations receive it", {
+  wf <- Workflow$new("W", use_cache = FALSE)
+  wf$add_station("s1", function(x) "original")
+  wf$add_station("s2", function(x) paste("next:", x))
+  wf$add_route("s1", "s2")
+  wf$set_hitl(1L, mode = "pause")
+
+  pending <- wf$run("input")
+  result <- wf$resume(pending$request_id, action = "edit", value = "edited output")
+
+  expect_equal(result, "next: edited output")
+})
+
+test_that("resume(action = 'abort') raises an error and does not record run_history", {
+  wf <- Workflow$new("W", use_cache = FALSE)
+  wf$add_station("s1", function(x) "output")
+  wf$set_hitl(1L, mode = "pause")
+
+  pending <- wf$run("input")
+  expect_error(wf$resume(pending$request_id, action = "abort"), "[Ss]topped by user")
+  expect_length(wf$run_history, 0L)
+})
+
+test_that("resume() with an unknown request_id errors", {
+  wf <- Workflow$new("W")
+  wf$add_station("s1", function(x) "output")
+  expect_error(wf$resume("not-a-real-id"), "[Nn]o pending")
+})
+
+test_that("resume() with action = 'edit' and no value errors", {
+  wf <- Workflow$new("W", use_cache = FALSE)
+  wf$add_station("s1", function(x) "output")
+  wf$set_hitl(1L, mode = "pause")
+  pending <- wf$run("input")
+  expect_error(wf$resume(pending$request_id, action = "edit"))
+})
+
+test_that("a resumed pending request cannot be resumed twice", {
+  wf <- Workflow$new("W", use_cache = FALSE)
+  wf$add_station("s1", function(x) "output")
+  wf$set_hitl(1L, mode = "pause")
+  pending <- wf$run("input")
+  wf$resume(pending$request_id, action = "continue")
+  expect_error(wf$resume(pending$request_id, action = "continue"), "[Nn]o pending")
+})
+
+test_that("pause mode works across multiple HITL steps in sequence", {
+  wf <- Workflow$new("W", use_cache = FALSE)
+  wf$add_station("s1", function(x) paste("A:", x))
+  wf$add_station("s2", function(x) paste("B:", x))
+  wf$add_route("s1", "s2")
+  wf$set_hitl(c(1L, 2L), mode = "pause")
+
+  p1 <- wf$run("in")
+  expect_true(is_pending(p1))
+  expect_equal(p1$step, 1L)
+
+  p2 <- wf$resume(p1$request_id, action = "continue")
+  expect_true(is_pending(p2))
+  expect_equal(p2$step, 2L)
+  expect_equal(p2$input, "A: in")
+
+  result <- wf$resume(p2$request_id, action = "continue")
+  expect_equal(result, "B: A: in")
+})
+
+test_that("resume() writes the (possibly edited) result to the cache, and a later run() hits it without pausing again", {
+  wf <- Workflow$new("W", use_cache = TRUE)
+  wf$add_station("s1", function(x) "original")
+  wf$set_hitl(1L, mode = "pause")
+
+  pending <- wf$run("hello")
+  expect_equal(wf$resume(pending$request_id, action = "edit", value = "edited"), "edited")
+
+  # Second run with the same input must hit the cache: no second pause.
+  result <- wf$run("hello")
+  expect_false(is_pending(result))
+  expect_equal(result, "edited")
+})
+
+test_that("WorkflowAgent$invoke() errors clearly if the wrapped workflow pauses for HITL", {
+  wf <- Workflow$new("W", use_cache = FALSE)
+  wf$add_station("s1", function(x) "output")
+  wf$set_hitl(1L, mode = "pause")
+  wa <- wf$as_agent()
+
+  expect_error(wa$invoke("hello"), "paused for HITL")
+})
+
+test_that("pause mode pauses on a parallel group merge and resumes correctly", {
+  wf <- Workflow$new("W", use_cache = FALSE)
+  wf$add_station("start", function(x) x)
+  wf$add_station("p1", function(x) paste0(x, "-1"))
+  wf$add_station("p2", function(x) paste0(x, "-2"))
+  wf$add_station("finish", function(x) paste0("[", x, "]"))
+  wf$set_daemons(2)
+  on.exit(wf$set_daemons(0), add = TRUE)
+  wf$add_parallel_group("start", c("p1", "p2"), to = "finish")
+  # Step 1 is the parallel group itself ("start" is only an attachment
+  # point and is never invoked as a handler when a group starts from it).
+  wf$set_hitl(1L, mode = "pause")
+
+  pending <- wf$run("go")
+  expect_true(is_pending(pending))
+  expect_equal(pending$station, "parallel_group")
+  expect_equal(pending$proposed_output, "go-1\ngo-2")
+
+  result <- wf$resume(pending$request_id, action = "continue")
+  expect_equal(result, "[go-1\ngo-2]")
+})
+
 # ── as_agent ─────────────────────────────────────────────────────────────────
 
 test_that("as_agent returns a WorkflowAgent", {

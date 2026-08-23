@@ -67,6 +67,14 @@ Create a new `WorkflowAgent`. Prefer \code{Workflow$as_agent()}.
 \if{latex}{\out{\hypertarget{method-WorkflowAgent-invoke}{}}}
 \subsection{Method \code{invoke()}}{
 Run the underlying workflow with `prompt` as input.
+
+Not compatible with a wrapped `Workflow` whose \code{hitl_mode} is
+`"pause"`: a `WorkflowAgent` is invoked synchronously from a `Workflow`
+Station or a `LeadAgent` step, both of which expect a single character
+result back, not a `mini007_pending` object to resume later. Use
+\code{hitl_mode = "console"} (the default), or drive the wrapped
+workflow directly with \code{$workflow$run()} / \code{$resume()} if you
+need pause/resume HITL.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{WorkflowAgent$invoke(prompt)}\if{html}{\out{</div>}}
 }

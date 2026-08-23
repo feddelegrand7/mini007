@@ -245,6 +245,181 @@ test_that("set_hitl validates steps are >= 1", {
   expect_error(lead$set_hitl(-1))
 })
 
+test_that("set_hitl(mode = 'pause') sets hitl_mode", {
+  mock_chat <- ProgrammableChat$new()
+  lead <- LeadAgent$new(name = "Leader", llm_object = mock_chat)
+
+  expect_equal(lead$hitl_mode, "console")
+  lead$set_hitl(1, mode = "pause")
+  expect_equal(lead$hitl_mode, "pause")
+})
+
+# ── invoke: HITL (console + pause) ──────────────────────────────────────────
+
+# A minimal sub-agent mock: register_agents() does no class checking, and
+# invoke() just needs $name, $agent_id, and $invoke(prompt).
+MockSubAgent <- R6::R6Class(
+  "MockSubAgent",
+  public = list(
+    name = NULL,
+    agent_id = NULL,
+    response = NULL,
+    prompts_received = NULL,
+    initialize = function(name, agent_id, response) {
+      self$name <- name
+      self$agent_id <- agent_id
+      self$response <- response
+      self$prompts_received <- list()
+    },
+    invoke = function(prompt) {
+      self$prompts_received[[length(self$prompts_received) + 1L]] <- prompt
+      self$response
+    }
+  )
+)
+
+# Build a LeadAgent with a 2-step plan already set, bypassing generate_plan()
+# (and its LLM calls) by directly setting $plan/$prompt_for_plan/$agents_for_plan
+# so that $invoke() reuses the existing plan (see the `invoke = function(...)`
+# plan-reuse condition in LeadAgent.R).
+setup_lead_with_plan <- function() {
+  mock_chat <- ProgrammableChat$new()
+  lead <- LeadAgent$new(name = "Leader", llm_object = mock_chat)
+
+  a1 <- MockSubAgent$new("agent1", "id1", "response1")
+  a2 <- MockSubAgent$new("agent2", "id2", "response2")
+  lead$register_agents(list(a1, a2))
+
+  lead$prompt_for_plan <- "do the thing"
+  lead$agents_for_plan <- c("agent1", "agent2")
+  lead$plan <- list(
+    list(agent_id = "id1", agent_name = "agent1", prompt = "task1",
+         model_provider = "dummy", model_name = "v0"),
+    list(agent_id = "id2", agent_name = "agent2", prompt = "task2",
+         model_provider = "dummy", model_name = "v0")
+  )
+
+  list(lead = lead, a1 = a1, a2 = a2)
+}
+
+test_that("invoke() with console-mode HITL blocks via readline (unchanged behavior)", {
+  setup <- setup_lead_with_plan()
+  setup$lead$set_hitl(1)
+
+  local_mocked_bindings(
+    readline = function(prompt) "1",
+    .package = "base"
+  )
+
+  result <- setup$lead$invoke("do the thing")
+  expect_equal(result, "response2")
+})
+
+test_that("invoke() with console-mode HITL choice 2 edits the response", {
+  setup <- setup_lead_with_plan()
+  setup$lead$set_hitl(1)
+
+  calls <- 0L
+  local_mocked_bindings(
+    readline = function(prompt) {
+      calls <<- calls + 1L
+      if (calls == 1L) "2" else "edited response1"
+    },
+    .package = "base"
+  )
+
+  setup$lead$invoke("do the thing")
+  expect_equal(setup$lead$agents_interaction[[1L]]$response, "edited response1")
+  expect_true(setup$lead$agents_interaction[[1L]]$edited_by_hitl)
+  expect_true(grepl("edited response1", setup$a2$prompts_received[[1L]], fixed = TRUE))
+})
+
+test_that("invoke() returns a mini007_pending object at a paused HITL step, without blocking on readline", {
+  setup <- setup_lead_with_plan()
+  setup$lead$set_hitl(1, mode = "pause")
+
+  local_mocked_bindings(
+    readline = function(prompt) stop("readline should not be called in pause mode"),
+    .package = "base"
+  )
+
+  pending <- setup$lead$invoke("do the thing")
+
+  expect_true(is_pending(pending))
+  expect_equal(pending$step, 1L)
+  expect_equal(pending$station, "agent1")
+  expect_equal(pending$input, "task1")
+  expect_equal(pending$proposed_output, "response1")
+  expect_true(nzchar(pending$request_id))
+  # agent2 must not have been invoked yet - execution is genuinely paused.
+  expect_length(setup$a2$prompts_received, 0L)
+})
+
+test_that("resume(action = 'continue') proceeds to the next agent with the proposed response", {
+  setup <- setup_lead_with_plan()
+  setup$lead$set_hitl(1, mode = "pause")
+
+  pending <- setup$lead$invoke("do the thing")
+  result <- setup$lead$resume(pending$request_id, action = "continue")
+
+  expect_equal(result, "response2")
+  expect_false(setup$lead$agents_interaction[[1L]]$edited_by_hitl)
+  expect_true(grepl("response1", setup$a2$prompts_received[[1L]], fixed = TRUE))
+})
+
+test_that("resume(action = 'edit') replaces the response and downstream agents receive it", {
+  setup <- setup_lead_with_plan()
+  setup$lead$set_hitl(1, mode = "pause")
+
+  pending <- setup$lead$invoke("do the thing")
+  result <- setup$lead$resume(pending$request_id, action = "edit", value = "edited response1")
+
+  expect_equal(result, "response2")
+  expect_equal(setup$lead$agents_interaction[[1L]]$response, "edited response1")
+  expect_true(setup$lead$agents_interaction[[1L]]$edited_by_hitl)
+  expect_true(grepl("edited response1", setup$a2$prompts_received[[1L]], fixed = TRUE))
+})
+
+test_that("resume(action = 'abort') raises an error", {
+  setup <- setup_lead_with_plan()
+  setup$lead$set_hitl(1, mode = "pause")
+
+  pending <- setup$lead$invoke("do the thing")
+  expect_error(setup$lead$resume(pending$request_id, action = "abort"), "[Ss]topped by user")
+  expect_length(setup$a2$prompts_received, 0L)
+})
+
+test_that("resume() with an unknown request_id errors", {
+  setup <- setup_lead_with_plan()
+  expect_error(setup$lead$resume("not-a-real-id"), "[Nn]o pending")
+})
+
+test_that("pausing on the final plan step and resuming does not re-invoke any agent", {
+  setup <- setup_lead_with_plan()
+  setup$lead$set_hitl(2, mode = "pause")
+
+  pending <- setup$lead$invoke("do the thing")
+  expect_true(is_pending(pending))
+  expect_equal(pending$step, 2L)
+  expect_equal(pending$station, "agent2")
+  expect_length(setup$a2$prompts_received, 1L)
+
+  result <- setup$lead$resume(pending$request_id, action = "continue")
+  expect_equal(result, "response2")
+  # Neither agent should have been invoked a second time.
+  expect_length(setup$a1$prompts_received, 1L)
+  expect_length(setup$a2$prompts_received, 1L)
+})
+
+test_that("a resumed pending request cannot be resumed twice", {
+  setup <- setup_lead_with_plan()
+  setup$lead$set_hitl(1, mode = "pause")
+
+  pending <- setup$lead$invoke("do the thing")
+  setup$lead$resume(pending$request_id, action = "continue")
+  expect_error(setup$lead$resume(pending$request_id, action = "continue"), "[Nn]o pending")
+})
+
 # ── set_daemons ─────────────────────────────────────────────────────────────
 
 test_that("set_daemons validates input", {

@@ -498,6 +498,11 @@ result$dialog_history
 
 \item{\code{hitl_steps}}{The steps where the workflow should be stopped in order to allow for a human interaction}
 
+\item{\code{hitl_mode}}{Either `"console"` (blocking \code{readline()} prompt,
+the default) or `"pause"` (non-blocking: \code{$invoke()} returns a
+`mini007_pending` object instead of blocking). Set via
+\code{$set_hitl()}.}
+
 \item{\code{prompt_for_plan}}{The prompt used to generate the plan.}
 
 \item{\code{agents_for_plan}}{The agents used for the plan}
@@ -519,6 +524,7 @@ result$dialog_history
 \item \href{#method-LeadAgent-register_agents}{\code{LeadAgent$register_agents()}}
 \item \href{#method-LeadAgent-visualize_plan}{\code{LeadAgent$visualize_plan()}}
 \item \href{#method-LeadAgent-invoke}{\code{LeadAgent$invoke()}}
+\item \href{#method-LeadAgent-resume}{\code{LeadAgent$resume()}}
 \item \href{#method-LeadAgent-generate_plan}{\code{LeadAgent$generate_plan()}}
 \item \href{#method-LeadAgent-set_daemons}{\code{LeadAgent$set_daemons()}}
 \item \href{#method-LeadAgent-broadcast}{\code{LeadAgent$broadcast()}}
@@ -869,6 +875,45 @@ The final response (from the last agent in the sequence).
 
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-LeadAgent-resume"></a>}}
+\if{latex}{\out{\hypertarget{method-LeadAgent-resume}{}}}
+\subsection{Method \code{resume()}}{
+Resume a `LeadAgent` paused at an HITL step.
+
+Only relevant when \code{hitl_mode = "pause"} (see \code{$set_hitl()}).
+\code{$invoke()} returns a `mini007_pending` object when it reaches a
+paused HITL step; call \code{$resume()} with that object's
+`request_id` and a chosen `action` to continue delegation from that
+point.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{LeadAgent$resume(
+  request_id,
+  action = c("continue", "edit", "abort"),
+  value = NULL
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{request_id}}{`[character(1)]` The `request_id` from the
+`mini007_pending` object returned by \code{$invoke()}.}
+
+\item{\code{action}}{`[character(1)]` One of `"continue"` (use the proposed
+response as-is), `"edit"` (replace it with `value`), or `"abort"`
+(raise an error, stopping delegation).}
+
+\item{\code{value}}{`[character(1) | NULL]` Required when
+\code{action = "edit"}: the replacement response.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+`[character(1)]` The final response, or another
+  `mini007_pending` object if a further HITL step is reached.
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-LeadAgent-generate_plan"></a>}}
 \if{latex}{\out{\hypertarget{method-LeadAgent-generate_plan}{}}}
 \subsection{Method \code{generate_plan()}}{
@@ -1056,15 +1101,23 @@ lead_agent$broadcast(
 \if{html}{\out{<a id="method-LeadAgent-set_hitl"></a>}}
 \if{latex}{\out{\hypertarget{method-LeadAgent-set_hitl}{}}}
 \subsection{Method \code{set_hitl()}}{
-Set Human In The Loop (HITL) interaction at determined steps within the workflow
+Set Human In The Loop (HITL) interaction at determined steps within the workflow.
+With \code{mode = "console"} (default) a paused step blocks on
+\code{readline()}, unchanged from previous behavior. With
+\code{mode = "pause"}, \code{$invoke()} instead returns a
+`mini007_pending` object describing the paused step; call
+\code{$resume()} with the chosen action to continue delegation. This
+allows HITL to work outside an interactive console.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LeadAgent$set_hitl(steps)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LeadAgent$set_hitl(steps, mode = c("console", "pause"))}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{steps}}{At which steps the Human In The Loop is required?}
+
+\item{\code{mode}}{`[character(1)]` `"console"` (default) or `"pause"`.}
 }
 \if{html}{\out{</div>}}
 }

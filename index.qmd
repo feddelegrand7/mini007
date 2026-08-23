@@ -15,18 +15,6 @@ if (requireNamespace("pkgload", quietly = TRUE)) pkgload::load_all()
 library(mini007)
 ```
 
-```{r}
-#| eval: false
-retrieve_open_ai_credential <- function() {
-  Sys.getenv("OPENAI_API_KEY")
-}
-
-llm <- ellmer::chat(
-  name        = "openai/gpt-4.1-mini",
-  credentials = retrieve_open_ai_credential,
-  echo        = "none"
-)
-```
 
 # Welcome to **mini007**
 
@@ -72,6 +60,19 @@ install.packages("mini007")
 An `Agent` wraps an `ellmer` chat object and adds identity (UUID), persistent
 message history, budget tracking, and tool support. It is the fundamental
 building block of the framework.
+
+```{r}
+#| eval: false
+retrieve_open_ai_credential <- function() {
+  Sys.getenv("OPENAI_API_KEY")
+}
+
+llm <- ellmer::chat(
+  name        = "openai/gpt-4.1-mini",
+  credentials = retrieve_open_ai_credential,
+  echo        = "none"
+)
+```
 
 ```{r}
 #| eval: false

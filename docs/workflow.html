@@ -1,0 +1,1894 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.27">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Workflow – mini007</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-4d9afe2b8d18ee9fa5d0d57b5ed4214d.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-5b4ad623e5705c0698d39aec6f10cf02.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-0d4a9d19931feb4fee1ddab4b2489000.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-5b4ad623e5705c0698d39aec6f10cf02.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<link href="site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="site_libs/viz-1.8.2/viz.js"></script>
+<link href="site_libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet">
+<script src="site_libs/grViz-binding-1.0.11/grViz.js"></script>
+
+
+</head>
+
+<body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">mini007</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./agents.html"> 
+<span class="menu-text">Agents</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./leadagent.html"> 
+<span class="menu-text">LeadAgent</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./tools.html"> 
+<span class="menu-text">Tools</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./workflow.html" aria-current="page"> 
+<span class="menu-text">Workflow</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./testing.html"> 
+<span class="menu-text">Testing</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/feddelegrand7/mini007"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#a-minimal-linear-pipeline" id="toc-a-minimal-linear-pipeline" class="nav-link active" data-scroll-target="#a-minimal-linear-pipeline">A minimal linear pipeline</a></li>
+  <li><a href="#mixing-agents-with-plain-r-functions" id="toc-mixing-agents-with-plain-r-functions" class="nav-link" data-scroll-target="#mixing-agents-with-plain-r-functions">Mixing agents with plain R functions</a></li>
+  <li><a href="#caching-station-results" id="toc-caching-station-results" class="nav-link" data-scroll-target="#caching-station-results">Caching station results</a></li>
+  <li><a href="#conditional-routing" id="toc-conditional-routing" class="nav-link" data-scroll-target="#conditional-routing">Conditional routing</a></li>
+  <li><a href="#wrapping-a-workflow-as-an-agent" id="toc-wrapping-a-workflow-as-an-agent" class="nav-link" data-scroll-target="#wrapping-a-workflow-as-an-agent">Wrapping a workflow as an agent</a>
+  <ul class="collapse">
+  <li><a href="#using-a-workflowagent-inside-a-leadagent" id="toc-using-a-workflowagent-inside-a-leadagent" class="nav-link" data-scroll-target="#using-a-workflowagent-inside-a-leadagent">Using a WorkflowAgent inside a LeadAgent</a></li>
+  <li><a href="#nesting-a-workflowagent-inside-another-workflow" id="toc-nesting-a-workflowagent-inside-another-workflow" class="nav-link" data-scroll-target="#nesting-a-workflowagent-inside-another-workflow">Nesting a WorkflowAgent inside another Workflow</a></li>
+  </ul></li>
+  <li><a href="#human-in-the-loop-hitl" id="toc-human-in-the-loop-hitl" class="nav-link" data-scroll-target="#human-in-the-loop-hitl">Human In The Loop (HITL)</a>
+  <ul class="collapse">
+  <li><a href="#non-blocking-hitl-pause-and-resume-not-yet-on-cran" id="toc-non-blocking-hitl-pause-and-resume-not-yet-on-cran" class="nav-link" data-scroll-target="#non-blocking-hitl-pause-and-resume-not-yet-on-cran">Non-blocking HITL: pause and resume (Not yet on CRAN)</a></li>
+  </ul></li>
+  <li><a href="#visualising-a-workflow" id="toc-visualising-a-workflow" class="nav-link" data-scroll-target="#visualising-a-workflow">Visualising a workflow</a></li>
+  <li><a href="#per-station-retry-not-yet-on-cran" id="toc-per-station-retry-not-yet-on-cran" class="nav-link" data-scroll-target="#per-station-retry-not-yet-on-cran">Per-station retry (Not yet on CRAN)</a>
+  <ul class="collapse">
+  <li><a href="#simulating-a-flaky-service" id="toc-simulating-a-flaky-service" class="nav-link" data-scroll-target="#simulating-a-flaky-service">Simulating a flaky service</a></li>
+  <li><a href="#attaching-retries-to-an-agent-station" id="toc-attaching-retries-to-an-agent-station" class="nav-link" data-scroll-target="#attaching-retries-to-an-agent-station">Attaching retries to an Agent station</a></li>
+  <li><a href="#behaviour-when-all-retries-are-exhausted" id="toc-behaviour-when-all-retries-are-exhausted" class="nav-link" data-scroll-target="#behaviour-when-all-retries-are-exhausted">Behaviour when all retries are exhausted</a></li>
+  </ul></li>
+  <li><a href="#fallback-handlers-fallback-handlers-not-yet-on-cran" id="toc-fallback-handlers-fallback-handlers-not-yet-on-cran" class="nav-link" data-scroll-target="#fallback-handlers-fallback-handlers-not-yet-on-cran">Fallback handlers {#fallback-handlers} (not yet on CRAN)</a>
+  <ul class="collapse">
+  <li><a href="#simple-graceful-degradation" id="toc-simple-graceful-degradation" class="nav-link" data-scroll-target="#simple-graceful-degradation">Simple graceful degradation</a></li>
+  <li><a href="#fallback-fires-only-after-all-retries" id="toc-fallback-fires-only-after-all-retries" class="nav-link" data-scroll-target="#fallback-fires-only-after-all-retries">Fallback fires only after all retries</a></li>
+  <li><a href="#routing-continues-after-a-fallback" id="toc-routing-continues-after-a-fallback" class="nav-link" data-scroll-target="#routing-continues-after-a-fallback">Routing continues after a fallback</a></li>
+  <li><a href="#using-a-backup-llm-as-the-fallback" id="toc-using-a-backup-llm-as-the-fallback" class="nav-link" data-scroll-target="#using-a-backup-llm-as-the-fallback">Using a backup LLM as the fallback</a></li>
+  </ul></li>
+  <li><a href="#parallel-stations-not-yet-on-cran" id="toc-parallel-stations-not-yet-on-cran" class="nav-link" data-scroll-target="#parallel-stations-not-yet-on-cran">Parallel Stations (not yet on CRAN)</a>
+  <ul class="collapse">
+  <li><a href="#multi-perspective-parallel-analysis" id="toc-multi-perspective-parallel-analysis" class="nav-link" data-scroll-target="#multi-perspective-parallel-analysis">Multi-perspective parallel analysis</a></li>
+  <li><a href="#how-it-works" id="toc-how-it-works" class="nav-link" data-scroll-target="#how-it-works">How it works</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Workflow</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mini007)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>retrieve_open_ai_credential <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">Sys.getenv</span>(<span class="st">"OPENAI_API_KEY"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>openai_4_1_mini <span class="ot">&lt;-</span> ellmer<span class="sc">::</span><span class="fu">chat</span>(</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"openai/gpt-4.1-mini"</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">credentials =</span> retrieve_open_ai_credential,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">echo =</span> <span class="st">"none"</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>A <code>Workflow</code> is a predefined, sequential pipeline of processing units called <strong>Stations</strong>. Each Station receives the output of the previous one as its input, transforms it, and passes the result forward. <strong>Routes</strong> define which Station comes next and can be gated by optional condition functions that inspect the current output to decide the execution path.</p>
+<p>Workflows complement <code>Agent</code> and <code>LeadAgent</code>:</p>
+<ul>
+<li>An <code>Agent</code> is LLM-driven and decides its own steps dynamically.</li>
+<li>A <code>LeadAgent</code> decomposes a prompt and delegates subtasks to agents automatically.</li>
+<li>A <code>Workflow</code> gives you <strong>explicit control</strong> over every step of the pipeline — you decide the order, the branching logic, and which handler runs where.</li>
+</ul>
+<p>There are two main building blocks:</p>
+<ul>
+<li><code>add_station(name, handler)</code> — registers a named processing unit. The handler can be an <code>Agent</code>, a <code>WorkflowAgent</code>, or a plain R <code>function</code>.</li>
+<li><code>add_route(from, to)</code> — connects two Stations in sequence.</li>
+</ul>
+<section id="a-minimal-linear-pipeline" class="level2">
+<h2 class="anchored" data-anchor-id="a-minimal-linear-pipeline">A minimal linear pipeline</h2>
+<p>The simplest <code>Workflow</code> is a straight chain of Stations executed one after the other. Here we wire three specialised agents: a researcher that gathers facts, a writer that shapes them into a paragraph, and an editor that polishes the result.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>researcher <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"researcher"</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"You are a research assistant. Provide concise, accurate facts on the given topic in 3 max"</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object  =</span> openai_4_1_mini</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>writer <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"writer"</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"You are a skilled writer. Turn the research notes you receive into a single, engaging paragraph."</span>,</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object  =</span> openai_4_1_mini</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>editor <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"editor"</span>,</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"You are a copy editor. Polish the paragraph you receive for grammar, clarity, and conciseness. Return only the final text."</span>,</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object  =</span> openai_4_1_mini</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>translator <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"translator"</span>, </span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"You're a English-German Translater, translate text from English to German"</span>, </span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>article_pipeline <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"article pipeline"</span>,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">"Research → Write → Edit -&gt; Transalte"</span>, </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">use_cache =</span> <span class="cn">TRUE</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>article_pipeline<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"research"</span>, <span class="at">handler =</span> researcher, )</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>article_pipeline<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"write"</span>, <span class="at">handler =</span> writer)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>article_pipeline<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"edit"</span>, <span class="at">handler =</span> editor)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>article_pipeline<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"translate"</span>, <span class="at">handler =</span> translator)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>article_pipeline<span class="sc">$</span><span class="fu">add_route</span>(<span class="at">from =</span> <span class="st">"research"</span>, <span class="at">to =</span> <span class="st">"write"</span>)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>article_pipeline<span class="sc">$</span><span class="fu">add_route</span>(<span class="at">from =</span> <span class="st">"write"</span>, <span class="at">to =</span> <span class="st">"edit"</span>)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>article_pipeline<span class="sc">$</span><span class="fu">add_route</span>(<span class="at">from =</span> <span class="st">"edit"</span>, <span class="at">to =</span> <span class="st">"translate"</span>)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>article_pipeline<span class="sc">$</span><span class="fu">set_entry</span>(<span class="at">station_name =</span> <span class="st">"research"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Calling <code>$run()</code> executes every Station in order. Each Station’s output becomes the next Station’s input automatically.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> article_pipeline<span class="sc">$</span><span class="fu">run</span>(<span class="st">"The potential of Algeria when it comes to tourism in the Sahara"</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>result</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Algerien, Heimat des größten Teils der Sahara, bietet weite und vielfältige 
+Landschaften – von ausgedehnten Sanddünen und uralten Oasen bis hin zu 
+bemerkenswerten Felsformationen – und ist somit ein erstklassiges Ziel für 
+Abenteuertourismus. Sein reiches kulturelles Erbe wird durch historische 
+Stätten wie die zum UNESCO-Weltkulturerbe gehörenden Felskunst von Tassili 
+n'Ajjer und gut erhaltene römische Ruinen, die verstreut in der Wüste liegen, 
+präsentiert, was es für Kulturreisende besonders attraktiv macht. Obwohl die 
+Tourismusinfrastruktur Algeriens noch unterentwickelt ist, versprechen laufende
+Sicherheitsverbesserungen und verstärkte Investitionen großes Potenzial, um den
+vollen Schatz des Sahara-Tourismus zu heben und das Land als faszinierendes 
+Ziel für Entdecker und Geschichtsinteressierte gleichermaßen zu positionieren.</code></pre>
+</div>
+</div>
+<p>The <code>run_history</code> attribute records every execution, including the full trace of inputs and outputs for each Station:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>article_pipeline<span class="sc">$</span>run_history</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+[[1]]$input
+[1] "The potential of Algeria when it comes to tourism in the Sahara"
+
+[[1]]$output
+Algerien, Heimat des größten Teils der Sahara, bietet weite und vielfältige 
+Landschaften – von ausgedehnten Sanddünen und uralten Oasen bis hin zu 
+bemerkenswerten Felsformationen – und ist somit ein erstklassiges Ziel für 
+Abenteuertourismus. Sein reiches kulturelles Erbe wird durch historische 
+Stätten wie die zum UNESCO-Weltkulturerbe gehörenden Felskunst von Tassili 
+n'Ajjer und gut erhaltene römische Ruinen, die verstreut in der Wüste liegen, 
+präsentiert, was es für Kulturreisende besonders attraktiv macht. Obwohl die 
+Tourismusinfrastruktur Algeriens noch unterentwickelt ist, versprechen laufende
+Sicherheitsverbesserungen und verstärkte Investitionen großes Potenzial, um den
+vollen Schatz des Sahara-Tourismus zu heben und das Land als faszinierendes 
+Ziel für Entdecker und Geschichtsinteressierte gleichermaßen zu positionieren.
+
+[[1]]$steps
+[1] 4
+
+[[1]]$trace
+[[1]]$trace[[1]]
+[[1]]$trace[[1]]$step
+[1] 1
+
+[[1]]$trace[[1]]$station
+[1] "research"
+
+[[1]]$trace[[1]]$input
+[1] "The potential of Algeria when it comes to tourism in the Sahara"
+
+[[1]]$trace[[1]]$output
+1. Algeria has the largest portion of the Sahara Desert, offering vast and 
+diverse landscapes including sand dunes, ancient oases, and unique rock 
+formations ideal for adventure tourism.
+
+2. Historical sites like the UNESCO World Heritage-listed Tassili n'Ajjer rock 
+art and Roman ruins in the desert enhance its cultural tourism appeal.
+
+3. Despite its potential, Algeria's tourism infrastructure is underdeveloped, 
+but improving security and investment could significantly boost Sahara tourism 
+prospects.
+
+
+[[1]]$trace[[2]]
+[[1]]$trace[[2]]$step
+[1] 2
+
+[[1]]$trace[[2]]$station
+[1] "write"
+
+[[1]]$trace[[2]]$input
+1. Algeria has the largest portion of the Sahara Desert, offering vast and 
+diverse landscapes including sand dunes, ancient oases, and unique rock 
+formations ideal for adventure tourism.
+
+2. Historical sites like the UNESCO World Heritage-listed Tassili n'Ajjer rock 
+art and Roman ruins in the desert enhance its cultural tourism appeal.
+
+3. Despite its potential, Algeria's tourism infrastructure is underdeveloped, 
+but improving security and investment could significantly boost Sahara tourism 
+prospects.
+
+[[1]]$trace[[2]]$output
+Algeria, home to the largest portion of the Sahara Desert, boasts vast and 
+diverse landscapes ranging from expansive sand dunes and ancient oases to 
+remarkable rock formations, making it a prime destination for adventure 
+tourism. The country's rich cultural heritage is exemplified by historical 
+sites such as the UNESCO World Heritage-listed Tassili n'Ajjer rock art and 
+well-preserved Roman ruins scattered throughout the desert, adding a compelling
+dimension for cultural travelers. Although Algeria’s tourism infrastructure 
+remains underdeveloped, ongoing improvements in security and increased 
+investment hold great promise for unlocking the full potential of Sahara 
+tourism, positioning the country as a captivating destination for explorers and
+history enthusiasts alike.
+
+
+[[1]]$trace[[3]]
+[[1]]$trace[[3]]$step
+[1] 3
+
+[[1]]$trace[[3]]$station
+[1] "edit"
+
+[[1]]$trace[[3]]$input
+Algeria, home to the largest portion of the Sahara Desert, boasts vast and 
+diverse landscapes ranging from expansive sand dunes and ancient oases to 
+remarkable rock formations, making it a prime destination for adventure 
+tourism. The country's rich cultural heritage is exemplified by historical 
+sites such as the UNESCO World Heritage-listed Tassili n'Ajjer rock art and 
+well-preserved Roman ruins scattered throughout the desert, adding a compelling
+dimension for cultural travelers. Although Algeria’s tourism infrastructure 
+remains underdeveloped, ongoing improvements in security and increased 
+investment hold great promise for unlocking the full potential of Sahara 
+tourism, positioning the country as a captivating destination for explorers and
+history enthusiasts alike.
+
+[[1]]$trace[[3]]$output
+Algeria, home to the largest part of the Sahara Desert, offers vast and diverse
+landscapes—from expansive sand dunes and ancient oases to remarkable rock 
+formations—making it a prime destination for adventure tourism. Its rich 
+cultural heritage is showcased by historical sites such as the UNESCO World 
+Heritage-listed Tassili n'Ajjer rock art and well-preserved Roman ruins 
+scattered throughout the desert, adding appeal for cultural travelers. Although
+Algeria’s tourism infrastructure remains underdeveloped, ongoing security 
+improvements and increased investment hold great promise for unlocking the full
+potential of Sahara tourism, positioning the country as a captivating 
+destination for explorers and history enthusiasts alike.
+
+
+[[1]]$trace[[4]]
+[[1]]$trace[[4]]$step
+[1] 4
+
+[[1]]$trace[[4]]$station
+[1] "translate"
+
+[[1]]$trace[[4]]$input
+Algeria, home to the largest part of the Sahara Desert, offers vast and diverse
+landscapes—from expansive sand dunes and ancient oases to remarkable rock 
+formations—making it a prime destination for adventure tourism. Its rich 
+cultural heritage is showcased by historical sites such as the UNESCO World 
+Heritage-listed Tassili n'Ajjer rock art and well-preserved Roman ruins 
+scattered throughout the desert, adding appeal for cultural travelers. Although
+Algeria’s tourism infrastructure remains underdeveloped, ongoing security 
+improvements and increased investment hold great promise for unlocking the full
+potential of Sahara tourism, positioning the country as a captivating 
+destination for explorers and history enthusiasts alike.
+
+[[1]]$trace[[4]]$output
+Algerien, Heimat des größten Teils der Sahara, bietet weite und vielfältige 
+Landschaften – von ausgedehnten Sanddünen und uralten Oasen bis hin zu 
+bemerkenswerten Felsformationen – und ist somit ein erstklassiges Ziel für 
+Abenteuertourismus. Sein reiches kulturelles Erbe wird durch historische 
+Stätten wie die zum UNESCO-Weltkulturerbe gehörenden Felskunst von Tassili 
+n'Ajjer und gut erhaltene römische Ruinen, die verstreut in der Wüste liegen, 
+präsentiert, was es für Kulturreisende besonders attraktiv macht. Obwohl die 
+Tourismusinfrastruktur Algeriens noch unterentwickelt ist, versprechen laufende
+Sicherheitsverbesserungen und verstärkte Investitionen großes Potenzial, um den
+vollen Schatz des Sahara-Tourismus zu heben und das Land als faszinierendes 
+Ziel für Entdecker und Geschichtsinteressierte gleichermaßen zu positionieren.</code></pre>
+</div>
+</div>
+</section>
+<section id="mixing-agents-with-plain-r-functions" class="level2">
+<h2 class="anchored" data-anchor-id="mixing-agents-with-plain-r-functions">Mixing agents with plain R functions</h2>
+<p>Stations do not have to be <code>Agent</code> objects. Any R function that accepts a single character argument and returns a character value is a valid handler. This makes it easy to add pre-processing or post-processing steps without an LLM call.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plain R function stations, no LLM involved</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>normalise <span class="ot">&lt;-</span> <span class="cf">function</span>(text) {</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">trimws</span>(<span class="fu">gsub</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">s+"</span>, <span class="st">" "</span>, text))</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>add_markdown_header <span class="ot">&lt;-</span> <span class="cf">function</span>(text) {</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste0</span>(<span class="st">"## Summary</span><span class="sc">\n\n</span><span class="st">"</span>, text)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>summariser <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"summariser"</span>,</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"Summarise the text you receive into exactly three concise bullet points."</span>,</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object  =</span> openai_4_1_mini</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>format_pipeline <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"format and summarise"</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>format_pipeline<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"normalise"</span>,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler =</span> normalise, </span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">"Collapse whitespace"</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>format_pipeline<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"summarise"</span>, </span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler =</span> summariser, </span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">"LLM bullet summary"</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>format_pipeline<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"add_header"</span>, </span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler =</span> add_markdown_header, </span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">"Prepend markdown header"</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>format_pipeline<span class="sc">$</span><span class="fu">add_route</span>(<span class="at">from =</span> <span class="st">"normalise"</span>,  <span class="at">to =</span> <span class="st">"summarise"</span>)</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>format_pipeline<span class="sc">$</span><span class="fu">add_route</span>(<span class="at">from =</span> <span class="st">"summarise"</span>,  <span class="at">to =</span> <span class="st">"add_header"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>messy_text <span class="ot">&lt;-</span> <span class="st">"  The   2026    worldcup is    approachine.   Algeria's first game   is against     Argentina          "</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>format_pipeline<span class="sc">$</span><span class="fu">run</span>(messy_text)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "## Summary\n\n- The 2026 World Cup is approaching.  \n- Algeria's first match will be against Argentina.  \n- This marks an important upcoming fixture for Algeria."</code></pre>
+</div>
+</div>
+</section>
+<section id="caching-station-results" class="level2">
+<h2 class="anchored" data-anchor-id="caching-station-results">Caching station results</h2>
+<p>When <code>use_cache = TRUE</code> (the default), every Station’s output is stored keyed by its name and the input it received. A subsequent <code>$run()</code> call with the same input skips re-invoking any handler and returns the cached result immediately — saving both time and LLM costs when you are iterating on later Stations.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>cached_pipeline <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name      =</span> <span class="st">"cached-pipeline"</span>,</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">use_cache =</span> <span class="cn">TRUE</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>drafter <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"drafter"</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"Write a two-sentence draft on the topic provided."</span>,</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object  =</span> openai_4_1_mini</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>refiner <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"refiner"</span>,</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"Improve the draft you receive. Make it more vivid and precise."</span>,</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object  =</span> openai_4_1_mini</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>cached_pipeline<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"draft"</span>, <span class="at">handler =</span> drafter)</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>cached_pipeline<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"refine"</span>, <span class="at">handler =</span> refiner)</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>cached_pipeline<span class="sc">$</span><span class="fu">add_route</span>(<span class="at">from =</span> <span class="st">"draft"</span>, <span class="at">to =</span> <span class="st">"refine"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First run — both stations are executed</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>start <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>first_run <span class="ot">&lt;-</span> cached_pipeline<span class="sc">$</span><span class="fu">run</span>(<span class="st">"Rare fish in the Algerian see"</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>first_run</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>The Algerian Sea harbors a remarkable array of rare fish species, notably 
+including the endangered Mediterranean sand tiger shark. These extraordinary 
+marine inhabitants enrich the region’s vibrant biodiversity and underscore the 
+urgent need for dedicated conservation initiatives to safeguard their delicate 
+and diminishing habitats.</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>end <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(end <span class="sc">-</span> start)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Time difference of 4.072386 secs</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Second run with the same input — cache is served, no LLM calls are made</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>start <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>second_run <span class="ot">&lt;-</span> cached_pipeline<span class="sc">$</span><span class="fu">run</span>(<span class="st">"Rare fish in the Algerian see"</span>)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>second_run</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>The Algerian Sea harbors a remarkable array of rare fish species, notably 
+including the endangered Mediterranean sand tiger shark. These extraordinary 
+marine inhabitants enrich the region’s vibrant biodiversity and underscore the 
+urgent need for dedicated conservation initiatives to safeguard their delicate 
+and diminishing habitats.</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>end <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(end <span class="sc">-</span> start)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Time difference of 0.05695391 secs</code></pre>
+</div>
+</div>
+<p>To force a fresh execution, call <code>$clear_cache()</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>cached_pipeline<span class="sc">$</span><span class="fu">clear_cache</span>()</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Fresh run after clearing the cache</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>start <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>fresh_run <span class="ot">&lt;-</span> cached_pipeline<span class="sc">$</span><span class="fu">run</span>(<span class="st">"Rare fish in the Algerian see"</span>)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>fresh_run</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>The Algerian Sea is a vibrant sanctuary for an array of rare fish species, 
+including the brilliantly colored Mediterranean rainbow wrasse and the striking
+ornate wrasse, both celebrated for their vivid hues and limited geographic 
+ranges. Safeguarding these extraordinary fish is essential to preserving the 
+ecological balance and sustaining the rich biodiversity of this unique marine 
+ecosystem.</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>end <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(end <span class="sc">-</span> start)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Time difference of 2.939737 secs</code></pre>
+</div>
+</div>
+</section>
+<section id="conditional-routing" class="level2">
+<h2 class="anchored" data-anchor-id="conditional-routing">Conditional routing</h2>
+<p>Routes can carry a <code>condition</code>, a function that inspects the current Station’s output and returns <code>TRUE</code> or <code>FALSE</code>. When a Station has multiple outgoing Routes, conditional ones are evaluated first (in the order they were added). The first condition that returns <code>TRUE</code> determines the next Station. If none match, the first unconditional Route is used as the default fallback.</p>
+<p>This makes it possible to build branching pipelines where the path taken depends on what an earlier Station produces.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>classifier <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"classifier"</span>,</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">'Classify the sentiment of the text. Reply with exactly one word: "positive" or "negative".'</span>,</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object  =</span> openai_4_1_mini</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>positive_handler <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"positive_handler"</span>,</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"Write a warm, enthusiastic one-sentence reply to the following positive message."</span>,</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object  =</span> openai_4_1_mini</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>negative_handler <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"negative_handler"</span>,</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"Write an empathetic, solution-focused one-sentence reply to the following negative message."</span>,</span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object  =</span> openai_4_1_mini</span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>sentiment_router <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"sentiment router"</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>sentiment_router<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"classify"</span>,  <span class="at">handler =</span> classifier)</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>sentiment_router<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"reply_pos"</span>, <span class="at">handler =</span> positive_handler)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>sentiment_router<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"reply_neg"</span>, <span class="at">handler =</span> negative_handler)</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Conditional routes — evaluated against the classifier's output</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>sentiment_router<span class="sc">$</span><span class="fu">add_route</span>(</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">from      =</span> <span class="st">"classify"</span>,</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">to        =</span> <span class="st">"reply_pos"</span>,</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">condition =</span> <span class="cf">function</span>(out) <span class="fu">grepl</span>(<span class="st">"positive"</span>, <span class="fu">tolower</span>(out))</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>sentiment_router<span class="sc">$</span><span class="fu">add_route</span>(</span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">from      =</span> <span class="st">"classify"</span>,</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">to        =</span> <span class="st">"reply_neg"</span>,</span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">condition =</span> <span class="cf">function</span>(out) <span class="fu">grepl</span>(<span class="st">"negative"</span>, <span class="fu">tolower</span>(out))</span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>sentiment_router<span class="sc">$</span><span class="fu">set_entry</span>(<span class="at">station_name =</span> <span class="st">"classify"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>sentiment_router<span class="sc">$</span><span class="fu">run</span>(<span class="st">"I absolutely love this product, it changed my life!"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Thank you so much—your positivity truly brightens my day!</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>sentiment_router<span class="sc">$</span><span class="fu">run</span>(<span class="st">"Very disappointed. The quality is nothing like advertised."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>I’m sorry to hear you’re feeling this way—how can I support you or help make 
+things better?</code></pre>
+</div>
+</div>
+<p>A more structured example uses a plain function as the router so the branching logic is deterministic and free of LLM calls.</p>
+<p><strong>Important pattern:</strong> the router station must be a <strong>passthrough</strong> — it returns the original text unchanged so that downstream agents receive the real content. The routing classification belongs in the <strong>route conditions</strong>, which inspect the station output and decide where it goes next.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>brief_expander <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"brief_expander"</span>,</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"The input is short. Expand it into a well-rounded paragraph of 2 sentences."</span>,</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object  =</span> openai_4_1_mini</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>long_summariser <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"long_summariser"</span>,</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"The input is long. Distill it into a single crisp sentence."</span>,</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object  =</span> openai_4_1_mini</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>length_router <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"length router"</span>)</span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a><span class="co"># The router station is a passthrough: it returns the text as-is.</span></span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a><span class="co"># The length check lives in the route conditions below, not here.</span></span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>length_router<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"router"</span>, <span class="at">handler =</span> <span class="cf">function</span>(text) text)</span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>length_router<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"short-to-long"</span>,  <span class="at">handler =</span> brief_expander)</span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>length_router<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"long-to-short"</span>,   <span class="at">handler =</span> long_summariser)</span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Conditions receive the router's output (the original text) and decide the branch.</span></span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a>length_router<span class="sc">$</span><span class="fu">add_route</span>(</span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">from      =</span> <span class="st">"router"</span>,</span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">to        =</span> <span class="st">"short-to-long"</span>,</span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">condition =</span> <span class="cf">function</span>(x) <span class="fu">nchar</span>(x) <span class="sc">&lt;</span> <span class="dv">80</span></span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a>length_router<span class="sc">$</span><span class="fu">add_route</span>(</span>
+<span id="cb31-28"><a href="#cb31-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">from      =</span> <span class="st">"router"</span>,</span>
+<span id="cb31-29"><a href="#cb31-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">to        =</span> <span class="st">"long-to-short"</span>,</span>
+<span id="cb31-30"><a href="#cb31-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">condition =</span> <span class="cf">function</span>(x) <span class="fu">nchar</span>(x) <span class="sc">&gt;=</span> <span class="dv">80</span></span>
+<span id="cb31-31"><a href="#cb31-31" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-32"><a href="#cb31-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-33"><a href="#cb31-33" aria-hidden="true" tabindex="-1"></a>length_router<span class="sc">$</span><span class="fu">set_entry</span>(<span class="at">station_name =</span> <span class="st">"router"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Short input — routed to the expander</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>length_router<span class="sc">$</span><span class="fu">run</span>(<span class="st">"Fennec Algeria football team"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>The Fennec Algeria football team, also known as the Algerian national team, is 
+highly regarded in African and international football for their skillful play 
+and passionate style. Representing Algeria, the team has achieved significant 
+success in regional and global competitions, earning a devoted fan base known 
+as the "Desert Foxes."</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Long input — routed to the summariser</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>long_input <span class="ot">&lt;-</span> <span class="fu">paste</span>(</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Bees are among the most important pollinators on the planet."</span>,</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"They transfer pollen from one flower to another, enabling plants to reproduce."</span>,</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Without bees, many of the fruits and vegetables we eat would disappear."</span>,</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Colony collapse disorder has threatened bee populations worldwide,"</span>,</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"raising serious concerns about food security and ecosystem stability."</span></span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>length_router<span class="sc">$</span><span class="fu">run</span>(long_input)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Bees are vital pollinators essential for plant reproduction and food 
+production, but their populations are threatened by colony collapse disorder, 
+risking food security and ecosystem health.</code></pre>
+</div>
+</div>
+</section>
+<section id="wrapping-a-workflow-as-an-agent" class="level2">
+<h2 class="anchored" data-anchor-id="wrapping-a-workflow-as-an-agent">Wrapping a workflow as an agent</h2>
+<p><code>$as_agent()</code> converts any <code>Workflow</code> into a <code>WorkflowAgent</code>. The result exposes the same <code>$invoke()</code> interface as a regular <code>Agent</code>, which means it can be:</p>
+<ul>
+<li><strong>registered with a <code>LeadAgent</code></strong> as one of its sub-agents, or</li>
+<li><strong>used as a Station handler</strong> inside another <code>Workflow</code>.</li>
+</ul>
+<p>This lets you compose complex pipelines from simpler ones without rewriting any logic.</p>
+<section id="using-a-workflowagent-inside-a-leadagent" class="level3">
+<h3 class="anchored" data-anchor-id="using-a-workflowagent-inside-a-leadagent">Using a WorkflowAgent inside a LeadAgent</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Inner workflow: research + summarise</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>research_wf <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"research workflow"</span>)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>gatherer <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"gatherer"</span>,</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"Gather three key facts about the topic provided. Be concise."</span>,</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object  =</span> openai_4_1_mini</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>condonser <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"condenser"</span>,</span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"Condense the facts you receive into a single sentence."</span>,</span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object  =</span> openai_4_1_mini</span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>research_wf<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"gather"</span>, <span class="at">handler =</span> gatherer)</span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>research_wf<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"condense"</span>, <span class="at">handler =</span> condonser)</span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>research_wf<span class="sc">$</span><span class="fu">add_route</span>(<span class="at">from =</span> <span class="st">"gather"</span>, <span class="at">to =</span> <span class="st">"condense"</span>)</span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a>research_wf<span class="sc">$</span><span class="fu">set_entry</span>(<span class="at">station_name =</span> <span class="st">"gather"</span>)</span>
+<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Wrap as a WorkflowAgent</span></span>
+<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a>research_agent <span class="ot">&lt;-</span> research_wf<span class="sc">$</span><span class="fu">as_agent</span>(</span>
+<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"research_agent"</span>,</span>
+<span id="cb36-24"><a href="#cb36-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"An agent that gathers and condenses facts on any topic into one sentence."</span></span>
+<span id="cb36-25"><a href="#cb36-25" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use the WorkflowAgent directly</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>research_agent<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"The city of Bejaia in Algeria"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Bejaia, a historic northeastern Algerian port city situated between the 
+Mediterranean Sea and the Kabylie Mountains, played a key role in medieval 
+Mediterranean trade and today thrives on a diverse economy of fishing, 
+agriculture, tourism, and Berber cultural heritage.</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Register with a LeadAgent alongside regular agents</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>translator <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"translator"</span>,</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"Translate the text you receive from English into German"</span>,</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object  =</span> openai_4_1_mini</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>lead <span class="ot">&lt;-</span> LeadAgent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">name       =</span> <span class="st">"Lead"</span>,</span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a>lead<span class="sc">$</span><span class="fu">register_agents</span>(<span class="fu">c</span>(research_agent, translator))</span>
+<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a>lead<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"Tell me about the city of Bejaia in one sentence, then translate it into German"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Bejaia ist eine historische Küstenstadt im Nordosten Algeriens, die für ihren 
+malerischen Mittelmeerhafen, ihre lebendige Berberkultur und ihre Lage in der 
+Nähe der Kabylei-Berge bekannt ist.</code></pre>
+</div>
+</div>
+</section>
+<section id="nesting-a-workflowagent-inside-another-workflow" class="level3">
+<h3 class="anchored" data-anchor-id="nesting-a-workflowagent-inside-another-workflow">Nesting a WorkflowAgent inside another Workflow</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Outer workflow: use the wrapped inner workflow as a Station</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>presentation_wf <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"Presentation workflow"</span>)</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>presentation_wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">name    =</span> <span class="st">"research"</span>,</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler =</span> research_agent  <span class="co"># WorkflowAgent used as a station handler</span></span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>presenter <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">"presenter"</span>,</span>
+<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">instruction =</span> <span class="st">"Turn the one-sentence summary you receive into a polished three-sentence report."</span>,</span>
+<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">llm_object  =</span> openai_4_1_mini</span>
+<span id="cb41-13"><a href="#cb41-13" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb41-14"><a href="#cb41-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-15"><a href="#cb41-15" aria-hidden="true" tabindex="-1"></a>presentation_wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb41-16"><a href="#cb41-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"present"</span>,</span>
+<span id="cb41-17"><a href="#cb41-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler =</span> presenter</span>
+<span id="cb41-18"><a href="#cb41-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb41-19"><a href="#cb41-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-20"><a href="#cb41-20" aria-hidden="true" tabindex="-1"></a>presentation_wf<span class="sc">$</span><span class="fu">add_route</span>(<span class="at">from =</span> <span class="st">"research"</span>, <span class="at">to =</span> <span class="st">"present"</span>)</span>
+<span id="cb41-21"><a href="#cb41-21" aria-hidden="true" tabindex="-1"></a>presentation_wf<span class="sc">$</span><span class="fu">set_entry</span>(<span class="at">station_name =</span> <span class="st">"research"</span>)</span>
+<span id="cb41-22"><a href="#cb41-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-23"><a href="#cb41-23" aria-hidden="true" tabindex="-1"></a>presentation_wf<span class="sc">$</span><span class="fu">run</span>(<span class="st">"Algeria and Coffee"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>In Algeria, coffee is a popular social beverage, commonly prepared strong or 
+spiced with cardamom. Cafés across the country serve as important community 
+hubs where people gather to enjoy their coffee. Despite its cultural 
+significance, Algeria relies on imported coffee beans because the local climate
+and soil conditions are unsuitable for coffee cultivation.</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="human-in-the-loop-hitl" class="level2">
+<h2 class="anchored" data-anchor-id="human-in-the-loop-hitl">Human In The Loop (HITL)</h2>
+<p><code>$set_hitl(steps)</code> lets you pause the workflow at specific steps so a human can inspect the Station’s output before execution continues. Steps are numbered from 1 in execution order — the same counter shown in the <code>run()</code> console output.</p>
+<p>When execution reaches a HITL step, it prints the Station name, the input it received, and the output it produced, then offers three choices:</p>
+<ol type="1">
+<li><strong>Continue</strong> — use the output as-is and move to the next Station.</li>
+<li><strong>Edit</strong> — type a replacement output; that value is forwarded to the next Station (and cached, if caching is on).</li>
+<li><strong>Stop</strong> — abort the workflow immediately.</li>
+</ol>
+<p>HITL only fires on fresh executions; cache hits are skipped since the result has already been reviewed in a prior run.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>hitl_pipeline <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"hitl pipeline"</span>, <span class="at">use_cache =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>drafter <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"drafter"</span>,</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"Write a short two-sentence paragraph on the topic provided."</span>,</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>translator <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"translator"</span>,</span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"Translate the text you receive from English into Spanish."</span>,</span>
+<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb43-13"><a href="#cb43-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb43-14"><a href="#cb43-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-15"><a href="#cb43-15" aria-hidden="true" tabindex="-1"></a>hitl_pipeline<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"draft"</span>, <span class="at">handler =</span> drafter)</span>
+<span id="cb43-16"><a href="#cb43-16" aria-hidden="true" tabindex="-1"></a>hitl_pipeline<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"translate"</span>, <span class="at">handler =</span> translator)</span>
+<span id="cb43-17"><a href="#cb43-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-18"><a href="#cb43-18" aria-hidden="true" tabindex="-1"></a>hitl_pipeline<span class="sc">$</span><span class="fu">add_route</span>(<span class="at">from =</span> <span class="st">"draft"</span>, <span class="at">to =</span> <span class="st">"translate"</span>)</span>
+<span id="cb43-19"><a href="#cb43-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-20"><a href="#cb43-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Pause after step 1 (the drafter) so a human can review the draft</span></span>
+<span id="cb43-21"><a href="#cb43-21" aria-hidden="true" tabindex="-1"></a><span class="co"># before it is sent to the translator</span></span>
+<span id="cb43-22"><a href="#cb43-22" aria-hidden="true" tabindex="-1"></a>hitl_pipeline<span class="sc">$</span><span class="fu">set_hitl</span>(<span class="at">steps =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>hitl_pipeline<span class="sc">$</span><span class="fu">run</span>(<span class="st">"The discovery of penicillin"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>You can set HITL at multiple steps at once:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>hitl_pipeline<span class="sc">$</span><span class="fu">set_hitl</span>(<span class="at">steps =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">mode =</span> <span class="st">"interactive"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="non-blocking-hitl-pause-and-resume-not-yet-on-cran" class="level3">
+<h3 class="anchored" data-anchor-id="non-blocking-hitl-pause-and-resume-not-yet-on-cran">Non-blocking HITL: pause and resume (Not yet on CRAN)</h3>
+<p>The <code>HITL</code> above with <code>mode="interactive"</code> (the default) only works in an interactive console. Pass <code>mode = "pause"</code> to <code>$set_hitl()</code> and <code>$run()</code> returns immediately instead of blocking, handing you back a <code>mini007_pending</code> object that describes exactly where execution stopped. This is what lets HITL work from a Shiny app, a Plumber API, or any batch job: persist the pending object, resume it whenever the human actually responds, even in a different R session.</p>
+<p>Let’s route a teaser about Tassili n’Ajjer, the Algerian Sahara’s prehistoric rock-art plateau through a drafter and a translator, pausing after the draft for review:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>sahara_pipeline <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"sahara pipeline"</span>, <span class="at">use_cache =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>drafter <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"sahara_drafter"</span>,</span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"Write a punchy two-sentence teaser about the Saharan destination provided."</span>,</span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>translator <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"translator"</span>,</span>
+<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"Translate the text you receive from English into German."</span>,</span>
+<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb46-14"><a href="#cb46-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-15"><a href="#cb46-15" aria-hidden="true" tabindex="-1"></a>sahara_pipeline<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"draft"</span>, <span class="at">handler =</span> drafter)</span>
+<span id="cb46-16"><a href="#cb46-16" aria-hidden="true" tabindex="-1"></a>sahara_pipeline<span class="sc">$</span><span class="fu">add_station</span>(<span class="at">name =</span> <span class="st">"translate"</span>, <span class="at">handler =</span> translator)</span>
+<span id="cb46-17"><a href="#cb46-17" aria-hidden="true" tabindex="-1"></a>sahara_pipeline<span class="sc">$</span><span class="fu">add_route</span>(<span class="at">from =</span> <span class="st">"draft"</span>, <span class="at">to =</span> <span class="st">"translate"</span>)</span>
+<span id="cb46-18"><a href="#cb46-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-19"><a href="#cb46-19" aria-hidden="true" tabindex="-1"></a><span class="co"># mode = "pause" instead of the default "console"</span></span>
+<span id="cb46-20"><a href="#cb46-20" aria-hidden="true" tabindex="-1"></a>sahara_pipeline<span class="sc">$</span><span class="fu">set_hitl</span>(<span class="at">steps =</span> <span class="dv">1</span>, <span class="at">mode =</span> <span class="st">"pause"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>pending <span class="ot">&lt;-</span> sahara_pipeline<span class="sc">$</span><span class="fu">run</span>(<span class="st">"Tassili n'Ajjer, Algeria"</span>)</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>pending</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<pre><code>── Pending HITL request - step 1 ──
+Request id: "b3f1c2a0-..."
+Station/Agent: draft
+ℹ Input:
+Tassili n'Ajjer, Algeria
+ℹ Proposed output:
+Deep in Algeria's Sahara, Tassili n'Ajjer hides 15,000 years of rock art
+carved into sandstone cathedrals — a UNESCO World Heritage plateau most
+travellers never set foot on.
+! Call `$resume("b3f1c2a0-...", action = "continue"|"edit"|"abort")` to proceed.</code></pre>
+<p><code>is_pending(pending)</code> returns <code>TRUE</code> for this object (and <code>FALSE</code> for a normal completed result). Once the human has weighed in, call <code>$resume()</code> with one of three actions:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Accept the draft as-is — the translator receives it next</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>sahara_pipeline<span class="sc">$</span><span class="fu">resume</span>(pending<span class="sc">$</span>request_id, <span class="at">action =</span> <span class="st">"continue"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Or edit it first. The edited text is what the translator receives</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>sahara_pipeline<span class="sc">$</span><span class="fu">resume</span>(</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>  pending<span class="sc">$</span>request_id,</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">action =</span> <span class="st">"edit"</span>,</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">value  =</span> <span class="st">"Tassili n'Ajjer: 15,000 years of rock art etched into Saharan sandstone, in Algeria's far southeast."</span></span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Or abort altogether — raises an error, nothing downstream runs</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>sahara_pipeline<span class="sc">$</span><span class="fu">resume</span>(pending<span class="sc">$</span>request_id, <span class="at">action =</span> <span class="st">"abort"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>If the workflow has more HITL steps ahead, <code>$resume()</code> returns another <code>mini007_pending</code> object instead of the final result — so a caller typically loops <code>while (is_pending(result))</code>, persisting <code>result$request_id</code> between iterations, until a plain character string comes back.</p>
+<p>Note that a <code>Workflow</code> wrapped as a <code>WorkflowAgent</code> (via <code>$as_agent()</code>) must keep <code>mode = "console"</code> (the default): a <code>WorkflowAgent</code> is invoked synchronously from inside a <code>Workflow</code> Station or a <code>LeadAgent</code> step, and neither knows how to hand a paused run back to you — <code>$invoke()</code> raises an error if the wrapped workflow pauses.</p>
+</section>
+</section>
+<section id="visualising-a-workflow" class="level2">
+<h2 class="anchored" data-anchor-id="visualising-a-workflow">Visualising a workflow</h2>
+<p>Call <code>$visualize()</code> on any <code>Workflow</code> to render an interactive directed graph. Stations appear as rounded blue boxes, conditional Routes as dashed arrows labelled “cond”, and the entry Station is reached via a green <strong>START</strong> node.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>article_pipeline<span class="sc">$</span><span class="fu">visualize</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="grViz html-widget html-fill-item" id="htmlwidget-43e20abb2b0cc7e190dc" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-43e20abb2b0cc7e190dc">{"x":{"diagram":"digraph workflow {\n  graph [rankdir=TB, label=\"article pipeline\", labelloc=t, fontsize=18, fontname=\"Helvetica\"]\n  node [fontname=\"Helvetica\", fontsize=12]\n  edge [fontname=\"Helvetica\", fontsize=10]\n  \"research\" [label=\"research\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"write\" [label=\"write\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"edit\" [label=\"edit\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"translate\" [label=\"translate\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"START\" [label=\"START\", shape=circle, style=filled, fillcolor=\"#82E0AA\", width=0.5]\n  \"START\" -> \"research\"\n  \"research\" -> \"write\"\n  \"write\" -> \"edit\"\n  \"edit\" -> \"translate\"\n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>sentiment_router<span class="sc">$</span><span class="fu">visualize</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="grViz html-widget html-fill-item" id="htmlwidget-be82aededa39dce810fb" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-be82aededa39dce810fb">{"x":{"diagram":"digraph workflow {\n  graph [rankdir=TB, label=\"sentiment router\", labelloc=t, fontsize=18, fontname=\"Helvetica\"]\n  node [fontname=\"Helvetica\", fontsize=12]\n  edge [fontname=\"Helvetica\", fontsize=10]\n  \"classify\" [label=\"classify\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"reply_pos\" [label=\"reply_pos\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"reply_neg\" [label=\"reply_neg\\n[Agent]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"START\" [label=\"START\", shape=circle, style=filled, fillcolor=\"#82E0AA\", width=0.5]\n  \"START\" -> \"classify\"\n  \"classify\" -> \"reply_pos\" [label=\"  cond\", style=dashed]\n  \"classify\" -> \"reply_neg\" [label=\"  cond\", style=dashed]\n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<p>The graph updates automatically to reflect whatever Stations and Routes are currently registered, making it a convenient tool for checking that the pipeline is wired correctly before running it.</p>
+<hr>
+</section>
+<section id="per-station-retry-not-yet-on-cran" class="level2">
+<h2 class="anchored" data-anchor-id="per-station-retry-not-yet-on-cran">Per-station retry (Not yet on CRAN)</h2>
+<p>Real-world pipelines talk to external services — LLM providers, APIs, databases — that can fail transiently: rate-limit errors, network blips, brief provider outages. Rather than letting a single transient failure abort the entire run, you can attach a <strong>retry logic</strong> to any Station via two parameters of <code>$add_station()</code>:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Parameter</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>max_retries</code></td>
+<td><code>0</code></td>
+<td>Extra attempts after the first failure</td>
+</tr>
+<tr class="even">
+<td><code>retry_delay</code></td>
+<td><code>1</code></td>
+<td>Seconds to sleep between attempts</td>
+</tr>
+</tbody>
+</table>
+<p>The station is tried up to <code>max_retries + 1</code> times in total. If it succeeds on any attempt, execution continues normally. If all attempts fail, the error is either forwarded to a <a href="#fallback-handlers">fallback handler</a> (see below) or re-raised.</p>
+<section id="simulating-a-flaky-service" class="level3">
+<h3 class="anchored" data-anchor-id="simulating-a-flaky-service">Simulating a flaky service</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Factory that returns a handler which fails the first `fail_times` calls</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>make_flaky_service <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">fail_times =</span> <span class="dv">2</span>L) {</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>  attempts <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">function</span>(text) {</span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>    attempts <span class="ot">&lt;&lt;-</span> attempts <span class="sc">+</span> <span class="dv">1</span>L</span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (attempts <span class="sc">&lt;=</span> fail_times) {</span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">stop</span>(<span class="fu">sprintf</span>(<span class="st">"HTTP 429: Rate limit (attempt %d of %d)"</span>, attempts, fail_times <span class="sc">+</span> <span class="dv">1</span>L))</span>
+<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste</span>(<span class="st">"Service result:"</span>, <span class="fu">toupper</span>(text))</span>
+<span id="cb54-10"><a href="#cb54-10" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb54-11"><a href="#cb54-11" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>retry_wf <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"retry pipeline"</span>, <span class="at">use_cache =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>retry_wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"call_service"</span>,</span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler     =</span> <span class="fu">make_flaky_service</span>(<span class="at">fail_times =</span> <span class="dv">2</span>L),</span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_retries =</span> <span class="dv">3</span>,</span>
+<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">retry_delay =</span> <span class="dv">0</span>     <span class="co"># set to a positive number (e.g. 2) in production</span></span>
+<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb55-9"><a href="#cb55-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-10"><a href="#cb55-10" aria-hidden="true" tabindex="-1"></a>retry_wf<span class="sc">$</span><span class="fu">run</span>(<span class="st">"summarise this document"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Service result: SUMMARISE THIS DOCUMENT"</code></pre>
+</div>
+</div>
+<p>The station fails on attempts 1 and 2, then succeeds on attempt 3. The workflow returns the successful result transparently.</p>
+</section>
+<section id="attaching-retries-to-an-agent-station" class="level3">
+<h3 class="anchored" data-anchor-id="attaching-retries-to-an-agent-station">Attaching retries to an Agent station</h3>
+<p><code>max_retries</code> works identically for Agent stations — the LLM call is retried the same way.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>fragile_pipeline <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"fragile pipeline"</span>)</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>fragile_pipeline<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"analyse"</span>,</span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler     =</span> some_agent,      <span class="co"># any Agent or WorkflowAgent</span></span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_retries =</span> <span class="dv">2</span>,</span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">retry_delay =</span> <span class="dv">3</span>                <span class="co"># wait 3 s between retries</span></span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="behaviour-when-all-retries-are-exhausted" class="level3">
+<h3 class="anchored" data-anchor-id="behaviour-when-all-retries-are-exhausted">Behaviour when all retries are exhausted</h3>
+<p>When every attempt fails and no <a href="#fallback-handlers">fallback</a> is defined, the last error is re-raised and propagates up from <code>$run()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>always_fails_wf <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"always-fails pipeline"</span>, <span class="at">use_cache =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>always_fails_wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"broken_step"</span>,</span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler     =</span> <span class="cf">function</span>(x) <span class="fu">stop</span>(<span class="st">"Service permanently unavailable"</span>),</span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_retries =</span> <span class="dv">1</span>,</span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">retry_delay =</span> <span class="dv">0</span></span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a><span class="fu">tryCatch</span>(</span>
+<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a>  always_fails_wf<span class="sc">$</span><span class="fu">run</span>(<span class="st">"input"</span>),</span>
+<span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">error =</span> <span class="cf">function</span>(e) <span class="fu">paste</span>(<span class="st">"Caught:"</span>, <span class="fu">conditionMessage</span>(e))</span>
+<span id="cb58-13"><a href="#cb58-13" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Caught: Service permanently unavailable"</code></pre>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="fallback-handlers-fallback-handlers-not-yet-on-cran" class="level2">
+<h2 class="anchored" data-anchor-id="fallback-handlers-fallback-handlers-not-yet-on-cran">Fallback handlers {#fallback-handlers} (not yet on CRAN)</h2>
+<p>A <strong>fallback</strong> is a <code>function(input, error)</code> attached to a specific Station. It is invoked only after all retry attempts for that Station have been exhausted, giving you a controlled degradation path instead of a hard failure.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name     =</span> <span class="st">"step"</span>,</span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler  =</span> primary_handler,</span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">fallback =</span> <span class="cf">function</span>(input, error) {</span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># `input`  — the string the station received</span></span>
+<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># `error`  — the condition object from the last failed attempt</span></span>
+<span id="cb60-7"><a href="#cb60-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"default output"</span></span>
+<span id="cb60-8"><a href="#cb60-8" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb60-9"><a href="#cb60-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The fallback’s return value is used as the station’s output and the pipeline continues normally from there.</p>
+<section id="simple-graceful-degradation" class="level3">
+<h3 class="anchored" data-anchor-id="simple-graceful-degradation">Simple graceful degradation</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>safe_wf <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"safe pipeline"</span>, <span class="at">use_cache =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>safe_wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">name     =</span> <span class="st">"fetch_summary"</span>,</span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler  =</span> <span class="cf">function</span>(x) <span class="fu">stop</span>(<span class="st">"Connection refused"</span>),</span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">fallback =</span> <span class="cf">function</span>(input, err) {</span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste</span>(<span class="st">"(Summary unavailable — service error:"</span>, <span class="fu">conditionMessage</span>(err), <span class="st">")</span><span class="sc">\n</span><span class="st">Original:"</span>, input)</span>
+<span id="cb61-8"><a href="#cb61-8" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb61-9"><a href="#cb61-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb61-10"><a href="#cb61-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-11"><a href="#cb61-11" aria-hidden="true" tabindex="-1"></a>safe_wf<span class="sc">$</span><span class="fu">run</span>(<span class="st">"Analyse this quarterly report"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "(Summary unavailable — service error: Connection refused )\nOriginal: Analyse this quarterly report"</code></pre>
+</div>
+</div>
+</section>
+<section id="fallback-fires-only-after-all-retries" class="level3">
+<h3 class="anchored" data-anchor-id="fallback-fires-only-after-all-retries">Fallback fires only after all retries</h3>
+<p>The fallback is a last resort. With <code>max_retries &gt; 0</code> the primary handler is tried repeatedly; the fallback only runs if every attempt fails.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>attempts <span class="ot">&lt;-</span> <span class="dv">0</span>L</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>resilient_wf <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"resilient pipeline"</span>, <span class="at">use_cache =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a>resilient_wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb63-6"><a href="#cb63-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">name        =</span> <span class="st">"external_call"</span>,</span>
+<span id="cb63-7"><a href="#cb63-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler     =</span> <span class="cf">function</span>(x) {</span>
+<span id="cb63-8"><a href="#cb63-8" aria-hidden="true" tabindex="-1"></a>    attempts <span class="ot">&lt;&lt;-</span> attempts <span class="sc">+</span> <span class="dv">1</span>L</span>
+<span id="cb63-9"><a href="#cb63-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="fu">sprintf</span>(<span class="st">"Attempt %d failed"</span>, attempts))</span>
+<span id="cb63-10"><a href="#cb63-10" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb63-11"><a href="#cb63-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_retries =</span> <span class="dv">2</span>,</span>
+<span id="cb63-12"><a href="#cb63-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">retry_delay =</span> <span class="dv">0</span>,</span>
+<span id="cb63-13"><a href="#cb63-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">fallback    =</span> <span class="cf">function</span>(input, err) {</span>
+<span id="cb63-14"><a href="#cb63-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste0</span>(<span class="st">"[Fallback after "</span>, attempts, <span class="st">" attempt(s)] "</span>, input)</span>
+<span id="cb63-15"><a href="#cb63-15" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb63-16"><a href="#cb63-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb63-17"><a href="#cb63-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-18"><a href="#cb63-18" aria-hidden="true" tabindex="-1"></a>resilient_wf<span class="sc">$</span><span class="fu">run</span>(<span class="st">"Process this document"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "[Fallback after 3 attempt(s)] Process this document"</code></pre>
+</div>
+</div>
+</section>
+<section id="routing-continues-after-a-fallback" class="level3">
+<h3 class="anchored" data-anchor-id="routing-continues-after-a-fallback">Routing continues after a fallback</h3>
+<p>The fallback’s output flows into the next Station via the normal routing mechanism. The rest of the pipeline is unaware that a fallback fired.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>routed_fallback_wf <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"routed fallback"</span>, <span class="at">use_cache =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>routed_fallback_wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">name     =</span> <span class="st">"fetch"</span>,</span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler  =</span> <span class="cf">function</span>(x) <span class="fu">stop</span>(<span class="st">"API down"</span>),</span>
+<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">fallback =</span> <span class="cf">function</span>(input, err) <span class="fu">paste</span>(<span class="st">"CACHED VERSION OF:"</span>, input)</span>
+<span id="cb65-7"><a href="#cb65-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb65-8"><a href="#cb65-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-9"><a href="#cb65-9" aria-hidden="true" tabindex="-1"></a>routed_fallback_wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb65-10"><a href="#cb65-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"format"</span>,</span>
+<span id="cb65-11"><a href="#cb65-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">function</span>(x) <span class="fu">paste0</span>(<span class="st">"**"</span>, <span class="fu">trimws</span>(x), <span class="st">"**"</span>)</span>
+<span id="cb65-12"><a href="#cb65-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb65-13"><a href="#cb65-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-14"><a href="#cb65-14" aria-hidden="true" tabindex="-1"></a>routed_fallback_wf<span class="sc">$</span><span class="fu">add_route</span>(<span class="st">"fetch"</span>, <span class="st">"format"</span>)</span>
+<span id="cb65-15"><a href="#cb65-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-16"><a href="#cb65-16" aria-hidden="true" tabindex="-1"></a>routed_fallback_wf<span class="sc">$</span><span class="fu">run</span>(<span class="st">"monthly sales figures"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "**CACHED VERSION OF: monthly sales figures**"</code></pre>
+</div>
+</div>
+</section>
+<section id="using-a-backup-llm-as-the-fallback" class="level3">
+<h3 class="anchored" data-anchor-id="using-a-backup-llm-as-the-fallback">Using a backup LLM as the fallback</h3>
+<p>A common production pattern is to call a premium model as the primary handler and fall back to a cheaper or local model when the primary is unavailable.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>primary_agent  <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(<span class="st">"primary"</span>,  <span class="st">"You are a senior analyst."</span>, premium_llm)</span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>fallback_agent <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(<span class="st">"fallback"</span>, <span class="st">"You are a concise analyst."</span>, cheap_llm)</span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a>pipeline <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"model-with-backup"</span>)</span>
+<span id="cb67-5"><a href="#cb67-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-6"><a href="#cb67-6" aria-hidden="true" tabindex="-1"></a>pipeline<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb67-7"><a href="#cb67-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">name     =</span> <span class="st">"analyse"</span>,</span>
+<span id="cb67-8"><a href="#cb67-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler  =</span> primary_agent,</span>
+<span id="cb67-9"><a href="#cb67-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_retries =</span> <span class="dv">1</span>,</span>
+<span id="cb67-10"><a href="#cb67-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">retry_delay =</span> <span class="dv">2</span>,</span>
+<span id="cb67-11"><a href="#cb67-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">fallback =</span> <span class="cf">function</span>(input, err) {</span>
+<span id="cb67-12"><a href="#cb67-12" aria-hidden="true" tabindex="-1"></a>    fallback_agent<span class="sc">$</span><span class="fu">invoke</span>(input)   <span class="co"># delegate to the backup model</span></span>
+<span id="cb67-13"><a href="#cb67-13" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb67-14"><a href="#cb67-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<hr>
+</section>
+</section>
+<section id="parallel-stations-not-yet-on-cran" class="level2">
+<h2 class="anchored" data-anchor-id="parallel-stations-not-yet-on-cran">Parallel Stations (not yet on CRAN)</h2>
+<p>Multiple independent Stations can run concurrently using <code>$set_daemons()</code> and <code>$add_parallel_group()</code>.</p>
+<section id="multi-perspective-parallel-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="multi-perspective-parallel-analysis">Multi-perspective parallel analysis</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create three specialized agents for different perspectives</span></span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>technical_agent <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"technical_analyst"</span>,</span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="fu">paste</span>(</span>
+<span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"You are a technical expert in AI and software engineering."</span>,</span>
+<span id="cb68-6"><a href="#cb68-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Analyze topics from a technical/engineering perspective."</span>,</span>
+<span id="cb68-7"><a href="#cb68-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Focus on: implementation details, technology stack, technical challenges."</span>,</span>
+<span id="cb68-8"><a href="#cb68-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Keep responses to 2-3 sentences."</span></span>
+<span id="cb68-9"><a href="#cb68-9" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb68-10"><a href="#cb68-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb68-11"><a href="#cb68-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb68-12"><a href="#cb68-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-13"><a href="#cb68-13" aria-hidden="true" tabindex="-1"></a>business_agent <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb68-14"><a href="#cb68-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"business_strategist"</span>,</span>
+<span id="cb68-15"><a href="#cb68-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="fu">paste</span>(</span>
+<span id="cb68-16"><a href="#cb68-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"You are a business strategist and market analyst."</span>,</span>
+<span id="cb68-17"><a href="#cb68-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Analyze topics from a business/market perspective."</span>,</span>
+<span id="cb68-18"><a href="#cb68-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Focus on: market opportunities, ROI, competitive advantage, business models."</span>,</span>
+<span id="cb68-19"><a href="#cb68-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Keep responses to 2-3 sentences."</span></span>
+<span id="cb68-20"><a href="#cb68-20" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb68-21"><a href="#cb68-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb68-22"><a href="#cb68-22" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb68-23"><a href="#cb68-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-24"><a href="#cb68-24" aria-hidden="true" tabindex="-1"></a>ux_agent <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb68-25"><a href="#cb68-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"ux_specialist"</span>,</span>
+<span id="cb68-26"><a href="#cb68-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="fu">paste</span>(</span>
+<span id="cb68-27"><a href="#cb68-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"You are a UX and product design specialist."</span>,</span>
+<span id="cb68-28"><a href="#cb68-28" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Analyze topics from a user experience perspective."</span>,</span>
+<span id="cb68-29"><a href="#cb68-29" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Focus on: user needs, design considerations, accessibility, user satisfaction."</span>,</span>
+<span id="cb68-30"><a href="#cb68-30" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Keep responses to 2-3 sentences."</span></span>
+<span id="cb68-31"><a href="#cb68-31" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb68-32"><a href="#cb68-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb68-33"><a href="#cb68-33" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb68-34"><a href="#cb68-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-35"><a href="#cb68-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-36"><a href="#cb68-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Create workflow with parallel execution</span></span>
+<span id="cb68-37"><a href="#cb68-37" aria-hidden="true" tabindex="-1"></a>wf <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb68-38"><a href="#cb68-38" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"parallel_multi_agent_analysis"</span>,</span>
+<span id="cb68-39"><a href="#cb68-39" aria-hidden="true" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">"Multi-perspective analysis using parallel Agent invocations"</span></span>
+<span id="cb68-40"><a href="#cb68-40" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb68-41"><a href="#cb68-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-42"><a href="#cb68-42" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up 3 parallel workers for concurrent API calls</span></span>
+<span id="cb68-43"><a href="#cb68-43" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">set_daemons</span>(<span class="dv">3</span>)</span>
+<span id="cb68-44"><a href="#cb68-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-45"><a href="#cb68-45" aria-hidden="true" tabindex="-1"></a><span class="co"># Add input station (passthrough)</span></span>
+<span id="cb68-46"><a href="#cb68-46" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb68-47"><a href="#cb68-47" aria-hidden="true" tabindex="-1"></a>  <span class="st">"input"</span>,</span>
+<span id="cb68-48"><a href="#cb68-48" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler =</span> <span class="cf">function</span>(x) x,</span>
+<span id="cb68-49"><a href="#cb68-49" aria-hidden="true" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">"Input topic"</span></span>
+<span id="cb68-50"><a href="#cb68-50" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb68-51"><a href="#cb68-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-52"><a href="#cb68-52" aria-hidden="true" tabindex="-1"></a><span class="co"># Add three parallel Agent stations</span></span>
+<span id="cb68-53"><a href="#cb68-53" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb68-54"><a href="#cb68-54" aria-hidden="true" tabindex="-1"></a>  <span class="st">"technical_analysis"</span>,</span>
+<span id="cb68-55"><a href="#cb68-55" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler =</span> technical_agent,</span>
+<span id="cb68-56"><a href="#cb68-56" aria-hidden="true" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">"Technical perspective"</span></span>
+<span id="cb68-57"><a href="#cb68-57" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb68-58"><a href="#cb68-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-59"><a href="#cb68-59" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb68-60"><a href="#cb68-60" aria-hidden="true" tabindex="-1"></a>  <span class="st">"business_analysis"</span>,</span>
+<span id="cb68-61"><a href="#cb68-61" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler =</span> business_agent,</span>
+<span id="cb68-62"><a href="#cb68-62" aria-hidden="true" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">"Business perspective"</span></span>
+<span id="cb68-63"><a href="#cb68-63" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb68-64"><a href="#cb68-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-65"><a href="#cb68-65" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb68-66"><a href="#cb68-66" aria-hidden="true" tabindex="-1"></a>  <span class="st">"ux_analysis"</span>,</span>
+<span id="cb68-67"><a href="#cb68-67" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler =</span> ux_agent,</span>
+<span id="cb68-68"><a href="#cb68-68" aria-hidden="true" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">"UX perspective"</span></span>
+<span id="cb68-69"><a href="#cb68-69" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb68-70"><a href="#cb68-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-71"><a href="#cb68-71" aria-hidden="true" tabindex="-1"></a><span class="co"># Add synthesis station</span></span>
+<span id="cb68-72"><a href="#cb68-72" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb68-73"><a href="#cb68-73" aria-hidden="true" tabindex="-1"></a>  <span class="st">"synthesis"</span>,</span>
+<span id="cb68-74"><a href="#cb68-74" aria-hidden="true" tabindex="-1"></a>  <span class="at">handler =</span> <span class="cf">function</span>(x) {</span>
+<span id="cb68-75"><a href="#cb68-75" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste0</span>(</span>
+<span id="cb68-76"><a href="#cb68-76" aria-hidden="true" tabindex="-1"></a>      <span class="st">"═══════════════════════════════════════════</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb68-77"><a href="#cb68-77" aria-hidden="true" tabindex="-1"></a>      <span class="st">"MULTI-PERSPECTIVE ANALYSIS REPORT</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb68-78"><a href="#cb68-78" aria-hidden="true" tabindex="-1"></a>      <span class="st">"═══════════════════════════════════════════</span><span class="sc">\n\n</span><span class="st">"</span>,</span>
+<span id="cb68-79"><a href="#cb68-79" aria-hidden="true" tabindex="-1"></a>      x</span>
+<span id="cb68-80"><a href="#cb68-80" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb68-81"><a href="#cb68-81" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb68-82"><a href="#cb68-82" aria-hidden="true" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">"Synthesis"</span></span>
+<span id="cb68-83"><a href="#cb68-83" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb68-84"><a href="#cb68-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-85"><a href="#cb68-85" aria-hidden="true" tabindex="-1"></a><span class="co"># Define parallel group: input -&gt; [technical, business, ux] -&gt; synthesis</span></span>
+<span id="cb68-86"><a href="#cb68-86" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">add_parallel_group</span>(</span>
+<span id="cb68-87"><a href="#cb68-87" aria-hidden="true" tabindex="-1"></a>  <span class="at">from =</span> <span class="st">"input"</span>,</span>
+<span id="cb68-88"><a href="#cb68-88" aria-hidden="true" tabindex="-1"></a>  <span class="at">stations =</span> <span class="fu">c</span>(<span class="st">"technical_analysis"</span>, <span class="st">"business_analysis"</span>, <span class="st">"ux_analysis"</span>),</span>
+<span id="cb68-89"><a href="#cb68-89" aria-hidden="true" tabindex="-1"></a>  <span class="at">to =</span> <span class="st">"synthesis"</span>,</span>
+<span id="cb68-90"><a href="#cb68-90" aria-hidden="true" tabindex="-1"></a>  <span class="at">merge_fn =</span> <span class="cf">function</span>(results) {</span>
+<span id="cb68-91"><a href="#cb68-91" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste0</span>(</span>
+<span id="cb68-92"><a href="#cb68-92" aria-hidden="true" tabindex="-1"></a>      <span class="st">"📱 TECHNICAL PERSPECTIVE:</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb68-93"><a href="#cb68-93" aria-hidden="true" tabindex="-1"></a>      results<span class="sc">$</span>technical_analysis, <span class="st">"</span><span class="sc">\n\n</span><span class="st">"</span>,</span>
+<span id="cb68-94"><a href="#cb68-94" aria-hidden="true" tabindex="-1"></a>      <span class="st">"💼 BUSINESS PERSPECTIVE:</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb68-95"><a href="#cb68-95" aria-hidden="true" tabindex="-1"></a>      results<span class="sc">$</span>business_analysis, <span class="st">"</span><span class="sc">\n\n</span><span class="st">"</span>,</span>
+<span id="cb68-96"><a href="#cb68-96" aria-hidden="true" tabindex="-1"></a>      <span class="st">"👤 UX PERSPECTIVE:</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb68-97"><a href="#cb68-97" aria-hidden="true" tabindex="-1"></a>      results<span class="sc">$</span>ux_analysis</span>
+<span id="cb68-98"><a href="#cb68-98" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb68-99"><a href="#cb68-99" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb68-100"><a href="#cb68-100" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb68-101"><a href="#cb68-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-102"><a href="#cb68-102" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">visualize</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="grViz html-widget html-fill-item" id="htmlwidget-e2111f57d03e317670b4" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-e2111f57d03e317670b4">{"x":{"diagram":"digraph workflow {\n  graph [rankdir=TB, label=\"parallel_multi_agent_analysis\", labelloc=t, fontsize=18, fontname=\"Helvetica\"]\n  node [fontname=\"Helvetica\", fontsize=12]\n  edge [fontname=\"Helvetica\", fontsize=10]\n  \"input\" [label=\"input\\n[Input topic]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"technical_analysis\" [label=\"technical_analysis\\n[Technical perspective]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"business_analysis\" [label=\"business_analysis\\n[Business perspective]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"ux_analysis\" [label=\"ux_analysis\\n[UX perspective]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"synthesis\" [label=\"synthesis\\n[Synthesis]\", shape=box, style=\"filled,rounded\", fillcolor=\"#AED6F1\"]\n  \"START\" [label=\"START\", shape=circle, style=filled, fillcolor=\"#82E0AA\", width=0.5]\n  \"START\" -> \"input\"\n  \"input\" -> \"technical_analysis\" [color=\"#FF6B6B\", penwidth=2, label=\"∥\"]\n  \"input\" -> \"business_analysis\" [color=\"#FF6B6B\", penwidth=2, label=\"∥\"]\n  \"input\" -> \"ux_analysis\" [color=\"#FF6B6B\", penwidth=2, label=\"∥\"]\n  \"technical_analysis\" -> \"synthesis\" [color=\"#FF6B6B\", penwidth=2]\n  \"business_analysis\" -> \"synthesis\" [color=\"#FF6B6B\", penwidth=2]\n  \"ux_analysis\" -> \"synthesis\" [color=\"#FF6B6B\", penwidth=2]\n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Execute workflow with parallel execution</span></span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>topic <span class="ot">&lt;-</span> <span class="st">"Artificial Intelligence in Healthcare"</span></span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> wf<span class="sc">$</span><span class="fu">run</span>(topic)</span>
+<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-6"><a href="#cb69-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Clean up any existing daemons from previous runs</span></span>
+<span id="cb69-7"><a href="#cb69-7" aria-hidden="true" tabindex="-1"></a>mirai<span class="sc">::</span><span class="fu">daemons</span>(<span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>result</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "═══════════════════════════════════════════\nMULTI-PERSPECTIVE ANALYSIS REPORT\n═══════════════════════════════════════════\n\n📱 TECHNICAL PERSPECTIVE:\nAI in healthcare commonly leverages deep learning frameworks like TensorFlow and PyTorch for tasks such as medical image analysis, natural language processing for clinical notes, and predictive analytics. Key technical challenges include integrating heterogeneous healthcare data sources (EHRs, imaging, genomics), ensuring data privacy through techniques like federated learning, and meeting stringent regulatory compliance like HIPAA. Robust model interpretability and real-time processing capabilities are critical for clinical adoption.\n\n💼 BUSINESS PERSPECTIVE:\nArtificial Intelligence in healthcare offers significant market opportunities through predictive diagnostics, personalized treatment, and operational efficiency, driving substantial ROI by reducing costs and improving patient outcomes. Companies leveraging proprietary AI algorithms and extensive healthcare data gain a competitive advantage, enabling scalable business models like SaaS platforms for hospitals, telemedicine integration, and AI-powered medical devices. Early adoption and regulatory compliance are critical for capturing market share in this rapidly evolving space.\n\n👤 UX PERSPECTIVE:\nAI in healthcare addresses user needs for faster diagnostics, personalized treatment, and efficient data management. Design considerations include intuitive interfaces for diverse users (patients, doctors), data privacy, and seamless integration with existing systems. Ensuring accessibility involves accommodating varying tech literacy and disabilities, while user satisfaction hinges on trust, accuracy, and transparency."</code></pre>
+</div>
+</div>
+</section>
+<section id="how-it-works" class="level3">
+<h3 class="anchored" data-anchor-id="how-it-works">How it works</h3>
+<ol type="1">
+<li><p><strong><code>$set_daemons(n)</code></strong> Creates <code>n</code> parallel worker processes.</p></li>
+<li><p><strong><code>$add_parallel_group(from, stations, to, merge_fn)</code></strong> Defines which stations run in parallel:</p>
+<ul>
+<li><code>from</code>: predecessor station (all parallel stations receive its output)</li>
+<li><code>stations</code>: vector of station names to run concurrently</li>
+<li><code>to</code>: successor station (receives merged results)</li>
+<li><code>merge_fn</code>: function to combine results from all parallel stations</li>
+</ul></li>
+<li><p><strong>Execution</strong> All parallel stations run concurrently in separate daemons</p></li>
+<li><p><strong>Visualization</strong> <code>$visualize()</code> shows parallel routes in <strong>red with ∥ symbol</strong> to distinguish from sequential routes</p></li>
+</ol>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
