@@ -239,7 +239,7 @@ After setting the `HITL` to step 1, the workflow execution will pose and give th
 
 Note that you can set a `HITL` at several steps, for example `lead_agent$set_hitl(steps = c(1, 2))` will set the `HITL` at step 1 and step 2.
 
-### Non-blocking HITL: pause and resume (Not yet on CRAN)
+### Non-blocking HITL: pause and resume
 
 The behaviour above blocks on `readline()`, which only works in an
 interactive console. Pass `mode = "pause"` to `$set_hitl()` and `$invoke()`

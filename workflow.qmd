@@ -465,7 +465,7 @@ You can set HITL at multiple steps at once:
 hitl_pipeline$set_hitl(steps = c(1, 2), mode = "interactive")
 ```
 
-### Non-blocking HITL: pause and resume (Not yet on CRAN)
+### Non-blocking HITL: pause and resume
 
 The `HITL` above with `mode="interactive"` (the default) only works in an interactive console. Pass `mode = "pause"` to `$set_hitl()` and `$run()` returns immediately instead of
 blocking, handing you back a `mini007_pending` object that describes exactly
@@ -571,7 +571,7 @@ The graph updates automatically to reflect whatever Stations and Routes are curr
 
 ---
 
-## Per-station retry (Not yet on CRAN)
+## Per-station retry
 
 Real-world pipelines talk to external services — LLM providers, APIs, databases — that can fail transiently: rate-limit errors, network blips, brief provider outages. Rather than letting a single transient failure abort the entire run, you can attach a **retry logic** to any Station via two parameters of `$add_station()`:
 
@@ -652,7 +652,7 @@ tryCatch(
 
 ---
 
-## Fallback handlers {#fallback-handlers} (not yet on CRAN)
+## Fallback handlers {#fallback-handlers}
 
 A **fallback** is a `function(input, error)` attached to a specific Station. It is invoked only after all retry attempts for that Station have been exhausted, giving you a controlled degradation path instead of a hard failure.
 
@@ -759,7 +759,7 @@ pipeline$add_station(
 
 ---
 
-## Parallel Stations (not yet on CRAN)
+## Parallel Stations
 
 Multiple independent Stations can run concurrently using `$set_daemons()` and `$add_parallel_group()`. 
 
