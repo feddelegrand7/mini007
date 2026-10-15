@@ -352,7 +352,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </ul></li>
   <li><a href="#human-in-the-loop-hitl" id="toc-human-in-the-loop-hitl" class="nav-link" data-scroll-target="#human-in-the-loop-hitl">Human In The Loop (HITL)</a>
   <ul class="collapse">
-  <li><a href="#non-blocking-hitl-pause-and-resume-not-yet-on-cran" id="toc-non-blocking-hitl-pause-and-resume-not-yet-on-cran" class="nav-link" data-scroll-target="#non-blocking-hitl-pause-and-resume-not-yet-on-cran">Non-blocking HITL: pause and resume (Not yet on CRAN)</a></li>
+  <li><a href="#non-blocking-hitl-pause-and-resume" id="toc-non-blocking-hitl-pause-and-resume" class="nav-link" data-scroll-target="#non-blocking-hitl-pause-and-resume">Non-blocking HITL: pause and resume</a></li>
   </ul></li>
   <li><a href="#judge-as-a-decision-process" id="toc-judge-as-a-decision-process" class="nav-link" data-scroll-target="#judge-as-a-decision-process">Judge as a decision process</a></li>
   <li><a href="#agents-dialog" id="toc-agents-dialog" class="nav-link" data-scroll-target="#agents-dialog">Agents Dialog</a></li>
@@ -818,8 +818,8 @@ openai_4_1_nano_agent answered with Algiers</code></pre>
 <li>Stop the execution of the workflow (hard error);</li>
 </ol>
 <p>Note that you can set a <code>HITL</code> at several steps, for example <code>lead_agent$set_hitl(steps = c(1, 2))</code> will set the <code>HITL</code> at step 1 and step 2.</p>
-<section id="non-blocking-hitl-pause-and-resume-not-yet-on-cran" class="level3">
-<h3 class="anchored" data-anchor-id="non-blocking-hitl-pause-and-resume-not-yet-on-cran">Non-blocking HITL: pause and resume (Not yet on CRAN)</h3>
+<section id="non-blocking-hitl-pause-and-resume" class="level3">
+<h3 class="anchored" data-anchor-id="non-blocking-hitl-pause-and-resume">Non-blocking HITL: pause and resume</h3>
 <p>The behaviour above blocks on <code>readline()</code>, which only works in an interactive console. Pass <code>mode = "pause"</code> to <code>$set_hitl()</code> and <code>$invoke()</code> returns immediately instead of blocking, handing back a <code>mini007_pending</code> object that describes exactly which agent’s response is awaiting review. Call <code>$resume()</code> once a decision is made — from the same session, or a completely different one that persisted the <code>request_id</code>.</p>
 <p>Let’s delegate a question about the Sahara’s Trans-Saharan Highway — the road linking Algiers to Lagos through the desert — to our <code>researcher</code>, <code>summarizer</code> and <code>translator</code> crew, pausing to review the researcher’s answer before it gets summarised:</p>
 <div class="cell">

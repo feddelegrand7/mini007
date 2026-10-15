@@ -354,23 +354,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </ul></li>
   <li><a href="#human-in-the-loop-hitl" id="toc-human-in-the-loop-hitl" class="nav-link" data-scroll-target="#human-in-the-loop-hitl">Human In The Loop (HITL)</a>
   <ul class="collapse">
-  <li><a href="#non-blocking-hitl-pause-and-resume-not-yet-on-cran" id="toc-non-blocking-hitl-pause-and-resume-not-yet-on-cran" class="nav-link" data-scroll-target="#non-blocking-hitl-pause-and-resume-not-yet-on-cran">Non-blocking HITL: pause and resume (Not yet on CRAN)</a></li>
+  <li><a href="#non-blocking-hitl-pause-and-resume" id="toc-non-blocking-hitl-pause-and-resume" class="nav-link" data-scroll-target="#non-blocking-hitl-pause-and-resume">Non-blocking HITL: pause and resume</a></li>
   </ul></li>
   <li><a href="#visualising-a-workflow" id="toc-visualising-a-workflow" class="nav-link" data-scroll-target="#visualising-a-workflow">Visualising a workflow</a></li>
-  <li><a href="#per-station-retry-not-yet-on-cran" id="toc-per-station-retry-not-yet-on-cran" class="nav-link" data-scroll-target="#per-station-retry-not-yet-on-cran">Per-station retry (Not yet on CRAN)</a>
+  <li><a href="#per-station-retry" id="toc-per-station-retry" class="nav-link" data-scroll-target="#per-station-retry">Per-station retry</a>
   <ul class="collapse">
   <li><a href="#simulating-a-flaky-service" id="toc-simulating-a-flaky-service" class="nav-link" data-scroll-target="#simulating-a-flaky-service">Simulating a flaky service</a></li>
   <li><a href="#attaching-retries-to-an-agent-station" id="toc-attaching-retries-to-an-agent-station" class="nav-link" data-scroll-target="#attaching-retries-to-an-agent-station">Attaching retries to an Agent station</a></li>
   <li><a href="#behaviour-when-all-retries-are-exhausted" id="toc-behaviour-when-all-retries-are-exhausted" class="nav-link" data-scroll-target="#behaviour-when-all-retries-are-exhausted">Behaviour when all retries are exhausted</a></li>
   </ul></li>
-  <li><a href="#fallback-handlers-fallback-handlers-not-yet-on-cran" id="toc-fallback-handlers-fallback-handlers-not-yet-on-cran" class="nav-link" data-scroll-target="#fallback-handlers-fallback-handlers-not-yet-on-cran">Fallback handlers {#fallback-handlers} (not yet on CRAN)</a>
+  <li><a href="#fallback-handlers" id="toc-fallback-handlers" class="nav-link" data-scroll-target="#fallback-handlers">Fallback handlers</a>
   <ul class="collapse">
   <li><a href="#simple-graceful-degradation" id="toc-simple-graceful-degradation" class="nav-link" data-scroll-target="#simple-graceful-degradation">Simple graceful degradation</a></li>
   <li><a href="#fallback-fires-only-after-all-retries" id="toc-fallback-fires-only-after-all-retries" class="nav-link" data-scroll-target="#fallback-fires-only-after-all-retries">Fallback fires only after all retries</a></li>
   <li><a href="#routing-continues-after-a-fallback" id="toc-routing-continues-after-a-fallback" class="nav-link" data-scroll-target="#routing-continues-after-a-fallback">Routing continues after a fallback</a></li>
   <li><a href="#using-a-backup-llm-as-the-fallback" id="toc-using-a-backup-llm-as-the-fallback" class="nav-link" data-scroll-target="#using-a-backup-llm-as-the-fallback">Using a backup LLM as the fallback</a></li>
   </ul></li>
-  <li><a href="#parallel-stations-not-yet-on-cran" id="toc-parallel-stations-not-yet-on-cran" class="nav-link" data-scroll-target="#parallel-stations-not-yet-on-cran">Parallel Stations (not yet on CRAN)</a>
+  <li><a href="#parallel-stations" id="toc-parallel-stations" class="nav-link" data-scroll-target="#parallel-stations">Parallel Stations</a>
   <ul class="collapse">
   <li><a href="#multi-perspective-parallel-analysis" id="toc-multi-perspective-parallel-analysis" class="nav-link" data-scroll-target="#multi-perspective-parallel-analysis">Multi-perspective parallel analysis</a></li>
   <li><a href="#how-it-works" id="toc-how-it-works" class="nav-link" data-scroll-target="#how-it-works">How it works</a></li>
@@ -1041,8 +1041,8 @@ and soil conditions are unsuitable for coffee cultivation.</code></pre>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>hitl_pipeline<span class="sc">$</span><span class="fu">set_hitl</span>(<span class="at">steps =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">mode =</span> <span class="st">"interactive"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<section id="non-blocking-hitl-pause-and-resume-not-yet-on-cran" class="level3">
-<h3 class="anchored" data-anchor-id="non-blocking-hitl-pause-and-resume-not-yet-on-cran">Non-blocking HITL: pause and resume (Not yet on CRAN)</h3>
+<section id="non-blocking-hitl-pause-and-resume" class="level3">
+<h3 class="anchored" data-anchor-id="non-blocking-hitl-pause-and-resume">Non-blocking HITL: pause and resume</h3>
 <p>The <code>HITL</code> above with <code>mode="interactive"</code> (the default) only works in an interactive console. Pass <code>mode = "pause"</code> to <code>$set_hitl()</code> and <code>$run()</code> returns immediately instead of blocking, handing you back a <code>mini007_pending</code> object that describes exactly where execution stopped. This is what lets HITL work from a Shiny app, a Plumber API, or any batch job: persist the pending object, resume it whenever the human actually responds, even in a different R session.</p>
 <p>Let’s route a teaser about Tassili n’Ajjer, the Algerian Sahara’s prehistoric rock-art plateau through a drafter and a translator, pausing after the draft for review:</p>
 <div class="cell">
@@ -1122,8 +1122,8 @@ travellers never set foot on.
 <p>The graph updates automatically to reflect whatever Stations and Routes are currently registered, making it a convenient tool for checking that the pipeline is wired correctly before running it.</p>
 <hr>
 </section>
-<section id="per-station-retry-not-yet-on-cran" class="level2">
-<h2 class="anchored" data-anchor-id="per-station-retry-not-yet-on-cran">Per-station retry (Not yet on CRAN)</h2>
+<section id="per-station-retry" class="level2">
+<h2 class="anchored" data-anchor-id="per-station-retry">Per-station retry</h2>
 <p>Real-world pipelines talk to external services — LLM providers, APIs, databases — that can fail transiently: rate-limit errors, network blips, brief provider outages. Rather than letting a single transient failure abort the entire run, you can attach a <strong>retry logic</strong> to any Station via two parameters of <code>$add_station()</code>:</p>
 <table class="caption-top table">
 <thead>
@@ -1217,8 +1217,8 @@ travellers never set foot on.
 <hr>
 </section>
 </section>
-<section id="fallback-handlers-fallback-handlers-not-yet-on-cran" class="level2">
-<h2 class="anchored" data-anchor-id="fallback-handlers-fallback-handlers-not-yet-on-cran">Fallback handlers {#fallback-handlers} (not yet on CRAN)</h2>
+<section id="fallback-handlers" class="level2">
+<h2 class="anchored" data-anchor-id="fallback-handlers">Fallback handlers</h2>
 <p>A <strong>fallback</strong> is a <code>function(input, error)</code> attached to a specific Station. It is invoked only after all retry attempts for that Station have been exhausted, giving you a controlled degradation path instead of a hard failure.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">add_station</span>(</span>
 <span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name     =</span> <span class="st">"step"</span>,</span>
@@ -1323,8 +1323,8 @@ travellers never set foot on.
 <hr>
 </section>
 </section>
-<section id="parallel-stations-not-yet-on-cran" class="level2">
-<h2 class="anchored" data-anchor-id="parallel-stations-not-yet-on-cran">Parallel Stations (not yet on CRAN)</h2>
+<section id="parallel-stations" class="level2">
+<h2 class="anchored" data-anchor-id="parallel-stations">Parallel Stations</h2>
 <p>Multiple independent Stations can run concurrently using <code>$set_daemons()</code> and <code>$add_parallel_group()</code>.</p>
 <section id="multi-perspective-parallel-analysis" class="level3">
 <h3 class="anchored" data-anchor-id="multi-perspective-parallel-analysis">Multi-perspective parallel analysis</h3>
