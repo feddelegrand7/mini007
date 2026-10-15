@@ -1,4 +1,4 @@
-# mini007 0.6.0
+# mini007 0.5.0
 
 #### Bugfix: clearer errors on LLM/tool failures instead of an opaque crash
 
@@ -83,10 +83,6 @@ Major feature addition enabling 2-4x speedup for independent processing units.
 - Each parallel station inherits retry/fallback configuration
 - Parallel results automatically cached with same mechanism as sequential stations
 - Graceful daemon cleanup and reinitialization
-
----
-
-# mini007 0.5.0
 
 - Adding the `per-station retry` features to the `Workflow` class
 - Adding the `fallback handlers` to the `Workflow` class

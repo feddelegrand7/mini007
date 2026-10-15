@@ -462,12 +462,12 @@ You can set HITL at multiple steps at once:
 
 ```{r}
 #| eval: false
-hitl_pipeline$set_hitl(steps = c(1, 2), mode = "interactive")
+hitl_pipeline$set_hitl(steps = c(1, 2), mode = "console")
 ```
 
 ### Non-blocking HITL: pause and resume
 
-The `HITL` above with `mode="interactive"` (the default) only works in an interactive console. Pass `mode = "pause"` to `$set_hitl()` and `$run()` returns immediately instead of
+The `HITL` above with `mode="console"` (the default) only works in an interactive console. Pass `mode = "pause"` to `$set_hitl()` and `$run()` returns immediately instead of
 blocking, handing you back a `mini007_pending` object that describes exactly
 where execution stopped. This is what lets HITL work from a Shiny app, a
 Plumber API, or any batch job: persist the pending object, resume it whenever
