@@ -14,7 +14,6 @@
 ^agents\.qmd$
 ^leadagent\.qmd$
 ^\.quarto$
-^read\.md$
 ^styles\.css$
 ^testing\.qmd$
 ^tools\.qmd$
