@@ -316,6 +316,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="menu-text">Workflow</span></a>
   </li>  
   <li class="nav-item">
+    <a class="nav-link" href="./streaming.html"> 
+<span class="menu-text">Streaming</span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link" href="./testing.html"> 
 <span class="menu-text">Testing</span></a>
   </li>  
@@ -1039,11 +1043,11 @@ and soil conditions are unsuitable for coffee cultivation.</code></pre>
 </div>
 <p>You can set HITL at multiple steps at once:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>hitl_pipeline<span class="sc">$</span><span class="fu">set_hitl</span>(<span class="at">steps =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">mode =</span> <span class="st">"interactive"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>hitl_pipeline<span class="sc">$</span><span class="fu">set_hitl</span>(<span class="at">steps =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">mode =</span> <span class="st">"console"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <section id="non-blocking-hitl-pause-and-resume" class="level3">
 <h3 class="anchored" data-anchor-id="non-blocking-hitl-pause-and-resume">Non-blocking HITL: pause and resume</h3>
-<p>The <code>HITL</code> above with <code>mode="interactive"</code> (the default) only works in an interactive console. Pass <code>mode = "pause"</code> to <code>$set_hitl()</code> and <code>$run()</code> returns immediately instead of blocking, handing you back a <code>mini007_pending</code> object that describes exactly where execution stopped. This is what lets HITL work from a Shiny app, a Plumber API, or any batch job: persist the pending object, resume it whenever the human actually responds, even in a different R session.</p>
+<p>The <code>HITL</code> above with <code>mode="console"</code> (the default) only works in an interactive console. Pass <code>mode = "pause"</code> to <code>$set_hitl()</code> and <code>$run()</code> returns immediately instead of blocking, handing you back a <code>mini007_pending</code> object that describes exactly where execution stopped. This is what lets HITL work from a Shiny app, a Plumber API, or any batch job: persist the pending object, resume it whenever the human actually responds, even in a different R session.</p>
 <p>Let’s route a teaser about Tassili n’Ajjer, the Algerian Sahara’s prehistoric rock-art plateau through a drafter and a translator, pausing after the draft for review:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>sahara_pipeline <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"sahara pipeline"</span>, <span class="at">use_cache =</span> <span class="cn">FALSE</span>)</span>

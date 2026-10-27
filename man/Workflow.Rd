@@ -199,14 +199,27 @@ has no outgoing Route (or no Route whose condition evaluates to `TRUE`).
 When \code{use_cache = TRUE}, a Station whose (name, input) pair has
 been seen before returns the cached output without re-invoking the
 handler. Use \code{$clear_cache()} to force re-execution.
+
+With \code{stream = TRUE} (or an `on_event` callback), progress is
+delivered as `mini007_event` objects while the workflow executes:
+station start/completion, retries, fallbacks, HITL requests, the final
+output, and the token deltas of every Agent Station (see
+\code{\link{mini007_event}}).
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Workflow$run(input)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Workflow$run(input, stream = FALSE, on_event = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{input}}{`[character(1)]` The initial prompt / payload.}
+
+\item{\code{stream}}{`[logical(1)]` Whether to stream progress. Without
+`on_event`, Agent token deltas are printed to the console.}
+
+\item{\code{on_event}}{`[function | NULL]` Callback receiving each
+`mini007_event`. Supplying it implies \code{stream = TRUE}. Raising an
+error inside it cancels the run.}
 }
 \if{html}{\out{</div>}}
 }
@@ -231,7 +244,9 @@ point.
 \if{html}{\out{<div class="r">}}\preformatted{Workflow$resume(
   request_id,
   action = c("continue", "edit", "abort"),
-  value = NULL
+  value = NULL,
+  stream = FALSE,
+  on_event = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -247,6 +262,12 @@ output as-is), `"edit"` (replace it with `value`), or `"abort"`
 
 \item{\code{value}}{`[character(1) | NULL]` Required when
 \code{action = "edit"}: the replacement output.}
+
+\item{\code{stream}}{`[logical(1)]` Whether to stream the remaining execution
+(see \code{$run()}).}
+
+\item{\code{on_event}}{`[function | NULL]` Callback receiving each
+`mini007_event`. Supplying it implies \code{stream = TRUE}.}
 }
 \if{html}{\out{</div>}}
 }

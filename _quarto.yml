@@ -16,6 +16,8 @@ website:
         href: tools.qmd
       - text: Workflow
         href: workflow.qmd
+      - text: Streaming
+        href: streaming.qmd
       - text: Testing
         href: testing.qmd
     right:

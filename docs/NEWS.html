@@ -276,6 +276,10 @@ ul.task-list li input[type="checkbox"] {
 <span class="menu-text">Workflow</span></a>
   </li>  
   <li class="nav-item">
+    <a class="nav-link" href="./streaming.html"> 
+<span class="menu-text">Streaming</span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link" href="./testing.html"> 
 <span class="menu-text">Testing</span></a>
   </li>  
@@ -303,7 +307,7 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#mini007-0.6.0" id="toc-mini007-0.6.0" class="nav-link active" data-scroll-target="#mini007-0.6.0">mini007 0.6.0</a></li>
+  <li><a href="#mini007-development-version" id="toc-mini007-development-version" class="nav-link active" data-scroll-target="#mini007-development-version">mini007 (development version)</a></li>
   <li><a href="#mini007-0.5.0" id="toc-mini007-0.5.0" class="nav-link" data-scroll-target="#mini007-0.5.0">mini007 0.5.0</a></li>
   <li><a href="#mini007-0.4.0" id="toc-mini007-0.4.0" class="nav-link" data-scroll-target="#mini007-0.4.0">mini007 0.4.0</a></li>
   <li><a href="#mini007-0.3.0" id="toc-mini007-0.3.0" class="nav-link" data-scroll-target="#mini007-0.3.0">mini007 0.3.0</a></li>
@@ -325,8 +329,31 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<section id="mini007-0.6.0" class="level1">
-<h1>mini007 0.6.0</h1>
+<section id="mini007-development-version" class="level1">
+<h1>mini007 (development version)</h1>
+<section id="streaming" class="level4">
+<h4 class="anchored" data-anchor-id="streaming">Streaming</h4>
+<p><code>Agent$invoke()</code>, <code>Workflow$run()</code> / <code>$resume()</code>, <code>WorkflowAgent$invoke()</code> and <code>LeadAgent$invoke()</code> / <code>$resume()</code> gain <code>stream = FALSE</code> and <code>on_event = NULL</code> arguments, so you can follow their progress while they run instead of waiting for the final answer:</p>
+<ul>
+<li><code>stream = TRUE</code> prints an Agent’s tokens to the console as they are generated. Supplying an <code>on_event</code> callback (which implies streaming) delivers every unit of progress as a <code>mini007_event</code> - a list with a <code>type</code> discriminator (<code>"text_delta"</code>, <code>"tool_call"</code>, <code>"tool_result"</code>, <code>"station_started"</code>, <code>"station_completed"</code>, <code>"station_retry"</code>, <code>"hitl_request"</code>, <code>"workflow_output"</code>, <code>"task_started"</code>, <code>"lead_output"</code>, …), the emitting <code>source</code>, a <code>text</code> payload and a <code>data</code> list. See <code>?mini007_event</code>.</li>
+<li>Streaming returns the same final text as the non-streaming call (as a plain character string). With <code>stream = TRUE</code> and no callback, <code>Agent$invoke()</code> returns it invisibly since it was already printed.</li>
+<li>Events from nested components flow to the outermost callback, tagged with where they happened (<code>station</code>/<code>step</code> in a Workflow, <code>task</code>/<code>agent</code> in a LeadAgent), so one callback on a <code>LeadAgent</code> sees the tokens of an Agent running inside a Workflow registered via <code>$as_agent()</code>.</li>
+<li>Raising an error inside <code>on_event</code> cancels the run with a <code>mini007_stream_cancelled</code> condition; Workflow retries and fallbacks never swallow it, and the Agent’s message history and cost stay in sync with what the LLM produced before the cancellation.</li>
+<li>Stations in a parallel group run in <code>mirai</code> daemons and emit only start/completion events; the callback is never sent to a daemon.</li>
+<li>Agent-like objects whose <code>invoke()</code> takes a single argument keep working inside a streamed Workflow or LeadAgent; they just don’t stream tokens.</li>
+</ul>
+</section>
+</section>
+<section id="mini007-0.5.0" class="level1">
+<h1>mini007 0.5.0</h1>
+<section id="bugfix-clearer-errors-on-llmtool-failures-instead-of-an-opaque-crash" class="level4">
+<h4 class="anchored" data-anchor-id="bugfix-clearer-errors-on-llmtool-failures-instead-of-an-opaque-crash">Bugfix: clearer errors on LLM/tool failures instead of an opaque crash</h4>
+<p>Two related failures previously surfaced as a cryptic internal error - <code>Error in vapply(): ! values must be length 1, but FUN(X[[1]]) result is length 0</code> - deep inside <code>Agent$invoke()</code>’s message-sync internals, with no indication of what actually went wrong:</p>
+<ul>
+<li><strong>The LLM provider itself is unreachable</strong> (network issue, invalid API key, provider outage, timeout). <code>$invoke()</code> (and every other direct LLM call inside <code>Agent</code> and <code>LeadAgent</code>) now catches the raw provider error and raises a clear, actionable message explaining the likely cause, while still preserving the original error for debugging.</li>
+<li><strong>A registered tool call fails</strong> (e.g.&nbsp;the API a tool wraps - like a weather service - is down). <code>ellmer</code> records this as a result with an empty value and an error attached; mini007 was feeding that empty value straight into <code>sprintf()</code>, which silently produced a zero-length string and crashed the vapply() call that assembles message history. <code>$invoke()</code> now survives this and records the actual tool error (e.g.&nbsp;<code>"ERROR: connection   refused: weather API is down"</code>) in the conversation history instead of crashing.</li>
+</ul>
+</section>
 <section id="non-blocking-human-in-the-loop-pause-and-resume" class="level4">
 <h4 class="anchored" data-anchor-id="non-blocking-human-in-the-loop-pause-and-resume">Non-blocking Human-In-The-Loop: pause and resume</h4>
 <p>HITL no longer requires a blocking <code>readline()</code> prompt inside an interactive console. <code>$set_hitl()</code> on both <code>Workflow</code> and <code>LeadAgent</code> gains a <code>mode</code> argument:</p>
@@ -347,15 +374,11 @@ ul.task-list li input[type="checkbox"] {
 <p><strong>Performance:</strong> - 3 parallel agents: ~3x faster than sequential execution - Compatible with existing caching, retry, fallback, and HITL features - Full integration with <code>Agent</code> and <code>WorkflowAgent</code> handlers</p>
 <p><strong>Documentation:</strong> - Comprehensive parallel stations section in <code>workflow.qmd</code> with working example - Real-world example in <code>example_real_llm.R</code> demonstrating 3 parallel agents analyzing “AI in Healthcare” - Updated README.Rmd with parallel execution overview</p>
 <p><strong>Technical Details:</strong> - Built on <code>mirai</code> package for reliable async execution - Each parallel station inherits retry/fallback configuration - Parallel results automatically cached with same mechanism as sequential stations - Graceful daemon cleanup and reinitialization</p>
-<hr>
-</section>
-</section>
-<section id="mini007-0.5.0" class="level1">
-<h1>mini007 0.5.0</h1>
 <ul>
 <li>Adding the <code>per-station retry</code> features to the <code>Workflow</code> class</li>
 <li>Adding the <code>fallback handlers</code> to the <code>Workflow</code> class</li>
 </ul>
+</section>
 </section>
 <section id="mini007-0.4.0" class="level1">
 <h1>mini007 0.4.0</h1>
