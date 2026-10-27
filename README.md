@@ -169,11 +169,40 @@ Key capabilities:
 - **Caching**: with `use_cache = TRUE` (default), each Station’s result
   is stored by `(name, input)`. Re-running the same input serves the
   cache instantly. Use `$clear_cache()` to reset.
+- **Human In The Loop (HITL)**: `$set_hitl(steps)` pauses execution at
+  specified steps so a human can review, edit, or stop the output before
+  it flows into the next Station.
 - **Wrapping as an agent**: `$as_agent()` converts any `Workflow` into a
   `WorkflowAgent` that can be registered with a `LeadAgent` or embedded
   as a Station inside another `Workflow`.
 - **Visualisation**: `$visualize()` renders the pipeline as an
   interactive directed graph via `DiagrammeR`.
+- **Parallel execution**: `$set_daemons()` and `$add_parallel_group()`
+  enable multiple independent Stations to run concurrently, providing
+  2-4x speedup for independent tasks like multi-agent analysis.
+
+### Streaming
+
+`Agent`, `Workflow`, and `LeadAgent` can all stream their progress
+instead of blocking until the final answer is ready. `stream = TRUE`
+prints tokens as they are generated; an `on_event` callback receives
+typed events (token deltas, tool calls, station and task progress, HITL
+requests), including those of nested agents. The return value is the
+same as without streaming.
+
+``` r
+researcher$invoke("Explain photosynthesis in two sentences.", stream = TRUE)
+
+wf$run("The history of the printing press", on_event = function(event) {
+  if (event$type == "station_started") cat("\n>", event$data$station, "\n")
+  if (event$type == "text_delta") cat(event$text)
+})
+```
+
+Raising an error inside `on_event` cancels the run cleanly. See the
+[Streaming
+article](https://feddelegrand7.github.io/mini007/streaming.html) for the
+full event reference.
 
 ## Installation
 

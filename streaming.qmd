@@ -1,0 +1,450 @@
+---
+title: "Streaming"
+format:
+  html:
+    toc: true
+execute:
+  echo: true
+  warning: false
+  error: false
+---
+
+```{r}
+#| include: false
+if (requireNamespace("pkgload", quietly = TRUE)) pkgload::load_all()
+```
+
+```{r}
+library(mini007)
+
+retrieve_open_ai_credential <- function() {
+  Sys.getenv("OPENAI_API_KEY")
+}
+
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  credentials = retrieve_open_ai_credential,
+  echo = "none"
+)
+```
+
+By default, `$invoke()` and `$run()` block until the whole answer is ready.
+With multi-agent pipelines that can mean several seconds of silence. Streaming
+lets you show progress while the work is happening: the tokens of each Agent
+as the LLM generates them, every tool call, and every step of a `Workflow` or
+`LeadAgent` as it starts and finishes.
+
+How it works:
+
+- **One method, one flag.** Streaming isn't a separate API. `Agent$invoke()`,
+  `Workflow$run()` / `$resume()`, `WorkflowAgent$invoke()` and
+  `LeadAgent$invoke()` / `$resume()` all accept `stream = TRUE` and an
+  optional `on_event` callback.
+- **Same result either way.** A streamed call returns the same final text as
+  a non-streamed one, so you can turn streaming on without changing any other
+  code.
+- **Typed events.** Each unit of progress is a `mini007_event` with a `type`
+  field, so you only handle the types you care about.
+- **Events from nested components reach the top.** One callback on a
+  `LeadAgent` also receives the tokens of an Agent that runs inside a
+  `Workflow` you registered with `$as_agent()`.
+- **Clean cancellation.** Stopping a stream early never leaves an Agent's
+  history out of sync, and Workflow retries don't treat it as a failure.
+
+## Streaming an Agent to the console
+
+`stream = TRUE` prints the response token by token as it is generated:
+
+```{r}
+poet <- Agent$new(
+  name = "poet",
+  instruction = "You write short poems. Four lines maximum.",
+  llm_object = openai_4_1_mini
+)
+
+poet$invoke("A poem about the R programming language.", stream = TRUE)
+```
+
+The response is returned invisibly, since it was already printed, so you can
+still capture it:
+
+```{r}
+poem <- poet$invoke("Now one about Python.", stream = TRUE)
+nchar(poem)
+```
+
+The Agent's history, cost and budget behave exactly as with a non-streamed
+call:
+
+```{r}
+length(poet$messages)
+poet$get_usage_stats()
+```
+
+## What is a text delta?
+
+An LLM doesn't write its answer in one go: it produces it a few characters at
+a time (a word, part of a word, a punctuation mark). When streaming, each new
+piece is sent to you as soon as it exists. That piece is called a **delta**:
+the text that is new since the previous event.
+
+So a `"text_delta"` event holds a small fragment of the answer, never the
+whole answer. Gluing all the deltas of a response together, in order, gives
+back the full text:
+
+```
+"The"  " sky"  " is"  " blue"  "."   →   "The sky is blue."
+```
+
+Showing a response "live" is therefore just a matter of printing each delta
+the moment it arrives, without a newline, which is what `stream = TRUE` does.
+
+## Handling events yourself
+
+Pass a function to `on_event` to decide what happens with each event. Passing
+a callback turns streaming on, so you don't need `stream = TRUE` as well.
+Here we only print the text deltas, each wrapped in brackets so you can see
+where one delta ends and the next begins:
+
+```{r}
+answer <- poet$invoke(
+  "Two lines about the sea.",
+  on_event = function(event) {
+    if (event$type == "text_delta") cat("[", event$text, "]", sep = "")
+  }
+)
+```
+
+Every event is a `mini007_event`, a list with five fields:
+
+| Field | Content |
+|---|---|
+| `type` | The kind of event, e.g. `"text_delta"`, `"tool_call"`, `"station_completed"` |
+| `source` | Name of the Agent, Workflow or LeadAgent that emitted it |
+| `text` | A text delta (a fragment of the answer), or the full output for the `*_completed` / `*_output` events |
+| `data` | A named list of type-specific details (station, step, tool name, ...) |
+| `timestamp` | When the event was emitted |
+
+A simple way to explore the stream is to collect every event and look at it
+afterwards:
+
+```{r}
+events <- list()
+collect <- function(event) events[[length(events) + 1L]] <<- event
+
+poet$invoke("One line about mountains.", on_event = collect)
+
+table(vapply(events, function(e) e$type, character(1)))
+events[[1]]
+```
+
+## Tool calls
+
+When an Agent calls a tool, the stream contains a `"tool_call"` event when
+the model asks for the tool and a `"tool_result"` event once it has run. With
+`stream = TRUE`, the tool call is also announced in the console between the
+text deltas (`ℹ Calling tool get_weather()`; this line is not shown on this
+page, which only displays printed output):
+
+```{r}
+get_weather <- ellmer::tool(
+  function(city) paste0("Sunny, 24°C in ", city),
+  name = "get_weather",
+  description = "Get the current weather for a city.",
+  arguments = list(city = ellmer::type_string("The city name."))
+)
+
+forecaster <- Agent$new(
+  name = "forecaster",
+  instruction = "Use the get_weather tool. Tell the user you are checking before calling it.",
+  llm_object = openai_4_1_mini
+)
+forecaster$register_tools(list(get_weather))
+
+forecast <- forecaster$invoke("What's the weather like in Algiers?", stream = TRUE)
+```
+
+The tool events carry the tool name, its arguments and its result (or error):
+
+```{r}
+events <- list()
+forecaster$invoke("And in Oran?", on_event = collect)
+
+call <- Filter(function(e) e$type == "tool_call", events)[[1]]
+call$data$tool_name
+str(call$data$arguments)
+
+result <- Filter(function(e) e$type == "tool_result", events)[[1]]
+result$data$value
+```
+
+Note that the text streamed *before* a tool call ("Let me check...") is part
+of the stream but not of the returned value: just like a non-streamed
+`$invoke()`, the return value is the text of the final answer.
+
+```{r}
+forecast
+```
+
+## Streaming a Workflow
+
+`Workflow$run(stream = TRUE)` prints the tokens of every Agent Station next to
+the Workflow's usual progress messages:
+
+```{r}
+pipeline <- Workflow$new("translation-pipeline", use_cache = FALSE)
+
+pipeline$add_station("draft", Agent$new(
+  name = "drafter",
+  instruction = "Write a single sentence about the topic you receive.",
+  llm_object = openai_4_1_mini
+))
+pipeline$add_station("translate", Agent$new(
+  name = "translator",
+  instruction = "Translate the text into French. Output only the translation.",
+  llm_object = openai_4_1_mini
+))
+pipeline$add_station("shout", function(text) toupper(text))
+
+pipeline$add_route("draft", "translate")
+pipeline$add_route("translate", "shout")
+
+result <- pipeline$run("The Sahara desert", stream = TRUE)
+result
+```
+
+With a callback you also get the Workflow's own events, so you can build a
+progress display without parsing console output. Each Agent's events are
+tagged with the `station` and `step` they belong to:
+
+```{r}
+progress <- function(event) {
+  switch(event$type,
+    station_started   = cat(sprintf("▶ step %d: %s\n", event$data$step, event$data$station)),
+    text_delta        = cat("."),
+    station_completed = cat(sprintf("\n✔ %s (%d chars)\n", event$data$station, nchar(event$text))),
+    workflow_output   = cat("Done.\n")
+  )
+}
+
+result <- pipeline$run("The Atlas mountains", on_event = progress)
+```
+
+A Station served from the cache emits `"station_started"` and
+`"station_completed"` with `data$from_cache = TRUE`, and no token deltas.
+Retries and fallbacks are visible as `"station_retry"` and
+`"station_fallback"` events:
+
+```{r}
+flaky <- Workflow$new("flaky-pipeline", use_cache = FALSE)
+flaky$add_station(
+  "unstable",
+  function(x) stop("service unavailable"),
+  max_retries = 1,
+  retry_delay = 0,
+  fallback = function(input, error) "fallback answer"
+)
+
+events <- list()
+flaky$run("hello", on_event = collect)
+vapply(events, function(e) e$type, character(1))
+events[[3]]$data$error
+```
+
+If a Station fails for good, a `"workflow_failed"` event is emitted before
+the error is raised.
+
+## Streaming a LeadAgent
+
+`LeadAgent$invoke()` streams the tokens of every Agent it delegates to. Its
+own events tell you which plan it uses and which task is running. The lead's
+planning calls themselves are not streamed: they return structured output that
+is only useful once complete.
+
+Events from nested components are forwarded too. Below, the `translator`
+registered with the LeadAgent is itself a Workflow wrapped with `$as_agent()`:
+
+```{r}
+researcher <- Agent$new(
+  name = "researcher",
+  instruction = "You answer factual questions in two sentences maximum.",
+  llm_object = openai_4_1_mini
+)
+
+german_pipeline <- Workflow$new("german-pipeline", use_cache = FALSE)
+german_pipeline$add_station("german", Agent$new(
+  name = "german",
+  instruction = "Translate the text into German. Output only the translation.",
+  llm_object = openai_4_1_mini
+))
+translator <- german_pipeline$as_agent(
+  name = "translator",
+  instruction = "Translates any text into German."
+)
+
+lead <- LeadAgent$new(name = "Leader", llm_object = openai_4_1_mini)
+lead$register_agents(c(researcher, translator))
+
+events <- list()
+answer <- lead$invoke(
+  "What is the capital of Algeria? Then translate the answer into German.",
+  on_event = collect
+)
+answer
+```
+
+Each event says where it came from. LeadAgent events carry the `task` (the
+index in the plan) and the `agent`; events from inside a Workflow also carry
+the `station` and `step`. A token from the `german` Agent therefore carries
+all four:
+
+```{r}
+deltas <- Filter(function(e) e$type == "text_delta", events)
+
+data.frame(
+  source  = vapply(deltas, function(e) e$source, character(1)),
+  task    = vapply(deltas, function(e) e$data$task, integer(1)),
+  agent   = vapply(deltas, function(e) e$data$agent, character(1)),
+  station = vapply(deltas, function(e) {
+    if (is.null(e$data$station)) NA_character_ else e$data$station
+  }, character(1))
+) |> unique()
+```
+
+The plan arrives as the first event, before any agent runs:
+
+```{r}
+plan_event <- events[[1]]
+plan_event$type
+vapply(plan_event$data$plan, function(task) task$agent_name, character(1))
+```
+
+## Streaming with Human In The Loop
+
+In pause mode (see [Workflow](workflow.qmd#non-blocking-hitl-pause-and-resume)),
+reaching an HITL step emits a `"hitl_request"` event that carries the
+`mini007_pending` object, then the call returns as usual. `$resume()` takes
+its own `stream` / `on_event` arguments, so the second half of the run can be
+streamed somewhere else, e.g. to a different browser session:
+
+```{r}
+review <- Workflow$new("review-pipeline", use_cache = FALSE)
+review$add_station("draft", function(x) paste("Draft about", x))
+review$add_station("publish", function(x) paste0(x, " [published]"))
+review$add_route("draft", "publish")
+review$set_hitl(1, mode = "pause")
+
+events <- list()
+pending <- review$run("streaming", on_event = collect)
+events[[length(events)]]$type
+identical(events[[length(events)]]$data$pending, pending)
+
+events <- list()
+review$resume(pending$request_id, action = "edit", value = "Edited draft", on_event = collect)
+vapply(events, function(e) e$type, character(1))
+```
+
+## Cancelling a stream
+
+To stop a run from inside the callback, raise an error. mini007 re-raises it
+as a condition of class `mini007_stream_cancelled`, which you can catch:
+
+```{r}
+rambler <- Agent$new(
+  name = "rambler",
+  instruction = "You are very verbose.",
+  llm_object = openai_4_1_mini
+)
+
+n_deltas <- 0
+result <- tryCatch(
+  rambler$invoke(
+    "Write 500 words about the history of statistics.",
+    on_event = function(event) {
+      if (event$type == "text_delta") {
+        n_deltas <<- n_deltas + 1
+        if (n_deltas == 10) stop("that's enough")
+      }
+    }
+  ),
+  mini007_stream_cancelled = function(e) e
+)
+
+class(result)
+conditionMessage(result)
+```
+
+A cancellation is never retried and never sent to a Station's `fallback`. It
+stops the whole Workflow or LeadAgent immediately. The Agent stays usable:
+since the interrupted answer was never completed, that exchange is not added
+to the history:
+
+```{r}
+rambler$invoke("Reply with just: OK")
+vapply(rambler$messages, function(m) m$role, character(1))
+```
+
+## Reasoning models
+
+With reasoning models, the model's reasoning arrives as `"thinking_delta"`
+events, separate from the `"text_delta"` events of the answer. Console mode
+doesn't print them. This requires `ellmer >= 0.5.0`; earlier versions stream
+the reasoning as ordinary text.
+
+```{r}
+#| eval: false
+thinker <- Agent$new(
+  name = "thinker",
+  instruction = "Answer briefly.",
+  llm_object = ellmer::chat_anthropic(
+    model = "claude-sonnet-4-5",
+    params = ellmer::params(reasoning_tokens = 1024),
+    echo = "none"
+  )
+)
+
+thinker$invoke("Is 391 a prime number?", on_event = function(event) {
+  if (event$type == "thinking_delta") cat(cli::col_grey(event$text))
+  if (event$type == "text_delta") cat(event$text)
+})
+```
+
+## Event reference
+
+| Emitted by | `type` | `text` | Main `data` fields |
+|---|---|---|---|
+| Agent | `agent_started` | | `prompt` |
+| Agent | `text_delta` | next fragment of the answer | |
+| Agent | `thinking_delta` | next fragment of the reasoning | |
+| Agent | `tool_call` | | `tool_name`, `call_id`, `arguments` |
+| Agent | `tool_result` | | `tool_name`, `call_id`, `value`, `error` |
+| Agent | `agent_completed` | final response | |
+| Workflow | `workflow_started` | | `input`, `entry` |
+| Workflow | `station_started` | | `station`, `step`, `input`, `parallel` |
+| Workflow | `station_retry` | | `station`, `step`, `attempt`, `max_attempts`, `error` |
+| Workflow | `station_fallback` | | `station`, `step`, `error` |
+| Workflow | `station_completed` | station output | `station`, `step`, `from_cache`, `parallel` |
+| Workflow | `hitl_request` | | `pending`, `station`, `step` |
+| Workflow | `workflow_output` | final output | `steps` |
+| Workflow | `workflow_failed` | | `error`, `step` |
+| LeadAgent | `plan_created` | | `plan`, `reused` |
+| LeadAgent | `task_started` | | `task`, `agent`, `prompt` |
+| LeadAgent | `task_completed` | task response | `task`, `agent` |
+| LeadAgent | `hitl_request` | | `pending`, `task`, `agent` |
+| LeadAgent | `lead_output` | final response | |
+
+## Good to know
+
+- **Parallel groups** run their Stations in separate `mirai` processes, so
+  those Stations emit `"station_started"` and `"station_completed"` but no
+  token deltas. Your callback always runs in your own R session; it's never
+  sent to a daemon.
+- **Custom agent objects** used as Stations or registered with a LeadAgent
+  only stream tokens if their `invoke()` method has an `on_event` argument.
+  Objects with a one-argument `invoke(prompt)` keep working; they just don't
+  stream.
+- **Callbacks run synchronously.** Each event is delivered as soon as it
+  happens, and the run waits for your callback to return, so keep callbacks
+  fast.
+- **Not streamed:** `$broadcast()`, `$agents_dialog()`,
+  `$judge_and_choose_best_response()` and `LeadAgent$generate_plan()`.

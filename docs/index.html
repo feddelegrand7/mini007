@@ -311,6 +311,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="menu-text">Workflow</span></a>
   </li>  
   <li class="nav-item">
+    <a class="nav-link" href="./streaming.html"> 
+<span class="menu-text">Streaming</span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link" href="./testing.html"> 
 <span class="menu-text">Testing</span></a>
   </li>  
@@ -347,6 +351,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#agent" id="toc-agent" class="nav-link" data-scroll-target="#agent"><code>Agent</code></a></li>
   <li><a href="#leadagent" id="toc-leadagent" class="nav-link" data-scroll-target="#leadagent"><code>LeadAgent</code></a></li>
   <li><a href="#workflow" id="toc-workflow" class="nav-link" data-scroll-target="#workflow"><code>Workflow</code></a></li>
+  <li><a href="#streaming" id="toc-streaming" class="nav-link" data-scroll-target="#streaming">Streaming</a></li>
   </ul></li>
   <li><a href="#get-started" id="toc-get-started" class="nav-link" data-scroll-target="#get-started">Get started</a></li>
   </ul></li>
@@ -392,6 +397,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>🔧 <strong>Tool support</strong>: register <code>ellmer</code> tools on any agent, or generate new ones from a natural-language description.</li>
 <li>💰 <strong>Budget control</strong>: set a USD spending cap on any agent with a configurable policy (<code>abort</code>, <code>warn</code>, or <code>ask</code>).</li>
 <li>🧑 <strong>Human In The Loop</strong>: pause at specific steps so a human can review, edit, or stop the response before it continues.</li>
+<li>📡 <strong>Streaming</strong>: watch tokens, tool calls, and workflow progress arrive in real time with <code>stream = TRUE</code> or an <code>on_event</code> callback.</li>
 <li>🌐 <strong>Model-agnostic</strong>: swap the underlying LLM without changing any orchestration logic.</li>
 </ul>
 </section>
@@ -444,8 +450,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>$invoke(prompt)</code></td>
-<td>Send a prompt and get a response</td>
+<td><code>$invoke(prompt, stream)</code></td>
+<td>Send a prompt and get a response, optionally streamed</td>
 </tr>
 <tr class="even">
 <td><code>$keep_last_n_messages(n)</code></td>
@@ -648,6 +654,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
+<section id="streaming" class="level3">
+<h3 class="anchored" data-anchor-id="streaming">Streaming</h3>
+<p>Every <code>Agent</code>, <code>Workflow</code>, and <code>LeadAgent</code> can stream its progress. With <code>stream = TRUE</code>, tokens are printed as they are generated; with an <code>on_event</code> callback you receive typed events (token deltas, tool calls, station and task progress, HITL requests), including those of nested agents. The return value is the same as without streaming.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>researcher<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"Explain photosynthesis in two sentences."</span>, <span class="at">stream =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>wf<span class="sc">$</span><span class="fu">run</span>(<span class="st">"The history of the printing press"</span>, <span class="at">on_event =</span> <span class="cf">function</span>(event) {</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (event<span class="sc">$</span>type <span class="sc">==</span> <span class="st">"station_started"</span>) <span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">&gt;"</span>, event<span class="sc">$</span>data<span class="sc">$</span>station, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (event<span class="sc">$</span>type <span class="sc">==</span> <span class="st">"text_delta"</span>) <span class="fu">cat</span>(event<span class="sc">$</span>text)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
 </section>
 <section id="get-started" class="level2">
 <h2 class="anchored" data-anchor-id="get-started">Get started</h2>
@@ -657,6 +675,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong>LeadAgent</strong> — multi-agent orchestration, broadcasting, HITL, and agent dialog.</li>
 <li><strong>Tools</strong> — building and registering custom tools.</li>
 <li><strong>Workflow</strong> — sequential pipelines, conditional routing, caching, and nesting.</li>
+<li><strong>Streaming</strong> — real-time tokens, tool calls, and progress events for agents, workflows, and lead agents.</li>
 <li><strong>Testing</strong> — utilities for writing tests against LLM responses.</li>
 </ul>
 

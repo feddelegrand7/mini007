@@ -43,6 +43,8 @@ tackle complex tasks that benefit from specialised, collaborating LLM workers.
   configurable policy (`abort`, `warn`, or `ask`).
 - 🧑 **Human In The Loop**: pause at specific steps so a
   human can review, edit, or stop the response before it continues.
+- 📡 **Streaming**: watch tokens, tool calls, and workflow progress arrive in
+  real time with `stream = TRUE` or an `on_event` callback.
 - 🌐 **Model-agnostic**: swap the underlying LLM without changing any
   orchestration logic.
 
@@ -96,7 +98,7 @@ Notable methods:
 
 | Method | Purpose |
 |---|---|
-| `$invoke(prompt)` | Send a prompt and get a response |
+| `$invoke(prompt, stream)` | Send a prompt and get a response, optionally streamed |
 | `$keep_last_n_messages(n)` | Trim history to the last *n* turns |
 | `$share_context_with(agent)` | Copy recent messages to another agent |
 | `$set_budget(amount)` | Set a USD spending limit |
@@ -216,6 +218,24 @@ Notable methods:
 | `$as_agent(name, instruction)` | Wrap the workflow as a `WorkflowAgent` |
 | `$visualize()` | Render the pipeline as an interactive directed graph |
 
+### Streaming
+
+Every `Agent`, `Workflow`, and `LeadAgent` can stream its progress. With
+`stream = TRUE`, tokens are printed as they are generated; with an `on_event`
+callback you receive typed events (token deltas, tool calls, station and task
+progress, HITL requests), including those of nested agents. The return value
+is the same as without streaming.
+
+```{r}
+#| eval: false
+researcher$invoke("Explain photosynthesis in two sentences.", stream = TRUE)
+
+wf$run("The history of the printing press", on_event = function(event) {
+  if (event$type == "station_started") cat("\n>", event$data$station, "\n")
+  if (event$type == "text_delta") cat(event$text)
+})
+```
+
 ## Get started
 
 Navigate through the pages in the top navigation bar:
@@ -224,4 +244,5 @@ Navigate through the pages in the top navigation bar:
 - **LeadAgent** — multi-agent orchestration, broadcasting, HITL, and agent dialog.
 - **Tools** — building and registering custom tools.
 - **Workflow** — sequential pipelines, conditional routing, caching, and nesting.
+- **Streaming** — real-time tokens, tool calls, and progress events for agents, workflows, and lead agents.
 - **Testing** — utilities for writing tests against LLM responses.

@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.27">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Streaming – mini007</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-4d9afe2b8d18ee9fa5d0d57b5ed4214d.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-5b4ad623e5705c0698d39aec6f10cf02.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-0d4a9d19931feb4fee1ddab4b2489000.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-5b4ad623e5705c0698d39aec6f10cf02.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">mini007</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./agents.html"> 
+<span class="menu-text">Agents</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./leadagent.html"> 
+<span class="menu-text">LeadAgent</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./tools.html"> 
+<span class="menu-text">Tools</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./workflow.html"> 
+<span class="menu-text">Workflow</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./streaming.html" aria-current="page"> 
+<span class="menu-text">Streaming</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./testing.html"> 
+<span class="menu-text">Testing</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/feddelegrand7/mini007"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#streaming-an-agent-to-the-console" id="toc-streaming-an-agent-to-the-console" class="nav-link active" data-scroll-target="#streaming-an-agent-to-the-console">Streaming an Agent to the console</a></li>
+  <li><a href="#what-is-a-text-delta" id="toc-what-is-a-text-delta" class="nav-link" data-scroll-target="#what-is-a-text-delta">What is a text delta?</a></li>
+  <li><a href="#handling-events-yourself" id="toc-handling-events-yourself" class="nav-link" data-scroll-target="#handling-events-yourself">Handling events yourself</a></li>
+  <li><a href="#tool-calls" id="toc-tool-calls" class="nav-link" data-scroll-target="#tool-calls">Tool calls</a></li>
+  <li><a href="#streaming-a-workflow" id="toc-streaming-a-workflow" class="nav-link" data-scroll-target="#streaming-a-workflow">Streaming a Workflow</a></li>
+  <li><a href="#streaming-a-leadagent" id="toc-streaming-a-leadagent" class="nav-link" data-scroll-target="#streaming-a-leadagent">Streaming a LeadAgent</a></li>
+  <li><a href="#streaming-with-human-in-the-loop" id="toc-streaming-with-human-in-the-loop" class="nav-link" data-scroll-target="#streaming-with-human-in-the-loop">Streaming with Human In The Loop</a></li>
+  <li><a href="#cancelling-a-stream" id="toc-cancelling-a-stream" class="nav-link" data-scroll-target="#cancelling-a-stream">Cancelling a stream</a></li>
+  <li><a href="#reasoning-models" id="toc-reasoning-models" class="nav-link" data-scroll-target="#reasoning-models">Reasoning models</a></li>
+  <li><a href="#event-reference" id="toc-event-reference" class="nav-link" data-scroll-target="#event-reference">Event reference</a></li>
+  <li><a href="#good-to-know" id="toc-good-to-know" class="nav-link" data-scroll-target="#good-to-know">Good to know</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Streaming</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mini007)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>retrieve_open_ai_credential <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">Sys.getenv</span>(<span class="st">"OPENAI_API_KEY"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>openai_4_1_mini <span class="ot">&lt;-</span> ellmer<span class="sc">::</span><span class="fu">chat</span>(</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"openai/gpt-4.1-mini"</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">credentials =</span> retrieve_open_ai_credential,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">echo =</span> <span class="st">"none"</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>By default, <code>$invoke()</code> and <code>$run()</code> block until the whole answer is ready. With multi-agent pipelines that can mean several seconds of silence. Streaming lets you show progress while the work is happening: the tokens of each Agent as the LLM generates them, every tool call, and every step of a <code>Workflow</code> or <code>LeadAgent</code> as it starts and finishes.</p>
+<p>How it works:</p>
+<ul>
+<li><strong>One method, one flag.</strong> Streaming isn’t a separate API. <code>Agent$invoke()</code>, <code>Workflow$run()</code> / <code>$resume()</code>, <code>WorkflowAgent$invoke()</code> and <code>LeadAgent$invoke()</code> / <code>$resume()</code> all accept <code>stream = TRUE</code> and an optional <code>on_event</code> callback.</li>
+<li><strong>Same result either way.</strong> A streamed call returns the same final text as a non-streamed one, so you can turn streaming on without changing any other code.</li>
+<li><strong>Typed events.</strong> Each unit of progress is a <code>mini007_event</code> with a <code>type</code> field, so you only handle the types you care about.</li>
+<li><strong>Events from nested components reach the top.</strong> One callback on a <code>LeadAgent</code> also receives the tokens of an Agent that runs inside a <code>Workflow</code> you registered with <code>$as_agent()</code>.</li>
+<li><strong>Clean cancellation.</strong> Stopping a stream early never leaves an Agent’s history out of sync, and Workflow retries don’t treat it as a failure.</li>
+</ul>
+<section id="streaming-an-agent-to-the-console" class="level2">
+<h2 class="anchored" data-anchor-id="streaming-an-agent-to-the-console">Streaming an Agent to the console</h2>
+<p><code>stream = TRUE</code> prints the response token by token as it is generated:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>poet <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"poet"</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"You write short poems. Four lines maximum."</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>poet<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"A poem about the R programming language."</span>, <span class="at">stream =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>In R’s realm, data sings and flows,  
+With plots and stats, the insight grows.  
+Code simple, sharp—patterns unfurled,  
+A language shaping data’s world.</code></pre>
+</div>
+</div>
+<p>The response is returned invisibly, since it was already printed, so you can still capture it:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>poem <span class="ot">&lt;-</span> poet<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"Now one about Python."</span>, <span class="at">stream =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Python’s code, sleek and clear,  
+Weaving logic far and near.  
+From script to AI’s might,  
+It turns ideas into light.</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nchar</span>(poem)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 119</code></pre>
+</div>
+</div>
+<p>The Agent’s history, cost and budget behave exactly as with a non-streamed call:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(poet<span class="sc">$</span>messages)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 5</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>poet<span class="sc">$</span><span class="fu">get_usage_stats</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$estimated_cost
+[1] 2e-04
+
+$budget
+[1] NA
+
+$budget_remaining
+[1] NA</code></pre>
+</div>
+</div>
+</section>
+<section id="what-is-a-text-delta" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-a-text-delta">What is a text delta?</h2>
+<p>An LLM doesn’t write its answer in one go: it produces it a few characters at a time (a word, part of a word, a punctuation mark). When streaming, each new piece is sent to you as soon as it exists. That piece is called a <strong>delta</strong>: the text that is new since the previous event.</p>
+<p>So a <code>"text_delta"</code> event holds a small fragment of the answer, never the whole answer. Gluing all the deltas of a response together, in order, gives back the full text:</p>
+<pre><code>"The"  " sky"  " is"  " blue"  "."   →   "The sky is blue."</code></pre>
+<p>Showing a response “live” is therefore just a matter of printing each delta the moment it arrives, without a newline, which is what <code>stream = TRUE</code> does.</p>
+</section>
+<section id="handling-events-yourself" class="level2">
+<h2 class="anchored" data-anchor-id="handling-events-yourself">Handling events yourself</h2>
+<p>Pass a function to <code>on_event</code> to decide what happens with each event. Passing a callback turns streaming on, so you don’t need <code>stream = TRUE</code> as well. Here we only print the text deltas, each wrapped in brackets so you can see where one delta ends and the next begins:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>answer <span class="ot">&lt;-</span> poet<span class="sc">$</span><span class="fu">invoke</span>(</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Two lines about the sea."</span>,</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">on_event =</span> <span class="cf">function</span>(event) {</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (event<span class="sc">$</span>type <span class="sc">==</span> <span class="st">"text_delta"</span>) <span class="fu">cat</span>(<span class="st">"["</span>, event<span class="sc">$</span>text, <span class="st">"]"</span>, <span class="at">sep =</span> <span class="st">""</span>)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[End][less][ waves][ in][ ce][as][eless][ dance][,][  
+][Wh][ispers][ of][ the][ deep][’s][ exp][anse][.][
+]</code></pre>
+</div>
+</div>
+<p>Every event is a <code>mini007_event</code>, a list with five fields:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Field</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>type</code></td>
+<td>The kind of event, e.g.&nbsp;<code>"text_delta"</code>, <code>"tool_call"</code>, <code>"station_completed"</code></td>
+</tr>
+<tr class="even">
+<td><code>source</code></td>
+<td>Name of the Agent, Workflow or LeadAgent that emitted it</td>
+</tr>
+<tr class="odd">
+<td><code>text</code></td>
+<td>A text delta (a fragment of the answer), or the full output for the <code>*_completed</code> / <code>*_output</code> events</td>
+</tr>
+<tr class="even">
+<td><code>data</code></td>
+<td>A named list of type-specific details (station, step, tool name, …)</td>
+</tr>
+<tr class="odd">
+<td><code>timestamp</code></td>
+<td>When the event was emitted</td>
+</tr>
+</tbody>
+</table>
+<p>A simple way to explore the stream is to collect every event and look at it afterwards:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>events <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>collect <span class="ot">&lt;-</span> <span class="cf">function</span>(event) events[[<span class="fu">length</span>(events) <span class="sc">+</span> <span class="dv">1</span>L]] <span class="ot">&lt;&lt;-</span> event</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>poet<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"One line about mountains."</span>, <span class="at">on_event =</span> collect)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Silent giants crowned with snow, watching time’s eternal flow."</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">vapply</span>(events, <span class="cf">function</span>(e) e<span class="sc">$</span>type, <span class="fu">character</span>(<span class="dv">1</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+agent_completed   agent_started      text_delta 
+              1               1              13 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>events[[<span class="dv">1</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="tool-calls" class="level2">
+<h2 class="anchored" data-anchor-id="tool-calls">Tool calls</h2>
+<p>When an Agent calls a tool, the stream contains a <code>"tool_call"</code> event when the model asks for the tool and a <code>"tool_result"</code> event once it has run. With <code>stream = TRUE</code>, the tool call is also announced in the console between the text deltas (<code>ℹ Calling tool get_weather()</code>; this line is not shown on this page, which only displays printed output):</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>get_weather <span class="ot">&lt;-</span> ellmer<span class="sc">::</span><span class="fu">tool</span>(</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">function</span>(city) <span class="fu">paste0</span>(<span class="st">"Sunny, 24°C in "</span>, city),</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"get_weather"</span>,</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">"Get the current weather for a city."</span>,</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">arguments =</span> <span class="fu">list</span>(<span class="at">city =</span> ellmer<span class="sc">::</span><span class="fu">type_string</span>(<span class="st">"The city name."</span>))</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>forecaster <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"forecaster"</span>,</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"Use the get_weather tool. Tell the user you are checking before calling it."</span>,</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>forecaster<span class="sc">$</span><span class="fu">register_tools</span>(<span class="fu">list</span>(get_weather))</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>forecast <span class="ot">&lt;-</span> forecaster<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"What's the weather like in Algiers?"</span>, <span class="at">stream =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>I am checking the current weather in Algiers for you.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>The weather in Algiers is currently sunny with a temperature of 24°C. Is there anything else you'd like to know?</code></pre>
+</div>
+</div>
+<p>The tool events carry the tool name, its arguments and its result (or error):</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>events <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>forecaster<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"And in Oran?"</span>, <span class="at">on_event =</span> collect)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "The weather in Oran is also sunny with a temperature of 24°C. Would you like to know the weather in any other cities?"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>call <span class="ot">&lt;-</span> <span class="fu">Filter</span>(<span class="cf">function</span>(e) e<span class="sc">$</span>type <span class="sc">==</span> <span class="st">"tool_call"</span>, events)[[<span class="dv">1</span>]]</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>call<span class="sc">$</span>data<span class="sc">$</span>tool_name</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "get_weather"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(call<span class="sc">$</span>data<span class="sc">$</span>arguments)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>List of 1
+ $ city: chr "Oran"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">Filter</span>(<span class="cf">function</span>(e) e<span class="sc">$</span>type <span class="sc">==</span> <span class="st">"tool_result"</span>, events)[[<span class="dv">1</span>]]</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>result<span class="sc">$</span>data<span class="sc">$</span>value</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Sunny, 24°C in Oran"</code></pre>
+</div>
+</div>
+<p>Note that the text streamed <em>before</em> a tool call (“Let me check…”) is part of the stream but not of the returned value: just like a non-streamed <code>$invoke()</code>, the return value is the text of the final answer.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>forecast</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "The weather in Algiers is currently sunny with a temperature of 24°C. Is there anything else you'd like to know?"</code></pre>
+</div>
+</div>
+</section>
+<section id="streaming-a-workflow" class="level2">
+<h2 class="anchored" data-anchor-id="streaming-a-workflow">Streaming a Workflow</h2>
+<p><code>Workflow$run(stream = TRUE)</code> prints the tokens of every Agent Station next to the Workflow’s usual progress messages:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>pipeline <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"translation-pipeline"</span>, <span class="at">use_cache =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>pipeline<span class="sc">$</span><span class="fu">add_station</span>(<span class="st">"draft"</span>, Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"drafter"</span>,</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"Write a single sentence about the topic you receive."</span>,</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>pipeline<span class="sc">$</span><span class="fu">add_station</span>(<span class="st">"translate"</span>, Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"translator"</span>,</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"Translate the text into French. Output only the translation."</span>,</span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>pipeline<span class="sc">$</span><span class="fu">add_station</span>(<span class="st">"shout"</span>, <span class="cf">function</span>(text) <span class="fu">toupper</span>(text))</span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a>pipeline<span class="sc">$</span><span class="fu">add_route</span>(<span class="st">"draft"</span>, <span class="st">"translate"</span>)</span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a>pipeline<span class="sc">$</span><span class="fu">add_route</span>(<span class="st">"translate"</span>, <span class="st">"shout"</span>)</span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> pipeline<span class="sc">$</span><span class="fu">run</span>(<span class="st">"The Sahara desert"</span>, <span class="at">stream =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>The Sahara Desert is the largest hot desert in the world, spanning much of North Africa with vast stretches of sand dunes, rocky plateaus, and sparse vegetation.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Le désert du Sahara est le plus grand désert chaud du monde, s'étendant sur une grande partie de l'Afrique du Nord avec de vastes étendues de dunes de sable, de plateaux rocheux et de végétation clairsemée.</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>result</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "LE DÉSERT DU SAHARA EST LE PLUS GRAND DÉSERT CHAUD DU MONDE, S'ÉTENDANT SUR UNE GRANDE PARTIE DE L'AFRIQUE DU NORD AVEC DE VASTES ÉTENDUES DE DUNES DE SABLE, DE PLATEAUX ROCHEUX ET DE VÉGÉTATION CLAIRSEMÉE."</code></pre>
+</div>
+</div>
+<p>With a callback you also get the Workflow’s own events, so you can build a progress display without parsing console output. Each Agent’s events are tagged with the <code>station</code> and <code>step</code> they belong to:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>progress <span class="ot">&lt;-</span> <span class="cf">function</span>(event) {</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">switch</span>(event<span class="sc">$</span>type,</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">station_started   =</span> <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"▶ step %d: %s</span><span class="sc">\n</span><span class="st">"</span>, event<span class="sc">$</span>data<span class="sc">$</span>step, event<span class="sc">$</span>data<span class="sc">$</span>station)),</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">text_delta        =</span> <span class="fu">cat</span>(<span class="st">"."</span>),</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">station_completed =</span> <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">✔ %s (%d chars)</span><span class="sc">\n</span><span class="st">"</span>, event<span class="sc">$</span>data<span class="sc">$</span>station, <span class="fu">nchar</span>(event<span class="sc">$</span>text))),</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">workflow_output   =</span> <span class="fu">cat</span>(<span class="st">"Done.</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> pipeline<span class="sc">$</span><span class="fu">run</span>(<span class="st">"The Atlas mountains"</span>, <span class="at">on_event =</span> progress)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>▶ step 1: draft</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>...............................
+✔ draft (173 chars)
+▶ step 2: translate</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>..........................................................
+✔ translate (223 chars)
+▶ step 3: shout</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+✔ shout (223 chars)</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Done.</code></pre>
+</div>
+</div>
+<p>A Station served from the cache emits <code>"station_started"</code> and <code>"station_completed"</code> with <code>data$from_cache = TRUE</code>, and no token deltas. Retries and fallbacks are visible as <code>"station_retry"</code> and <code>"station_fallback"</code> events:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>flaky <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"flaky-pipeline"</span>, <span class="at">use_cache =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>flaky<span class="sc">$</span><span class="fu">add_station</span>(</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"unstable"</span>,</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">function</span>(x) <span class="fu">stop</span>(<span class="st">"service unavailable"</span>),</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_retries =</span> <span class="dv">1</span>,</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">retry_delay =</span> <span class="dv">0</span>,</span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">fallback =</span> <span class="cf">function</span>(input, error) <span class="st">"fallback answer"</span></span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>events <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a>flaky<span class="sc">$</span><span class="fu">run</span>(<span class="st">"hello"</span>, <span class="at">on_event =</span> collect)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "fallback answer"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vapply</span>(events, <span class="cf">function</span>(e) e<span class="sc">$</span>type, <span class="fu">character</span>(<span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "workflow_started"  "station_started"   "station_retry"    
+[4] "station_fallback"  "station_completed" "workflow_output"  </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>events[[<span class="dv">3</span>]]<span class="sc">$</span>data<span class="sc">$</span>error</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "service unavailable"</code></pre>
+</div>
+</div>
+<p>If a Station fails for good, a <code>"workflow_failed"</code> event is emitted before the error is raised.</p>
+</section>
+<section id="streaming-a-leadagent" class="level2">
+<h2 class="anchored" data-anchor-id="streaming-a-leadagent">Streaming a LeadAgent</h2>
+<p><code>LeadAgent$invoke()</code> streams the tokens of every Agent it delegates to. Its own events tell you which plan it uses and which task is running. The lead’s planning calls themselves are not streamed: they return structured output that is only useful once complete.</p>
+<p>Events from nested components are forwarded too. Below, the <code>translator</code> registered with the LeadAgent is itself a Workflow wrapped with <code>$as_agent()</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>researcher <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"researcher"</span>,</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"You answer factual questions in two sentences maximum."</span>,</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>german_pipeline <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"german-pipeline"</span>, <span class="at">use_cache =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>german_pipeline<span class="sc">$</span><span class="fu">add_station</span>(<span class="st">"german"</span>, Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"german"</span>,</span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"Translate the text into German. Output only the translation."</span>,</span>
+<span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb50-12"><a href="#cb50-12" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb50-13"><a href="#cb50-13" aria-hidden="true" tabindex="-1"></a>translator <span class="ot">&lt;-</span> german_pipeline<span class="sc">$</span><span class="fu">as_agent</span>(</span>
+<span id="cb50-14"><a href="#cb50-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"translator"</span>,</span>
+<span id="cb50-15"><a href="#cb50-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"Translates any text into German."</span></span>
+<span id="cb50-16"><a href="#cb50-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb50-17"><a href="#cb50-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-18"><a href="#cb50-18" aria-hidden="true" tabindex="-1"></a>lead <span class="ot">&lt;-</span> LeadAgent<span class="sc">$</span><span class="fu">new</span>(<span class="at">name =</span> <span class="st">"Leader"</span>, <span class="at">llm_object =</span> openai_4_1_mini)</span>
+<span id="cb50-19"><a href="#cb50-19" aria-hidden="true" tabindex="-1"></a>lead<span class="sc">$</span><span class="fu">register_agents</span>(<span class="fu">c</span>(researcher, translator))</span>
+<span id="cb50-20"><a href="#cb50-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-21"><a href="#cb50-21" aria-hidden="true" tabindex="-1"></a>events <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb50-22"><a href="#cb50-22" aria-hidden="true" tabindex="-1"></a>answer <span class="ot">&lt;-</span> lead<span class="sc">$</span><span class="fu">invoke</span>(</span>
+<span id="cb50-23"><a href="#cb50-23" aria-hidden="true" tabindex="-1"></a>  <span class="st">"What is the capital of Algeria? Then translate the answer into German."</span>,</span>
+<span id="cb50-24"><a href="#cb50-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">on_event =</span> collect</span>
+<span id="cb50-25"><a href="#cb50-25" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb50-26"><a href="#cb50-26" aria-hidden="true" tabindex="-1"></a>answer</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Algier"</code></pre>
+</div>
+</div>
+<p>Each event says where it came from. LeadAgent events carry the <code>task</code> (the index in the plan) and the <code>agent</code>; events from inside a Workflow also carry the <code>station</code> and <code>step</code>. A token from the <code>german</code> Agent therefore carries all four:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>deltas <span class="ot">&lt;-</span> <span class="fu">Filter</span>(<span class="cf">function</span>(e) e<span class="sc">$</span>type <span class="sc">==</span> <span class="st">"text_delta"</span>, events)</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">source  =</span> <span class="fu">vapply</span>(deltas, <span class="cf">function</span>(e) e<span class="sc">$</span>source, <span class="fu">character</span>(<span class="dv">1</span>)),</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">task    =</span> <span class="fu">vapply</span>(deltas, <span class="cf">function</span>(e) e<span class="sc">$</span>data<span class="sc">$</span>task, <span class="fu">integer</span>(<span class="dv">1</span>)),</span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">agent   =</span> <span class="fu">vapply</span>(deltas, <span class="cf">function</span>(e) e<span class="sc">$</span>data<span class="sc">$</span>agent, <span class="fu">character</span>(<span class="dv">1</span>)),</span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">station =</span> <span class="fu">vapply</span>(deltas, <span class="cf">function</span>(e) {</span>
+<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">is.null</span>(e<span class="sc">$</span>data<span class="sc">$</span>station)) <span class="cn">NA_character_</span> <span class="cf">else</span> e<span class="sc">$</span>data<span class="sc">$</span>station</span>
+<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a>  }, <span class="fu">character</span>(<span class="dv">1</span>))</span>
+<span id="cb52-10"><a href="#cb52-10" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> <span class="fu">unique</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       source task      agent station
+1  researcher    1 researcher    &lt;NA&gt;
+28     german    2 translator  german</code></pre>
+</div>
+</div>
+<p>The plan arrives as the first event, before any agent runs:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>plan_event <span class="ot">&lt;-</span> events[[<span class="dv">1</span>]]</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>plan_event<span class="sc">$</span>type</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "plan_created"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vapply</span>(plan_event<span class="sc">$</span>data<span class="sc">$</span>plan, <span class="cf">function</span>(task) task<span class="sc">$</span>agent_name, <span class="fu">character</span>(<span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "researcher" "translator"</code></pre>
+</div>
+</div>
+</section>
+<section id="streaming-with-human-in-the-loop" class="level2">
+<h2 class="anchored" data-anchor-id="streaming-with-human-in-the-loop">Streaming with Human In The Loop</h2>
+<p>In pause mode (see <a href="./workflow.html#non-blocking-hitl-pause-and-resume">Workflow</a>), reaching an HITL step emits a <code>"hitl_request"</code> event that carries the <code>mini007_pending</code> object, then the call returns as usual. <code>$resume()</code> takes its own <code>stream</code> / <code>on_event</code> arguments, so the second half of the run can be streamed somewhere else, e.g.&nbsp;to a different browser session:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>review <span class="ot">&lt;-</span> Workflow<span class="sc">$</span><span class="fu">new</span>(<span class="st">"review-pipeline"</span>, <span class="at">use_cache =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>review<span class="sc">$</span><span class="fu">add_station</span>(<span class="st">"draft"</span>, <span class="cf">function</span>(x) <span class="fu">paste</span>(<span class="st">"Draft about"</span>, x))</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>review<span class="sc">$</span><span class="fu">add_station</span>(<span class="st">"publish"</span>, <span class="cf">function</span>(x) <span class="fu">paste0</span>(x, <span class="st">" [published]"</span>))</span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>review<span class="sc">$</span><span class="fu">add_route</span>(<span class="st">"draft"</span>, <span class="st">"publish"</span>)</span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>review<span class="sc">$</span><span class="fu">set_hitl</span>(<span class="dv">1</span>, <span class="at">mode =</span> <span class="st">"pause"</span>)</span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>events <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a>pending <span class="ot">&lt;-</span> review<span class="sc">$</span><span class="fu">run</span>(<span class="st">"streaming"</span>, <span class="at">on_event =</span> collect)</span>
+<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a>events[[<span class="fu">length</span>(events)]]<span class="sc">$</span>type</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "hitl_request"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">identical</span>(events[[<span class="fu">length</span>(events)]]<span class="sc">$</span>data<span class="sc">$</span>pending, pending)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>events <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>review<span class="sc">$</span><span class="fu">resume</span>(pending<span class="sc">$</span>request_id, <span class="at">action =</span> <span class="st">"edit"</span>, <span class="at">value =</span> <span class="st">"Edited draft"</span>, <span class="at">on_event =</span> collect)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Edited draft [published]"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vapply</span>(events, <span class="cf">function</span>(e) e<span class="sc">$</span>type, <span class="fu">character</span>(<span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "station_started"   "station_completed" "workflow_output"  </code></pre>
+</div>
+</div>
+</section>
+<section id="cancelling-a-stream" class="level2">
+<h2 class="anchored" data-anchor-id="cancelling-a-stream">Cancelling a stream</h2>
+<p>To stop a run from inside the callback, raise an error. mini007 re-raises it as a condition of class <code>mini007_stream_cancelled</code>, which you can catch:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>rambler <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"rambler"</span>,</span>
+<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"You are very verbose."</span>,</span>
+<span id="cb66-4"><a href="#cb66-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb66-5"><a href="#cb66-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb66-6"><a href="#cb66-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb66-7"><a href="#cb66-7" aria-hidden="true" tabindex="-1"></a>n_deltas <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb66-8"><a href="#cb66-8" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">tryCatch</span>(</span>
+<span id="cb66-9"><a href="#cb66-9" aria-hidden="true" tabindex="-1"></a>  rambler<span class="sc">$</span><span class="fu">invoke</span>(</span>
+<span id="cb66-10"><a href="#cb66-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Write 500 words about the history of statistics."</span>,</span>
+<span id="cb66-11"><a href="#cb66-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">on_event =</span> <span class="cf">function</span>(event) {</span>
+<span id="cb66-12"><a href="#cb66-12" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (event<span class="sc">$</span>type <span class="sc">==</span> <span class="st">"text_delta"</span>) {</span>
+<span id="cb66-13"><a href="#cb66-13" aria-hidden="true" tabindex="-1"></a>        n_deltas <span class="ot">&lt;&lt;-</span> n_deltas <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb66-14"><a href="#cb66-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (n_deltas <span class="sc">==</span> <span class="dv">10</span>) <span class="fu">stop</span>(<span class="st">"that's enough"</span>)</span>
+<span id="cb66-15"><a href="#cb66-15" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb66-16"><a href="#cb66-16" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb66-17"><a href="#cb66-17" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb66-18"><a href="#cb66-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">mini007_stream_cancelled =</span> <span class="cf">function</span>(e) e</span>
+<span id="cb66-19"><a href="#cb66-19" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb66-20"><a href="#cb66-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb66-21"><a href="#cb66-21" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(result)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "mini007_stream_cancelled" "rlang_error"             
+[3] "error"                    "condition"               </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">conditionMessage</span>(result)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Streaming cancelled by `on_event`: that's enough\nCaused by error in `on_event()`:\n! that's enough"</code></pre>
+</div>
+</div>
+<p>A cancellation is never retried and never sent to a Station’s <code>fallback</code>. It stops the whole Workflow or LeadAgent immediately. The Agent stays usable: since the interrupted answer was never completed, that exchange is not added to the history:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>rambler<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"Reply with just: OK"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OK</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vapply</span>(rambler<span class="sc">$</span>messages, <span class="cf">function</span>(m) m<span class="sc">$</span>role, <span class="fu">character</span>(<span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "system"    "user"      "assistant"</code></pre>
+</div>
+</div>
+</section>
+<section id="reasoning-models" class="level2">
+<h2 class="anchored" data-anchor-id="reasoning-models">Reasoning models</h2>
+<p>With reasoning models, the model’s reasoning arrives as <code>"thinking_delta"</code> events, separate from the <code>"text_delta"</code> events of the answer. Console mode doesn’t print them. This requires <code>ellmer &gt;= 0.5.0</code>; earlier versions stream the reasoning as ordinary text.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>thinker <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"thinker"</span>,</span>
+<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"Answer briefly."</span>,</span>
+<span id="cb74-4"><a href="#cb74-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> ellmer<span class="sc">::</span><span class="fu">chat_anthropic</span>(</span>
+<span id="cb74-5"><a href="#cb74-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">model =</span> <span class="st">"claude-sonnet-4-5"</span>,</span>
+<span id="cb74-6"><a href="#cb74-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">params =</span> ellmer<span class="sc">::</span><span class="fu">params</span>(<span class="at">reasoning_tokens =</span> <span class="dv">1024</span>),</span>
+<span id="cb74-7"><a href="#cb74-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">echo =</span> <span class="st">"none"</span></span>
+<span id="cb74-8"><a href="#cb74-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb74-9"><a href="#cb74-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb74-10"><a href="#cb74-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-11"><a href="#cb74-11" aria-hidden="true" tabindex="-1"></a>thinker<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"Is 391 a prime number?"</span>, <span class="at">on_event =</span> <span class="cf">function</span>(event) {</span>
+<span id="cb74-12"><a href="#cb74-12" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (event<span class="sc">$</span>type <span class="sc">==</span> <span class="st">"thinking_delta"</span>) <span class="fu">cat</span>(cli<span class="sc">::</span><span class="fu">col_grey</span>(event<span class="sc">$</span>text))</span>
+<span id="cb74-13"><a href="#cb74-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (event<span class="sc">$</span>type <span class="sc">==</span> <span class="st">"text_delta"</span>) <span class="fu">cat</span>(event<span class="sc">$</span>text)</span>
+<span id="cb74-14"><a href="#cb74-14" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="event-reference" class="level2">
+<h2 class="anchored" data-anchor-id="event-reference">Event reference</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Emitted by</th>
+<th><code>type</code></th>
+<th><code>text</code></th>
+<th>Main <code>data</code> fields</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Agent</td>
+<td><code>agent_started</code></td>
+<td></td>
+<td><code>prompt</code></td>
+</tr>
+<tr class="even">
+<td>Agent</td>
+<td><code>text_delta</code></td>
+<td>next fragment of the answer</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>Agent</td>
+<td><code>thinking_delta</code></td>
+<td>next fragment of the reasoning</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>Agent</td>
+<td><code>tool_call</code></td>
+<td></td>
+<td><code>tool_name</code>, <code>call_id</code>, <code>arguments</code></td>
+</tr>
+<tr class="odd">
+<td>Agent</td>
+<td><code>tool_result</code></td>
+<td></td>
+<td><code>tool_name</code>, <code>call_id</code>, <code>value</code>, <code>error</code></td>
+</tr>
+<tr class="even">
+<td>Agent</td>
+<td><code>agent_completed</code></td>
+<td>final response</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>Workflow</td>
+<td><code>workflow_started</code></td>
+<td></td>
+<td><code>input</code>, <code>entry</code></td>
+</tr>
+<tr class="even">
+<td>Workflow</td>
+<td><code>station_started</code></td>
+<td></td>
+<td><code>station</code>, <code>step</code>, <code>input</code>, <code>parallel</code></td>
+</tr>
+<tr class="odd">
+<td>Workflow</td>
+<td><code>station_retry</code></td>
+<td></td>
+<td><code>station</code>, <code>step</code>, <code>attempt</code>, <code>max_attempts</code>, <code>error</code></td>
+</tr>
+<tr class="even">
+<td>Workflow</td>
+<td><code>station_fallback</code></td>
+<td></td>
+<td><code>station</code>, <code>step</code>, <code>error</code></td>
+</tr>
+<tr class="odd">
+<td>Workflow</td>
+<td><code>station_completed</code></td>
+<td>station output</td>
+<td><code>station</code>, <code>step</code>, <code>from_cache</code>, <code>parallel</code></td>
+</tr>
+<tr class="even">
+<td>Workflow</td>
+<td><code>hitl_request</code></td>
+<td></td>
+<td><code>pending</code>, <code>station</code>, <code>step</code></td>
+</tr>
+<tr class="odd">
+<td>Workflow</td>
+<td><code>workflow_output</code></td>
+<td>final output</td>
+<td><code>steps</code></td>
+</tr>
+<tr class="even">
+<td>Workflow</td>
+<td><code>workflow_failed</code></td>
+<td></td>
+<td><code>error</code>, <code>step</code></td>
+</tr>
+<tr class="odd">
+<td>LeadAgent</td>
+<td><code>plan_created</code></td>
+<td></td>
+<td><code>plan</code>, <code>reused</code></td>
+</tr>
+<tr class="even">
+<td>LeadAgent</td>
+<td><code>task_started</code></td>
+<td></td>
+<td><code>task</code>, <code>agent</code>, <code>prompt</code></td>
+</tr>
+<tr class="odd">
+<td>LeadAgent</td>
+<td><code>task_completed</code></td>
+<td>task response</td>
+<td><code>task</code>, <code>agent</code></td>
+</tr>
+<tr class="even">
+<td>LeadAgent</td>
+<td><code>hitl_request</code></td>
+<td></td>
+<td><code>pending</code>, <code>task</code>, <code>agent</code></td>
+</tr>
+<tr class="odd">
+<td>LeadAgent</td>
+<td><code>lead_output</code></td>
+<td>final response</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="good-to-know" class="level2">
+<h2 class="anchored" data-anchor-id="good-to-know">Good to know</h2>
+<ul>
+<li><strong>Parallel groups</strong> run their Stations in separate <code>mirai</code> processes, so those Stations emit <code>"station_started"</code> and <code>"station_completed"</code> but no token deltas. Your callback always runs in your own R session; it’s never sent to a daemon.</li>
+<li><strong>Custom agent objects</strong> used as Stations or registered with a LeadAgent only stream tokens if their <code>invoke()</code> method has an <code>on_event</code> argument. Objects with a one-argument <code>invoke(prompt)</code> keep working; they just don’t stream.</li>
+<li><strong>Callbacks run synchronously.</strong> Each event is delivered as soon as it happens, and the run waits for your callback to return, so keep callbacks fast.</li>
+<li><strong>Not streamed:</strong> <code>$broadcast()</code>, <code>$agents_dialog()</code>, <code>$judge_and_choose_best_response()</code> and <code>LeadAgent$generate_plan()</code>.</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
