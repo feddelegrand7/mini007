@@ -84,7 +84,19 @@ Agent <- R6::R6Class(
     #' @description
     #' Sends a user prompt to the agent and returns the assistant's response.
     #'
+    #' Set \code{stream = TRUE} to receive the response incrementally: token
+    #' deltas, tool calls and tool results are delivered to `on_event` as
+    #' `mini007_event` objects while the LLM is still generating (see
+    #' \code{\link{mini007_event}}). Without `on_event`, deltas are printed to
+    #' the console and the response is returned invisibly. The returned text
+    #' is the same in both modes.
+    #'
     #' @param prompt A character string prompt for the agent to respond to.
+    #' @param stream `[logical(1)]` Whether to stream the response. Defaults
+    #'   to `FALSE`.
+    #' @param on_event `[function | NULL]` Callback receiving each
+    #'   `mini007_event`. Supplying it implies \code{stream = TRUE}. Raising an
+    #'   error inside it cancels the run.
     #' @return The LLM-generated response as a character string.
     #' @examples \dontrun{
     #' # An API KEY is required in order to invoke the Agent
@@ -99,13 +111,26 @@ Agent <- R6::R6Class(
     #'  llm_object = openai_4_1_mini
     #' )
     #' agent$invoke("Continue this sentence: 1 2 3 viva")
+    #'
+    #' # Stream tokens to the console as they are generated
+    #' agent$invoke("Tell me a short story", stream = TRUE)
     #' }
-    invoke = function(prompt) {
+    invoke = function(prompt, stream = FALSE, on_event = NULL) {
 
       checkmate::assert_string(prompt)
+      on_event <- resolve_on_event(stream, on_event)
 
       if (!is.na(self$budget)) {
         private$.check_budget()
+      }
+
+      if (!is.null(on_event)) {
+        response <- private$.stream_chat(prompt, on_event)
+        # Already printed token by token: don't print it a second time.
+        if (is_console_handler(on_event)) {
+          return(invisible(response))
+        }
+        return(response)
       }
 
       response <- private$.safe_chat(prompt)
@@ -1187,6 +1212,73 @@ Agent <- R6::R6Class(
           )
         }
       )
+    },
+
+    # Streaming counterpart of .safe_chat() + the bookkeeping in $invoke().
+    # Each chunk from ellmer's content stream is forwarded to `on_event` as it
+    # arrives. Cost and message history are synced in on.exit() so that a
+    # cancellation from the callback, an interrupt, or a provider failure
+    # mid-stream still leaves `messages` consistent with ellmer's turns. On
+    # that abnormal path the sync is best-effort: it must never replace the
+    # original condition (a cancellation in particular).
+    .stream_chat = function(prompt, on_event) {
+      completed <- FALSE
+      sync_state <- function() {
+        cost <- self$llm_object$get_cost()
+        if (!is.na(cost)) {
+          self$cost <- as.numeric(round(cost, 4))
+        }
+        private$.set_messages_from_turns()
+      }
+      on.exit({
+        if (completed) sync_state() else try(sync_state(), silent = TRUE)
+      }, add = TRUE)
+
+      emit_event(on_event, new_event("agent_started", self$name, prompt = prompt))
+
+      deltas <- character(0)
+
+      tryCatch(
+        coro::loop(for (chunk in self$llm_object$stream(prompt, stream = "content")) {
+          event <- content_to_event(chunk, self$name)
+          if (identical(event$type, "text_delta")) {
+            deltas <- c(deltas, event$text)
+          }
+          emit_event(on_event, event)
+        }),
+        error = function(e) {
+          if (inherits(e, "mini007_stream_cancelled")) stop(e)
+          cli::cli_abort(
+            c(
+              "Agent {.val {self$name}} could not get a response from the LLM provider.",
+              "i" = paste(
+                "This is usually caused by an unreachable API (network issue or",
+                "provider outage), an invalid or missing API key, or a request timeout."
+              ),
+              "x" = conditionMessage(e)
+            ),
+            parent = e,
+            call = NULL
+          )
+        }
+      )
+
+      # Match the non-streaming return value: ellmer's $chat() returns the
+      # text of the last assistant turn, which excludes text emitted before a
+      # tool call round. Fall back to the collected deltas for chat objects
+      # that don't expose $last_turn().
+      response <- tryCatch(
+        self$llm_object$last_turn()@text,
+        error = function(e) NULL
+      )
+      if (is.null(response) || length(response) != 1L || is.na(response)) {
+        response <- paste(deltas, collapse = "")
+      }
+
+      completed <- TRUE
+      emit_event(on_event, new_event("agent_completed", self$name, text = response))
+
+      response
     },
 
     # Best-effort conversion of a single ellmer Content object into a

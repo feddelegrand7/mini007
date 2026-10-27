@@ -277,9 +277,20 @@ LeadAgent <- R6::R6Class(
 
     #' @description
     #' Executes the full prompt pipeline: decomposition → delegation → invocation.
+    #'
+    #' With \code{stream = TRUE} (or an `on_event` callback), progress is
+    #' delivered as `mini007_event` objects: the plan, the start/completion of
+    #' every delegated task, HITL requests, the final output, and the token
+    #' deltas of every delegated Agent (see \code{\link{mini007_event}}). The
+    #' lead agent's own planning calls are not streamed.
     #' @param prompt The complex user instruction to process.
     #' @param force_regenerate_plan If TRUE, regenerate a plan even if one exists,
     #' defaults to FALSE.
+    #' @param stream `[logical(1)]` Whether to stream progress. Without
+    #'   `on_event`, Agent token deltas are printed to the console.
+    #' @param on_event `[function | NULL]` Callback receiving each
+    #'   `mini007_event`. Supplying it implies \code{stream = TRUE}. Raising an
+    #'   error inside it cancels the run.
     #' @return The final response (from the last agent in the sequence).
     #' @examples \dontrun{
     #'  # An API KEY is required in order to invoke the agents
@@ -325,10 +336,12 @@ LeadAgent <- R6::R6Class(
     #'  )
     #' }
 
-    invoke = function(prompt, force_regenerate_plan = FALSE) {
+    invoke = function(prompt, force_regenerate_plan = FALSE,
+                      stream = FALSE, on_event = NULL) {
 
       checkmate::assert_character(prompt)
       checkmate::assert_flag(force_regenerate_plan)
+      on_event <- resolve_on_event(stream, on_event)
 
       if (length(self$agents) == 0) {
 
@@ -356,7 +369,10 @@ LeadAgent <- R6::R6Class(
         prompt_invoke_same_as_plan <- FALSE
       }
 
-      if (!prompt_invoke_same_as_plan || length(self$plan) == 0 || force_regenerate_plan) {
+      reuse_plan <- prompt_invoke_same_as_plan && length(self$plan) > 0 &&
+        !force_regenerate_plan
+
+      if (!reuse_plan) {
         cli::cli_h2("Generating new plan")
         prompts_res <- self$generate_plan(prompt)
       } else {
@@ -364,13 +380,17 @@ LeadAgent <- R6::R6Class(
         prompts_res <- self$plan
       }
 
+      emit_event(on_event, new_event(
+        "plan_created", self$name, plan = prompts_res, reused = reuse_plan
+      ))
+
       for (i in seq_along(prompts_res)) {
         prompts_res[[i]]$response <- NA
       }
 
       self$agents_interaction <- prompts_res
 
-      private$.run_steps(1L)
+      private$.run_steps(1L, on_event = on_event)
     },
 
     # -- resume ------------------------------------------------------------
@@ -390,13 +410,19 @@ LeadAgent <- R6::R6Class(
     #'   (raise an error, stopping delegation).
     #' @param value `[character(1) | NULL]` Required when
     #'   \code{action = "edit"}: the replacement response.
+    #' @param stream `[logical(1)]` Whether to stream the remaining steps
+    #'   (see \code{$invoke()}).
+    #' @param on_event `[function | NULL]` Callback receiving each
+    #'   `mini007_event`. Supplying it implies \code{stream = TRUE}.
     #'
     #' @return `[character(1)]` The final response, or another
     #'   `mini007_pending` object if a further HITL step is reached.
-    resume = function(request_id, action = c("continue", "edit", "abort"), value = NULL) {
+    resume = function(request_id, action = c("continue", "edit", "abort"), value = NULL,
+                      stream = FALSE, on_event = NULL) {
       checkmate::assert_string(request_id)
       action <- match.arg(action)
       if (identical(action, "edit")) checkmate::assert_string(value)
+      on_event <- resolve_on_event(stream, on_event)
 
       pending <- private$.pending[[request_id]]
       if (is.null(pending)) {
@@ -421,7 +447,7 @@ LeadAgent <- R6::R6Class(
       }
       self$agents_interaction[[step_index]] <- step
 
-      private$.run_steps(step_index + 1L)
+      private$.run_steps(step_index + 1L, on_event = on_event)
     },
 
     #' @description
@@ -1074,10 +1100,14 @@ LeadAgent <- R6::R6Class(
     # $resume() (start_index = the step after the one just confirmed). In
     # "console" mode, an HITL step blocks on .human_confirm() exactly as
     # before. In "pause" mode, it instead returns a mini007_pending object
-    # immediately instead of continuing the loop.
-    .run_steps = function(start_index) {
+    # immediately instead of continuing the loop. `on_event` is the streaming
+    # callback of the current $invoke()/$resume() call (NULL when not
+    # streaming); sub-agent events are forwarded to it tagged with the step.
+    .run_steps = function(start_index, on_event = NULL) {
       if (start_index > length(self$agents_interaction)) {
-        return(self$agents_interaction[[length(self$agents_interaction)]]$response)
+        final <- self$agents_interaction[[length(self$agents_interaction)]]$response
+        emit_event(on_event, new_event("lead_output", self$name, text = final))
+        return(final)
       }
 
       for (i in seq.int(start_index, length(self$agents_interaction))) {
@@ -1095,28 +1125,48 @@ LeadAgent <- R6::R6Class(
           )
         }
 
-        response <- selected_agent$invoke(prompt_to_consider)
+        emit_event(on_event, new_event(
+          "task_started", self$name,
+          task = i, agent = step$agent_name, prompt = prompt_to_consider
+        ))
+
+        response <- invoke_with_events(
+          selected_agent, prompt_to_consider,
+          forward_events(on_event, task = i, agent = step$agent_name)
+        )
         step$response <- response
         step$edited_by_hitl <- FALSE
         self$agents_interaction[[i]] <- step
+
+        emit_event(on_event, new_event(
+          "task_completed", self$name, text = response,
+          task = i, agent = step$agent_name
+        ))
 
         if (!is.null(self$hitl_steps) && i %in% self$hitl_steps) {
           if (identical(self$hitl_mode, "pause")) {
             request_id <- uuid::UUIDgenerate()
             private$.pending[[request_id]] <- list(step = i)
-            return(new_pending(
+            pending <- new_pending(
               request_id      = request_id,
               step            = i,
               station         = step$agent_name,
               input           = step$prompt,
               proposed_output = step$response
+            )
+            emit_event(on_event, new_event(
+              "hitl_request", self$name,
+              pending = pending, task = i, agent = step$agent_name
             ))
+            return(pending)
           }
           private$.human_confirm(i)
         }
       }
 
-      self$agents_interaction[[length(self$agents_interaction)]]$response
+      final <- self$agents_interaction[[length(self$agents_interaction)]]$response
+      emit_event(on_event, new_event("lead_output", self$name, text = final))
+      final
     },
 
     .analyze_prompt = function(prompt) {

@@ -76,13 +76,20 @@ result back, not a `mini007_pending` object to resume later. Use
 workflow directly with \code{$workflow$run()} / \code{$resume()} if you
 need pause/resume HITL.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{WorkflowAgent$invoke(prompt)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{WorkflowAgent$invoke(prompt, stream = FALSE, on_event = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{prompt}}{`[character(1)]` The user prompt / input payload.}
+
+\item{\code{stream}}{`[logical(1)]` Whether to stream the wrapped workflow's
+progress (see \code{Workflow$run()}).}
+
+\item{\code{on_event}}{`[function | NULL]` Callback receiving each
+`mini007_event` emitted by the wrapped workflow and its Agents.
+Supplying it implies \code{stream = TRUE}.}
 }
 \if{html}{\out{</div>}}
 }

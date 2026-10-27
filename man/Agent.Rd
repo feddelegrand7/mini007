@@ -49,6 +49,9 @@ agent <- Agent$new(
  llm_object = openai_4_1_mini
 )
 agent$invoke("Continue this sentence: 1 2 3 viva")
+
+# Stream tokens to the console as they are generated
+agent$invoke("Tell me a short story", stream = TRUE)
 }
 
 ## ------------------------------------------------
@@ -525,14 +528,28 @@ if the budget is reached, an error will be thrown.}
 \if{latex}{\out{\hypertarget{method-Agent-invoke}{}}}
 \subsection{Method \code{invoke()}}{
 Sends a user prompt to the agent and returns the assistant's response.
+
+Set \code{stream = TRUE} to receive the response incrementally: token
+deltas, tool calls and tool results are delivered to `on_event` as
+`mini007_event` objects while the LLM is still generating (see
+\code{\link{mini007_event}}). Without `on_event`, deltas are printed to
+the console and the response is returned invisibly. The returned text
+is the same in both modes.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Agent$invoke(prompt)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Agent$invoke(prompt, stream = FALSE, on_event = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{prompt}}{A character string prompt for the agent to respond to.}
+
+\item{\code{stream}}{`[logical(1)]` Whether to stream the response. Defaults
+to `FALSE`.}
+
+\item{\code{on_event}}{`[function | NULL]` Callback receiving each
+`mini007_event`. Supplying it implies \code{stream = TRUE}. Raising an
+error inside it cancels the run.}
 }
 \if{html}{\out{</div>}}
 }
@@ -554,6 +571,9 @@ agent <- Agent$new(
  llm_object = openai_4_1_mini
 )
 agent$invoke("Continue this sentence: 1 2 3 viva")
+
+# Stream tokens to the console as they are generated
+agent$invoke("Tell me a short story", stream = TRUE)
 }
 }
 \if{html}{\out{</div>}}

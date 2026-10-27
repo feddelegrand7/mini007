@@ -214,13 +214,25 @@ Workflow <- R6::R6Class(
     #' been seen before returns the cached output without re-invoking the
     #' handler. Use \code{$clear_cache()} to force re-execution.
     #'
+    #' With \code{stream = TRUE} (or an `on_event` callback), progress is
+    #' delivered as `mini007_event` objects while the workflow executes:
+    #' station start/completion, retries, fallbacks, HITL requests, the final
+    #' output, and the token deltas of every Agent Station (see
+    #' \code{\link{mini007_event}}).
+    #'
     #' @param input `[character(1)]` The initial prompt / payload.
+    #' @param stream `[logical(1)]` Whether to stream progress. Without
+    #'   `on_event`, Agent token deltas are printed to the console.
+    #' @param on_event `[function | NULL]` Callback receiving each
+    #'   `mini007_event`. Supplying it implies \code{stream = TRUE}. Raising an
+    #'   error inside it cancels the run.
     #'
     #' @return `[character(1)]` The output of the last Station executed, or -
     #'   if execution reaches an HITL step while \code{hitl_mode = "pause"} -
     #'   a `mini007_pending` object. Use \code{\link{is_pending}()} to check.
-    run = function(input) {
+    run = function(input, stream = FALSE, on_event = NULL) {
       checkmate::assert_string(input)
+      on_event <- resolve_on_event(stream, on_event)
 
       if (length(private$.stations) == 0L) {
         cli::cli_abort("No Stations defined. Use {.fn add_station} first.")
@@ -240,13 +252,17 @@ Workflow <- R6::R6Class(
 
       cli::cli_rule(left = glue::glue("Workflow: {self$name}"))
 
+      emit_event(on_event, new_event(
+        "workflow_started", self$name, input = input, entry = entry
+      ))
+
       private$.execute(list(
         current        = entry,
         current_input  = input,
         original_input = input,
         trace          = list(),
         steps_taken    = 0L
-      ))
+      ), on_event = on_event)
     },
 
     # -- resume ------------------------------------------------------------
@@ -266,13 +282,19 @@ Workflow <- R6::R6Class(
     #'   (raise an error, stopping the workflow).
     #' @param value `[character(1) | NULL]` Required when
     #'   \code{action = "edit"}: the replacement output.
+    #' @param stream `[logical(1)]` Whether to stream the remaining execution
+    #'   (see \code{$run()}).
+    #' @param on_event `[function | NULL]` Callback receiving each
+    #'   `mini007_event`. Supplying it implies \code{stream = TRUE}.
     #'
     #' @return `[character(1)]` The final output, or another `mini007_pending`
     #'   object if a further HITL step is reached.
-    resume = function(request_id, action = c("continue", "edit", "abort"), value = NULL) {
+    resume = function(request_id, action = c("continue", "edit", "abort"), value = NULL,
+                      stream = FALSE, on_event = NULL) {
       checkmate::assert_string(request_id)
       action <- match.arg(action)
       if (identical(action, "edit")) checkmate::assert_string(value)
+      on_event <- resolve_on_event(stream, on_event)
 
       pending <- private$.pending[[request_id]]
       if (is.null(pending)) {
@@ -284,7 +306,8 @@ Workflow <- R6::R6Class(
 
       private$.execute(
         pending$state,
-        resume_response = list(action = action, value = value)
+        resume_response = list(action = action, value = value),
+        on_event = on_event
       )
     },
 
@@ -617,9 +640,10 @@ Workflow <- R6::R6Class(
 
     # Dispatch a handler call: Agent/WorkflowAgent use $invoke(); plain
     # functions are called directly and their output coerced to character.
-    .invoke_handler = function(handler, input) {
+    # `on_event` is forwarded to agents that support streaming.
+    .invoke_handler = function(handler, input, on_event = NULL) {
       if (inherits(handler, c("Agent", "WorkflowAgent"))) {
-        handler$invoke(input)
+        invoke_with_events(handler, input, on_event)
       } else {
         out <- handler(input)
         if (!is.character(out)) as.character(out) else out
@@ -630,7 +654,9 @@ Workflow <- R6::R6Class(
     # Wraps .invoke_handler, retrying up to max_retries additional times with
     # retry_delay seconds between attempts. If all attempts fail and a fallback
     # is defined, calls fallback(input, error); otherwise re-raises the last error.
-    .invoke_handler_safe = function(station, input) {
+    # A cancellation raised by `on_event` is never retried nor sent to the
+    # fallback - it propagates immediately.
+    .invoke_handler_safe = function(station, input, on_event = NULL) {
       max_retries <- station$max_retries
       retry_delay <- station$retry_delay
       fallback    <- station$fallback
@@ -640,8 +666,11 @@ Workflow <- R6::R6Class(
       for (attempt in seq_len(max_retries + 1L)) {
         out <- tryCatch(
           list(ok = TRUE,
-               value = private$.invoke_handler(station$handler, input)),
-          error = function(e) list(ok = FALSE, error = e)
+               value = private$.invoke_handler(station$handler, input, on_event)),
+          error = function(e) {
+            if (inherits(e, "mini007_stream_cancelled")) stop(e)
+            list(ok = FALSE, error = e)
+          }
         )
 
         if (isTRUE(out$ok)) return(out$value)
@@ -652,6 +681,11 @@ Workflow <- R6::R6Class(
           cli::cli_alert_warning(
             "Station {.val {station$name}} failed (attempt {attempt}/{max_retries + 1L}): {last_err$message}. Retrying in {retry_delay}s."
           )
+          emit_event(on_event, new_event(
+            "station_retry", self$name,
+            attempt = attempt, max_attempts = max_retries + 1L,
+            error = conditionMessage(last_err)
+          ))
           Sys.sleep(retry_delay)
         }
       }
@@ -660,6 +694,9 @@ Workflow <- R6::R6Class(
         cli::cli_alert_warning(
           "Station {.val {station$name}}: all {max_retries + 1L} attempt(s) failed. Invoking fallback."
         )
+        emit_event(on_event, new_event(
+          "station_fallback", self$name, error = conditionMessage(last_err)
+        ))
         return(fallback(input, last_err))
       }
 
@@ -769,16 +806,30 @@ Workflow <- R6::R6Class(
     # All stations in the group receive the same input and run concurrently.
     # Results are merged and returned (HITL confirmation, if any, happens in
     # the caller so it can be paused/resumed uniformly with regular stations).
-    .execute_parallel_group_compute = function(group, input) {
+    # `on_event` is only ever called from this (main) process: it is never
+    # shipped to the mirai daemons, so parallel stations emit start/completion
+    # events but no token deltas.
+    .execute_parallel_group_compute = function(group, input, step = NA_integer_,
+                                               on_event = NULL) {
       station_names <- group$stations
 
       cli::cli_text("{cli::col_cyan('\u250c Parallel Group')} ({length(station_names)} station{?s})")
+
+      from_cache <- vapply(station_names, function(name) {
+        self$use_cache &&
+          exists(private$.cache_key(name, input), envir = self$cache, inherits = FALSE)
+      }, logical(1))
 
       tasks <- lapply(station_names, function(name) {
         station <- private$.stations[[name]]
         cache_key <- private$.cache_key(name, input)
 
-        if (self$use_cache && exists(cache_key, envir = self$cache, inherits = FALSE)) {
+        emit_event(on_event, new_event(
+          "station_started", self$name,
+          station = name, step = step, input = input, parallel = TRUE
+        ))
+
+        if (from_cache[[name]]) {
           cli::cli_alert_info("[cache] Parallel station {.val {name}}.")
           return(get(cache_key, envir = self$cache, inherits = FALSE))
         }
@@ -812,6 +863,14 @@ Workflow <- R6::R6Class(
 
       cli::cli_text("{cli::col_cyan('\u2514 Parallel Group')} complete.")
 
+      for (name in station_names) {
+        emit_event(on_event, new_event(
+          "station_completed", self$name, text = results[[name]],
+          station = name, step = step, from_cache = from_cache[[name]],
+          parallel = TRUE
+        ))
+      }
+
       if (self$use_cache) {
         for (name in station_names) {
           cache_key <- private$.cache_key(name, input)
@@ -829,7 +888,10 @@ Workflow <- R6::R6Class(
     # by computing the current step from scratch. On $resume(), `state` is a
     # snapshot captured right before the paused step's HITL confirmation, and
     # `resume_response` is applied instead of recomputing that step.
-    .execute = function(state, resume_response = NULL) {
+    # `on_event` is the streaming callback of the current $run()/$resume()
+    # call (NULL when not streaming); it is deliberately not part of `state`
+    # so a resumed run streams to the callback given to $resume().
+    .execute = function(state, resume_response = NULL, on_event = NULL) {
       current        <- state$current
       current_input  <- state$current_input
       original_input <- state$original_input
@@ -840,7 +902,7 @@ Workflow <- R6::R6Class(
       first_iteration <- TRUE
       result          <- NULL
 
-      pause_result <- tryCatch({
+      pause_result <- tryCatch(withCallingHandlers({
         repeat {
           if (first_iteration && !is.null(resume_response)) {
             context <- state$context
@@ -860,7 +922,8 @@ Workflow <- R6::R6Class(
 
             if (!is.null(parallel_group)) {
               proposed_result <- private$.execute_parallel_group_compute(
-                parallel_group, current_input
+                parallel_group, current_input,
+                step = steps_taken, on_event = on_event
               )
               context <- list(kind = "parallel", parallel_group = parallel_group)
               station_label <- "parallel_group"
@@ -870,13 +933,26 @@ Workflow <- R6::R6Class(
               from_cache <- self$use_cache &&
                 exists(cache_key, envir = self$cache, inherits = FALSE)
 
+              emit_event(on_event, new_event(
+                "station_started", self$name,
+                station = current, step = steps_taken, input = current_input
+              ))
+
               if (from_cache) {
                 cli::cli_alert_info("[cache] Station {.val {current}}.")
                 proposed_result <- get(cache_key, envir = self$cache, inherits = FALSE)
               } else {
                 cli::cli_text("  {cli::col_blue('->')} Station {.val {current}}")
-                proposed_result <- private$.invoke_handler_safe(station, current_input)
+                proposed_result <- private$.invoke_handler_safe(
+                  station, current_input,
+                  on_event = forward_events(on_event, station = current, step = steps_taken)
+                )
               }
+
+              emit_event(on_event, new_event(
+                "station_completed", self$name, text = proposed_result,
+                station = current, step = steps_taken, from_cache = from_cache
+              ))
 
               context <- list(
                 kind = "station", cache_key = cache_key, from_cache = from_cache
@@ -929,11 +1005,24 @@ Workflow <- R6::R6Class(
         }
 
         list(status = "complete")
-      }, mini007_workflow_pause = function(e) {
+      }, error = function(e) {
+        if (!inherits(e, "mini007_stream_cancelled")) {
+          emit_event(on_event, new_event(
+            "workflow_failed", self$name,
+            error = conditionMessage(e), step = steps_taken
+          ))
+        }
+      }), mini007_workflow_pause = function(e) {
         list(status = "awaiting_input", pending = e$pending)
       })
 
       if (identical(pause_result$status, "awaiting_input")) {
+        emit_event(on_event, new_event(
+          "hitl_request", self$name,
+          pending = pause_result$pending,
+          station = pause_result$pending$station,
+          step = pause_result$pending$step
+        ))
         return(pause_result$pending)
       }
 
@@ -947,6 +1036,10 @@ Workflow <- R6::R6Class(
         steps  = steps_taken,
         trace  = trace
       )
+
+      emit_event(on_event, new_event(
+        "workflow_output", self$name, text = result, steps = steps_taken
+      ))
 
       result
     }
@@ -1026,17 +1119,23 @@ WorkflowAgent <- R6::R6Class(
     #' need pause/resume HITL.
     #'
     #' @param prompt `[character(1)]` The user prompt / input payload.
+    #' @param stream `[logical(1)]` Whether to stream the wrapped workflow's
+    #'   progress (see \code{Workflow$run()}).
+    #' @param on_event `[function | NULL]` Callback receiving each
+    #'   `mini007_event` emitted by the wrapped workflow and its Agents.
+    #'   Supplying it implies \code{stream = TRUE}.
     #'
     #' @return `[character(1)]` The final output of the workflow.
-    invoke = function(prompt) {
+    invoke = function(prompt, stream = FALSE, on_event = NULL) {
       checkmate::assert_string(prompt)
+      on_event <- resolve_on_event(stream, on_event)
 
       self$messages <- c(
         self$messages,
         list(list(role = "user", content = prompt))
       )
 
-      result <- self$workflow$run(prompt)
+      result <- self$workflow$run(prompt, on_event = on_event)
 
       if (is_pending(result)) {
         cli::cli_abort(c(

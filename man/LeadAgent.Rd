@@ -806,8 +806,19 @@ the actual prompt delegated to that agent.
 \if{latex}{\out{\hypertarget{method-LeadAgent-invoke}{}}}
 \subsection{Method \code{invoke()}}{
 Executes the full prompt pipeline: decomposition → delegation → invocation.
+
+With \code{stream = TRUE} (or an `on_event` callback), progress is
+delivered as `mini007_event` objects: the plan, the start/completion of
+every delegated task, HITL requests, the final output, and the token
+deltas of every delegated Agent (see \code{\link{mini007_event}}). The
+lead agent's own planning calls are not streamed.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LeadAgent$invoke(prompt, force_regenerate_plan = FALSE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LeadAgent$invoke(
+  prompt,
+  force_regenerate_plan = FALSE,
+  stream = FALSE,
+  on_event = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -817,6 +828,13 @@ Executes the full prompt pipeline: decomposition → delegation → invocation.
 
 \item{\code{force_regenerate_plan}}{If TRUE, regenerate a plan even if one exists,
 defaults to FALSE.}
+
+\item{\code{stream}}{`[logical(1)]` Whether to stream progress. Without
+`on_event`, Agent token deltas are printed to the console.}
+
+\item{\code{on_event}}{`[function | NULL]` Callback receiving each
+`mini007_event`. Supplying it implies \code{stream = TRUE}. Raising an
+error inside it cancels the run.}
 }
 \if{html}{\out{</div>}}
 }
@@ -889,7 +907,9 @@ point.
 \if{html}{\out{<div class="r">}}\preformatted{LeadAgent$resume(
   request_id,
   action = c("continue", "edit", "abort"),
-  value = NULL
+  value = NULL,
+  stream = FALSE,
+  on_event = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -905,6 +925,12 @@ response as-is), `"edit"` (replace it with `value`), or `"abort"`
 
 \item{\code{value}}{`[character(1) | NULL]` Required when
 \code{action = "edit"}: the replacement response.}
+
+\item{\code{stream}}{`[logical(1)]` Whether to stream the remaining steps
+(see \code{$invoke()}).}
+
+\item{\code{on_event}}{`[function | NULL]` Callback receiving each
+`mini007_event`. Supplying it implies \code{stream = TRUE}.}
 }
 \if{html}{\out{</div>}}
 }

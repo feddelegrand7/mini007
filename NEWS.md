@@ -1,3 +1,36 @@
+# mini007 (development version)
+
+#### Streaming
+
+`Agent$invoke()`, `Workflow$run()` / `$resume()`, `WorkflowAgent$invoke()`
+and `LeadAgent$invoke()` / `$resume()` gain `stream = FALSE` and
+`on_event = NULL` arguments, so you can follow their progress while they
+run instead of waiting for the final answer:
+
+- `stream = TRUE` prints an Agent's tokens to the console as they are
+  generated. Supplying an `on_event` callback (which implies streaming)
+  delivers every unit of progress as a `mini007_event` - a list with a `type`
+  discriminator (`"text_delta"`, `"tool_call"`, `"tool_result"`,
+  `"station_started"`, `"station_completed"`, `"station_retry"`,
+  `"hitl_request"`, `"workflow_output"`, `"task_started"`, `"lead_output"`,
+  ...), the emitting `source`, a `text` payload and a `data` list.
+  See `?mini007_event`.
+- Streaming returns the same final text as the non-streaming call (as a
+  plain character string). With `stream = TRUE` and no callback,
+  `Agent$invoke()` returns it invisibly since it was already printed.
+- Events from nested components flow to the outermost callback, tagged with
+  where they happened (`station`/`step` in a Workflow, `task`/`agent` in a
+  LeadAgent), so one callback on a `LeadAgent` sees the tokens of an Agent
+  running inside a Workflow registered via `$as_agent()`.
+- Raising an error inside `on_event` cancels the run with a
+  `mini007_stream_cancelled` condition; Workflow retries and fallbacks never
+  swallow it, and the Agent's message history and cost stay in sync with
+  what the LLM produced before the cancellation.
+- Stations in a parallel group run in `mirai` daemons and emit only
+  start/completion events; the callback is never sent to a daemon.
+- Agent-like objects whose `invoke()` takes a single argument keep working
+  inside a streamed Workflow or LeadAgent; they just don't stream tokens.
+
 # mini007 0.5.0
 
 #### Bugfix: clearer errors on LLM/tool failures instead of an opaque crash
