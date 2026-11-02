@@ -389,6 +389,51 @@ agent$list_tools()
 }
 
 ## ------------------------------------------------
+## Method `Agent$set_memory`
+## ------------------------------------------------
+
+\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+agent <- Agent$new(
+  name = "translator",
+  instruction = "You translate English to German.",
+  llm_object = openai_4_1_mini
+)
+agent$set_memory(Memory$new(path = "translator_memory.json"))
+}
+
+## ------------------------------------------------
+## Method `Agent$learn`
+## ------------------------------------------------
+
+\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+agent <- Agent$new(
+  name = "fact_checker",
+  instruction = "You are a factual assistant.",
+  llm_object = openai_4_1_mini
+)
+agent$set_memory(Memory$new())
+prompt <- "What is the capital of Algeria?"
+response <- agent$invoke(prompt)
+validation <- agent$validate_response(
+  prompt = prompt,
+  response = response,
+  validation_criteria = "The response must be accurate and mention Algiers"
+)
+agent$learn(validation)
+agent$memory$lessons
+}
+
+## ------------------------------------------------
 ## Method `Agent$clone_agent`
 ## ------------------------------------------------
 
@@ -438,6 +483,8 @@ agent_copy <- agent$clone_agent()
 \item{\code{cost}}{The current cost of the agent}
 
 \item{\code{tools}}{A list of registered tools available to the agent}
+
+\item{\code{memory}}{The \code{\link{Memory}} attached with \code{$set_memory()}, or `NULL`.}
 }
 \if{html}{\out{</div>}}
 }
@@ -472,6 +519,8 @@ Assignment is validated automatically.}
 \item \href{#method-Agent-remove_tools}{\code{Agent$remove_tools()}}
 \item \href{#method-Agent-clear_tools}{\code{Agent$clear_tools()}}
 \item \href{#method-Agent-generate_and_register_tool}{\code{Agent$generate_and_register_tool()}}
+\item \href{#method-Agent-set_memory}{\code{Agent$set_memory()}}
+\item \href{#method-Agent-learn}{\code{Agent$learn()}}
 \item \href{#method-Agent-clone_agent}{\code{Agent$clone_agent()}}
 \item \href{#method-Agent-clone}{\code{Agent$clone()}}
 }
@@ -1292,6 +1341,105 @@ agent$generate_and_register_tool(
 )
 # Now the tool is available to use
 agent$list_tools()
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Agent-set_memory"></a>}}
+\if{latex}{\out{\hypertarget{method-Agent-set_memory}{}}}
+\subsection{Method \code{set_memory()}}{
+Attach a \code{\link{Memory}} to the agent. Before each \code{$invoke()},
+the lessons most relevant to the prompt are retrieved from the memory
+and added in front of the prompt. Use \code{$learn()} to add lessons.
+
+On a `LeadAgent`, the memory is used differently: see
+\code{LeadAgent$set_validation()}.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Agent$set_memory(memory, k = 3)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{memory}}{A `Memory` object, or `NULL` to detach the current one.
+The same memory can be shared by several agents.}
+
+\item{\code{k}}{`[integerish(1)]` Maximum number of lessons added to a prompt.
+Default 3.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Invisibly, `self`.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+agent <- Agent$new(
+  name = "translator",
+  instruction = "You translate English to German.",
+  llm_object = openai_4_1_mini
+)
+agent$set_memory(Memory$new(path = "translator_memory.json"))
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Agent-learn"></a>}}
+\if{latex}{\out{\hypertarget{method-Agent-learn}{}}}
+\subsection{Method \code{learn()}}{
+Learn from a judged response: record the outcome in the agent's
+memory and store a lesson distilled from it by the agent's LLM.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Agent$learn(validation)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{validation}}{The list returned by \code{$validate_response()}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Invisibly, the stored lesson record.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+agent <- Agent$new(
+  name = "fact_checker",
+  instruction = "You are a factual assistant.",
+  llm_object = openai_4_1_mini
+)
+agent$set_memory(Memory$new())
+prompt <- "What is the capital of Algeria?"
+response <- agent$invoke(prompt)
+validation <- agent$validate_response(
+  prompt = prompt,
+  response = response,
+  validation_criteria = "The response must be accurate and mention Algiers"
+)
+agent$learn(validation)
+agent$memory$lessons
 }
 }
 \if{html}{\out{</div>}}

@@ -124,6 +124,13 @@ Agent <- R6::R6Class(
         private$.check_budget()
       }
 
+      if (!is.null(self$memory)) {
+        prompt <- prompt_with_lessons(
+          prompt,
+          self$memory$search(prompt, k = private$.memory_k)
+        )
+      }
+
       if (!is.null(on_event)) {
         response <- private$.stream_chat(prompt, on_event)
         # Already printed token by token: don't print it a second time.
@@ -1053,6 +1060,115 @@ Agent <- R6::R6Class(
     },
 
     #' @description
+    #' Attach a \code{\link{Memory}} to the agent. Before each \code{$invoke()},
+    #' the lessons most relevant to the prompt are retrieved from the memory
+    #' and added in front of the prompt. Use \code{$learn()} to add lessons.
+    #'
+    #' On a `LeadAgent`, the memory is used differently: see
+    #' \code{LeadAgent$set_validation()}.
+    #' @param memory A `Memory` object, or `NULL` to detach the current one.
+    #'   The same memory can be shared by several agents.
+    #' @param k `[integerish(1)]` Maximum number of lessons added to a prompt.
+    #'   Default 3.
+    #' @return Invisibly, `self`.
+    #' @examples
+    #' \dontrun{
+    #' openai_4_1_mini <- ellmer::chat(
+    #'   name = "openai/gpt-4.1-mini",
+    #'   api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'   echo = "none"
+    #' )
+    #' agent <- Agent$new(
+    #'   name = "translator",
+    #'   instruction = "You translate English to German.",
+    #'   llm_object = openai_4_1_mini
+    #' )
+    #' agent$set_memory(Memory$new(path = "translator_memory.json"))
+    #' }
+    set_memory = function(memory, k = 3) {
+      if (!is.null(memory) && !inherits(memory, "Memory")) {
+        cli::cli_abort("{.arg memory} must be a {.cls Memory} object or NULL.")
+      }
+      checkmate::assert_int(k, lower = 0)
+
+      self$memory <- memory
+      private$.memory_k <- as.integer(k)
+
+      invisible(self)
+    },
+
+    #' @description
+    #' Learn from a judged response: record the outcome in the agent's
+    #' memory and store a lesson distilled from it by the agent's LLM.
+    #' @param validation The list returned by \code{$validate_response()}.
+    #' @return Invisibly, the stored lesson record.
+    #' @examples
+    #' \dontrun{
+    #' openai_4_1_mini <- ellmer::chat(
+    #'   name = "openai/gpt-4.1-mini",
+    #'   api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'   echo = "none"
+    #' )
+    #' agent <- Agent$new(
+    #'   name = "fact_checker",
+    #'   instruction = "You are a factual assistant.",
+    #'   llm_object = openai_4_1_mini
+    #' )
+    #' agent$set_memory(Memory$new())
+    #' prompt <- "What is the capital of Algeria?"
+    #' response <- agent$invoke(prompt)
+    #' validation <- agent$validate_response(
+    #'   prompt = prompt,
+    #'   response = response,
+    #'   validation_criteria = "The response must be accurate and mention Algiers"
+    #' )
+    #' agent$learn(validation)
+    #' agent$memory$lessons
+    #' }
+    learn = function(validation) {
+      if (is.null(self$memory)) {
+        cli::cli_abort("No memory attached. Call {.fn set_memory} first.")
+      }
+      checkmate::assert_list(validation)
+      checkmate::assert_names(
+        names(validation),
+        must.include = c("prompt", "response", "score", "feedback", "valid")
+      )
+
+      verdict <- paste0(
+        if (isTRUE(validation$valid)) "Accepted" else "Rejected",
+        " with a score of ", validation$score, " out of 1. Feedback: ",
+        validation$feedback
+      )
+
+      lesson <- private$.distill_lesson(
+        task = validation$prompt,
+        response = validation$response,
+        verdict = verdict
+      )
+
+      self$memory$add_outcome(
+        agent_name = self$name,
+        task = validation$prompt,
+        success = isTRUE(validation$valid),
+        score = as.numeric(validation$score),
+        source = "validation"
+      )
+
+      record <- self$memory$add_lesson(
+        lesson = lesson,
+        task = validation$prompt,
+        agent_name = self$name,
+        score = as.numeric(validation$score),
+        success = isTRUE(validation$valid)
+      )
+
+      cli::cli_alert_success("Lesson stored: {.emph {lesson}}")
+
+      invisible(record)
+    },
+
+    #' @description
     #' Create a copy of the agent with the same instruction and configuration but a new unique ID.
     #' Useful for creating multiple instances of the same agent type.
     #'
@@ -1117,7 +1233,9 @@ Agent <- R6::R6Class(
     #'@field cost The current cost of the agent
     cost = NULL,
     #'@field tools A list of registered tools available to the agent
-    tools = list()
+    tools = list(),
+    #'@field memory The \code{\link{Memory}} attached with \code{$set_memory()}, or `NULL`.
+    memory = NULL
 
   ),
 
@@ -1158,6 +1276,30 @@ Agent <- R6::R6Class(
     # messages and turns. When TRUE, allows normal sync operations.
     # When FALSE, prevents .set_turns_from_messages() from executing.
     .sync_flag = TRUE,
+    .memory_k = 3L,
+
+    # Clones keep the same Memory on purpose: they learn into, and read from,
+    # the same store (and the same file) as the original.
+    deep_clone = function(name, value) {
+      if (identical(name, "memory")) return(value)
+      if (inherits(value, "R6")) return(value$clone(deep = TRUE))
+      value
+    },
+
+    # Ask the LLM for a lesson about one judged task. The system prompt is
+    # swapped for the call and restored afterwards, as in $validate_response().
+    .distill_lesson = function(task, response, verdict) {
+      original_system_prompt <- self$llm_object$get_system_prompt()
+      self$llm_object$set_system_prompt(value = lesson_system_prompt)
+      on.exit(
+        self$llm_object$set_system_prompt(value = original_system_prompt),
+        add = TRUE,
+        after = FALSE
+      )
+
+      lesson <- private$.safe_chat(lesson_prompt(task, response, verdict))
+      trimws(paste(as.character(lesson), collapse = "\n"))
+    },
     .add_message = function(message, type) {
       private$._messages[[length(private$._messages) + 1]] <- list(
         role = type,

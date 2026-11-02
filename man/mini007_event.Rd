@@ -55,7 +55,8 @@ way for the reasoning of reasoning models.
     `"station_retry"`, `"station_fallback"`, `"station_completed"`,
     `"hitl_request"`, `"workflow_output"`, `"workflow_failed"`.}
   \item{LeadAgent}{`"plan_created"`, `"task_started"`, `"task_completed"`,
-    `"hitl_request"`, `"lead_output"`.}
+    `"task_validated"` and `"task_reassigned"` (with
+    \code{$set_validation()}), `"hitl_request"`, `"lead_output"`.}
 }
 }
 

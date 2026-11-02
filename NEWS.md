@@ -1,5 +1,40 @@
 # mini007 (development version)
 
+#### Learning from experience
+
+A new `Memory` class lets agents learn from past tasks, within a session or
+across sessions:
+
+- `LeadAgent$set_validation(criteria, threshold, max_reassign)` judges every
+  delegated step from 0 to 1. A step scoring below `threshold` is handed to
+  the next best agent, up to `max_reassign` times, and the best-scoring
+  attempt is kept. Each step in `agents_interaction` gains `score`,
+  `feedback`, `valid` and `attempts`. While streaming, this emits
+  `"task_validated"` and `"task_reassigned"` events.
+- `$set_memory(Memory$new(path = ...))` on a `LeadAgent` records every judged
+  step as an outcome and distills a short lesson from it, in the same LLM call
+  as the judging. Each agent's track record (`$agent_track_record()`) is shown
+  to the LLM when it chooses an agent for a subtask, and the lessons most
+  relevant to a subtask are added to the prompt of the agent it is delegated
+  to.
+- HITL decisions are recorded as outcomes too, and an HITL edit is distilled
+  into a lesson.
+- On a plain `Agent`, `$set_memory()` adds the relevant lessons in front of
+  each `$invoke()` prompt, and `$learn(validation)` stores a lesson from a
+  `$validate_response()` result.
+- Lessons are retrieved by keyword relevance (BM25) with no new dependency;
+  `Memory$new(search_fn = )` plugs in another retriever. A `Memory` with a
+  `path` is saved as JSON after every change and reloaded on creation.
+- `$clone_agent()` keeps sharing the original agent's memory.
+
+#### Minor fixes
+
+- The `LeadAgent` agent-matching step now restores the lead agent's system
+  prompt even when the LLM returns an invalid agent ID, and that error now
+  shows the ID it received.
+- `jsonlite`, already used to export and load message histories, is now
+  declared in `Imports`.
+
 #### Streaming
 
 `Agent$invoke()`, `Workflow$run()` / `$resume()`, `WorkflowAgent$invoke()`
