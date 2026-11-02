@@ -8,8 +8,9 @@ across sessions:
 - `LeadAgent$set_validation(criteria, threshold, max_reassign)` judges every
   delegated step from 0 to 1. A step scoring below `threshold` is handed to
   the next best agent, up to `max_reassign` times, and the best-scoring
-  attempt is kept. Each step in `agents_interaction` gains `score`,
-  `feedback`, `valid` and `attempts`. While streaming, this emits
+  attempt is kept, and `$plan` is updated so that re-running the same prompt
+  starts with the agent that did best. Each step in `agents_interaction`
+  gains `score`, `feedback`, `valid` and `attempts`. While streaming, this emits
   `"task_validated"` and `"task_reassigned"` events.
 - `$set_memory(Memory$new(path = ...))` on a `LeadAgent` records every judged
   step as an outcome and distills a short lesson from it, in the same LLM call

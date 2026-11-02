@@ -197,6 +197,7 @@ test_that("a memory with a path is saved on every change and reloaded on creatio
   memory <- Memory$new(path = path)
   memory$add_lesson("Persist me.", task = "t", agent_name = "a", score = 0.8, success = TRUE)
   memory$add_lesson("No score.")
+  memory$add_lesson("Whole-number score.", score = 1)
   memory$add_outcome("a", "t", success = FALSE)
   expect_true(file.exists(path))
 
@@ -364,6 +365,21 @@ test_that("reassignment works with the classed strings ellmer returns", {
   suppressMessages(setup$lead$invoke("do the thing"))
 
   expect_identical(setup$lead$agents_interaction[[1L]]$agent_id, "id2")
+})
+
+test_that("after a reassignment, re-running the same prompt starts with the agent that did best", {
+  setup <- setup_lead()
+  suppressMessages(setup$lead$set_validation("Be accurate.", max_reassign = 1))
+  setup$chat$structured_queue <- list(verdict(0.2), verdict(0.9), verdict(0.9))
+  setup$chat$chat_queue <- list("id2")
+  suppressMessages(setup$lead$invoke("do the thing"))
+
+  expect_equal(setup$lead$plan[[1L]]$agent_id, "id2")
+  expect_equal(setup$lead$plan[[1L]]$agent_name, "agent2")
+
+  setup$chat$structured_queue <- list(verdict(0.9), verdict(0.9))
+  suppressMessages(setup$lead$invoke("do the thing"))
+  expect_length(setup$a1$prompts_received, 1L)
 })
 
 test_that("when every attempt fails, the best-scoring one is kept", {

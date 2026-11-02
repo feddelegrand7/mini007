@@ -320,6 +320,8 @@ normalize_record <- function(record, defaults) {
       record[[field]] <- defaults[[field]]
     }
   }
+  # A whole-number score such as 1 comes back from JSON as an integer.
+  if ("score" %in% names(record)) record$score <- as.numeric(record$score)
   record[names(defaults)]
 }
 

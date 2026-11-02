@@ -792,7 +792,9 @@ LeadAgent <- R6::R6Class(
     #' scored from 0 to 1 against `criteria` by the lead agent's LLM. A
     #' response scoring below `threshold` is handed to the next best agent,
     #' up to `max_reassign` times, and the best-scoring attempt is kept. The
-    #' score, feedback and every attempt are stored in `agents_interaction`.
+    #' score, feedback and every attempt are stored in `agents_interaction`,
+    #' and when another agent did best, `plan` is updated so that re-running
+    #' the same prompt starts with that agent.
     #'
     #' Combined with \code{$set_memory()}, this is how a `LeadAgent` learns:
     #' \itemize{
@@ -1228,6 +1230,13 @@ LeadAgent <- R6::R6Class(
         step <- private$.execute_step(i, step, selected_agent, prompt_to_consider, on_event)
         step$edited_by_hitl <- FALSE
         self$agents_interaction[[i]] <- step
+
+        # After a reassignment, point the plan at the agent that did best, so
+        # that re-running the same prompt starts with it.
+        agent_fields <- c("agent_id", "agent_name", "model_provider", "model_name")
+        if (i <= length(self$plan) && !identical(self$plan[[i]]$agent_id, step$agent_id)) {
+          self$plan[[i]][agent_fields] <- step[agent_fields]
+        }
 
         if (!is.null(self$hitl_steps) && i %in% self$hitl_steps) {
           if (identical(self$hitl_mode, "pause")) {

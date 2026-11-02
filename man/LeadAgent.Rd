@@ -1260,7 +1260,9 @@ Validate every delegated step of \code{$invoke()}. Each response is
 scored from 0 to 1 against `criteria` by the lead agent's LLM. A
 response scoring below `threshold` is handed to the next best agent,
 up to `max_reassign` times, and the best-scoring attempt is kept. The
-score, feedback and every attempt are stored in `agents_interaction`.
+score, feedback and every attempt are stored in `agents_interaction`,
+and when another agent did best, `plan` is updated so that re-running
+the same prompt starts with that agent.
 
 Combined with \code{$set_memory()}, this is how a `LeadAgent` learns:
 \itemize{
