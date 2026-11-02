@@ -1,0 +1,214 @@
+---
+title: "Learning"
+format:
+  html:
+    toc: true
+execute:
+  echo: true
+  warning: false
+  error: false
+---
+
+```{r}
+#| include: false
+if (requireNamespace("pkgload", quietly = TRUE)) pkgload::load_all()
+```
+
+```{r}
+library(mini007)
+
+retrieve_open_ai_credential <- function() {
+  Sys.getenv("OPENAI_API_KEY")
+}
+
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  credentials = retrieve_open_ai_credential,
+  echo = "none"
+)
+```
+
+By default, agents start every task from scratch: a `LeadAgent` picks an
+agent for a subtask from its instruction alone, and nothing that went well or
+badly in a previous run informs the next one. A `Memory` changes that. It
+stores what agents learned from past tasks and feeds it back into future
+ones, within a session or across sessions.
+
+How it works:
+
+- **Judge.** Every delegated step is scored from 0 to 1 against criteria you
+  set. A step that scores too low is handed to another agent, and the best
+  attempt is kept.
+- **Remember.** Each judged step is recorded as an *outcome* (who did what,
+  and how well), and the same judging call distills a short, reusable
+  *lesson* from it. Human edits at a HITL step are remembered too.
+- **Reuse.** When choosing an agent, the `LeadAgent` sees each agent's track
+  record. When delegating a task, the lessons most relevant to it are added to
+  the prompt.
+- **Persist.** Give the `Memory` a file path and all of this carries over to
+  the next R session.
+
+## A quality gate for LeadAgent
+
+`$set_validation()` makes the `LeadAgent` check every response it receives
+from a sub-agent. Responses scoring below `threshold` are reassigned to the
+next best agent, up to `max_reassign` times.
+
+```{r}
+researcher <- Agent$new(
+  name = "researcher",
+  instruction = "You answer factual questions in at most 2 lines, in English only.",
+  llm_object = openai_4_1_mini
+)
+
+translator <- Agent$new(
+  name = "translator",
+  instruction = "You translate English text to German. Return only the translation.",
+  llm_object = openai_4_1_mini
+)
+
+lead_agent <- LeadAgent$new(name = "Leader", llm_object = openai_4_1_mini)
+lead_agent$register_agents(c(researcher, translator))
+
+lead_agent$set_validation(
+  criteria = "Accurate, complete, and in the language the task asks for.",
+  threshold = 0.7,
+  max_reassign = 1
+)
+```
+
+Each step in `agents_interaction` now carries its `score`, its `feedback`, and
+every `attempts` made:
+
+```{r}
+answer <- lead_agent$invoke(
+  "Give the capital of Algeria and its population in one sentence, answered in German."
+)
+answer
+
+for (step in lead_agent$agents_interaction) {
+  cat(step$agent_name, "| score:", step$score, "|", step$feedback, "\n\n")
+}
+```
+
+While streaming, validation shows up as `"task_validated"` events, and a
+reassignment as a `"task_reassigned"` event (see the
+[Streaming](streaming.html) article).
+
+## Remembering outcomes and lessons
+
+Attach a `Memory` with `$set_memory()`. With validation on, the lead agent now
+also learns from every step it judges:
+
+```{r}
+memory_path <- tempfile(fileext = ".json")
+
+lead_agent$set_memory(Memory$new(path = memory_path))
+
+answer <- lead_agent$invoke(
+  "Name the longest river in Africa and its length in one sentence, answered in German."
+)
+answer
+```
+
+Each agent now has a track record. It is shown to the LLM whenever the lead
+agent chooses who should handle a subtask, so agents that did well on similar
+tasks are preferred and those that failed them are avoided:
+
+```{r}
+lead_agent$agent_track_record()
+```
+
+And each judged step left a lesson behind:
+
+```{r}
+for (lesson in lead_agent$memory$lessons) {
+  cat("-", lesson$agent_name, ":", lesson$lesson, "\n")
+}
+```
+
+The next time a task resembles one of these, the most relevant lessons
+(3 by default, set with `$set_memory(memory, k = )`) are placed in front of
+the task sent to the agent, under a "Lessons learned from previous similar
+tasks" heading. `$search()` shows which ones a task would get:
+
+```{r}
+lessons <- lead_agent$memory$search("Translate a short answer into German")
+for (lesson in lessons) cat("-", lesson$lesson, "\n")
+```
+
+Lessons are ranked by keyword relevance (BM25), which needs no extra
+dependency. To use another retriever, e.g. one based on embeddings, pass
+`search_fn = function(query, lessons, k)` to `Memory$new()`.
+
+Learning adds no LLM call to a validated step: the score, the feedback and the
+lesson come from the same request.
+
+## Learning from humans
+
+When a `Memory` is attached, the decisions made at an HITL step (see
+`$set_hitl()`) are recorded as outcomes as well: accepting a response counts
+as a success, editing or stopping it as a failure. An edit is the most
+informative signal there is, so it is also distilled into a lesson that
+describes what the human changed.
+
+## Across sessions
+
+A `Memory` created with a `path` is saved after every change and loaded again
+when you create it with the same path, so a new session starts with
+everything learned before:
+
+```{r}
+memory <- Memory$new(path = memory_path)
+cat(length(memory$lessons), "lessons and", length(memory$outcomes), "outcomes reloaded\n")
+```
+
+The file is plain JSON, so lessons can be read, edited, or removed by hand.
+`$max_lessons` and `$max_outcomes` (500 and 1000 by default) cap its size by
+dropping the oldest records first, and `$clear()` empties it.
+
+Several agents can share the same `Memory` object, and a clone made with
+`$clone_agent()` keeps using the memory of its original.
+
+## A single Agent
+
+An `Agent` can learn on its own too. `$learn()` takes the result of
+`$validate_response()`, records the outcome and stores a lesson; from then
+on, `$invoke()` adds the relevant lessons in front of each prompt.
+
+```{r}
+fact_checker <- Agent$new(
+  name = "fact_checker",
+  instruction = "You are a factual assistant. Answer in one sentence.",
+  llm_object = openai_4_1_mini
+)
+
+fact_checker$set_memory(Memory$new())
+
+prompt <- "When did Algeria gain its independence?"
+response <- fact_checker$invoke(prompt)
+
+validation <- fact_checker$validate_response(
+  prompt = prompt,
+  response = response,
+  validation_criteria = "Gives the exact date (day, month and year)."
+)
+
+fact_checker$learn(validation)
+
+fact_checker$memory$lessons[[1]]$lesson
+```
+
+## Reference
+
+| Method | Description |
+|---|---|
+| `Memory$new(path, max_lessons, max_outcomes, search_fn)` | Create a memory, loaded from `path` if it exists |
+| `$add_lesson()` / `$add_outcome()` | Store a lesson or an outcome by hand |
+| `$search(query, k, agent_name)` | The lessons most relevant to `query` |
+| `$track_record(agent_names)` | Outcomes summarised per agent |
+| `$save()` / `$load()` / `$clear()` | Persistence |
+| `Agent$set_memory(memory, k)` | Attach a memory to an Agent or LeadAgent |
+| `Agent$learn(validation)` | Learn from a `$validate_response()` result |
+| `LeadAgent$set_validation(criteria, threshold, max_reassign)` | Judge, reassign and learn from every delegated step |
+| `LeadAgent$agent_track_record()` | Track record of every registered agent |

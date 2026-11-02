@@ -315,6 +315,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="menu-text">Streaming</span></a>
   </li>  
   <li class="nav-item">
+    <a class="nav-link" href="./learning.html"> 
+<span class="menu-text">Learning</span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link" href="./testing.html"> 
 <span class="menu-text">Testing</span></a>
   </li>  
@@ -398,6 +402,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>💰 <strong>Budget control</strong>: set a USD spending cap on any agent with a configurable policy (<code>abort</code>, <code>warn</code>, or <code>ask</code>).</li>
 <li>🧑 <strong>Human In The Loop</strong>: pause at specific steps so a human can review, edit, or stop the response before it continues.</li>
 <li>📡 <strong>Streaming</strong>: watch tokens, tool calls, and workflow progress arrive in real time with <code>stream = TRUE</code> or an <code>on_event</code> callback.</li>
+<li>🧠 <strong>Learning</strong>: validate every delegated step, reassign the ones that fall short, and keep track records and lessons in a <code>Memory</code> that later tasks (and sessions) benefit from.</li>
 <li>🌐 <strong>Model-agnostic</strong>: swap the underlying LLM without changing any orchestration logic.</li>
 </ul>
 </section>
@@ -676,6 +681,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong>Tools</strong> — building and registering custom tools.</li>
 <li><strong>Workflow</strong> — sequential pipelines, conditional routing, caching, and nesting.</li>
 <li><strong>Streaming</strong> — real-time tokens, tool calls, and progress events for agents, workflows, and lead agents.</li>
+<li><strong>Learning</strong> — validation, reassignment, track records, and lessons that carry over between sessions.</li>
 <li><strong>Testing</strong> — utilities for writing tests against LLM responses.</li>
 </ul>
 
