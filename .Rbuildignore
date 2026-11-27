@@ -14,6 +14,7 @@
 ^agents\.qmd$
 ^leadagent\.qmd$
 ^react\.qmd$
+^router\.qmd$
 ^\.quarto$
 ^styles\.css$
 ^testing\.qmd$

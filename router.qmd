@@ -1,0 +1,229 @@
+---
+title: "RouterAgent"
+format:
+  html:
+    toc: true
+execute:
+  echo: true
+  warning: false
+  error: false
+---
+
+A `RouterAgent` reads a request, decides which of its agents should handle
+it, and hands the request to that agent, unchanged. It works like this:
+
+1. **Route**: one LLM call classifies the request and picks a route.
+2. **Run**: the agent behind that route answers the request.
+
+Unlike a [LeadAgent](leadagent.qmd), the router never splits the request
+into subtasks: its LLM only routes, and each route is a specialist you
+defined in advance. Each specialist gets a focused prompt and its own tools,
+which usually works better than one giant prompt that tries to cover
+everything.
+
+```{r}
+library(mini007)
+
+retrieve_open_ai_credential <- function() {
+  Sys.getenv("OPENAI_API_KEY")
+}
+
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  credentials = retrieve_open_ai_credential,
+  echo = "none"
+)
+```
+
+## A career help desk
+
+People ask three kinds of questions: which **career** fits them, which
+**training** gets them there, and how to pay for it (**funding**). We build
+one route for each.
+
+### The routes
+
+The career route only needs a well-written prompt, so it is a plain `Agent`.
+The training and funding routes need to look things up, so they are
+[ReActAgents](react.qmd) with a tool each. Small made-up tables stand in for
+real services, so the example runs anywhere:
+
+```{r}
+programs <- data.frame(
+  career = c("Nurse", "Nurse", "UX Designer", "Electrician"),
+  program = c("BSN Nursing", "LPN Certificate", "UX Design Bootcamp", "Electrical Trade School"),
+  type = c("college", "trade_school", "bootcamp", "trade_school"),
+  months = c(48, 12, 4, 18),
+  cost_usd = c(60000, 15000, 14000, 20000)
+)
+
+funding <- data.frame(
+  name = c("Pell Grant", "Nursing Scholarship Fund", "Federal Student Loan", "Apprenticeship Wage"),
+  kind = c("grant", "scholarship", "loan", "employer"),
+  covers = c("college", "college trade_school", "college trade_school", "trade_school"),
+  amount = c("up to $7,395 per year", "$5,000", "up to $5,500 per year", "paid while training")
+)
+
+find_programs <- ellmer::tool(
+  function(career) {
+    programs[tolower(programs$career) == tolower(career), c("program", "type", "months", "cost_usd")]
+  },
+  name = "find_programs",
+  description = "Find training programs for one career, using its title.",
+  arguments = list(career = ellmer::type_string("Career title, e.g. 'Nurse'."))
+)
+
+find_funding <- ellmer::tool(
+  function(program_type) {
+    funding[grepl(program_type, funding$covers), c("name", "kind", "amount")]
+  },
+  name = "find_funding",
+  description = "Find grants, scholarships and loans for one type of program.",
+  arguments = list(
+    program_type = ellmer::type_enum(c("college", "trade_school", "bootcamp"), "Program type.")
+  )
+)
+```
+
+```{r}
+career <- Agent$new(
+  name = "career",
+  instruction = paste(
+    "You recommend careers that fit a person's personality, interests and goals.",
+    "Suggest at most three careers. Answer in under 80 words."
+  ),
+  llm_object = openai_4_1_mini
+)
+
+training <- ReActAgent$new(
+  name = "training",
+  instruction = paste(
+    "You recommend trade schools, colleges, bootcamps and courses for a given career.",
+    "Answer in under 80 words."
+  ),
+  llm_object = openai_4_1_mini,
+  tools = list(find_programs)
+)
+
+funding_advisor <- ReActAgent$new(
+  name = "funding",
+  instruction = paste(
+    "You explain scholarships, loans and grants that can pay for training.",
+    "Answer in under 80 words."
+  ),
+  llm_object = openai_4_1_mini,
+  tools = list(find_funding)
+)
+```
+
+### The router
+
+The router needs its own LLM and the agents to route to. Each agent's name
+becomes a route label, and its instruction tells the router when to choose it:
+
+```{r}
+router <- RouterAgent$new(name = "router", llm_object = openai_4_1_mini)
+
+router$register_agents(list(career, training, funding_advisor))
+
+router$route_names()
+```
+
+## Routing requests
+
+Each request goes to exactly one route:
+
+```{r}
+answer <- router$invoke("I'm creative and love helping people. What careers would suit me?")
+cat(answer)
+```
+
+`$last_route()` shows where the request went, and why:
+
+```{r}
+route <- router$last_route()
+route$agent_name
+route$reason
+```
+
+```{r}
+answer <- router$invoke("Which programs can train me to become a nurse?")
+cat(answer)
+router$last_route()$agent_name
+```
+
+```{r}
+answer <- router$invoke("How can I pay for nursing school?")
+cat(answer)
+router$last_route()$agent_name
+```
+
+The router remembers earlier requests, so a short follow-up is routed in
+context:
+
+```{r}
+answer <- router$invoke("Are there any loans for it?")
+cat(answer)
+router$last_route()$agent_name
+```
+
+Every decision is kept in `$routing_history`:
+
+```{r}
+do.call(rbind, lapply(router$routing_history, function(h) {
+  data.frame(request = h$prompt, route = h$agent_name)
+}))
+```
+
+## Choosing a route without running it
+
+`$route()` returns the decision only, without calling the agent. This is
+useful to check how requests would be routed:
+
+```{r}
+decision <- router$route("Is a bootcamp enough to become a UX designer?")
+decision$agent_name
+decision$reason
+```
+
+## Requests that fit no route
+
+When no route fits, the router stops with an error of class
+`mini007_no_route`:
+
+```{r}
+result <- tryCatch(
+  router$invoke("What is the capital of France?"),
+  mini007_no_route = function(e) "No route for this request."
+)
+result
+```
+
+To answer those requests anyway, register a general agent and make it the
+fallback. Its `descriptions` entry tells the router what it covers:
+
+```{r}
+general <- Agent$new(
+  name = "general",
+  instruction = "You are a friendly assistant. Answer in one sentence.",
+  llm_object = openai_4_1_mini
+)
+
+router$register_agents(
+  general,
+  descriptions = "Anything that is not about careers, training or funding."
+)
+router$set_fallback("general")
+
+answer <- router$invoke("What is the capital of France?")
+cat(answer)
+router$last_route()$agent_name
+```
+
+## Using it with other mini007 classes
+
+A `RouterAgent` is an `Agent`: it supports streaming (a `"route_selected"`
+event comes first, then the chosen agent's events), budgets and cloning, and
+can be registered with a [LeadAgent](leadagent.qmd) or used as a
+[Workflow](workflow.qmd) station. Any agent can be a route, including a
+[ReActAgent](react.qmd) or a Workflow wrapped with `$as_agent()`.

@@ -272,6 +272,10 @@ ul.task-list li input[type="checkbox"] {
 <span class="menu-text">ReActAgent</span></a>
   </li>  
   <li class="nav-item">
+    <a class="nav-link" href="./router.html"> 
+<span class="menu-text">RouterAgent</span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link" href="./tools.html"> 
 <span class="menu-text">Tools</span></a>
   </li>  
@@ -339,6 +343,16 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="mini007-development-version" class="level1">
 <h1>mini007 (development version)</h1>
+<section id="routing" class="level4">
+<h4 class="anchored" data-anchor-id="routing">Routing</h4>
+<ul>
+<li>New <code>RouterAgent</code> class: it classifies each request and sends it, whole, to the one registered agent best suited to it. Unlike <code>LeadAgent</code>, it never splits the request: its LLM only picks the route.</li>
+<li>Agents are registered with <code>$register_agents(agents, descriptions = )</code>. Each agent’s name is a route label; its description defaults to the agent’s instruction (its role, for a <code>ReActAgent</code>).</li>
+<li>The route is chosen with one structured LLM call, limited to the registered names, which also returns a short reason. <code>$route()</code> returns the decision without running the agent, and <code>$routing_history</code> and <code>$last_route()</code> keep every decision.</li>
+<li>A request no route fits goes to the agent set with <code>$set_fallback()</code>, or is an error of class <code>mini007_no_route</code> when there is none.</li>
+<li>While streaming, <code>RouterAgent$invoke()</code> emits <code>"route_selected"</code>, then the chosen agent’s events (tagged with <code>agent</code>), then <code>"router_output"</code>.</li>
+</ul>
+</section>
 <section id="react-agents" class="level4">
 <h4 class="anchored" data-anchor-id="react-agents">ReAct agents</h4>
 <ul>

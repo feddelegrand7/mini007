@@ -4,9 +4,9 @@
 \alias{mini007_event}
 \title{Streaming Events}
 \description{
-`Agent$invoke()`, `Workflow$run()` / `$resume()`, `WorkflowAgent$invoke()`
-and `LeadAgent$invoke()` / `$resume()` accept \code{stream = TRUE} and an
-optional \code{on_event} callback. While streaming, every unit of progress
+`Agent$invoke()`, `Workflow$run()` / `$resume()`, `WorkflowAgent$invoke()`,
+`LeadAgent$invoke()` / `$resume()` and `RouterAgent$invoke()` accept
+\code{stream = TRUE} and an optional \code{on_event} callback. While streaming, every unit of progress
 is delivered to the callback as a `mini007_event` - a list with a `type`
 discriminator - as soon as it happens, instead of only returning the final
 result at the end. The return value of the call is unchanged: the same
@@ -57,6 +57,8 @@ way for the reasoning of reasoning models.
   \item{LeadAgent}{`"plan_created"`, `"task_started"`, `"task_completed"`,
     `"task_validated"` and `"task_reassigned"` (with
     \code{$set_validation()}), `"hitl_request"`, `"lead_output"`.}
+  \item{RouterAgent}{`"route_selected"`, then the chosen agent's events
+    (tagged with `agent`), then `"router_output"`.}
 }
 }
 

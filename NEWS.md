@@ -1,5 +1,22 @@
 # mini007 (development version)
 
+#### Routing
+
+- New `RouterAgent` class: it classifies each request and sends it, whole,
+  to the one registered agent best suited to it. Unlike `LeadAgent`, it
+  never splits the request: its LLM only picks the route.
+- Agents are registered with `$register_agents(agents, descriptions = )`.
+  Each agent's name is a route label; its description defaults to the
+  agent's instruction (its role, for a `ReActAgent`).
+- The route is chosen with one structured LLM call, limited to the
+  registered names, which also returns a short reason. `$route()` returns
+  the decision without running the agent, and `$routing_history` and
+  `$last_route()` keep every decision.
+- A request no route fits goes to the agent set with `$set_fallback()`, or
+  is an error of class `mini007_no_route` when there is none.
+- While streaming, `RouterAgent$invoke()` emits `"route_selected"`, then the
+  chosen agent's events (tagged with `agent`), then `"router_output"`.
+
 #### ReAct agents
 
 - New `ReActAgent` class: an `Agent` that answers by looping through Think
