@@ -1,6 +1,9 @@
 project:
   type: website
   output-dir: docs
+  resources:
+    - chatbot.js
+    - chatbot.css
 
 website:
   title: "mini007"
@@ -35,6 +38,7 @@ format:
     toc: true
     code-fold: false
     css: styles.css
+    include-after-body: _chatbot.html
     theme:
       light: cosmo
       dark: darkly

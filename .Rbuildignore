@@ -22,3 +22,7 @@
 ^workflow\.qmd$
 ^streaming\.qmd$
 ^learning\.qmd$
+^chatbot$
+^chatbot\.js$
+^chatbot\.css$
+^_chatbot\.html$

@@ -1,0 +1,19 @@
+name = "mini007-chat"
+main = "src/index.js"
+compatibility_date = "2026-11-01"
+
+[vars]
+# Sites allowed to call the bot from a browser (comma-separated).
+ALLOWED_ORIGINS = "https://feddelegrand7.github.io,http://localhost:8765"
+
+# At most 8 questions per minute from one IP address.
+[[ratelimits]]
+name = "CHAT_LIMITER"
+namespace_id = "1001"
+
+  [ratelimits.simple]
+  limit = 8
+  period = 60
+
+# The OpenAI key is a secret, set once with:
+#   npx wrangler secret put OPENAI_API_KEY

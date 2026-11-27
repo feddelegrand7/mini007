@@ -1,0 +1,366 @@
+/* mini007 docs chatbot: floating button and chat window.
+   Uses the colour variables from styles.css, so it follows light/dark mode. */
+
+.m7c-launcher {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 1080;
+  width: 58px;
+  height: 58px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #fff;
+  background: linear-gradient(135deg, var(--m7-accent, #4f46e5), var(--m7-accent-2, #7c3aed));
+  box-shadow: 0 10px 30px rgba(79, 70, 229, 0.35), 0 2px 6px rgba(15, 23, 42, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.m7c-launcher:hover {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 14px 36px rgba(79, 70, 229, 0.45), 0 2px 6px rgba(15, 23, 42, 0.15);
+}
+
+.m7c-launcher:focus-visible,
+.m7c-panel button:focus-visible,
+.m7c-panel textarea:focus-visible {
+  outline: 3px solid var(--m7-accent-border, #c7d2fe);
+  outline-offset: 2px;
+}
+
+.m7c-launcher svg {
+  width: 26px;
+  height: 26px;
+  transition: transform 0.25s ease, opacity 0.2s ease;
+}
+
+.m7c-launcher .m7c-icon-close {
+  position: absolute;
+  opacity: 0;
+  transform: rotate(-90deg);
+}
+
+.m7c-open .m7c-launcher .m7c-icon-chat {
+  opacity: 0;
+  transform: rotate(90deg);
+}
+
+.m7c-open .m7c-launcher .m7c-icon-close {
+  opacity: 1;
+  transform: rotate(0);
+}
+
+/* ---- Window ------------------------------------------------------------- */
+
+.m7c-panel {
+  position: fixed;
+  right: 24px;
+  bottom: 96px;
+  z-index: 1080;
+  width: 380px;
+  height: min(560px, calc(100vh - 130px));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid var(--m7-border, #e2e8f0);
+  background: var(--m7-bg, #fff);
+  color: var(--m7-text, #1e293b);
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 14.5px;
+  line-height: 1.55;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18), 0 4px 14px rgba(15, 23, 42, 0.08);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px) scale(0.98);
+  transform-origin: bottom right;
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0.2s;
+}
+
+.m7c-open .m7c-panel {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.m7c-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--m7-accent, #4f46e5), var(--m7-accent-2, #7c3aed));
+}
+
+.m7c-avatar {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.18);
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: -0.02em;
+}
+
+.m7c-title {
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+.m7c-subtitle {
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+.m7c-header-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 4px;
+}
+
+.m7c-icon-button {
+  border: none;
+  background: transparent;
+  color: #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.85;
+}
+
+.m7c-icon-button:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.m7c-icon-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ---- Messages ----------------------------------------------------------- */
+
+.m7c-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--m7-surface, #f8fafc);
+  scroll-behavior: smooth;
+}
+
+.m7c-msg {
+  max-width: 85%;
+  padding: 9px 13px;
+  border-radius: 14px;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.m7c-msg-bot {
+  align-self: flex-start;
+  background: var(--m7-bg, #fff);
+  border: 1px solid var(--m7-border, #e2e8f0);
+  border-bottom-left-radius: 4px;
+}
+
+.m7c-msg-user {
+  align-self: flex-end;
+  color: #fff;
+  background: linear-gradient(135deg, var(--m7-accent, #4f46e5), var(--m7-accent-2, #7c3aed));
+  border-bottom-right-radius: 4px;
+}
+
+.m7c-msg-error {
+  align-self: flex-start;
+  color: var(--m7-warning, #b45309);
+  background: var(--m7-warning-soft, #fffbeb);
+  border: 1px solid var(--m7-warning, #b45309);
+  border-bottom-left-radius: 4px;
+}
+
+.m7c-msg code {
+  font-family: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  font-size: 0.85em;
+  padding: 0.05em 0.35em;
+  border-radius: 5px;
+  color: var(--m7-inline-code, #4338ca);
+  background: var(--m7-accent-soft, #eef2ff);
+}
+
+.m7c-msg-user code {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.m7c-msg a {
+  color: var(--m7-accent, #4f46e5);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid var(--m7-accent-border, #c7d2fe);
+}
+
+.m7c-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.m7c-chip {
+  border: 1px solid var(--m7-accent-border, #c7d2fe);
+  background: var(--m7-bg, #fff);
+  color: var(--m7-accent, #4f46e5);
+  border-radius: 999px;
+  padding: 5px 11px;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.15s ease;
+}
+
+.m7c-chip:hover {
+  background: var(--m7-accent-soft, #eef2ff);
+}
+
+.m7c-typing {
+  align-self: flex-start;
+  display: flex;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border-bottom-left-radius: 4px;
+  background: var(--m7-bg, #fff);
+  border: 1px solid var(--m7-border, #e2e8f0);
+}
+
+.m7c-typing span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--m7-accent, #4f46e5);
+  opacity: 0.4;
+  animation: m7c-blink 1.2s infinite ease-in-out;
+}
+
+.m7c-typing span:nth-child(2) { animation-delay: 0.2s; }
+.m7c-typing span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes m7c-blink {
+  0%, 80%, 100% { opacity: 0.25; transform: translateY(0); }
+  40% { opacity: 1; transform: translateY(-3px); }
+}
+
+/* ---- Input -------------------------------------------------------------- */
+
+.m7c-form {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid var(--m7-border, #e2e8f0);
+  background: var(--m7-bg, #fff);
+}
+
+.m7c-input {
+  flex: 1;
+  resize: none;
+  max-height: 110px;
+  min-height: 40px;
+  padding: 9px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--m7-border, #e2e8f0);
+  background: var(--m7-surface, #f8fafc);
+  color: var(--m7-text, #1e293b);
+  font: inherit;
+  line-height: 1.4;
+}
+
+.m7c-input::placeholder {
+  color: var(--m7-text-muted, #64748b);
+}
+
+.m7c-send {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  color: #fff;
+  background: linear-gradient(135deg, var(--m7-accent, #4f46e5), var(--m7-accent-2, #7c3aed));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.m7c-send:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.m7c-send svg {
+  width: 18px;
+  height: 18px;
+}
+
+.m7c-footnote {
+  padding: 0 12px 10px;
+  font-size: 11px;
+  color: var(--m7-text-muted, #64748b);
+  background: var(--m7-bg, #fff);
+  text-align: center;
+}
+
+/* ---- Dark mode: keep white text readable on the gradients ------------- */
+
+body.quarto-dark .m7c-launcher,
+body.quarto-dark .m7c-header,
+body.quarto-dark .m7c-msg-user,
+body.quarto-dark .m7c-send {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+}
+
+/* ---- Small screens ------------------------------------------------------ */
+
+@media (max-width: 520px) {
+  .m7c-launcher {
+    right: 16px;
+    bottom: 16px;
+  }
+  .m7c-panel {
+    right: 8px;
+    left: 8px;
+    bottom: 84px;
+    width: auto;
+    height: min(560px, calc(100vh - 100px));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .m7c-launcher,
+  .m7c-panel,
+  .m7c-launcher svg,
+  .m7c-typing span {
+    transition: none;
+    animation: none;
+  }
+}
