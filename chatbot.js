@@ -12,7 +12,7 @@
   var MAX_QUESTION_CHARS = 600;
   var MAX_HISTORY_SENT = 6;
   var WELCOME =
-    "Hi! I can answer questions about mini007: its agents, workflows, tools and examples.";
+    "Hi, I'm Robert! Ask me anything about mini007: its agents, workflows, tools and examples.";
   var SUGGESTIONS = [
     "What is a ReActAgent?",
     "How do I set a budget on an agent?",
@@ -22,9 +22,10 @@
   if (window.__mini007Chat) return;
   window.__mini007Chat = true;
 
+  // Robert: the assistant's face, with sunglasses and a bow tie.
+  var ROBERT = '<svg class="m7c-robert" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="m7c-lens" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#334155"/><stop offset="1" stop-color="#020617"/></linearGradient></defs><circle cx="11.6" cy="34" r="3.6" fill="#F2B98E"/><circle cx="52.4" cy="34" r="3.6" fill="#F2B98E"/><circle cx="32" cy="32" r="20.5" fill="#FFD7B5"/><path d="M12.2 27.5 C11.4 15 20.8 7.6 33 7.6 C45.2 7.6 54 15.2 52.2 27 C48.6 19.6 42 16.2 34.4 16.6 C29 16.9 26.6 14.6 25.4 13.4 C22.6 17.6 17.2 21 12.2 27.5 Z" fill="#1F2937"/><path d="M34 9.4 C40 10.2 44.6 13.2 46.4 17" stroke="#475569" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M12.6 29.4 H51.4" stroke="#0F172A" stroke-width="2.4" stroke-linecap="round"/><rect x="14.2" y="27.4" width="15.6" height="10.6" rx="4.8" fill="url(#m7c-lens)"/><rect x="34.2" y="27.4" width="15.6" height="10.6" rx="4.8" fill="url(#m7c-lens)"/><path d="M17.6 31.4 L21.8 29.4 M37.6 31.4 L41.8 29.4" stroke="#fff" stroke-opacity=".8" stroke-width="1.7" stroke-linecap="round"/><path d="M26.2 44.2 Q32.6 48.6 38.6 43.4" stroke="#7C2D12" stroke-width="2.3" fill="none" stroke-linecap="round"/><path d="M23.4 55 L31 58.6 L23.4 62.2 Z M40.6 55 L33 58.6 L40.6 62.2 Z" fill="#0F172A"/><rect x="29.8" y="56.6" width="4.4" height="4" rx="1.4" fill="#0F172A"/></svg>';
+
   var ICONS = {
-    chat:
-      '<svg class="m7c-icon-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01"/></svg>',
     close:
       '<svg class="m7c-icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>',
     send:
@@ -49,13 +50,13 @@
   var root = document.createElement("div");
   root.className = "m7c-root";
   root.innerHTML =
-    '<button type="button" class="m7c-launcher" aria-label="Open the mini007 assistant" aria-expanded="false" aria-controls="m7c-panel">' +
-    ICONS.chat + ICONS.close +
+    '<button type="button" class="m7c-launcher" aria-label="Chat with Robert, the mini007 assistant" aria-expanded="false" aria-controls="m7c-panel">' +
+    '<span class="m7c-launcher-face">' + ROBERT + "</span>" + ICONS.close +
     "</button>" +
-    '<section class="m7c-panel" id="m7c-panel" role="dialog" aria-label="mini007 assistant">' +
+    '<section class="m7c-panel" id="m7c-panel" role="dialog" aria-label="Robert, the mini007 assistant">' +
     '<header class="m7c-header">' +
-    '<div class="m7c-avatar" aria-hidden="true">007</div>' +
-    '<div><div class="m7c-title">mini007 assistant</div><div class="m7c-subtitle">Answers from the documentation</div></div>' +
+    '<div class="m7c-avatar">' + ROBERT + "</div>" +
+    '<div><div class="m7c-title">Robert</div><div class="m7c-subtitle">mini007 assistant · answers from the docs</div></div>' +
     '<div class="m7c-header-actions">' +
     '<button type="button" class="m7c-icon-button m7c-reset" aria-label="Start a new conversation" title="New conversation">' + ICONS.reset + "</button>" +
     "</div>" +
@@ -85,7 +86,7 @@
   function setOpen(open) {
     root.classList.toggle("m7c-open", open);
     launcher.setAttribute("aria-expanded", String(open));
-    launcher.setAttribute("aria-label", open ? "Close the mini007 assistant" : "Open the mini007 assistant");
+    launcher.setAttribute("aria-label", open ? "Close the chat with Robert" : "Chat with Robert, the mini007 assistant");
     if (open) {
       setTimeout(function () { input.focus(); }, 150);
       scrollToEnd();
@@ -139,10 +140,12 @@
   function ask() {
     busy = true;
     send.disabled = true;
-    var typing = document.createElement("div");
-    typing.className = "m7c-typing";
-    typing.setAttribute("aria-label", "The assistant is typing");
-    typing.innerHTML = "<span></span><span></span><span></span>";
+    var typing = botRow();
+    var dots = document.createElement("div");
+    dots.className = "m7c-typing";
+    dots.setAttribute("aria-label", "Robert is typing");
+    dots.innerHTML = "<span></span><span></span><span></span>";
+    typing.appendChild(dots);
     list.appendChild(typing);
     scrollToEnd();
 
@@ -213,19 +216,44 @@
     } else {
       bubble.textContent = content;
     }
-    list.appendChild(bubble);
+    if (role === "user") {
+      list.appendChild(bubble);
+    } else {
+      var row = botRow();
+      row.appendChild(bubble);
+      list.appendChild(row);
+    }
   }
 
-  // Minimal, safe Markdown: the text is escaped first, then `code`,
-  // **bold** and links to this site are turned back into HTML.
+  // A row for Robert's messages: his face, then the bubble.
+  function botRow() {
+    var row = document.createElement("div");
+    row.className = "m7c-row";
+    var face = document.createElement("div");
+    face.className = "m7c-row-avatar";
+    face.innerHTML = ROBERT;
+    row.appendChild(face);
+    return row;
+  }
+
+  // Minimal, safe Markdown. Everything is escaped first; then fenced code
+  // blocks, `inline code`, **bold**, line breaks and links to this site are
+  // turned back into HTML.
   function formatAnswer(text) {
-    var html = escapeHtml(text);
-    html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
-    html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-    html = html.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, function (match, label, url) {
-      return isSafeUrl(url) ? '<a href="' + url + '">' + label + "</a>" : label;
-    });
-    return html;
+    var parts = String(text).split(/```[a-zA-Z]*\n?([\s\S]*?)```/);
+    return parts.map(function (part, i) {
+      if (i % 2 === 1) {
+        return '<pre class="m7c-code"><code>' + escapeHtml(part.replace(/\n+$/, "")) + "</code></pre>";
+      }
+      var html = escapeHtml(part.trim());
+      if (!html) return "";
+      html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+      html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+      html = html.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, function (match, label, url) {
+        return isSafeUrl(url) ? '<a href="' + url + '">' + label + "</a>" : label;
+      });
+      return "<p>" + html.replace(/\n{2,}/g, "</p><p>").replace(/\n/g, "<br>") + "</p>";
+    }).join("");
   }
 
   function isSafeUrl(url) {

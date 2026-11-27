@@ -232,6 +232,12 @@ main h2 code, main h3 code, main h4 code {
    Inline code
    -------------------------------------------------------------------------- */
 
+code,
+pre {
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "calt" 0;
+}
+
 code {
   font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.86em;

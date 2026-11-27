@@ -2,6 +2,7 @@
    Uses the colour variables from styles.css, so it follows light/dark mode. */
 
 .m7c-launcher {
+  overflow: hidden;
   position: fixed;
   right: 24px;
   bottom: 24px;
@@ -32,10 +33,27 @@
   outline-offset: 2px;
 }
 
+.m7c-launcher-face {
+  width: 46px;
+  height: 46px;
+  margin-top: 6px;
+  display: flex;
+  transition: transform 0.25s ease, opacity 0.2s ease;
+}
+
 .m7c-launcher svg {
+  transition: transform 0.25s ease, opacity 0.2s ease;
+}
+
+.m7c-launcher .m7c-icon-close {
   width: 26px;
   height: 26px;
-  transition: transform 0.25s ease, opacity 0.2s ease;
+}
+
+.m7c-robert {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .m7c-launcher .m7c-icon-close {
@@ -44,7 +62,7 @@
   transform: rotate(-90deg);
 }
 
-.m7c-open .m7c-launcher .m7c-icon-chat {
+.m7c-open .m7c-launcher .m7c-launcher-face {
   opacity: 0;
   transform: rotate(90deg);
 }
@@ -99,16 +117,15 @@
 
 .m7c-avatar {
   flex: none;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.18);
-  font-weight: 800;
-  font-size: 13px;
-  letter-spacing: -0.02em;
+  background: rgba(255, 255, 255, 0.22);
+  overflow: hidden;
+  padding: 4px 2px 0;
 }
 
 .m7c-title {
@@ -165,11 +182,51 @@
   scroll-behavior: smooth;
 }
 
+.m7c-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: 92%;
+  align-self: flex-start;
+}
+
+.m7c-row-avatar {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  overflow: hidden;
+  padding: 3px 1px 0;
+  background: var(--m7-accent-soft, #eef2ff);
+  border: 1px solid var(--m7-accent-border, #c7d2fe);
+}
+
 .m7c-msg {
   max-width: 85%;
-  padding: 9px 13px;
+  min-width: 0;
+  padding: 10px 14px;
   border-radius: 14px;
-  overflow-wrap: anywhere;
+  font-size: 14px;
+  line-height: 1.55;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
+.m7c-row .m7c-msg {
+  max-width: 100%;
+}
+
+.m7c-msg p {
+  margin: 0;
+}
+
+.m7c-msg p + p,
+.m7c-msg p + .m7c-code,
+.m7c-msg .m7c-code + p {
+  margin-top: 8px;
+}
+
+.m7c-msg-user {
   white-space: pre-wrap;
 }
 
@@ -197,11 +254,37 @@
 
 .m7c-msg code {
   font-family: "JetBrains Mono", ui-monospace, Menlo, monospace;
-  font-size: 0.85em;
+  font-size: 0.86em;
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "calt" 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
   padding: 0.05em 0.35em;
   border-radius: 5px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
   color: var(--m7-inline-code, #4338ca);
   background: var(--m7-accent-soft, #eef2ff);
+}
+
+.m7c-code {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  overflow-x: auto;
+}
+
+.m7c-msg .m7c-code code {
+  display: block;
+  padding: 0;
+  color: #e2e8f0;
+  background: transparent;
+  font-size: 12.5px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .m7c-msg-user code {
@@ -242,7 +325,6 @@
 }
 
 .m7c-typing {
-  align-self: flex-start;
   display: flex;
   gap: 4px;
   padding: 12px 14px;
