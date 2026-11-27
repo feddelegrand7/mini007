@@ -1,0 +1,534 @@
+/* ==========================================================================
+   mini007 site theme
+   Layered on top of Quarto's cosmo (light) and darkly (dark) Bootstrap
+   themes. Colours live in the custom properties below; the dark values
+   apply when Quarto's dark mode is on (body.quarto-dark).
+   ========================================================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+:root,
+body.quarto-light {
+  --m7-bg: #ffffff;
+  --m7-surface: #f8fafc;
+  --m7-surface-2: #f1f5f9;
+  --m7-border: #e2e8f0;
+  --m7-text: #1e293b;
+  --m7-text-soft: #475569;
+  --m7-text-muted: #64748b;
+  --m7-heading: #0f172a;
+  --m7-accent: #4f46e5;
+  --m7-accent-2: #7c3aed;
+  --m7-accent-soft: #eef2ff;
+  --m7-accent-border: #c7d2fe;
+  --m7-inline-code: #4338ca;
+  --m7-output-bg: #ffffff;
+  --m7-warning: #b45309;
+  --m7-warning-soft: #fffbeb;
+  --m7-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 16px rgba(15, 23, 42, 0.04);
+  --m7-nav-bg: rgba(255, 255, 255, 0.82);
+}
+
+body.quarto-dark {
+  --m7-bg: #0b1020;
+  --m7-surface: #111827;
+  --m7-surface-2: #1a2234;
+  --m7-border: #243049;
+  --m7-text: #d5dbe7;
+  --m7-text-soft: #aab4c8;
+  --m7-text-muted: #8591a8;
+  --m7-heading: #f1f5f9;
+  --m7-accent: #818cf8;
+  --m7-accent-2: #c084fc;
+  --m7-accent-soft: rgba(129, 140, 248, 0.12);
+  --m7-accent-border: rgba(129, 140, 248, 0.35);
+  --m7-inline-code: #c7d2fe;
+  --m7-output-bg: #0e1526;
+  --m7-warning: #fbbf24;
+  --m7-warning-soft: rgba(251, 191, 36, 0.08);
+  --m7-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.25);
+  --m7-nav-bg: rgba(11, 16, 32, 0.82);
+}
+
+/* --------------------------------------------------------------------------
+   Base typography
+   -------------------------------------------------------------------------- */
+
+body {
+  background-color: var(--m7-bg);
+  color: var(--m7-text);
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 16.5px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+main p,
+main li {
+  color: var(--m7-text);
+}
+
+main li {
+  margin-bottom: 0.35rem;
+}
+
+main li::marker {
+  color: var(--m7-accent);
+  font-weight: 600;
+}
+
+strong {
+  color: var(--m7-heading);
+  font-weight: 650;
+}
+
+a {
+  color: var(--m7-accent);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+main a:not(.nav-link):not(.anchorjs-link):not(.code-copy-button) {
+  border-bottom: 1px solid var(--m7-accent-border);
+}
+
+main a:not(.nav-link):not(.anchorjs-link):hover {
+  color: var(--m7-accent-2);
+  border-bottom-color: var(--m7-accent-2);
+}
+
+::selection {
+  background: var(--m7-accent-border);
+}
+
+/* --------------------------------------------------------------------------
+   Headings
+   -------------------------------------------------------------------------- */
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  font-family: "Inter", system-ui, sans-serif;
+  color: var(--m7-heading);
+  letter-spacing: -0.02em;
+}
+
+#title-block-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--m7-border);
+}
+
+#title-block-header .title {
+  font-size: clamp(2.2rem, 4vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  background: linear-gradient(120deg, var(--m7-accent) 0%, var(--m7-accent-2) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  padding-bottom: 0.1em;
+}
+
+main h2,
+main .h2 {
+  font-size: 1.65rem;
+  font-weight: 750;
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0;
+  border-bottom: none;
+  position: relative;
+}
+
+main h2::before {
+  content: "";
+  display: block;
+  width: 2.25rem;
+  height: 4px;
+  border-radius: 4px;
+  margin-bottom: 0.75rem;
+  background: linear-gradient(90deg, var(--m7-accent), var(--m7-accent-2));
+}
+
+main h3,
+main .h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-top: 2.25rem;
+}
+
+main h4,
+main .h4 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-top: 1.75rem;
+  color: var(--m7-text-soft);
+}
+
+/* Inline code inside headings keeps the heading's weight and size */
+main h2 code, main h3 code, main h4 code {
+  font-size: 0.9em;
+}
+
+/* --------------------------------------------------------------------------
+   Navbar
+   -------------------------------------------------------------------------- */
+
+#quarto-header .navbar {
+  background-color: var(--m7-nav-bg) !important;
+  backdrop-filter: saturate(180%) blur(14px);
+  -webkit-backdrop-filter: saturate(180%) blur(14px);
+  border-bottom: 1px solid var(--m7-border);
+  box-shadow: none;
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
+}
+
+#quarto-header .navbar-brand .navbar-title,
+#quarto-header .navbar-title {
+  font-weight: 800;
+  font-size: 1.3rem;
+  letter-spacing: -0.03em;
+  background: linear-gradient(120deg, var(--m7-accent), var(--m7-accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+}
+
+#quarto-header .navbar-nav .nav-link {
+  color: var(--m7-text-soft) !important;
+  font-weight: 500;
+  font-size: 0.93rem;
+  padding: 0.4rem 0.75rem !important;
+  margin: 0 0.1rem;
+  border-radius: 999px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+#quarto-header .navbar-nav .nav-link:hover {
+  color: var(--m7-accent) !important;
+  background-color: var(--m7-accent-soft);
+}
+
+#quarto-header .navbar-nav .nav-link.active {
+  color: var(--m7-accent) !important;
+  background-color: var(--m7-accent-soft);
+  font-weight: 600;
+}
+
+#quarto-header .navbar-nav .nav-link .menu-text {
+  color: inherit;
+}
+
+#quarto-header .navbar .bi,
+#quarto-header .quarto-color-scheme-toggle,
+#quarto-header .aa-DetachedSearchButtonIcon {
+  color: var(--m7-text-soft) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Inline code
+   -------------------------------------------------------------------------- */
+
+code {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.86em;
+}
+
+p code:not(.sourceCode),
+li code:not(.sourceCode),
+td code:not(.sourceCode),
+th code:not(.sourceCode),
+h1 code:not(.sourceCode),
+h2 code:not(.sourceCode),
+h3 code:not(.sourceCode),
+h4 code:not(.sourceCode),
+blockquote code:not(.sourceCode),
+dd code:not(.sourceCode) {
+  color: var(--m7-inline-code) !important;
+  background-color: var(--m7-accent-soft) !important;
+  border: 1px solid var(--m7-accent-border);
+  border-radius: 6px;
+  padding: 0.1em 0.38em;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* --------------------------------------------------------------------------
+   Code blocks (the R source)
+   -------------------------------------------------------------------------- */
+
+div.sourceCode,
+.cell-code,
+pre.sourceCode {
+  background-color: var(--m7-surface) !important;
+  border: 1px solid var(--m7-border) !important;
+  border-radius: 12px !important;
+}
+
+div.sourceCode {
+  box-shadow: var(--m7-shadow);
+  margin: 1.25rem 0 0.75rem;
+  overflow: hidden;
+}
+
+div.sourceCode pre.sourceCode {
+  border: none !important;
+  border-radius: 0 !important;
+  margin: 0;
+  padding: 1rem 1.15rem !important;
+}
+
+pre.sourceCode code,
+div.sourceCode code {
+  font-size: 0.84rem;
+  line-height: 1.65;
+  background: transparent !important;
+  border: none;
+  padding: 0;
+  font-weight: 400;
+}
+
+/* Code copy button */
+.code-copy-button {
+  border-radius: 8px !important;
+  background-color: var(--m7-bg) !important;
+  border: 1px solid var(--m7-border) !important;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+div.sourceCode:hover .code-copy-button,
+.code-copy-outer-scaffold:hover .code-copy-button {
+  opacity: 1;
+}
+
+.code-copy-button > .bi::before {
+  color: var(--m7-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Cell output (what R printed, including LLM answers)
+   Long lines wrap instead of scrolling sideways.
+   -------------------------------------------------------------------------- */
+
+.cell-output {
+  margin: 0.5rem 0 1.5rem;
+}
+
+.cell-output pre,
+.cell-output-stdout pre,
+.cell-output-stderr pre {
+  position: relative;
+  background-color: var(--m7-output-bg) !important;
+  border: 1px solid var(--m7-border);
+  border-left: 3px solid var(--m7-accent);
+  border-radius: 0 10px 10px 0;
+  padding: 1.9rem 1.1rem 0.95rem !important;
+  margin: 0;
+  overflow: visible;
+  white-space: pre-wrap !important;
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+
+.cell-output pre code,
+.cell-output-stdout pre code,
+.cell-output-stderr pre code {
+  white-space: pre-wrap !important;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  font-size: 0.82rem;
+  line-height: 1.65;
+  color: var(--m7-text) !important;
+  background: transparent !important;
+  border: none;
+  padding: 0;
+  font-weight: 400;
+}
+
+.cell-output-stdout pre::before,
+.cell-output-stderr pre::before {
+  content: "Output";
+  position: absolute;
+  top: 0.55rem;
+  left: 1.1rem;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--m7-accent);
+}
+
+/* Messages and warnings printed by R */
+.cell-output-stderr pre {
+  border-left-color: var(--m7-warning);
+  background-color: var(--m7-warning-soft) !important;
+}
+
+.cell-output-stderr pre::before {
+  content: "Message";
+  color: var(--m7-warning);
+}
+
+/* Plots and HTML output */
+.cell-output-display {
+  margin: 0.75rem 0 1.5rem;
+}
+
+.cell-output-display img {
+  border-radius: 10px;
+  border: 1px solid var(--m7-border);
+  background: #fff;
+  max-width: 100%;
+  height: auto;
+}
+
+.cell-output-display .grViz,
+.cell-output-display .html-widget {
+  border-radius: 10px;
+  border: 1px solid var(--m7-border);
+  background: var(--m7-surface);
+}
+
+/* --------------------------------------------------------------------------
+   Blockquotes, callouts and tables
+   -------------------------------------------------------------------------- */
+
+blockquote,
+.blockquote {
+  margin: 1.5rem 0;
+  padding: 0.9rem 1.2rem;
+  border-left: 3px solid var(--m7-accent) !important;
+  background: var(--m7-accent-soft);
+  border-radius: 0 10px 10px 0;
+  color: var(--m7-text-soft);
+}
+
+blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+div.callout {
+  border-radius: 12px !important;
+  border-left-width: 4px !important;
+  box-shadow: var(--m7-shadow);
+}
+
+main table:not(.sourceCode) {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--m7-border);
+  border-radius: 12px;
+  overflow: hidden;
+  font-size: 0.92rem;
+  margin: 1.25rem 0 1.75rem;
+}
+
+main table:not(.sourceCode) thead th {
+  background: var(--m7-surface-2);
+  color: var(--m7-heading);
+  font-weight: 650;
+  border-bottom: 1px solid var(--m7-border) !important;
+  padding: 0.65rem 0.9rem;
+}
+
+main table:not(.sourceCode) td {
+  padding: 0.6rem 0.9rem;
+  border-top: 1px solid var(--m7-border);
+  vertical-align: top;
+}
+
+main table:not(.sourceCode) tbody tr:first-child td {
+  border-top: none;
+}
+
+main table:not(.sourceCode) tbody tr:hover td {
+  background: var(--m7-surface);
+}
+
+/* --------------------------------------------------------------------------
+   "On this page" sidebar
+   -------------------------------------------------------------------------- */
+
+#TOC #toc-title,
+#quarto-margin-sidebar #toc-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--m7-text-muted);
+  margin-bottom: 0.6rem;
+}
+
+#TOC ul {
+  border-left: 1px solid var(--m7-border) !important;
+}
+
+#TOC .nav-link,
+#TOC a {
+  color: var(--m7-text-muted);
+  font-size: 0.85rem;
+  line-height: 1.45;
+  padding-top: 0.22rem;
+  padding-bottom: 0.22rem;
+  border-left: 2px solid transparent;
+  margin-left: -1px;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+#TOC .nav-link:hover,
+#TOC a:hover {
+  color: var(--m7-text);
+}
+
+#TOC .nav-link.active {
+  color: var(--m7-accent) !important;
+  font-weight: 600;
+  border-left-color: var(--m7-accent) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Search, footer, misc
+   -------------------------------------------------------------------------- */
+
+.aa-DetachedSearchButton,
+#quarto-search .aa-Autocomplete {
+  border-radius: 999px !important;
+}
+
+hr {
+  border-color: var(--m7-border);
+  opacity: 1;
+}
+
+.nav-footer {
+  border-top: 1px solid var(--m7-border);
+  color: var(--m7-text-muted);
+}
+
+.anchorjs-link {
+  color: var(--m7-accent-border) !important;
+}
+
+/* Comfortable reading width on large screens */
+@media (min-width: 1200px) {
+  main.content {
+    font-size: 1.02rem;
+  }
+}
+
+@media (max-width: 991.98px) {
+  #quarto-header .navbar-nav .nav-link {
+    border-radius: 8px;
+  }
+  main h2 {
+    font-size: 1.45rem;
+  }
+}

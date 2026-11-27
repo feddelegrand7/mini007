@@ -34,6 +34,7 @@ format:
   html:
     toc: true
     code-fold: false
+    css: styles.css
     theme:
       light: cosmo
       dark: darkly
