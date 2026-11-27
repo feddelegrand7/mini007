@@ -10,9 +10,13 @@ import { KNOWLEDGE } from "./knowledge.js";
 const MODEL = "gpt-4.1-mini";
 const MAX_OUTPUT_TOKENS = 250;
 const MAX_SENTENCES = 3;
-const MAX_TURNS = 6;               // past messages kept from the conversation
-const MAX_QUESTION_CHARS = 600;
-const MAX_ANSWER_CHARS = 1200;     // for earlier answers sent back as history
+// Limits on what a visitor can send, so nobody can pay for big inputs with
+// your key. In the worst case a request adds about 400 tokens to the prompt.
+const MAX_BODY_BYTES = 8000;       // larger requests are refused unread
+const MAX_TURNS = 4;               // past messages kept from the conversation
+const MAX_QUESTION_CHARS = 400;
+const MAX_ANSWER_CHARS = 600;      // for earlier answers sent back as history
+const MAX_HISTORY_CHARS = 1500;    // all kept messages together
 
 export const REFUSAL = "I can only answer questions about mini007.";
 
@@ -55,9 +59,18 @@ export default {
       }
     }
 
+    const declared = Number(request.headers.get("Content-Length") || 0);
+    if (declared > MAX_BODY_BYTES) {
+      return json({ error: "The request is too large." }, 413, cors);
+    }
+
     let body;
     try {
-      body = await request.json();
+      const text = await request.text();
+      if (text.length > MAX_BODY_BYTES) {
+        return json({ error: "The request is too large." }, 413, cors);
+      }
+      body = JSON.parse(text);
     } catch {
       return json({ error: "The request is not valid JSON." }, 400, cors);
     }
@@ -125,7 +138,10 @@ export function sanitizeMessages(raw) {
   if (!messages.length || messages[messages.length - 1].role !== "user") return null;
   if (typeof last.content !== "string" || last.content.trim().length > MAX_QUESTION_CHARS) return null;
 
-  // The API expects the conversation to start with the user.
+  // Drop the oldest messages until the whole conversation fits, then make it
+  // start with the user, as the API expects.
+  const total = () => messages.reduce((n, m) => n + m.content.length, 0);
+  while (messages.length > 1 && total() > MAX_HISTORY_CHARS) messages.shift();
   while (messages.length && messages[0].role !== "user") messages.shift();
   return messages;
 }

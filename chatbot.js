@@ -9,8 +9,8 @@
 
   var ENDPOINT = "https://mini007-chat.mini007.workers.dev/chat";
   var STORAGE_KEY = "mini007-chat-history";
-  var MAX_QUESTION_CHARS = 600;
-  var MAX_HISTORY_SENT = 6;
+  var MAX_QUESTION_CHARS = 400;
+  var MAX_HISTORY_SENT = 4;
   var WELCOME =
     "Hi, I'm Robert! Ask me anything about mini007: its agents, workflows, tools and examples.";
   var SUGGESTIONS = [
