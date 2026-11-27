@@ -28,6 +28,20 @@ across sessions:
   `path` is saved as JSON after every change and reloaded on creation.
 - `$clone_agent()` keeps sharing the original agent's memory.
 
+#### Custom model prices
+
+- New `set_prices()`, `get_prices()` and `clear_prices()` register a model's
+  price (USD per million tokens) for the session. ellmer returns a cost of
+  `NA` for models missing from its price table (eg. models newer than the
+  installed ellmer); agents now compute their cost, and enforce their budget,
+  from the registered price instead. Registered prices also override
+  ellmer's.
+- New `llm_cost()` returns the cost of an ellmer chat, using the registered
+  prices when there is one for its model.
+- An agent with a budget no longer fails on its second `$invoke()` with
+  "missing value where TRUE/FALSE needed" when the cost of its model is
+  unknown: it warns once that the budget cannot be enforced.
+
 #### Minor fixes
 
 - The `LeadAgent` agent-matching step now restores the lead agent's system

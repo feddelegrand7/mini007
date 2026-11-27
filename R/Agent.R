@@ -142,7 +142,7 @@ Agent <- R6::R6Class(
 
       response <- private$.safe_chat(prompt)
 
-      cost <- self$llm_object$get_cost()
+      cost <- llm_cost(self$llm_object)
 
       if (!is.na(cost)) {
         self$cost <- as.numeric(round(cost, 4))
@@ -1277,6 +1277,7 @@ Agent <- R6::R6Class(
     # When FALSE, prevents .set_turns_from_messages() from executing.
     .sync_flag = TRUE,
     .memory_k = 3L,
+    .unknown_cost_warned = FALSE,
 
     # Clones keep the same Memory on purpose: they learn into, and read from,
     # the same store (and the same file) as the original.
@@ -1366,7 +1367,7 @@ Agent <- R6::R6Class(
     .stream_chat = function(prompt, on_event) {
       completed <- FALSE
       sync_state <- function() {
-        cost <- self$llm_object$get_cost()
+        cost <- llm_cost(self$llm_object)
         if (!is.na(cost)) {
           self$cost <- as.numeric(round(cost, 4))
         }
@@ -1653,7 +1654,19 @@ Agent <- R6::R6Class(
 
     .check_budget = function() {
 
-      current_cost <- as.numeric(self$llm_object$get_cost())
+      current_cost <- llm_cost(self$llm_object)
+
+      # ellmer has no price for this model: the budget cannot be enforced.
+      if (is.na(current_cost)) {
+        if (!isTRUE(private$.unknown_cost_warned)) {
+          cli::cli_alert_warning(glue::glue(
+            "{self$name}: the cost of model '{self$model_name}' is unknown, ",
+            "so its budget cannot be enforced. Set its price with set_prices()."
+          ))
+          private$.unknown_cost_warned <- TRUE
+        }
+        return(invisible(NULL))
+      }
 
       warn_at <- self$budget_policy$warn_at
       ratio <- current_cost / as.numeric(self$budget)
