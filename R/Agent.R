@@ -1341,6 +1341,8 @@ Agent <- R6::R6Class(
       tryCatch(
         self$llm_object$chat(prompt),
         error = function(e) {
+          # A ReActAgent's step limit is not a provider failure.
+          if (inherits(e, "mini007_react_step_limit")) stop(e)
           cli::cli_abort(
             c(
               "Agent {.val {self$name}} could not get a response from the LLM provider.",
@@ -1390,7 +1392,7 @@ Agent <- R6::R6Class(
           emit_event(on_event, event)
         }),
         error = function(e) {
-          if (inherits(e, "mini007_stream_cancelled")) stop(e)
+          if (inherits(e, c("mini007_stream_cancelled", "mini007_react_step_limit"))) stop(e)
           cli::cli_abort(
             c(
               "Agent {.val {self$name}} could not get a response from the LLM provider.",

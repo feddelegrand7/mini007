@@ -13,6 +13,7 @@
 ^index\.qmd$
 ^agents\.qmd$
 ^leadagent\.qmd$
+^react\.qmd$
 ^\.quarto$
 ^styles\.css$
 ^testing\.qmd$

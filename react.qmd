@@ -1,0 +1,202 @@
+---
+title: "ReActAgent"
+format:
+  html:
+    toc: true
+execute:
+  echo: true
+  warning: false
+  error: false
+---
+
+A `ReActAgent` is an `Agent` that **reasons** and **acts**. Instead of
+answering in one go, it works in a loop:
+
+1. **Think**: it states what it knows so far and what it needs next.
+2. **Act**: it calls one or more of its tools.
+3. **Observe**: it reads what the tools returned.
+4. It repeats steps 1 to 3 until it has enough to answer, then gives a **final
+   answer** without calling a tool.
+
+Use it when answering a question takes several lookups, and each one depends
+on what the previous one found.
+
+```{r}
+library(mini007)
+
+retrieve_open_ai_credential <- function() {
+  Sys.getenv("OPENAI_API_KEY")
+}
+
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  credentials = retrieve_open_ai_credential,
+  echo = "none"
+)
+```
+
+## A career advisor
+
+A person asks: *"I'm creative and love helping people. What career paths
+might be a good fit, what programs can help me get there, and how can I pay
+for it?"*
+
+Answering takes three lookups, one after the other: find careers that match,
+find programs that train for those careers, then find funding for those
+programs. We give the agent one tool per lookup.
+
+### The data
+
+Small, made-up tables stand in for real services, so the example runs anywhere:
+
+```{r}
+careers <- data.frame(
+  career = c("UX Designer", "Teacher", "Art Therapist", "Data Analyst"),
+  interests = c(
+    "creative design technology helping",
+    "helping teaching children creative",
+    "creative art helping psychology",
+    "technology math analysis"
+  ),
+  median_salary_usd = c(98000, 62000, 58000, 85000)
+)
+
+programs <- data.frame(
+  career = c("UX Designer", "UX Designer", "Teacher", "Art Therapist", "Data Analyst"),
+  program = c(
+    "UX Design Bootcamp", "UX Online Certificate", "Teaching Certification",
+    "M.A. Art Therapy", "Data Analytics Bootcamp"
+  ),
+  type = c("bootcamp", "online", "online", "college", "bootcamp"),
+  months = c(4, 6, 9, 24, 3),
+  cost_usd = c(14000, 300, 5000, 45000, 11000)
+)
+
+funding <- data.frame(
+  name = c("Pell Grant", "Creative Futures Scholarship", "TEACH Grant", "Income Share Agreement"),
+  program_type = c("college", "bootcamp", "online", "bootcamp"),
+  amount = c("up to $7,395 per year", "$2,500", "up to $4,000 per year", "paid back as a % of salary")
+)
+```
+
+### The tools
+
+Each tool is an ordinary R function wrapped with `ellmer::tool()`. Its
+description tells the LLM what the tool does and when to call it:
+
+```{r}
+search_careers <- ellmer::tool(
+  function(interest) {
+    careers[grepl(tolower(interest), careers$interests), c("career", "median_salary_usd")]
+  },
+  name = "search_careers",
+  description = "Find careers that match one interest or trait. Call it once per interest.",
+  arguments = list(
+    interest = ellmer::type_string("One word, e.g. 'creative' or 'helping'.")
+  )
+)
+
+find_programs <- ellmer::tool(
+  function(career) {
+    programs[programs$career == career, c("program", "type", "months", "cost_usd")]
+  },
+  name = "find_programs",
+  description = "Find training programs for one career, using its exact title.",
+  arguments = list(
+    career = ellmer::type_string("Exact career title, e.g. 'UX Designer'.")
+  )
+)
+
+find_funding <- ellmer::tool(
+  function(program_type) {
+    funding[funding$program_type == program_type, c("name", "amount")]
+  },
+  name = "find_funding",
+  description = "Find scholarships, grants and loans for one type of program.",
+  arguments = list(
+    program_type = ellmer::type_enum(c("bootcamp", "online", "college"), "Program type.")
+  )
+)
+```
+
+### The agent
+
+`instruction` is the agent's role. The `ReActAgent` adds the
+Think / Act / Observe guidance to it. `max_steps` caps how many tool-using
+steps one run can take:
+
+```{r}
+advisor <- ReActAgent$new(
+  name = "career_advisor",
+  instruction = "You are a career guidance advisor. Keep your final answer under 150 words.",
+  llm_object = openai_4_1_mini,
+  tools = list(search_careers, find_programs, find_funding),
+  max_steps = 6
+)
+```
+
+```{r}
+answer <- advisor$invoke(
+  "I'm creative and love helping people. What career paths might be a good fit,
+  what programs can help me get there, and how can I pay for it?"
+)
+
+cat(answer)
+```
+
+## Following the reasoning
+
+`$print_trace()` shows each step of the last run: what the agent thought,
+which tools it called with which arguments, and what it observed:
+
+```{r}
+advisor$print_trace()
+```
+
+The same steps are available as a data frame in `$trace`, with one row per
+entry:
+
+```{r}
+advisor$trace[, c("step", "type", "tool")]
+```
+
+| Column     | Meaning                                                             |
+|------------|---------------------------------------------------------------------|
+| `step`     | The step number. Several tool calls made together share a step.     |
+| `type`     | `"think"`, `"act"`, `"observe"` or `"answer"`.                      |
+| `tool`     | The tool called (for `"act"` and `"observe"` rows).                 |
+| `content`  | The thought, the tool's arguments, its result, or the answer.       |
+| `is_error` | `TRUE` when a tool failed. The agent sees the error and can adapt.  |
+
+## Limiting the number of steps
+
+When an agent reaches `max_steps`, its next tool calls are refused and it is
+told to answer with the information it already has. With a single step
+allowed, the advisor can search for careers but not look up programs or
+funding:
+
+```{r}
+quick_advisor <- ReActAgent$new(
+  name = "quick_advisor",
+  instruction = "You are a career guidance advisor. Keep your final answer under 100 words.",
+  llm_object = openai_4_1_mini,
+  tools = list(search_careers, find_programs, find_funding),
+  max_steps = 1
+)
+
+answer <- quick_advisor$invoke(
+  "I'm creative and love helping people. Which careers fit me, and which programs should I look at?"
+)
+
+quick_advisor$print_trace()
+```
+
+If the LLM still keeps calling tools after that, the run stops with an error
+of class `mini007_react_step_limit`.
+
+## Using it with other mini007 classes
+
+A `ReActAgent` is an `Agent`, so everything on the [Agents](agents.qmd) page
+applies to it: budgets, memory, streaming, cloning and conversation history.
+It can also be registered with a [LeadAgent](leadagent.qmd) or used as a
+[Workflow](workflow.qmd) station, like any other agent.

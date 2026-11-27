@@ -1,5 +1,21 @@
 # mini007 (development version)
 
+#### ReAct agents
+
+- New `ReActAgent` class: an `Agent` that answers by looping through Think
+  (it states what it knows and needs next), Act (it calls its tools) and
+  Observe (it reads the results) until it can answer without a tool.
+  Tools are passed to `ReActAgent$new(tools = )` or `$register_tools()`.
+- `$trace` holds the steps of the last run as a data frame (`step`, `type`,
+  `tool`, `content`, `is_error`), and `$print_trace()` prints them.
+- `max_steps` (default 10) caps the tool-using steps in one run: further
+  tool calls are refused and the LLM is asked to answer with what it has; if
+  it keeps calling tools, the run stops with an error of class
+  `mini007_react_step_limit`.
+- A `ReActAgent` keeps everything an `Agent` does (budget, memory,
+  streaming, cloning) and can be registered with a `LeadAgent` or used as a
+  `Workflow` station.
+
 #### Learning from experience
 
 A new `Memory` class lets agents learn from past tasks, within a session or

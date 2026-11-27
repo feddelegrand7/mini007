@@ -12,6 +12,8 @@ website:
         href: agents.qmd
       - text: LeadAgent
         href: leadagent.qmd
+      - text: ReActAgent
+        href: react.qmd
       - text: Tools
         href: tools.qmd
       - text: Workflow
