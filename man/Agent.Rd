@@ -55,6 +55,28 @@ agent$invoke("Tell me a short story", stream = TRUE)
 }
 
 ## ------------------------------------------------
+## Method `Agent$plan_and_execute`
+## ------------------------------------------------
+
+\dontrun{
+search_careers <- ellmer::tool(
+  function(interest) if (interest == "helping") "Teacher, Nurse" else "Designer",
+  name = "search_careers",
+  description = "Find careers that match one interest.",
+  arguments = list(interest = ellmer::type_string("One interest."))
+)
+advisor <- Agent$new(
+  name = "advisor",
+  instruction = "You are a career advisor.",
+  llm_object = ellmer::chat("openai/gpt-4.1-mini", echo = "none")
+)
+advisor$register_tools(list(search_careers))
+
+advisor$plan_and_execute("I love helping people. Which careers fit me, and how do I start?")
+advisor$last_plan$steps
+}
+
+## ------------------------------------------------
 ## Method `Agent$generate_execute_r_code`
 ## ------------------------------------------------
 
@@ -485,6 +507,10 @@ agent_copy <- agent$clone_agent()
 \item{\code{tools}}{A list of registered tools available to the agent}
 
 \item{\code{memory}}{The \code{\link{Memory}} attached with \code{$set_memory()}, or `NULL`.}
+
+\item{\code{last_plan}}{The last run of \code{$plan_and_execute()}: a list with
+the `prompt`, a `steps` data frame (`step`, `task`, `result`), the
+final `answer` and a `timestamp`. `NULL` before the first run.}
 }
 \if{html}{\out{</div>}}
 }
@@ -501,6 +527,7 @@ Assignment is validated automatically.}
 \itemize{
 \item \href{#method-Agent-new}{\code{Agent$new()}}
 \item \href{#method-Agent-invoke}{\code{Agent$invoke()}}
+\item \href{#method-Agent-plan_and_execute}{\code{Agent$plan_and_execute()}}
 \item \href{#method-Agent-generate_execute_r_code}{\code{Agent$generate_execute_r_code()}}
 \item \href{#method-Agent-set_budget}{\code{Agent$set_budget()}}
 \item \href{#method-Agent-set_budget_policy}{\code{Agent$set_budget_policy()}}
@@ -623,6 +650,78 @@ agent$invoke("Continue this sentence: 1 2 3 viva")
 
 # Stream tokens to the console as they are generated
 agent$invoke("Tell me a short story", stream = TRUE)
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Agent-plan_and_execute"></a>}}
+\if{latex}{\out{\hypertarget{method-Agent-plan_and_execute}{}}}
+\subsection{Method \code{plan_and_execute()}}{
+Plans a task up front, then carries out the plan one step at a time
+and writes the final answer from the results.
+
+1. **Plan**: one LLM call turns the task into an ordered list of
+   steps, at most `max_steps`. The LLM sees the agent's tools while
+   planning, but cannot call them yet.
+2. **Execute**: each step is one call to the agent, which may use its
+   tools. Every step sees the task, the plan and the earlier results.
+3. **Answer**: a last call combines the results into the final answer.
+
+The plan is made once and not revised, which makes this cheaper and
+more predictable than a [ReActAgent] loop, but less adaptive when a
+step turns up something unexpected. It suits tasks whose steps can be
+described in advance.
+
+Everything runs in the agent's own conversation, so `messages`, cost
+and budget work as with `$invoke()`. The plan, each step's result and
+the answer are kept in `$last_plan`.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Agent$plan_and_execute(prompt, max_steps = 6, stream = FALSE, on_event = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{prompt}}{The task.}
+
+\item{\code{max_steps}}{`[integer(1)]` The largest number of steps in the
+plan, not counting the final answer. Defaults to 6.}
+
+\item{\code{stream}}{`[logical(1)]` Whether to stream the steps and the answer.}
+
+\item{\code{on_event}}{`[function | NULL]` Callback receiving each
+`mini007_event`; supplying it implies `stream = TRUE`. Besides the
+usual Agent events (tagged with `step`), it receives
+`"plan_created"`, `"step_started"`, `"step_completed"`,
+`"answer_started"` and `"plan_completed"`.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The final answer as a character string.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+search_careers <- ellmer::tool(
+  function(interest) if (interest == "helping") "Teacher, Nurse" else "Designer",
+  name = "search_careers",
+  description = "Find careers that match one interest.",
+  arguments = list(interest = ellmer::type_string("One interest."))
+)
+advisor <- Agent$new(
+  name = "advisor",
+  instruction = "You are a career advisor.",
+  llm_object = ellmer::chat("openai/gpt-4.1-mini", echo = "none")
+)
+advisor$register_tools(list(search_careers))
+
+advisor$plan_and_execute("I love helping people. Which careers fit me, and how do I start?")
+advisor$last_plan$steps
 }
 }
 \if{html}{\out{</div>}}

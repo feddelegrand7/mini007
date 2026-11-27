@@ -154,6 +154,121 @@ Agent <- R6::R6Class(
     },
 
     #' @description
+    #' Plans a task up front, then carries out the plan one step at a time
+    #' and writes the final answer from the results.
+    #'
+    #' 1. **Plan**: one LLM call turns the task into an ordered list of
+    #'    steps, at most `max_steps`. The LLM sees the agent's tools while
+    #'    planning, but cannot call them yet.
+    #' 2. **Execute**: each step is one call to the agent, which may use its
+    #'    tools. Every step sees the task, the plan and the earlier results.
+    #' 3. **Answer**: a last call combines the results into the final answer.
+    #'
+    #' The plan is made once and not revised, which makes this cheaper and
+    #' more predictable than a [ReActAgent] loop, but less adaptive when a
+    #' step turns up something unexpected. It suits tasks whose steps can be
+    #' described in advance.
+    #'
+    #' Everything runs in the agent's own conversation, so `messages`, cost
+    #' and budget work as with `$invoke()`. The plan, each step's result and
+    #' the answer are kept in `$last_plan`.
+    #'
+    #' @param prompt The task.
+    #' @param max_steps `[integer(1)]` The largest number of steps in the
+    #'   plan, not counting the final answer. Defaults to 6.
+    #' @param stream `[logical(1)]` Whether to stream the steps and the answer.
+    #' @param on_event `[function | NULL]` Callback receiving each
+    #'   `mini007_event`; supplying it implies `stream = TRUE`. Besides the
+    #'   usual Agent events (tagged with `step`), it receives
+    #'   `"plan_created"`, `"step_started"`, `"step_completed"`,
+    #'   `"answer_started"` and `"plan_completed"`.
+    #' @return The final answer as a character string.
+    #' @examples \dontrun{
+    #' search_careers <- ellmer::tool(
+    #'   function(interest) if (interest == "helping") "Teacher, Nurse" else "Designer",
+    #'   name = "search_careers",
+    #'   description = "Find careers that match one interest.",
+    #'   arguments = list(interest = ellmer::type_string("One interest."))
+    #' )
+    #' advisor <- Agent$new(
+    #'   name = "advisor",
+    #'   instruction = "You are a career advisor.",
+    #'   llm_object = ellmer::chat("openai/gpt-4.1-mini", echo = "none")
+    #' )
+    #' advisor$register_tools(list(search_careers))
+    #'
+    #' advisor$plan_and_execute("I love helping people. Which careers fit me, and how do I start?")
+    #' advisor$last_plan$steps
+    #' }
+    plan_and_execute = function(prompt, max_steps = 6, stream = FALSE, on_event = NULL) {
+      checkmate::assert_string(prompt)
+      checkmate::assert_count(max_steps, positive = TRUE)
+      on_event <- resolve_on_event(stream, on_event)
+
+      if (!is.na(self$budget)) private$.check_budget()
+
+      task <- prompt
+      if (!is.null(self$memory)) {
+        task <- prompt_with_lessons(prompt, self$memory$search(prompt, k = private$.memory_k))
+      }
+
+      # Keep cost and messages in sync with ellmer's turns, also when a step
+      # fails or the run is cancelled part way.
+      completed <- FALSE
+      on.exit({
+        sync <- function() {
+          cost <- llm_cost(self$llm_object)
+          if (!is.na(cost)) self$cost <- as.numeric(round(cost, 4))
+          private$.set_messages_from_turns()
+        }
+        if (completed) sync() else try(sync(), silent = TRUE)
+      }, add = TRUE)
+
+      # 1. Plan up front.
+      steps <- private$.make_plan(task, as.integer(max_steps))
+      self$last_plan <- list(
+        prompt = prompt,
+        steps = data.frame(
+          step = seq_along(steps),
+          task = steps,
+          result = rep(NA_character_, length(steps)),
+          stringsAsFactors = FALSE
+        ),
+        answer = NA_character_,
+        timestamp = Sys.time()
+      )
+      emit_event(on_event, new_event("plan_created", self$name, steps = steps))
+
+      # 2. Execute the steps in order.
+      for (i in seq_along(steps)) {
+        if (!is.na(self$budget)) private$.check_budget()
+        emit_event(on_event, new_event("step_started", self$name, step = i, task = steps[[i]]))
+        result <- private$.plan_turn(
+          step_prompt(i, steps, task),
+          forward_events(on_event, step = i)
+        )
+        self$last_plan$steps$result[i] <- result
+        emit_event(on_event, new_event(
+          "step_completed", self$name, text = result, step = i, task = steps[[i]]
+        ))
+      }
+
+      # 3. Combine the results into the final answer.
+      if (!is.na(self$budget)) private$.check_budget()
+      emit_event(on_event, new_event("answer_started", self$name))
+      answer <- private$.plan_turn(final_answer_prompt(task), on_event)
+      self$last_plan$answer <- answer
+      emit_event(on_event, new_event("plan_completed", self$name, text = answer))
+
+      completed <- TRUE
+      # Already printed token by token: don't print it a second time.
+      if (is_console_handler(on_event)) {
+        return(invisible(answer))
+      }
+      answer
+    },
+
+    #' @description
     #' Generate R code from natural language descriptions and optionally validate/execute it
     #'
     #' @param code_description Character string describing the R code to generate
@@ -1235,7 +1350,11 @@ Agent <- R6::R6Class(
     #'@field tools A list of registered tools available to the agent
     tools = list(),
     #'@field memory The \code{\link{Memory}} attached with \code{$set_memory()}, or `NULL`.
-    memory = NULL
+    memory = NULL,
+    #'@field last_plan The last run of \code{$plan_and_execute()}: a list with
+    #'  the `prompt`, a `steps` data frame (`step`, `task`, `result`), the
+    #'  final `answer` and a `timestamp`. `NULL` before the first run.
+    last_plan = NULL
 
   ),
 
@@ -1301,6 +1420,55 @@ Agent <- R6::R6Class(
       lesson <- private$.safe_chat(lesson_prompt(task, response, verdict))
       trimws(paste(as.character(lesson), collapse = "\n"))
     },
+    # Ask the LLM for the plan of $plan_and_execute(): a character vector of
+    # steps. Tools are switched off for this call, since a structured answer
+    # cannot carry tool calls; they are back on for the steps.
+    .make_plan = function(task, max_steps) {
+      if (length(self$tools) > 0) {
+        suppressMessages(self$llm_object$set_tools(list()))
+        on.exit(private$.update_llm_tools(), add = TRUE)
+      }
+
+      result <- tryCatch(
+        self$llm_object$chat_structured(
+          plan_prompt(task, self$tools, max_steps),
+          type = plan_steps_type()
+        ),
+        error = function(e) {
+          cli::cli_abort(
+            c(
+              "Agent {.val {self$name}} could not make a plan.",
+              "x" = conditionMessage(e)
+            ),
+            parent = e,
+            call = NULL
+          )
+        }
+      )
+
+      steps <- trimws(as.character(unlist(result$steps)))
+      steps <- steps[!is.na(steps) & nzchar(steps)]
+
+      if (length(steps) > max_steps) {
+        cli::cli_alert_warning(
+          "{self$name}: the plan had {length(steps)} steps; keeping the first {max_steps}."
+        )
+        steps <- steps[seq_len(max_steps)]
+      }
+      steps
+    },
+
+    # One call of $plan_and_execute() (a step or the final answer), streamed
+    # when a callback is given. Returns the text of the agent's reply.
+    .plan_turn = function(prompt, on_event) {
+      response <- if (is.null(on_event)) {
+        private$.safe_chat(prompt)
+      } else {
+        private$.stream_chat(prompt, on_event)
+      }
+      trimws(paste(as.character(response), collapse = "\n"))
+    },
+
     .add_message = function(message, type) {
       private$._messages[[length(private$._messages) + 1]] <- list(
         role = type,

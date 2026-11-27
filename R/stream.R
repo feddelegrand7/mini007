@@ -43,6 +43,10 @@
 #' \describe{
 #'   \item{Agent}{`"agent_started"`, `"text_delta"`, `"thinking_delta"`,
 #'     `"tool_call"`, `"tool_result"`, `"agent_completed"`.}
+#'   \item{Agent$plan_and_execute()}{`"plan_created"`, then for each step
+#'     `"step_started"`, the step's Agent events (tagged with `step`) and
+#'     `"step_completed"`, then `"answer_started"`, the answer's Agent events
+#'     and `"plan_completed"`.}
 #'   \item{Workflow}{`"workflow_started"`, `"station_started"`,
 #'     `"station_retry"`, `"station_fallback"`, `"station_completed"`,
 #'     `"hitl_request"`, `"workflow_output"`, `"workflow_failed"`.}
@@ -196,6 +200,19 @@ new_console_handler <- function() {
         cat(event$text, sep = "")
         utils::flush.console()
         at_line_start <<- endsWith(event$text, "\n")
+      },
+      plan_created = if (is.character(event$data$steps)) {
+        ensure_newline()
+        cli::cli_text("{.strong {event$source}} plan:")
+        cli::cli_ol(event$data$steps)
+      },
+      step_started = {
+        ensure_newline()
+        cli::cli_rule(left = "Step {event$data$step}: {event$data$task}")
+      },
+      answer_started = {
+        ensure_newline()
+        cli::cli_rule(left = "Final answer")
       },
       route_selected = {
         ensure_newline()

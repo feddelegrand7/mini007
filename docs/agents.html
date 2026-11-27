@@ -358,6 +358,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#agents-and-messages" id="toc-agents-and-messages" class="nav-link" data-scroll-target="#agents-and-messages">Agents and Messages</a></li>
   <li><a href="#budget-and-cost-control" id="toc-budget-and-cost-control" class="nav-link" data-scroll-target="#budget-and-cost-control">Budget and cost control</a></li>
   <li><a href="#generate-and-execute-r-code-from-natural-language" id="toc-generate-and-execute-r-code-from-natural-language" class="nav-link" data-scroll-target="#generate-and-execute-r-code-from-natural-language">Generate and execute R code from natural language</a></li>
+  <li><a href="#plan-and-execute" id="toc-plan-and-execute" class="nav-link" data-scroll-target="#plan-and-execute">Plan and execute</a></li>
   <li><a href="#cloning-an-agent" id="toc-cloning-an-agent" class="nav-link" data-scroll-target="#cloning-an-agent">Cloning an Agent</a></li>
   <li><a href="#response-validation" id="toc-response-validation" class="nav-link" data-scroll-target="#response-validation">Response Validation</a>
   <ul class="collapse">
@@ -420,7 +421,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>polar_bear_researcher<span class="sc">$</span>agent_id</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "61670822-fc00-43c7-aa02-7096d97be4b3"</code></pre>
+<pre><code>[1] "ece51f70-3094-4104-81a8-4de3bbefc04c"</code></pre>
 </div>
 </div>
 <p>At any time, you can tweak the <code>llm_object</code>:</p>
@@ -437,7 +438,7 @@ You are an expert in polar bears, you task is to collect information about polar
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>polar_bear_researcher<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"Are polar bears dangerous for humans?"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Yes, polar bears are dangerous to humans as they are powerful predators and can
-attack if threatened or provoked.</code></pre>
+be aggressive if threatened or hungry.</code></pre>
 </div>
 </div>
 <p>You can also retrieve a list that displays the history of the agent:</p>
@@ -465,7 +466,7 @@ attack if threatened or provoked.</code></pre>
 [1] "assistant"
 
 [[3]]$content
-[1] "Yes, polar bears are dangerous to humans as they are powerful predators and can attack if threatened or provoked."</code></pre>
+[1] "Yes, polar bears are dangerous to humans as they are powerful predators and can be aggressive if threatened or hungry."</code></pre>
 </div>
 </div>
 <p>Or the <code>ellmer</code> way:</p>
@@ -478,7 +479,7 @@ You are an expert in polar bears, you task is to collect information about polar
 ── user ────────────────────────────────────────────────────────────────────────
 Are polar bears dangerous for humans?
 ── assistant [input=43 output=23 cost=$0.00] ───────────────────────────────────
-Yes, polar bears are dangerous to humans as they are powerful predators and can attack if threatened or provoked.</code></pre>
+Yes, polar bears are dangerous to humans as they are powerful predators and can be aggressive if threatened or hungry.</code></pre>
 </div>
 </div>
 </section>
@@ -497,7 +498,7 @@ Yes, polar bears are dangerous to humans as they are powerful predators and can 
 [1] "system"
 
 [[1]]$content
-[1] "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max. \n\n--- Conversation Summary ---\n The user asked if polar bears are dangerous to humans, and the assistant confirmed that they are, as polar bears are powerful predators capable of attacking if threatened or provoked."</code></pre>
+[1] "You are an expert in polar bears, you task is to collect information about polar bears. Answer in 1 sentence max. \n\n--- Conversation Summary ---\n The user asked if polar bears are dangerous to humans, and the assistant responded that they are indeed dangerous due to their strength and potential aggression when threatened or hungry."</code></pre>
 </div>
 </div>
 <p>This method summarises all previous conversations into a paragraph and appends it to the system prompt, then clears the conversation history. The agent retains the context but with reduced memory usage.</p>
@@ -675,8 +676,8 @@ Yes, polar bears are dangerous to humans as they are powerful predators and can 
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>agent<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"summarise the previous conversation"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>You asked where to find the best pizza in the world, and I told you that you 
-can find it in Algiers, Algeria, where the pizza is tasty and crunchy.</code></pre>
+<pre><code>You asked where to find the best pizza in the world, and I told you that 
+Algiers, Algeria, is known for tasty and crunchy pizza.</code></pre>
 </div>
 </div>
 </section>
@@ -784,7 +785,7 @@ can find it in Algiers, Algeria, where the pizza is tasty and crunchy.</code></p
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>agent<span class="sc">$</span>llm_object</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>&lt;Chat OpenAI/gpt-4.1-mini turns=5 input=62 output=37&gt;
+<pre><code>&lt;Chat OpenAI/gpt-4.1-mini turns=5 input=62 output=32&gt;
 ── system ──────────────────────────────────────────────────────────────────────
 You are a Pizza expert
 ── user ────────────────────────────────────────────────────────────────────────
@@ -793,7 +794,7 @@ Where can I find the best pizza in the world?
 You can find the best pizza in the world in Algiers, Algeria. It's tasty and crunchy.
 ── user ────────────────────────────────────────────────────────────────────────
 summarise the previous conversation
-── assistant [input=62 output=37] ──────────────────────────────────────────────
+── assistant [input=62 output=32] ──────────────────────────────────────────────
 Obivously you asked me about the best pizza in the world which is of course in Algiery!</code></pre>
 </div>
 </div>
@@ -816,13 +817,16 @@ Obivously you asked me about the best pizza in the world which is of course in A
 <span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a>agent<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"Tell me a short fun fact about dates (the fruit)."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Sure! Here’s a fun fact: Dates are one of the oldest cultivated fruits in the 
-world, with evidence of date farming going back over 6,000 years!</code></pre>
+<pre><code>Sure! Here’s a fun fact about dates: Dates are one of the oldest cultivated 
+fruits, with evidence of date farming dating back over 6,000 years in the 
+Middle East! They were so valued that ancient Egyptians used them as a form of 
+currency.</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>agent<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"And one more."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Absolutely! Did you know that date palms can produce up to 200 pounds of dates 
-in a single year? That's a lot of natural energy-packed fruit!</code></pre>
+<pre><code>Absolutely! Did you know that date palms can produce up to 200 pounds (about 90
+kilograms) of dates in a single year from just one tree? That’s a lot of sweet 
+energy!</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Clear all messages except the system prompt</span></span>
 <span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>agent<span class="sc">$</span><span class="fu">reset_conversation_history</span>()</span>
@@ -938,8 +942,8 @@ in a single year? That's a lot of natural energy-packed fruit!</code></pre>
 <span id="cb48-20"><a href="#cb48-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Normal usage</span></span>
 <span id="cb48-21"><a href="#cb48-21" aria-hidden="true" tabindex="-1"></a>agent<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"Give me a one-sentence fun fact about Algeria."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Algeria is home to the Sahara Desert, the largest hot desert in the world, 
-covering more than 80% of its territory!</code></pre>
+<pre><code>Algeria is home to the Sahara Desert's famous Tassili n'Ajjer, where ancient 
+rock art dating back over 12,000 years reveals early human life and creativity.</code></pre>
 </div>
 </div>
 <p>The current policy is echoed when setting the budget. You can update the policy at any time before or during an interaction lifecycle to adapt to your workflow’s tolerance for cost overruns.</p>
@@ -961,6 +965,16 @@ $budget_remaining
 </div>
 </div>
 </section>
+<section id="prices-for-models-ellmer-doesnt-know" class="level4">
+<h4 class="anchored" data-anchor-id="prices-for-models-ellmer-doesnt-know">Prices for models ellmer doesn’t know</h4>
+<p>Costs come from ellmer’s built-in price table. For a model that is not in it (for instance a model released after your ellmer version), the cost is <code>NA</code> and a budget cannot be enforced. Register the model’s price, in USD per million tokens, with <code>set_prices()</code>; prices set this way also override ellmer’s when a price is out of date. They apply to every agent in the session.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set_prices</span>(<span class="st">"gpt-5.6"</span>, <span class="at">input =</span> <span class="fl">1.25</span>, <span class="at">output =</span> <span class="dv">10</span>, <span class="at">cached_input =</span> <span class="fl">0.125</span>)</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="fu">get_prices</span>()    <span class="co"># the registered prices</span></span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a><span class="fu">clear_prices</span>()  <span class="co"># back to ellmer's prices</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><code>llm_cost(agent$llm_object)</code> returns the unrounded cost of an agent’s conversation.</p>
+</section>
 </section>
 <section id="generate-and-execute-r-code-from-natural-language" class="level2">
 <h2 class="anchored" data-anchor-id="generate-and-execute-r-code-from-natural-language">Generate and execute R code from natural language</h2>
@@ -974,30 +988,30 @@ $budget_remaining
 </ul>
 <p>Safety notes: - Set <code>validate = TRUE</code> and review the printed code before execution. - Keep <code>interactive = TRUE</code> to require an explicit confirmation before running code.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>openai_4_1_mini <span class="ot">&lt;-</span> ellmer<span class="sc">::</span><span class="fu">chat</span>(</span>
-<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"openai/gpt-4.1-mini"</span>,</span>
-<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">credentials =</span> retrieve_open_ai_credential, </span>
-<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">echo =</span> <span class="st">"none"</span></span>
-<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a>r_assistant <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
-<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"R Code Assistant"</span>,</span>
-<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"You are an expert R programmer."</span>,</span>
-<span id="cb52-10"><a href="#cb52-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
-<span id="cb52-11"><a href="#cb52-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb52-12"><a href="#cb52-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-13"><a href="#cb52-13" aria-hidden="true" tabindex="-1"></a>agent<span class="sc">$</span><span class="fu">generate_execute_r_code</span>(</span>
-<span id="cb52-14"><a href="#cb52-14" aria-hidden="true" tabindex="-1"></a>   <span class="at">code_description =</span> <span class="st">"using ggplot2, generate a scatterplot of hwy and cty in red"</span>, </span>
-<span id="cb52-15"><a href="#cb52-15" aria-hidden="true" tabindex="-1"></a>   <span class="at">validate =</span> <span class="cn">TRUE</span>, </span>
-<span id="cb52-16"><a href="#cb52-16" aria-hidden="true" tabindex="-1"></a>   <span class="at">execute =</span> <span class="cn">TRUE</span>, </span>
-<span id="cb52-17"><a href="#cb52-17" aria-hidden="true" tabindex="-1"></a>   <span class="at">interactive =</span> <span class="cn">FALSE</span></span>
-<span id="cb52-18"><a href="#cb52-18" aria-hidden="true" tabindex="-1"></a> )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>openai_4_1_mini <span class="ot">&lt;-</span> ellmer<span class="sc">::</span><span class="fu">chat</span>(</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"openai/gpt-4.1-mini"</span>,</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">credentials =</span> retrieve_open_ai_credential, </span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">echo =</span> <span class="st">"none"</span></span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>r_assistant <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"R Code Assistant"</span>,</span>
+<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"You are an expert R programmer."</span>,</span>
+<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb53-11"><a href="#cb53-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb53-12"><a href="#cb53-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-13"><a href="#cb53-13" aria-hidden="true" tabindex="-1"></a>agent<span class="sc">$</span><span class="fu">generate_execute_r_code</span>(</span>
+<span id="cb53-14"><a href="#cb53-14" aria-hidden="true" tabindex="-1"></a>   <span class="at">code_description =</span> <span class="st">"using ggplot2, generate a scatterplot of hwy and cty in red"</span>, </span>
+<span id="cb53-15"><a href="#cb53-15" aria-hidden="true" tabindex="-1"></a>   <span class="at">validate =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb53-16"><a href="#cb53-16" aria-hidden="true" tabindex="-1"></a>   <span class="at">execute =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb53-17"><a href="#cb53-17" aria-hidden="true" tabindex="-1"></a>   <span class="at">interactive =</span> <span class="cn">FALSE</span></span>
+<span id="cb53-18"><a href="#cb53-18" aria-hidden="true" tabindex="-1"></a> )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$description
 [1] "using ggplot2, generate a scatterplot of hwy and cty in red"
 
 $code
-library(ggplot2);ggplot(mpg,aes(x=cty,y=hwy))+geom_point(color="red")
+library(ggplot2); ggplot(mpg,aes(x=cty,y=hwy))+geom_point(color="red")
 
 $validated
 [1] TRUE
@@ -1014,7 +1028,7 @@ $execution_result$value</code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="agents_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="agents_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1025,31 +1039,146 @@ character(0)</code></pre>
 </div>
 </div>
 </section>
+<section id="plan-and-execute" class="level2">
+<h2 class="anchored" data-anchor-id="plan-and-execute">Plan and execute</h2>
+<p><code>plan_and_execute()</code> lets an <code>Agent</code> work through a task in three stages:</p>
+<ol type="1">
+<li><strong>Plan up front</strong>: the agent writes the full list of steps before doing anything. It knows which tools it will have, but cannot call them yet.</li>
+<li><strong>Execute the steps in order</strong>: each step is one call to the agent, which can use its tools and sees the results of the earlier steps.</li>
+<li><strong>Write the final answer</strong> by combining the results of all the steps.</li>
+</ol>
+<p>The plan is made once and followed as written. This makes it cheaper and more predictable than a <a href="./react.html">ReActAgent</a>, which decides its next move after every observation, but less adaptive when a step turns up something unexpected. It works best when the task can be broken down in advance.</p>
+<p>In the example below, a career advisor answers <em>“I’m creative and love helping people. What career paths fit me, what programs can help me get there, and how can I pay for it?”</em>. The steps are easy to foresee (find careers, then programs, then funding), so we give the agent one tool for each. Small, made-up tables stand in for real services, so the example runs anywhere:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>careers <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">career =</span> <span class="fu">c</span>(<span class="st">"UX Designer"</span>, <span class="st">"Teacher"</span>, <span class="st">"Art Therapist"</span>, <span class="st">"Data Analyst"</span>),</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">interests =</span> <span class="fu">c</span>(</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"creative design helping"</span>,</span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"helping teaching creative"</span>,</span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"creative art helping"</span>,</span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"math analysis"</span></span>
+<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb56-10"><a href="#cb56-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-11"><a href="#cb56-11" aria-hidden="true" tabindex="-1"></a>programs <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb56-12"><a href="#cb56-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">career =</span> <span class="fu">c</span>(<span class="st">"UX Designer"</span>, <span class="st">"Teacher"</span>, <span class="st">"Art Therapist"</span>),</span>
+<span id="cb56-13"><a href="#cb56-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">program =</span> <span class="fu">c</span>(<span class="st">"UX Design Bootcamp"</span>, <span class="st">"Teaching Certification"</span>, <span class="st">"M.A. Art Therapy"</span>),</span>
+<span id="cb56-14"><a href="#cb56-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="fu">c</span>(<span class="st">"bootcamp"</span>, <span class="st">"online"</span>, <span class="st">"college"</span>),</span>
+<span id="cb56-15"><a href="#cb56-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">cost_usd =</span> <span class="fu">c</span>(<span class="dv">14000</span>, <span class="dv">5000</span>, <span class="dv">45000</span>)</span>
+<span id="cb56-16"><a href="#cb56-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb56-17"><a href="#cb56-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-18"><a href="#cb56-18" aria-hidden="true" tabindex="-1"></a>funding <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb56-19"><a href="#cb56-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="fu">c</span>(<span class="st">"Creative Futures Scholarship"</span>, <span class="st">"TEACH Grant"</span>, <span class="st">"Pell Grant"</span>),</span>
+<span id="cb56-20"><a href="#cb56-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">program_type =</span> <span class="fu">c</span>(<span class="st">"bootcamp"</span>, <span class="st">"online"</span>, <span class="st">"college"</span>),</span>
+<span id="cb56-21"><a href="#cb56-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">amount =</span> <span class="fu">c</span>(<span class="st">"$2,500"</span>, <span class="st">"up to $4,000 per year"</span>, <span class="st">"up to $7,395 per year"</span>)</span>
+<span id="cb56-22"><a href="#cb56-22" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb56-23"><a href="#cb56-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-24"><a href="#cb56-24" aria-hidden="true" tabindex="-1"></a>search_careers <span class="ot">&lt;-</span> ellmer<span class="sc">::</span><span class="fu">tool</span>(</span>
+<span id="cb56-25"><a href="#cb56-25" aria-hidden="true" tabindex="-1"></a>  <span class="cf">function</span>(interest) {</span>
+<span id="cb56-26"><a href="#cb56-26" aria-hidden="true" tabindex="-1"></a>    careers<span class="sc">$</span>career[<span class="fu">grepl</span>(<span class="fu">tolower</span>(interest), careers<span class="sc">$</span>interests)]</span>
+<span id="cb56-27"><a href="#cb56-27" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb56-28"><a href="#cb56-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"search_careers"</span>,</span>
+<span id="cb56-29"><a href="#cb56-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">"Career Database API: find careers that match one interest."</span>,</span>
+<span id="cb56-30"><a href="#cb56-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">arguments =</span> <span class="fu">list</span>(<span class="at">interest =</span> ellmer<span class="sc">::</span><span class="fu">type_string</span>(<span class="st">"One interest, e.g. 'creative'."</span>))</span>
+<span id="cb56-31"><a href="#cb56-31" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb56-32"><a href="#cb56-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-33"><a href="#cb56-33" aria-hidden="true" tabindex="-1"></a>find_programs <span class="ot">&lt;-</span> ellmer<span class="sc">::</span><span class="fu">tool</span>(</span>
+<span id="cb56-34"><a href="#cb56-34" aria-hidden="true" tabindex="-1"></a>  <span class="cf">function</span>(career) {</span>
+<span id="cb56-35"><a href="#cb56-35" aria-hidden="true" tabindex="-1"></a>    programs[programs<span class="sc">$</span>career <span class="sc">==</span> career, <span class="fu">c</span>(<span class="st">"program"</span>, <span class="st">"type"</span>, <span class="st">"cost_usd"</span>)]</span>
+<span id="cb56-36"><a href="#cb56-36" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb56-37"><a href="#cb56-37" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"find_programs"</span>,</span>
+<span id="cb56-38"><a href="#cb56-38" aria-hidden="true" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">"Education Programs API: find programs for one career title."</span>,</span>
+<span id="cb56-39"><a href="#cb56-39" aria-hidden="true" tabindex="-1"></a>  <span class="at">arguments =</span> <span class="fu">list</span>(<span class="at">career =</span> ellmer<span class="sc">::</span><span class="fu">type_string</span>(<span class="st">"Career title, e.g. 'Teacher'."</span>))</span>
+<span id="cb56-40"><a href="#cb56-40" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb56-41"><a href="#cb56-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-42"><a href="#cb56-42" aria-hidden="true" tabindex="-1"></a>find_funding <span class="ot">&lt;-</span> ellmer<span class="sc">::</span><span class="fu">tool</span>(</span>
+<span id="cb56-43"><a href="#cb56-43" aria-hidden="true" tabindex="-1"></a>  <span class="cf">function</span>(program_type) {</span>
+<span id="cb56-44"><a href="#cb56-44" aria-hidden="true" tabindex="-1"></a>    funding[funding<span class="sc">$</span>program_type <span class="sc">==</span> program_type, <span class="fu">c</span>(<span class="st">"name"</span>, <span class="st">"amount"</span>)]</span>
+<span id="cb56-45"><a href="#cb56-45" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb56-46"><a href="#cb56-46" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"find_funding"</span>,</span>
+<span id="cb56-47"><a href="#cb56-47" aria-hidden="true" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">"Financial Aid API: find scholarships, grants and loans for one program type."</span>,</span>
+<span id="cb56-48"><a href="#cb56-48" aria-hidden="true" tabindex="-1"></a>  <span class="at">arguments =</span> <span class="fu">list</span>(</span>
+<span id="cb56-49"><a href="#cb56-49" aria-hidden="true" tabindex="-1"></a>    <span class="at">program_type =</span> ellmer<span class="sc">::</span><span class="fu">type_enum</span>(<span class="fu">c</span>(<span class="st">"bootcamp"</span>, <span class="st">"online"</span>, <span class="st">"college"</span>), <span class="st">"Program type."</span>)</span>
+<span id="cb56-50"><a href="#cb56-50" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb56-51"><a href="#cb56-51" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb56-52"><a href="#cb56-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-53"><a href="#cb56-53" aria-hidden="true" tabindex="-1"></a>advisor <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb56-54"><a href="#cb56-54" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"career_advisor"</span>,</span>
+<span id="cb56-55"><a href="#cb56-55" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"You are a career guidance advisor. Keep the final answer under 150 words."</span>,</span>
+<span id="cb56-56"><a href="#cb56-56" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb56-57"><a href="#cb56-57" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb56-58"><a href="#cb56-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-59"><a href="#cb56-59" aria-hidden="true" tabindex="-1"></a>advisor<span class="sc">$</span><span class="fu">register_tools</span>(<span class="fu">list</span>(search_careers, find_programs, find_funding))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>answer <span class="ot">&lt;-</span> advisor<span class="sc">$</span><span class="fu">plan_and_execute</span>(</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"I'm creative and love helping people. What career paths fit me,</span></span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a><span class="st">  what programs can help me get there, and how can I pay for it?"</span></span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(answer)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Based on your creativity and desire to help people, suitable career paths include UX Designer, Teacher, and Art Therapist. To prepare for these, you can consider the UX Design Bootcamp ($14,000), Teaching Certification online program ($5,000), or an M.A. in Art Therapy college program ($45,000). Financial aid options are available: the Creative Futures Scholarship can contribute $2,500 toward the bootcamp, the TEACH Grant offers up to $4,000 per year for the teaching program, and the Pell Grant provides up to $7,395 annually for the college program. These funding sources can help reduce your educational costs.</code></pre>
+</div>
+</div>
+<p><code>$last_plan</code> keeps the whole run: the original <code>prompt</code>, the final <code>answer</code>, and a <code>steps</code> data frame with each step the agent planned and what it found when it carried it out:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>steps <span class="ot">&lt;-</span> advisor<span class="sc">$</span>last_plan<span class="sc">$</span>steps</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(<span class="fu">nrow</span>(steps))) {</span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Step"</span>, i, <span class="st">":"</span>, steps<span class="sc">$</span>task[i], <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(steps<span class="sc">$</span>result[i], <span class="st">"</span><span class="sc">\n\n</span><span class="st">"</span>)</span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Step 1 : Use search_careers to find careers that match both creativity and helping people. 
+The careers that match your interests in creativity and helping people include UX Designer, Teacher, and Art Therapist. 
+
+Step 2 : Use find_programs to identify education programs for each career found. 
+Education programs for the careers found are:
+- UX Designer: UX Design Bootcamp (bootcamp, cost: $14,000)
+- Teacher: Teaching Certification (online, cost: $5,000)
+- Art Therapist: M.A. Art Therapy (college, cost: $45,000) 
+
+Step 3 : Use find_funding to find scholarships, grants, and loans available for each identified program. 
+Funding options for the programs are:
+- UX Design Bootcamp: Creative Futures Scholarship ($2,500)
+- Teaching Certification (online): TEACH Grant (up to $4,000 per year)
+- M.A. Art Therapy (college): Pell Grant (up to $7,395 per year) </code></pre>
+</div>
+</div>
+<p>Options:</p>
+<ul>
+<li><code>max_steps</code> caps the number of steps in the plan (6 by default). The agent is asked to use as few steps as the task needs, so most plans are shorter.</li>
+<li><code>stream = TRUE</code> prints the plan, then each step and the final answer as they are written. With <code>on_event</code>, you receive <code>"plan_created"</code>, <code>"step_started"</code>, <code>"step_completed"</code>, <code>"answer_started"</code> and <code>"plan_completed"</code> events, along with the usual Agent events.</li>
+<li>An agent without tools can plan and execute too: each step is then done by writing, for example drafting a text and then reviewing it.</li>
+</ul>
+<p>Everything runs in the agent’s own conversation, so its <code>messages</code>, cost, budget and memory work as with <code>$invoke()</code>. Every class built on <code>Agent</code>, such as <code>ReActAgent</code>, has <code>plan_and_execute()</code> too.</p>
+</section>
 <section id="cloning-an-agent" class="level2">
 <h2 class="anchored" data-anchor-id="cloning-an-agent">Cloning an Agent</h2>
 <p>If you want to create a new agent with the exact same characteristics, you can use the <code>clone_agent</code> method. Note that the new Agent can have the same name but it’ll have a different <code>ID</code>:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>rai_agent <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
-<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"Rai musician"</span>,</span>
-<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"You are an expert in Algerian Rai music"</span>,</span>
-<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
-<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> rai_agent<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"Give me a rai song in 1 sentence. Don't explain"</span>)</span>
-<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb55-9"><a href="#cb55-9" aria-hidden="true" tabindex="-1"></a>rai_agent<span class="sc">$</span>agent_id</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>rai_agent <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"Rai musician"</span>,</span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"You are an expert in Algerian Rai music"</span>,</span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> rai_agent<span class="sc">$</span><span class="fu">invoke</span>(<span class="st">"Give me a rai song in 1 sentence. Don't explain"</span>)</span>
+<span id="cb61-8"><a href="#cb61-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-9"><a href="#cb61-9" aria-hidden="true" tabindex="-1"></a>rai_agent<span class="sc">$</span>agent_id</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "d9c58e7e-221b-45ce-b338-806a3c2fd0b6"</code></pre>
+<pre><code>[1] "c50a7f79-bd63-489b-b421-b6cf67d437c1"</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>rai_agent<span class="sc">$</span>name</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>rai_agent<span class="sc">$</span>name</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "Rai musician"</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>rai_agent<span class="sc">$</span>instruction</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>rai_agent<span class="sc">$</span>instruction</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "You are an expert in Algerian Rai music"</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>rai_agent<span class="sc">$</span>messages</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>rai_agent<span class="sc">$</span>messages</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
 [[1]]$role
@@ -1072,25 +1201,25 @@ character(0)</code></pre>
 [1] "assistant"
 
 [[3]]$content
-[1] "\"Ya Rayah\" by Dahmane El Harrachi tells the story of a traveler longing for home and reflecting on the hardships of life."</code></pre>
+[1] "\"Ya Rayah\" by Dahmane El Harrachi is a classic rai song about the pain of exile and longing for home."</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>new_rai_agent <span class="ot">&lt;-</span> rai_agent<span class="sc">$</span><span class="fu">clone_agent</span>(<span class="at">new_name =</span> <span class="st">"Just Rai"</span>)</span>
-<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>new_rai_agent<span class="sc">$</span>agent_id</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>new_rai_agent <span class="ot">&lt;-</span> rai_agent<span class="sc">$</span><span class="fu">clone_agent</span>(<span class="at">new_name =</span> <span class="st">"Just Rai"</span>)</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>new_rai_agent<span class="sc">$</span>agent_id</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "1cae62df-7a33-4014-9deb-2c6d91695acc"</code></pre>
+<pre><code>[1] "56a5c77a-7875-4205-889a-009c871455d6"</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>new_rai_agent<span class="sc">$</span>name</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>new_rai_agent<span class="sc">$</span>name</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "Just Rai"</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>new_rai_agent<span class="sc">$</span>instruction</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>new_rai_agent<span class="sc">$</span>instruction</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "You are an expert in Algerian Rai music"</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>new_rai_agent<span class="sc">$</span>messages</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>new_rai_agent<span class="sc">$</span>messages</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
 [[1]]$role
@@ -1113,7 +1242,7 @@ character(0)</code></pre>
 [1] "assistant"
 
 [[3]]$content
-[1] "\"Ya Rayah\" by Dahmane El Harrachi tells the story of a traveler longing for home and reflecting on the hardships of life."</code></pre>
+[1] "\"Ya Rayah\" by Dahmane El Harrachi is a classic rai song about the pain of exile and longing for home."</code></pre>
 </div>
 </div>
 </section>
@@ -1135,23 +1264,23 @@ character(0)</code></pre>
 <section id="example-1-factual-content-validation" class="level4">
 <h4 class="anchored" data-anchor-id="example-1-factual-content-validation">Example 1: Factual Content Validation</h4>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>fact_checker <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
-<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"fact_checker"</span>,</span>
-<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"You are a factual assistant."</span>,</span>
-<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
-<span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb71-6"><a href="#cb71-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb71-7"><a href="#cb71-7" aria-hidden="true" tabindex="-1"></a>prompt <span class="ot">&lt;-</span> <span class="st">"What is the capital of Algeria?"</span></span>
-<span id="cb71-8"><a href="#cb71-8" aria-hidden="true" tabindex="-1"></a>response <span class="ot">&lt;-</span> fact_checker<span class="sc">$</span><span class="fu">invoke</span>(prompt)</span>
-<span id="cb71-9"><a href="#cb71-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb71-10"><a href="#cb71-10" aria-hidden="true" tabindex="-1"></a>validation <span class="ot">&lt;-</span> fact_checker<span class="sc">$</span><span class="fu">validate_response</span>(</span>
-<span id="cb71-11"><a href="#cb71-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">prompt =</span> prompt,</span>
-<span id="cb71-12"><a href="#cb71-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">response =</span> response,</span>
-<span id="cb71-13"><a href="#cb71-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">validation_criteria =</span> <span class="st">"The response must be factually accurate and mention Algiers as the capital"</span>,</span>
-<span id="cb71-14"><a href="#cb71-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">validation_score =</span> <span class="fl">0.8</span></span>
-<span id="cb71-15"><a href="#cb71-15" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb71-16"><a href="#cb71-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb71-17"><a href="#cb71-17" aria-hidden="true" tabindex="-1"></a>validation</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>fact_checker <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"fact_checker"</span>,</span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"You are a factual assistant."</span>,</span>
+<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb77-6"><a href="#cb77-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-7"><a href="#cb77-7" aria-hidden="true" tabindex="-1"></a>prompt <span class="ot">&lt;-</span> <span class="st">"What is the capital of Algeria?"</span></span>
+<span id="cb77-8"><a href="#cb77-8" aria-hidden="true" tabindex="-1"></a>response <span class="ot">&lt;-</span> fact_checker<span class="sc">$</span><span class="fu">invoke</span>(prompt)</span>
+<span id="cb77-9"><a href="#cb77-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-10"><a href="#cb77-10" aria-hidden="true" tabindex="-1"></a>validation <span class="ot">&lt;-</span> fact_checker<span class="sc">$</span><span class="fu">validate_response</span>(</span>
+<span id="cb77-11"><a href="#cb77-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">prompt =</span> prompt,</span>
+<span id="cb77-12"><a href="#cb77-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">response =</span> response,</span>
+<span id="cb77-13"><a href="#cb77-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">validation_criteria =</span> <span class="st">"The response must be factually accurate and mention Algiers as the capital"</span>,</span>
+<span id="cb77-14"><a href="#cb77-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">validation_score =</span> <span class="fl">0.8</span></span>
+<span id="cb77-15"><a href="#cb77-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb77-16"><a href="#cb77-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-17"><a href="#cb77-17" aria-hidden="true" tabindex="-1"></a>validation</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$prompt
 [1] "What is the capital of Algeria?"
@@ -1172,38 +1301,38 @@ $score
 [1] 1
 
 $feedback
-[1] "The response is factually accurate and correctly identifies Algiers as the capital of Algeria, meeting the validation criteria perfectly."</code></pre>
+[1] "The response is factually accurate and correctly identifies Algiers as the capital of Algeria, fully meeting the validation criteria."</code></pre>
 </div>
 </div>
 </section>
 <section id="example-2-content-length-and-style-validation" class="level4">
 <h4 class="anchored" data-anchor-id="example-2-content-length-and-style-validation">Example 2: Content Length and Style Validation</h4>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>content_agent <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
-<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"content_creator"</span>,</span>
-<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"You are a creative writing assistant."</span>,</span>
-<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
-<span id="cb73-5"><a href="#cb73-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb73-6"><a href="#cb73-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb73-7"><a href="#cb73-7" aria-hidden="true" tabindex="-1"></a>prompt <span class="ot">&lt;-</span> <span class="st">"Write a 1 sentence advertisment about an Algerian dates (the fruid)"</span></span>
-<span id="cb73-8"><a href="#cb73-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb73-9"><a href="#cb73-9" aria-hidden="true" tabindex="-1"></a>response <span class="ot">&lt;-</span> content_agent<span class="sc">$</span><span class="fu">invoke</span>(prompt)</span>
-<span id="cb73-10"><a href="#cb73-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb73-11"><a href="#cb73-11" aria-hidden="true" tabindex="-1"></a>validation <span class="ot">&lt;-</span> content_agent<span class="sc">$</span><span class="fu">validate_response</span>(</span>
-<span id="cb73-12"><a href="#cb73-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">prompt =</span> prompt,</span>
-<span id="cb73-13"><a href="#cb73-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">response =</span> response,</span>
-<span id="cb73-14"><a href="#cb73-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">validation_criteria =</span> <span class="st">"Response must be under 100 words, professional tone, and highlight Algerian dates"</span>,</span>
-<span id="cb73-15"><a href="#cb73-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">validation_score =</span> <span class="fl">0.75</span></span>
-<span id="cb73-16"><a href="#cb73-16" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb73-17"><a href="#cb73-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb73-18"><a href="#cb73-18" aria-hidden="true" tabindex="-1"></a>validation</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>content_agent <span class="ot">&lt;-</span> Agent<span class="sc">$</span><span class="fu">new</span>(</span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"content_creator"</span>,</span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">instruction =</span> <span class="st">"You are a creative writing assistant."</span>,</span>
+<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">llm_object =</span> openai_4_1_mini</span>
+<span id="cb79-5"><a href="#cb79-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb79-6"><a href="#cb79-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-7"><a href="#cb79-7" aria-hidden="true" tabindex="-1"></a>prompt <span class="ot">&lt;-</span> <span class="st">"Write a 1 sentence advertisment about an Algerian dates (the fruid)"</span></span>
+<span id="cb79-8"><a href="#cb79-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-9"><a href="#cb79-9" aria-hidden="true" tabindex="-1"></a>response <span class="ot">&lt;-</span> content_agent<span class="sc">$</span><span class="fu">invoke</span>(prompt)</span>
+<span id="cb79-10"><a href="#cb79-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-11"><a href="#cb79-11" aria-hidden="true" tabindex="-1"></a>validation <span class="ot">&lt;-</span> content_agent<span class="sc">$</span><span class="fu">validate_response</span>(</span>
+<span id="cb79-12"><a href="#cb79-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">prompt =</span> prompt,</span>
+<span id="cb79-13"><a href="#cb79-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">response =</span> response,</span>
+<span id="cb79-14"><a href="#cb79-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">validation_criteria =</span> <span class="st">"Response must be under 100 words, professional tone, and highlight Algerian dates"</span>,</span>
+<span id="cb79-15"><a href="#cb79-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">validation_score =</span> <span class="fl">0.75</span></span>
+<span id="cb79-16"><a href="#cb79-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb79-17"><a href="#cb79-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-18"><a href="#cb79-18" aria-hidden="true" tabindex="-1"></a>validation</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$prompt
 [1] "Write a 1 sentence advertisment about an Algerian dates (the fruid)"
 
 $response
-Savor the rich, natural sweetness of authentic Algerian dates—nature’s perfect 
-energy bite from the heart of the Sahara!
+Savor the rich, sun-kissed sweetness of authentic Algerian dates – nature’s 
+finest delight packed with natural energy and tradition!
 
 $validation_criteria
 [1] "Response must be under 100 words, professional tone, and highlight Algerian dates"
@@ -1218,7 +1347,7 @@ $score
 [1] 1
 
 $feedback
-[1] "The response is concise, under 100 words, maintains a professional and appealing tone, and effectively highlights Algerian dates by emphasizing their authenticity, natural sweetness, and origin from the Sahara. It perfectly meets all the specified criteria."</code></pre>
+[1] "The response is a single sentence advertisement that highlights Algerian dates effectively. It maintains a professional tone and is well under the 100-word limit. The wording emphasizes quality, authenticity, and appealing attributes like natural energy and tradition, meeting all specified criteria."</code></pre>
 </div>
 </div>
 </section>

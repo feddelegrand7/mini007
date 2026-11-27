@@ -376,6 +376,127 @@ agent$generate_execute_r_code(
 ```
 
 
+## Plan and execute
+
+`plan_and_execute()` lets an `Agent` work through a task in three stages:
+
+1. **Plan up front**: the agent writes the full list of steps before doing
+   anything. It knows which tools it will have, but cannot call them yet.
+2. **Execute the steps in order**: each step is one call to the agent, which
+   can use its tools and sees the results of the earlier steps.
+3. **Write the final answer** by combining the results of all the steps.
+
+The plan is made once and followed as written. This makes it cheaper and more
+predictable than a [ReActAgent](react.qmd), which decides its next move after
+every observation, but less adaptive when a step turns up something
+unexpected. It works best when the task can be broken down in advance.
+
+In the example below, a career advisor answers *"I'm creative and love helping
+people. What career paths fit me, what programs can help me get there, and how
+can I pay for it?"*. The steps are easy to foresee (find careers, then
+programs, then funding), so we give the agent one tool for each. Small,
+made-up tables stand in for real services, so the example runs anywhere:
+
+```{r}
+careers <- data.frame(
+  career = c("UX Designer", "Teacher", "Art Therapist", "Data Analyst"),
+  interests = c(
+    "creative design helping",
+    "helping teaching creative",
+    "creative art helping",
+    "math analysis"
+  )
+)
+
+programs <- data.frame(
+  career = c("UX Designer", "Teacher", "Art Therapist"),
+  program = c("UX Design Bootcamp", "Teaching Certification", "M.A. Art Therapy"),
+  type = c("bootcamp", "online", "college"),
+  cost_usd = c(14000, 5000, 45000)
+)
+
+funding <- data.frame(
+  name = c("Creative Futures Scholarship", "TEACH Grant", "Pell Grant"),
+  program_type = c("bootcamp", "online", "college"),
+  amount = c("$2,500", "up to $4,000 per year", "up to $7,395 per year")
+)
+
+search_careers <- ellmer::tool(
+  function(interest) {
+    careers$career[grepl(tolower(interest), careers$interests)]
+  },
+  name = "search_careers",
+  description = "Career Database API: find careers that match one interest.",
+  arguments = list(interest = ellmer::type_string("One interest, e.g. 'creative'."))
+)
+
+find_programs <- ellmer::tool(
+  function(career) {
+    programs[programs$career == career, c("program", "type", "cost_usd")]
+  },
+  name = "find_programs",
+  description = "Education Programs API: find programs for one career title.",
+  arguments = list(career = ellmer::type_string("Career title, e.g. 'Teacher'."))
+)
+
+find_funding <- ellmer::tool(
+  function(program_type) {
+    funding[funding$program_type == program_type, c("name", "amount")]
+  },
+  name = "find_funding",
+  description = "Financial Aid API: find scholarships, grants and loans for one program type.",
+  arguments = list(
+    program_type = ellmer::type_enum(c("bootcamp", "online", "college"), "Program type.")
+  )
+)
+
+advisor <- Agent$new(
+  name = "career_advisor",
+  instruction = "You are a career guidance advisor. Keep the final answer under 150 words.",
+  llm_object = openai_4_1_mini
+)
+
+advisor$register_tools(list(search_careers, find_programs, find_funding))
+```
+
+```{r}
+answer <- advisor$plan_and_execute(
+  "I'm creative and love helping people. What career paths fit me,
+  what programs can help me get there, and how can I pay for it?"
+)
+
+cat(answer)
+```
+
+`$last_plan` keeps the whole run: the original `prompt`, the final `answer`,
+and a `steps` data frame with each step the agent planned and what it found
+when it carried it out:
+
+```{r}
+steps <- advisor$last_plan$steps
+
+for (i in seq_len(nrow(steps))) {
+  cat("Step", i, ":", steps$task[i], "\n")
+  cat(steps$result[i], "\n\n")
+}
+```
+
+Options:
+
+- `max_steps` caps the number of steps in the plan (6 by default). The agent
+  is asked to use as few steps as the task needs, so most plans are shorter.
+- `stream = TRUE` prints the plan, then each step and the final answer as they
+  are written. With `on_event`, you receive `"plan_created"`,
+  `"step_started"`, `"step_completed"`, `"answer_started"` and
+  `"plan_completed"` events, along with the usual Agent events.
+- An agent without tools can plan and execute too: each step is then done by
+  writing, for example drafting a text and then reviewing it.
+
+Everything runs in the agent's own conversation, so its `messages`, cost,
+budget and memory work as with `$invoke()`. Every class built on `Agent`,
+such as `ReActAgent`, has `plan_and_execute()` too.
+
+
 ## Cloning an Agent
 
 If you want to create a new agent with the exact same characteristics, you can use the `clone_agent` method. Note that the new Agent can have the same name but it'll have a different `ID`: 

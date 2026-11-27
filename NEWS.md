@@ -1,5 +1,21 @@
 # mini007 (development version)
 
+#### Plan-and-execute
+
+- New `Agent$plan_and_execute(prompt, max_steps = 6)`: the agent first
+  makes a plan (one LLM call that returns the ordered steps, with the
+  agent's tools listed but not callable), then carries out the steps in
+  order, each one able to use the agent's tools and the earlier results, and
+  finally combines the results into the answer. Usually cheaper and more
+  predictable than a `ReActAgent` loop, but the plan is not revised along
+  the way.
+- `$last_plan` keeps the plan, each step's result and the final answer.
+- Every `Agent` subclass inherits it. Messages, cost, budget and memory
+  work as with `$invoke()`, and with `stream = TRUE` the plan, each step and
+  the answer are printed as they happen (`"plan_created"`,
+  `"step_started"`, `"step_completed"`, `"answer_started"` and
+  `"plan_completed"` events).
+
 #### Routing
 
 - New `RouterAgent` class: it classifies each request and sends it, whole,

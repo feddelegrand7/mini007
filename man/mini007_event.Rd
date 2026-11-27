@@ -51,6 +51,10 @@ way for the reasoning of reasoning models.
 \describe{
   \item{Agent}{`"agent_started"`, `"text_delta"`, `"thinking_delta"`,
     `"tool_call"`, `"tool_result"`, `"agent_completed"`.}
+  \item{Agent$plan_and_execute()}{`"plan_created"`, then for each step
+    `"step_started"`, the step's Agent events (tagged with `step`) and
+    `"step_completed"`, then `"answer_started"`, the answer's Agent events
+    and `"plan_completed"`.}
   \item{Workflow}{`"workflow_started"`, `"station_started"`,
     `"station_retry"`, `"station_fallback"`, `"station_completed"`,
     `"hitl_request"`, `"workflow_output"`, `"workflow_failed"`.}
