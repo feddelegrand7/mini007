@@ -1,5 +1,71 @@
 # mini007 (development version)
 
+#### ReAct agents
+
+- New `ReActAgent` class: an `Agent` that answers by looping through Think
+  (it states what it knows and needs next), Act (it calls its tools) and
+  Observe (it reads the results) until it can answer without a tool.
+  Tools are passed to `ReActAgent$new(tools = )` or `$register_tools()`.
+- `$trace` holds the steps of the last run as a data frame (`step`, `type`,
+  `tool`, `content`, `is_error`), and `$print_trace()` prints them.
+- `max_steps` (default 10) caps the tool-using steps in one run: further
+  tool calls are refused and the LLM is asked to answer with what it has; if
+  it keeps calling tools, the run stops with an error of class
+  `mini007_react_step_limit`.
+- A `ReActAgent` keeps everything an `Agent` does (budget, memory,
+  streaming, cloning) and can be registered with a `LeadAgent` or used as a
+  `Workflow` station.
+
+#### Learning from experience
+
+A new `Memory` class lets agents learn from past tasks, within a session or
+across sessions:
+
+- `LeadAgent$set_validation(criteria, threshold, max_reassign)` judges every
+  delegated step from 0 to 1. A step scoring below `threshold` is handed to
+  the next best agent, up to `max_reassign` times, and the best-scoring
+  attempt is kept, and `$plan` is updated so that re-running the same prompt
+  starts with the agent that did best. Each step in `agents_interaction`
+  gains `score`, `feedback`, `valid` and `attempts`. While streaming, this emits
+  `"task_validated"` and `"task_reassigned"` events.
+- `$set_memory(Memory$new(path = ...))` on a `LeadAgent` records every judged
+  step as an outcome and distills a short lesson from it, in the same LLM call
+  as the judging. Each agent's track record (`$agent_track_record()`) is shown
+  to the LLM when it chooses an agent for a subtask, and the lessons most
+  relevant to a subtask are added to the prompt of the agent it is delegated
+  to.
+- HITL decisions are recorded as outcomes too, and an HITL edit is distilled
+  into a lesson.
+- On a plain `Agent`, `$set_memory()` adds the relevant lessons in front of
+  each `$invoke()` prompt, and `$learn(validation)` stores a lesson from a
+  `$validate_response()` result.
+- Lessons are retrieved by keyword relevance (BM25) with no new dependency;
+  `Memory$new(search_fn = )` plugs in another retriever. A `Memory` with a
+  `path` is saved as JSON after every change and reloaded on creation.
+- `$clone_agent()` keeps sharing the original agent's memory.
+
+#### Custom model prices
+
+- New `set_prices()`, `get_prices()` and `clear_prices()` register a model's
+  price (USD per million tokens) for the session. ellmer returns a cost of
+  `NA` for models missing from its price table (eg. models newer than the
+  installed ellmer); agents now compute their cost, and enforce their budget,
+  from the registered price instead. Registered prices also override
+  ellmer's.
+- New `llm_cost()` returns the cost of an ellmer chat, using the registered
+  prices when there is one for its model.
+- An agent with a budget no longer fails on its second `$invoke()` with
+  "missing value where TRUE/FALSE needed" when the cost of its model is
+  unknown: it warns once that the budget cannot be enforced.
+
+#### Minor fixes
+
+- The `LeadAgent` agent-matching step now restores the lead agent's system
+  prompt even when the LLM returns an invalid agent ID, and that error now
+  shows the ID it received.
+- `jsonlite`, already used to export and load message histories, is now
+  declared in `Imports`.
+
 #### Streaming
 
 `Agent$invoke()`, `Workflow$run()` / `$resume()`, `WorkflowAgent$invoke()`

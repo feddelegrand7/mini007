@@ -390,6 +390,40 @@ lead_agent$broadcast(
 }
 
 ## ------------------------------------------------
+## Method `LeadAgent$set_validation`
+## ------------------------------------------------
+
+\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+researcher <- Agent$new(
+  name = "researcher",
+  instruction = "You answer factual questions in at most 2 lines.",
+  llm_object = openai_4_1_mini
+)
+translator <- Agent$new(
+  name = "translator",
+  instruction = "You translate English text to German.",
+  llm_object = openai_4_1_mini
+)
+lead_agent <- LeadAgent$new(name = "Leader", llm_object = openai_4_1_mini)
+lead_agent$register_agents(c(researcher, translator))
+
+lead_agent$set_memory(Memory$new(path = "team_memory.json"))
+lead_agent$set_validation(
+  criteria = "Accurate, complete, and in the language the task asks for.",
+  threshold = 0.7
+)
+
+lead_agent$invoke("Describe Algeria's economy in 3 sentences, in German.")
+lead_agent$agent_track_record()
+lead_agent$memory$lessons
+}
+
+## ------------------------------------------------
 ## Method `LeadAgent$judge_and_choose_best_response`
 ## ------------------------------------------------
 
@@ -512,6 +546,9 @@ the default) or `"pause"` (non-blocking: \code{$invoke()} returns a
 \item{\code{broadcast_history}}{A list storing the history of broadcast interactions}
 
 \item{\code{n_daemons}}{Number of parallel daemons used for parallel broadcast. Set via \code{$set_daemons()}.}
+
+\item{\code{validation}}{The validation settings (`criteria`, `threshold`,
+`max_reassign`) set via \code{$set_validation()}, or `NULL`.}
 }
 \if{html}{\out{</div>}}
 }
@@ -529,6 +566,8 @@ the default) or `"pause"` (non-blocking: \code{$invoke()} returns a
 \item \href{#method-LeadAgent-set_daemons}{\code{LeadAgent$set_daemons()}}
 \item \href{#method-LeadAgent-broadcast}{\code{LeadAgent$broadcast()}}
 \item \href{#method-LeadAgent-set_hitl}{\code{LeadAgent$set_hitl()}}
+\item \href{#method-LeadAgent-set_validation}{\code{LeadAgent$set_validation()}}
+\item \href{#method-LeadAgent-agent_track_record}{\code{LeadAgent$agent_track_record()}}
 \item \href{#method-LeadAgent-judge_and_choose_best_response}{\code{LeadAgent$judge_and_choose_best_response()}}
 \item \href{#method-LeadAgent-agents_dialog}{\code{LeadAgent$agents_dialog()}}
 \item \href{#method-LeadAgent-clone}{\code{LeadAgent$clone()}}
@@ -546,6 +585,7 @@ the default) or `"pause"` (non-blocking: \code{$invoke()} returns a
 <li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="generate_execute_r_code"><a href='../../mini007/html/Agent.html#method-Agent-generate_execute_r_code'><code>mini007::Agent$generate_execute_r_code()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="get_usage_stats"><a href='../../mini007/html/Agent.html#method-Agent-get_usage_stats'><code>mini007::Agent$get_usage_stats()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="keep_last_n_messages"><a href='../../mini007/html/Agent.html#method-Agent-keep_last_n_messages'><code>mini007::Agent$keep_last_n_messages()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="learn"><a href='../../mini007/html/Agent.html#method-Agent-learn'><code>mini007::Agent$learn()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="list_tools"><a href='../../mini007/html/Agent.html#method-Agent-list_tools'><code>mini007::Agent$list_tools()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="load_messages_history"><a href='../../mini007/html/Agent.html#method-Agent-load_messages_history'><code>mini007::Agent$load_messages_history()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="register_tools"><a href='../../mini007/html/Agent.html#method-Agent-register_tools'><code>mini007::Agent$register_tools()</code></a></span></li>
@@ -553,6 +593,7 @@ the default) or `"pause"` (non-blocking: \code{$invoke()} returns a
 <li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="reset_conversation_history"><a href='../../mini007/html/Agent.html#method-Agent-reset_conversation_history'><code>mini007::Agent$reset_conversation_history()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="set_budget"><a href='../../mini007/html/Agent.html#method-Agent-set_budget'><code>mini007::Agent$set_budget()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="set_budget_policy"><a href='../../mini007/html/Agent.html#method-Agent-set_budget_policy'><code>mini007::Agent$set_budget_policy()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="set_memory"><a href='../../mini007/html/Agent.html#method-Agent-set_memory'><code>mini007::Agent$set_memory()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="share_context_with"><a href='../../mini007/html/Agent.html#method-Agent-share_context_with'><code>mini007::Agent$share_context_with()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="update_instruction"><a href='../../mini007/html/Agent.html#method-Agent-update_instruction'><code>mini007::Agent$update_instruction()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="mini007" data-topic="Agent" data-id="validate_response"><a href='../../mini007/html/Agent.html#method-Agent-validate_response'><code>mini007::Agent$validate_response()</code></a></span></li>
@@ -1210,6 +1251,105 @@ A list of responses from all agents.
 
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-LeadAgent-set_validation"></a>}}
+\if{latex}{\out{\hypertarget{method-LeadAgent-set_validation}{}}}
+\subsection{Method \code{set_validation()}}{
+Validate every delegated step of \code{$invoke()}. Each response is
+scored from 0 to 1 against `criteria` by the lead agent's LLM. A
+response scoring below `threshold` is handed to the next best agent,
+up to `max_reassign` times, and the best-scoring attempt is kept. The
+score, feedback and every attempt are stored in `agents_interaction`,
+and when another agent did best, `plan` is updated so that re-running
+the same prompt starts with that agent.
+
+Combined with \code{$set_memory()}, this is how a `LeadAgent` learns:
+\itemize{
+  \item every judged step is recorded as an outcome, building each
+    agent's track record (see \code{$agent_track_record()}), which is
+    shown to the LLM when it chooses an agent for a task;
+  \item the same judging call distills a short lesson from the step,
+    and the lessons most relevant to a task are added to the prompt of
+    the agent it is delegated to;
+  \item HITL decisions are recorded as outcomes too, and an HITL edit
+    is distilled into a lesson.
+}
+With a `Memory` saved to a file, all of this carries over to the next
+session.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{LeadAgent$set_validation(criteria, threshold = 0.7, max_reassign = 1)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{criteria}}{`[character(1) | NULL]` What a good response looks
+like. `NULL` turns validation off.}
+
+\item{\code{threshold}}{`[numeric(1)]` Minimum score (0 to 1) for a response
+to pass. Default 0.7.}
+
+\item{\code{max_reassign}}{`[integerish(1)]` How many times a rejected step can
+be handed to another agent. Default 1. Use 0 to only score responses.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Invisibly, `self`.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+openai_4_1_mini <- ellmer::chat(
+  name = "openai/gpt-4.1-mini",
+  api_key = Sys.getenv("OPENAI_API_KEY"),
+  echo = "none"
+)
+researcher <- Agent$new(
+  name = "researcher",
+  instruction = "You answer factual questions in at most 2 lines.",
+  llm_object = openai_4_1_mini
+)
+translator <- Agent$new(
+  name = "translator",
+  instruction = "You translate English text to German.",
+  llm_object = openai_4_1_mini
+)
+lead_agent <- LeadAgent$new(name = "Leader", llm_object = openai_4_1_mini)
+lead_agent$register_agents(c(researcher, translator))
+
+lead_agent$set_memory(Memory$new(path = "team_memory.json"))
+lead_agent$set_validation(
+  criteria = "Accurate, complete, and in the language the task asks for.",
+  threshold = 0.7
+)
+
+lead_agent$invoke("Describe Algeria's economy in 3 sentences, in German.")
+lead_agent$agent_track_record()
+lead_agent$memory$lessons
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-LeadAgent-agent_track_record"></a>}}
+\if{latex}{\out{\hypertarget{method-LeadAgent-agent_track_record}{}}}
+\subsection{Method \code{agent_track_record()}}{
+Summarise the recorded outcomes of every registered agent. Requires a
+memory (see \code{$set_memory()}).
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{LeadAgent$agent_track_record()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A data frame with columns `agent_name`, `n_tasks`,
+  `n_success`, `success_rate` and `mean_score`, one row per registered
+  agent.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-LeadAgent-judge_and_choose_best_response"></a>}}

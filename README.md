@@ -204,6 +204,31 @@ Raising an error inside `on_event` cancels the run cleanly. See the
 article](https://feddelegrand7.github.io/mini007/streaming.html) for the
 full event reference.
 
+### Learning from experience
+
+A `Memory` lets agents learn from past tasks. With `$set_validation()`,
+a `LeadAgent` scores every delegated step and reassigns the ones that
+fall short; with a `Memory` attached, it also records each agent’s track
+record and distills a short lesson from every judged step (and from
+every HITL edit). Track records guide which agent gets a subtask, and
+the most relevant lessons are added to the prompt of the agent doing it.
+Saved to a file, all of this carries over to the next session.
+
+``` r
+lead_agent$set_memory(Memory$new(path = "team_memory.json"))
+lead_agent$set_validation(
+  criteria = "Accurate, complete, and in the language the task asks for.",
+  threshold = 0.7
+)
+
+lead_agent$invoke("Describe Algeria's economy in 3 sentences, in German.")
+lead_agent$agent_track_record()
+```
+
+See the [Learning
+article](https://feddelegrand7.github.io/mini007/learning.html) for
+details.
+
 ## Installation
 
 You can install `mini007` from `CRAN` with:

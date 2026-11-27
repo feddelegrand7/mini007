@@ -45,6 +45,9 @@ tackle complex tasks that benefit from specialised, collaborating LLM workers.
   human can review, edit, or stop the response before it continues.
 - 📡 **Streaming**: watch tokens, tool calls, and workflow progress arrive in
   real time with `stream = TRUE` or an `on_event` callback.
+- 🧠 **Learning**: validate every delegated step, reassign the ones that
+  fall short, and keep track records and lessons in a `Memory` that later
+  tasks (and sessions) benefit from.
 - 🌐 **Model-agnostic**: swap the underlying LLM without changing any
   orchestration logic.
 
@@ -245,4 +248,5 @@ Navigate through the pages in the top navigation bar:
 - **Tools** — building and registering custom tools.
 - **Workflow** — sequential pipelines, conditional routing, caching, and nesting.
 - **Streaming** — real-time tokens, tool calls, and progress events for agents, workflows, and lead agents.
+- **Learning** — validation, reassignment, track records, and lessons that carry over between sessions.
 - **Testing** — utilities for writing tests against LLM responses.

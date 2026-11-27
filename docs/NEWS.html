@@ -268,6 +268,10 @@ ul.task-list li input[type="checkbox"] {
 <span class="menu-text">LeadAgent</span></a>
   </li>  
   <li class="nav-item">
+    <a class="nav-link" href="./react.html"> 
+<span class="menu-text">ReActAgent</span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link" href="./tools.html"> 
 <span class="menu-text">Tools</span></a>
   </li>  
@@ -278,6 +282,10 @@ ul.task-list li input[type="checkbox"] {
   <li class="nav-item">
     <a class="nav-link" href="./streaming.html"> 
 <span class="menu-text">Streaming</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./learning.html"> 
+<span class="menu-text">Learning</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./testing.html"> 
@@ -331,6 +339,42 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="mini007-development-version" class="level1">
 <h1>mini007 (development version)</h1>
+<section id="react-agents" class="level4">
+<h4 class="anchored" data-anchor-id="react-agents">ReAct agents</h4>
+<ul>
+<li>New <code>ReActAgent</code> class: an <code>Agent</code> that answers by looping through Think (it states what it knows and needs next), Act (it calls its tools) and Observe (it reads the results) until it can answer without a tool. Tools are passed to <code>ReActAgent$new(tools = )</code> or <code>$register_tools()</code>.</li>
+<li><code>$trace</code> holds the steps of the last run as a data frame (<code>step</code>, <code>type</code>, <code>tool</code>, <code>content</code>, <code>is_error</code>), and <code>$print_trace()</code> prints them.</li>
+<li><code>max_steps</code> (default 10) caps the tool-using steps in one run: further tool calls are refused and the LLM is asked to answer with what it has; if it keeps calling tools, the run stops with an error of class <code>mini007_react_step_limit</code>.</li>
+<li>A <code>ReActAgent</code> keeps everything an <code>Agent</code> does (budget, memory, streaming, cloning) and can be registered with a <code>LeadAgent</code> or used as a <code>Workflow</code> station.</li>
+</ul>
+</section>
+<section id="learning-from-experience" class="level4">
+<h4 class="anchored" data-anchor-id="learning-from-experience">Learning from experience</h4>
+<p>A new <code>Memory</code> class lets agents learn from past tasks, within a session or across sessions:</p>
+<ul>
+<li><code>LeadAgent$set_validation(criteria, threshold, max_reassign)</code> judges every delegated step from 0 to 1. A step scoring below <code>threshold</code> is handed to the next best agent, up to <code>max_reassign</code> times, and the best-scoring attempt is kept, and <code>$plan</code> is updated so that re-running the same prompt starts with the agent that did best. Each step in <code>agents_interaction</code> gains <code>score</code>, <code>feedback</code>, <code>valid</code> and <code>attempts</code>. While streaming, this emits <code>"task_validated"</code> and <code>"task_reassigned"</code> events.</li>
+<li><code>$set_memory(Memory$new(path = ...))</code> on a <code>LeadAgent</code> records every judged step as an outcome and distills a short lesson from it, in the same LLM call as the judging. Each agent’s track record (<code>$agent_track_record()</code>) is shown to the LLM when it chooses an agent for a subtask, and the lessons most relevant to a subtask are added to the prompt of the agent it is delegated to.</li>
+<li>HITL decisions are recorded as outcomes too, and an HITL edit is distilled into a lesson.</li>
+<li>On a plain <code>Agent</code>, <code>$set_memory()</code> adds the relevant lessons in front of each <code>$invoke()</code> prompt, and <code>$learn(validation)</code> stores a lesson from a <code>$validate_response()</code> result.</li>
+<li>Lessons are retrieved by keyword relevance (BM25) with no new dependency; <code>Memory$new(search_fn = )</code> plugs in another retriever. A <code>Memory</code> with a <code>path</code> is saved as JSON after every change and reloaded on creation.</li>
+<li><code>$clone_agent()</code> keeps sharing the original agent’s memory.</li>
+</ul>
+</section>
+<section id="custom-model-prices" class="level4">
+<h4 class="anchored" data-anchor-id="custom-model-prices">Custom model prices</h4>
+<ul>
+<li>New <code>set_prices()</code>, <code>get_prices()</code> and <code>clear_prices()</code> register a model’s price (USD per million tokens) for the session. ellmer returns a cost of <code>NA</code> for models missing from its price table (eg. models newer than the installed ellmer); agents now compute their cost, and enforce their budget, from the registered price instead. Registered prices also override ellmer’s.</li>
+<li>New <code>llm_cost()</code> returns the cost of an ellmer chat, using the registered prices when there is one for its model.</li>
+<li>An agent with a budget no longer fails on its second <code>$invoke()</code> with “missing value where TRUE/FALSE needed” when the cost of its model is unknown: it warns once that the budget cannot be enforced.</li>
+</ul>
+</section>
+<section id="minor-fixes" class="level4">
+<h4 class="anchored" data-anchor-id="minor-fixes">Minor fixes</h4>
+<ul>
+<li>The <code>LeadAgent</code> agent-matching step now restores the lead agent’s system prompt even when the LLM returns an invalid agent ID, and that error now shows the ID it received.</li>
+<li><code>jsonlite</code>, already used to export and load message histories, is now declared in <code>Imports</code>.</li>
+</ul>
+</section>
 <section id="streaming" class="level4">
 <h4 class="anchored" data-anchor-id="streaming">Streaming</h4>
 <p><code>Agent$invoke()</code>, <code>Workflow$run()</code> / <code>$resume()</code>, <code>WorkflowAgent$invoke()</code> and <code>LeadAgent$invoke()</code> / <code>$resume()</code> gain <code>stream = FALSE</code> and <code>on_event = NULL</code> arguments, so you can follow their progress while they run instead of waiting for the final answer:</p>

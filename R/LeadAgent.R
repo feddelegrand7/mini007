@@ -40,6 +40,9 @@ LeadAgent <- R6::R6Class(
     broadcast_history = list(),
     #' @field n_daemons Number of parallel daemons used for parallel broadcast. Set via \code{$set_daemons()}.
     n_daemons = NULL,
+    #' @field validation The validation settings (`criteria`, `threshold`,
+    #'   `max_reassign`) set via \code{$set_validation()}, or `NULL`.
+    validation = NULL,
 
     #' @description
     #' Initializes the LeadAgent with a built-in task-decomposition prompt.
@@ -435,6 +438,8 @@ LeadAgent <- R6::R6Class(
       step_index <- pending$step
       step <- self$agents_interaction[[step_index]]
 
+      private$.remember_hitl(step, action, edited_response = value)
+
       if (identical(action, "abort")) {
         cli::cli_alert_danger("Workflow manually stopped at step {step_index}.")
         cli::cli_abort("HITL: Execution stopped by user.")
@@ -783,6 +788,103 @@ LeadAgent <- R6::R6Class(
     },
 
     #' @description
+    #' Validate every delegated step of \code{$invoke()}. Each response is
+    #' scored from 0 to 1 against `criteria` by the lead agent's LLM. A
+    #' response scoring below `threshold` is handed to the next best agent,
+    #' up to `max_reassign` times, and the best-scoring attempt is kept. The
+    #' score, feedback and every attempt are stored in `agents_interaction`,
+    #' and when another agent did best, `plan` is updated so that re-running
+    #' the same prompt starts with that agent.
+    #'
+    #' Combined with \code{$set_memory()}, this is how a `LeadAgent` learns:
+    #' \itemize{
+    #'   \item every judged step is recorded as an outcome, building each
+    #'     agent's track record (see \code{$agent_track_record()}), which is
+    #'     shown to the LLM when it chooses an agent for a task;
+    #'   \item the same judging call distills a short lesson from the step,
+    #'     and the lessons most relevant to a task are added to the prompt of
+    #'     the agent it is delegated to;
+    #'   \item HITL decisions are recorded as outcomes too, and an HITL edit
+    #'     is distilled into a lesson.
+    #' }
+    #' With a `Memory` saved to a file, all of this carries over to the next
+    #' session.
+    #' @param criteria `[character(1) | NULL]` What a good response looks
+    #'   like. `NULL` turns validation off.
+    #' @param threshold `[numeric(1)]` Minimum score (0 to 1) for a response
+    #'   to pass. Default 0.7.
+    #' @param max_reassign `[integerish(1)]` How many times a rejected step can
+    #'   be handed to another agent. Default 1. Use 0 to only score responses.
+    #' @return Invisibly, `self`.
+    #' @examples \dontrun{
+    #' openai_4_1_mini <- ellmer::chat(
+    #'   name = "openai/gpt-4.1-mini",
+    #'   api_key = Sys.getenv("OPENAI_API_KEY"),
+    #'   echo = "none"
+    #' )
+    #' researcher <- Agent$new(
+    #'   name = "researcher",
+    #'   instruction = "You answer factual questions in at most 2 lines.",
+    #'   llm_object = openai_4_1_mini
+    #' )
+    #' translator <- Agent$new(
+    #'   name = "translator",
+    #'   instruction = "You translate English text to German.",
+    #'   llm_object = openai_4_1_mini
+    #' )
+    #' lead_agent <- LeadAgent$new(name = "Leader", llm_object = openai_4_1_mini)
+    #' lead_agent$register_agents(c(researcher, translator))
+    #'
+    #' lead_agent$set_memory(Memory$new(path = "team_memory.json"))
+    #' lead_agent$set_validation(
+    #'   criteria = "Accurate, complete, and in the language the task asks for.",
+    #'   threshold = 0.7
+    #' )
+    #'
+    #' lead_agent$invoke("Describe Algeria's economy in 3 sentences, in German.")
+    #' lead_agent$agent_track_record()
+    #' lead_agent$memory$lessons
+    #' }
+    set_validation = function(criteria, threshold = 0.7, max_reassign = 1) {
+      checkmate::assert_string(criteria, min.chars = 1, null.ok = TRUE)
+      checkmate::assert_number(threshold, lower = 0, upper = 1)
+      checkmate::assert_int(max_reassign, lower = 0)
+
+      if (is.null(criteria)) {
+        self$validation <- NULL
+        cli::cli_alert_success("Validation turned off.")
+        return(invisible(self))
+      }
+
+      self$validation <- list(
+        criteria = criteria,
+        threshold = threshold,
+        max_reassign = as.integer(max_reassign)
+      )
+
+      cli::cli_alert_success(
+        "Validation set: threshold {threshold}, up to {max_reassign} reassignment{?s} per step."
+      )
+
+      invisible(self)
+    },
+
+    #' @description
+    #' Summarise the recorded outcomes of every registered agent. Requires a
+    #' memory (see \code{$set_memory()}).
+    #' @return A data frame with columns `agent_name`, `n_tasks`,
+    #'   `n_success`, `success_rate` and `mean_score`, one row per registered
+    #'   agent.
+    agent_track_record = function() {
+      if (is.null(self$memory)) {
+        cli::cli_abort("No memory attached. Call {.fn set_memory} first.")
+      }
+
+      agent_names <- vapply(self$agents, function(agent) agent$name, character(1))
+      self$memory$track_record(unique(agent_names))
+    },
+
+    #' @description
     #' The Lead Agent send a prompt to its registered agents and choose the best response
     #' from the agents' responses
     #' @param prompt The prompt to send to the registered agents
@@ -1125,23 +1227,16 @@ LeadAgent <- R6::R6Class(
           )
         }
 
-        emit_event(on_event, new_event(
-          "task_started", self$name,
-          task = i, agent = step$agent_name, prompt = prompt_to_consider
-        ))
-
-        response <- invoke_with_events(
-          selected_agent, prompt_to_consider,
-          forward_events(on_event, task = i, agent = step$agent_name)
-        )
-        step$response <- response
+        step <- private$.execute_step(i, step, selected_agent, prompt_to_consider, on_event)
         step$edited_by_hitl <- FALSE
         self$agents_interaction[[i]] <- step
 
-        emit_event(on_event, new_event(
-          "task_completed", self$name, text = response,
-          task = i, agent = step$agent_name
-        ))
+        # After a reassignment, point the plan at the agent that did best, so
+        # that re-running the same prompt starts with it.
+        agent_fields <- c("agent_id", "agent_name", "model_provider", "model_name")
+        if (i <= length(self$plan) && !identical(self$plan[[i]]$agent_id, step$agent_id)) {
+          self$plan[[i]][agent_fields] <- step[agent_fields]
+        }
 
         if (!is.null(self$hitl_steps) && i %in% self$hitl_steps) {
           if (identical(self$hitl_mode, "pause")) {
@@ -1169,6 +1264,255 @@ LeadAgent <- R6::R6Class(
       final
     },
 
+    # Run one plan step. Without validation this is a single delegation. With
+    # validation (see $set_validation()), every response is judged; a
+    # rejected one is handed to the next best agent, up to `max_reassign`
+    # times, and the best-scoring attempt is kept. With a memory attached,
+    # judged attempts are recorded as outcomes and lessons.
+    .execute_step = function(i, step, selected_agent, prompt_to_consider, on_event) {
+      attempts <- list()
+      tried <- character(0)
+
+      repeat {
+        tried <- c(tried, step$agent_id)
+
+        agent_prompt <- prompt_to_consider
+        # An agent with its own memory adds its lessons itself in $invoke().
+        if (!is.null(self$memory) && is.null(selected_agent$memory)) {
+          agent_prompt <- prompt_with_lessons(
+            agent_prompt,
+            self$memory$search(step$prompt, k = private$.memory_k)
+          )
+        }
+
+        emit_event(on_event, new_event(
+          "task_started", self$name,
+          task = i, agent = step$agent_name, prompt = agent_prompt
+        ))
+
+        response <- invoke_with_events(
+          selected_agent, agent_prompt,
+          forward_events(on_event, task = i, agent = step$agent_name)
+        )
+
+        emit_event(on_event, new_event(
+          "task_completed", self$name, text = response,
+          task = i, agent = step$agent_name
+        ))
+
+        if (is.null(self$validation)) {
+          step$response <- response
+          return(step)
+        }
+
+        verdict <- private$.judge_step(step$prompt, response)
+        private$.remember_verdict(step, verdict)
+
+        emit_event(on_event, new_event(
+          "task_validated", self$name,
+          task = i, agent = step$agent_name,
+          score = verdict$score, valid = verdict$valid, feedback = verdict$feedback
+        ))
+
+        attempts[[length(attempts) + 1L]] <- list(
+          agent_id       = step$agent_id,
+          agent_name     = step$agent_name,
+          model_provider = step$model_provider,
+          model_name     = step$model_name,
+          response       = response,
+          score          = verdict$score,
+          valid          = verdict$valid,
+          feedback       = verdict$feedback
+        )
+
+        if (verdict$valid || length(attempts) > self$validation$max_reassign) break
+
+        next_id <- private$.match_agent_to_task(step$prompt, exclude = tried)
+        if (is.null(next_id)) break
+
+        selected_agent <- self$agents[[private$.agent_index(next_id)]]
+
+        emit_event(on_event, new_event(
+          "task_reassigned", self$name,
+          task = i, from = step$agent_name, to = selected_agent$name,
+          score = verdict$score
+        ))
+        cli::cli_alert_warning(
+          "Step {i}: {step$agent_name} scored {verdict$score}, reassigning to {selected_agent$name}."
+        )
+
+        step$agent_id       <- selected_agent$agent_id
+        step$agent_name     <- selected_agent$name
+        step$model_provider <- selected_agent$model_provider
+        step$model_name     <- selected_agent$model_name
+      }
+
+      scores <- vapply(attempts, function(a) a$score, numeric(1))
+      best <- attempts[[which.max(scores)]]
+
+      step$agent_id       <- best$agent_id
+      step$agent_name     <- best$agent_name
+      step$model_provider <- best$model_provider
+      step$model_name     <- best$model_name
+      step$response       <- best$response
+      step$score          <- best$score
+      step$valid          <- best$valid
+      step$feedback       <- best$feedback
+      step$attempts       <- attempts
+
+      step
+    },
+
+    # Judge a delegated response against the validation criteria. When a
+    # memory is attached, the same call also distills a lesson, so learning
+    # costs no extra request.
+    .judge_step = function(task, response) {
+      learn <- !is.null(self$memory)
+
+      fields <- list(
+        score = ellmer::type_number(
+          description = "How well the response satisfies the criteria, from 0 (worst) to 1 (best)."
+        ),
+        feedback = ellmer::type_string(
+          description = "Short explanation of the score."
+        )
+      )
+      if (learn) {
+        fields$lesson <- ellmer::type_string(
+          description = paste(
+            "One reusable lesson, at most two sentences, for an agent facing similar tasks:",
+            "the strategy that worked, or what to avoid and do instead.",
+            "Do not mention details that only apply to this exact input."
+          )
+        )
+      }
+
+      judge_prompt <- paste0(
+        "Validation criteria: ", self$validation$criteria, "\n\n",
+        "Task:\n", task, "\n\n",
+        "Response to evaluate:\n", response
+      )
+
+      original_system_prompt <- self$llm_object$get_system_prompt()
+      self$llm_object$set_system_prompt(value = paste0(
+        "You are a response validation assistant. Evaluate responses objectively ",
+        "against the given criteria."
+      ))
+      on.exit(
+        self$llm_object$set_system_prompt(value = original_system_prompt),
+        add = TRUE,
+        after = FALSE
+      )
+
+      result <- tryCatch(
+        self$llm_object$chat_structured(
+          judge_prompt,
+          type = do.call(ellmer::type_object, fields)
+        ),
+        error = function(e) {
+          cli::cli_abort(
+            c(
+              "LeadAgent {.val {self$name}} could not validate a delegated response.",
+              "x" = conditionMessage(e)
+            ),
+            parent = e,
+            call = NULL
+          )
+        }
+      )
+
+      score <- as.numeric(result$score)
+      list(
+        score    = score,
+        valid    = isTRUE(score >= self$validation$threshold),
+        feedback = as.character(result$feedback),
+        lesson   = if (learn) as.character(result$lesson) else NULL
+      )
+    },
+
+    .remember_verdict = function(step, verdict) {
+      if (is.null(self$memory)) return(invisible(NULL))
+
+      self$memory$add_outcome(
+        agent_name = step$agent_name,
+        task = step$prompt,
+        success = verdict$valid,
+        score = verdict$score,
+        source = "validation"
+      )
+
+      if (length(verdict$lesson) == 1L && nzchar(trimws(verdict$lesson))) {
+        self$memory$add_lesson(
+          lesson = verdict$lesson,
+          task = step$prompt,
+          agent_name = step$agent_name,
+          score = verdict$score,
+          success = verdict$valid
+        )
+      }
+
+      invisible(NULL)
+    },
+
+    # Record a human decision at an HITL step. An edit is the strongest
+    # signal there is, so it is also distilled into a lesson.
+    .remember_hitl = function(step, action, edited_response = NULL) {
+      if (is.null(self$memory)) return(invisible(NULL))
+
+      self$memory$add_outcome(
+        agent_name = step$agent_name,
+        task = step$prompt,
+        success = identical(action, "continue"),
+        source = "hitl"
+      )
+
+      if (identical(action, "edit")) {
+        lesson <- private$.distill_lesson(
+          task = step$prompt,
+          response = step$response,
+          verdict = paste0(
+            "Rejected by a human reviewer, who replaced the response with:\n",
+            edited_response
+          )
+        )
+        self$memory$add_lesson(
+          lesson = lesson,
+          task = step$prompt,
+          agent_name = step$agent_name,
+          success = FALSE
+        )
+      }
+
+      invisible(NULL)
+    },
+
+    .agent_index = function(agent_id) {
+      which(vapply(self$agents, function(agent) agent$agent_id == agent_id, logical(1)))
+    },
+
+    # One line per agent summarising its past outcomes, for the matching
+    # prompt. Empty when no memory is attached or the agent has no history.
+    .track_record_line = function(agent_name) {
+      if (is.null(self$memory)) return("")
+
+      record <- self$memory$track_record(agent_name)
+      if (record$n_tasks == 0L) return("")
+
+      own <- Filter(function(o) identical(o$agent_name, agent_name), self$memory$outcomes)
+      recent <- own[seq.int(max(1L, length(own) - 2L), length(own))]
+      recent <- vapply(recent, function(o) {
+        task <- o$task
+        if (nchar(task) > 80) task <- paste0(substr(task, 1, 77), "...")
+        paste0("[", if (isTRUE(o$success)) "passed" else "failed", "] ", task)
+      }, character(1))
+
+      paste0(
+        "\nTrack record: ", record$n_tasks, " past task(s), ", record$n_success, " passed",
+        if (!is.na(record$mean_score)) paste0(", mean score ", round(record$mean_score, 2)) else "",
+        "\nRecent tasks:\n", paste0("  ", recent, collapse = "\n")
+      )
+    },
+
     .analyze_prompt = function(prompt) {
 
       result <- private$.safe_chat(prompt)
@@ -1180,14 +1524,21 @@ LeadAgent <- R6::R6Class(
       return(tasks)
     },
 
-    .match_agent_to_task = function(task) {
+    # Pick the agent best suited to `task` and return its ID. Agents whose ID
+    # is in `exclude` are not considered; NULL is returned when none is left.
+    # With a memory attached, each agent's track record is shown to the LLM.
+    .match_agent_to_task = function(task, exclude = character(0)) {
 
-      agent_descriptions <- vapply(self$agents, function(agent) {
+      candidates <- Filter(function(agent) !agent$agent_id %in% exclude, self$agents)
+      if (length(candidates) == 0L) return(NULL)
+
+      agent_descriptions <- vapply(candidates, function(agent) {
         paste0(
           "----------------",
           "\nID: ", agent$agent_id,
           "\nName: ", agent$name,
           "\nInstruction: ", agent$instruction,
+          private$.track_record_line(agent$name),
           "\n---------------"
         )
       }, character(1))
@@ -1196,12 +1547,21 @@ LeadAgent <- R6::R6Class(
         "You are an agent-matching assistant. ",
         "Given a task and a list of available agents with their instructions, names and IDs, ",
         "pick the best-suited agent (only one) and return ONLY its ID (no explanation). The ID has a UUID structure",
-        " The structure of the Agent starts with the ID and finishes with the Instruction."
+        " The structure of the Agent starts with the ID and finishes with the Instruction.",
+        if (!is.null(self$memory)) paste0(
+          " Some agents list a track record of past tasks: prefer agents that passed ",
+          "similar tasks and avoid agents that failed them."
+        ) else ""
       )
 
       base_system_prompt <- self$llm_object$get_system_prompt()
 
       self$llm_object$set_system_prompt(value = system_prompt)
+      on.exit(
+        self$llm_object$set_system_prompt(value = base_system_prompt),
+        add = TRUE,
+        after = FALSE
+      )
 
       user_message <- paste(
         "Task:", task, "\n\n",
@@ -1215,15 +1575,14 @@ LeadAgent <- R6::R6Class(
 
       checkmate::assert_string(agent_id)
 
-      agent_id <- trimws(agent_id)
+      # ellmer returns a classed `ellmer_output` string: keep only the text.
+      agent_id <- trimws(as.character(agent_id))
 
-      agent_ids <- unlist(lapply(self$agents, function(agent) agent$agent_id))
+      agent_ids <- unlist(lapply(candidates, function(agent) agent$agent_id))
 
       if (!agent_id %in% agent_ids) {
-        cli::cli_abort("LLM returned invalid agent_id: ", agent_id)
+        cli::cli_abort("LLM returned invalid agent_id: {agent_id}")
       }
-
-      self$llm_object$set_system_prompt(value = base_system_prompt)
 
       return(agent_id)
 
@@ -1252,8 +1611,11 @@ LeadAgent <- R6::R6Class(
         cli::cli_alert_warning("Invalid input. Please enter 1, 2, or 3.")
       }
 
+      action <- c("1" = "continue", "2" = "edit", "3" = "abort")[[answer]]
+      new_response <- if (answer == "2") readline("(->) Enter edited response: ") else NULL
+      private$.remember_hitl(step, action, edited_response = new_response)
+
       if (answer == "2") {
-        new_response <- readline("(->) Enter edited response: ")
         step$response <- new_response
         step$edited_by_hitl <- TRUE
         cli::cli_alert_success("Response updated.")

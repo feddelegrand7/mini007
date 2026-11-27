@@ -328,6 +328,18 @@ stats <- agent$get_usage_stats()
 stats
 ```
 
+#### Prices for models ellmer doesn't know
+
+Costs come from ellmer's built-in price table. For a model that is not in it (for instance a model released after your ellmer version), the cost is `NA` and a budget cannot be enforced. Register the model's price, in USD per million tokens, with `set_prices()`; prices set this way also override ellmer's when a price is out of date. They apply to every agent in the session.
+
+```{r, eval = FALSE}
+set_prices("gpt-5.6", input = 1.25, output = 10, cached_input = 0.125)
+get_prices()    # the registered prices
+clear_prices()  # back to ellmer's prices
+```
+
+`llm_cost(agent$llm_object)` returns the unrounded cost of an agent's conversation.
+
 ## Generate and execute R code from natural language
 
 `generate_execute_r_code()` lets an `Agent` translate a natural-language task description into R code, optionally validate its syntax, and (optionally) execute it.

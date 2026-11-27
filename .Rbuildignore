@@ -13,9 +13,11 @@
 ^index\.qmd$
 ^agents\.qmd$
 ^leadagent\.qmd$
+^react\.qmd$
 ^\.quarto$
 ^styles\.css$
 ^testing\.qmd$
 ^tools\.qmd$
 ^workflow\.qmd$
 ^streaming\.qmd$
+^learning\.qmd$
