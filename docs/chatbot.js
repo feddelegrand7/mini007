@@ -257,7 +257,8 @@
   }
 
   function isSafeUrl(url) {
-    return /^https:\/\/feddelegrand7\.github\.io\/mini007\//.test(url) ||
+    return /^https:\/\/(www\.)?mini007\.com\//.test(url) ||
+      /^https:\/\/feddelegrand7\.github\.io\/mini007\//.test(url) ||
       /^https:\/\/github\.com\/feddelegrand7\/mini007/.test(url) ||
       /^[a-z0-9-]+\.html(#[\w-]+)?$/i.test(url);
   }

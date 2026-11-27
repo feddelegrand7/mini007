@@ -2,6 +2,7 @@ project:
   type: website
   output-dir: docs
   resources:
+    - CNAME
     - chatbot.js
     - chatbot.css
 

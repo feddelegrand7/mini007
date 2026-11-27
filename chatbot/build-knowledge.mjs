@@ -13,7 +13,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const siteUrl = "https://feddelegrand7.github.io/mini007/";
+const siteUrl = "https://mini007.com/";
 
 const pages = [
   ["index.qmd", "Home"],

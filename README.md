@@ -201,7 +201,7 @@ wf$run("The history of the printing press", on_event = function(event) {
 
 Raising an error inside `on_event` cancels the run cleanly. See the
 [Streaming
-article](https://feddelegrand7.github.io/mini007/streaming.html) for the
+article](https://mini007.com/streaming.html) for the
 full event reference.
 
 ### Learning from experience
@@ -226,7 +226,7 @@ lead_agent$agent_track_record()
 ```
 
 See the [Learning
-article](https://feddelegrand7.github.io/mini007/learning.html) for
+article](https://mini007.com/learning.html) for
 details.
 
 ## Installation
@@ -238,7 +238,7 @@ install.packages("mini007")
 ```
 
 The documentation is available
-[here](https://feddelegrand7.github.io/mini007/)
+[here](https://mini007.com/)
 
 ## Code of Conduct
 

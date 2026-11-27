@@ -4,7 +4,7 @@ compatibility_date = "2026-11-01"
 
 [vars]
 # Sites allowed to call the bot from a browser (comma-separated).
-ALLOWED_ORIGINS = "https://feddelegrand7.github.io,http://localhost:8765"
+ALLOWED_ORIGINS = "https://mini007.com,https://www.mini007.com,https://feddelegrand7.github.io,http://localhost:8765"
 
 # At most 8 questions per minute from one IP address.
 [[ratelimits]]
